@@ -39,25 +39,25 @@ const _nav = [
   {
     component: CNavItem,
     name: '首頁',
-    to: '/theme/colors',
+    to: '/theme/home',
     icon: <CIcon icon={cilHome} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
     name: '碳盤查系統',
-    to: '/theme/colors',
+    to: '/theme/system',
     icon: <CIcon icon={cilPencil} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
     name: '盤查系統查詢',
-    to: '/theme/colors',
+    to: '/theme/search',
     icon: <CIcon icon={cilSearch} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
     name: '盤查報告書',
-    to: '/theme/colors',
+    to: '/theme/report',
     icon: <CIcon icon={cilFile} customClassName="nav-icon" />,
   },
   {
@@ -79,13 +79,13 @@ const _nav = [
   {
     component: CNavItem,
     name: '個人資料',
-    to: '/theme/typography',
+    to: '/theme/user_info',
     icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
     name: '企業資料',
-    to: '/theme/typography',
+    to: '/theme/company_info',
     icon: <CIcon icon={cilBuilding} customClassName="nav-icon" />,
   },
   {
