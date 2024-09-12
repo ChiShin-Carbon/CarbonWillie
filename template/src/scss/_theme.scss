@@ -13,10 +13,12 @@ body {
 .header > .container-fluid,
 .sidebar-header {
   min-height: calc(4rem + 1px); // stylelint-disable-line function-disallowed-list
+  background-color: #AE57A4;
 }
 
 .sidebar-brand-full {
   margin-left: 3px;
+  
 }
 
 .sidebar-header {
@@ -45,6 +47,7 @@ body {
 
 .header > .container-fluid + .container-fluid {
   min-height: 3rem;
+  background-color: white
 }
 
 .footer {
