@@ -39,10 +39,10 @@ const FormControl = () => {
             <strong>修改個人資料</strong>
           </CCardHeader>
           <CCardBody>
-            <DocsExample href="forms/form-control">
+            
               <CForm>
                 <CRow className="mb-3">
-                  <CCol sm={6}>
+                  <CCol sm={4}>
                     <div className="mb-3">
                       <CFormLabel htmlFor="account">帳號</CFormLabel>
                       <CFormInput
@@ -51,7 +51,8 @@ const FormControl = () => {
                       />
                     </div>
                   </CCol>
-                  <CCol sm={6}>
+                  <CCol sm={2}></CCol>
+                  <CCol sm={4}>
                     <div className="mb-3">
                       <CFormLabel htmlFor="email">姓名</CFormLabel>
                       <CFormInput
@@ -62,7 +63,7 @@ const FormControl = () => {
                   </CCol>
                 </CRow>
                 <CRow className="mb-3">
-                  <CCol sm={6}>
+                  <CCol sm={4}>
                     <div className="mb-3">
                       <CFormLabel htmlFor="account">電子郵件</CFormLabel>
                       <CFormInput
@@ -72,30 +73,45 @@ const FormControl = () => {
                       />
                     </div>
                   </CCol>
-                  <CCol sm={6}>
+                  <CCol sm={2}></CCol>
+                  <CCol sm={4}>
                     <div className="mb-3">
-                      <CFormLabel htmlFor="email">姓名</CFormLabel>
+                      <CFormLabel htmlFor="email">辦公室電話</CFormLabel>
                       <CFormInput
-                        type="name"
+                        type="phone"
                         id="name"
                       />
                     </div>
                   </CCol>
                 </CRow>
-                <div className="mb-3">
-                  <CFormLabel htmlFor="exampleFormControlInput1">電子郵件</CFormLabel>
-                  <CFormInput
-                    type="email"
-                    id="email"
-                    placeholder="name@example.com"
-                  />
-                </div>
-                <div className="mb-3">
-                  <CFormLabel htmlFor="exampleFormControlTextarea1">Example textarea</CFormLabel>
-                  <CFormTextarea id="exampleFormControlTextarea1" rows={3}></CFormTextarea>
+                <CRow className="mb-3">
+                  <CCol sm={4}>
+                    <div className="mb-3">
+                      <CFormLabel htmlFor="account">所屬部門</CFormLabel>
+                      <CFormInput
+                        type="email"
+                        id="email"
+                      />
+                    </div>
+                  </CCol>
+                  <CCol sm={2}></CCol>
+                  <CCol sm={4}>
+                    <div className="mb-3">
+                      <CFormLabel htmlFor="email">職業</CFormLabel>
+                      <CFormInput
+                        type="phone"
+                        id="name"
+                      />
+                    </div>
+                  </CCol>
+                </CRow>
+                <div className="col-auto text-center">
+                  <CButton color="primary" type="submit" className="mb-3">
+                    保存資料
+                  </CButton>
                 </div>
               </CForm>
-            </DocsExample>
+            
           </CCardBody>
         </CCard>
       </CCol>
