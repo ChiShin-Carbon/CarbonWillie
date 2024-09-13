@@ -16,6 +16,90 @@ import { DocsExample } from 'src/components'
 const FormControl = () => {
   return (
     <CRow>
+      {/* 正式 
+      <CRow className="mb-3">
+                <CFormLabel htmlFor="staticEmail" className="col-sm-2 col-form-label">
+                  Email
+                </CFormLabel>
+                <div className="col-sm-10">
+                  <CFormInput
+                    type="text"
+                    id="staticEmail"
+                    defaultValue="email@example.com"
+                    readOnly
+                    plainText
+                  />
+                </div>
+              </CRow>
+      
+      */}
+      <CCol xs={12}>
+        <CCard className="mb-4">
+          <CCardHeader>
+            <strong>修改個人資料</strong>
+          </CCardHeader>
+          <CCardBody>
+            <DocsExample href="forms/form-control">
+              <CForm>
+                <CRow className="mb-3">
+                  <CCol sm={6}>
+                    <div className="mb-3">
+                      <CFormLabel htmlFor="account">帳號</CFormLabel>
+                      <CFormInput
+                        type="email"
+                        id="account"
+                      />
+                    </div>
+                  </CCol>
+                  <CCol sm={6}>
+                    <div className="mb-3">
+                      <CFormLabel htmlFor="email">姓名</CFormLabel>
+                      <CFormInput
+                        type="name"
+                        id="name"
+                      />
+                    </div>
+                  </CCol>
+                </CRow>
+                <CRow className="mb-3">
+                  <CCol sm={6}>
+                    <div className="mb-3">
+                      <CFormLabel htmlFor="account">電子郵件</CFormLabel>
+                      <CFormInput
+                        type="email"
+                        id="email"
+                        placeholder="name@example.com"
+                      />
+                    </div>
+                  </CCol>
+                  <CCol sm={6}>
+                    <div className="mb-3">
+                      <CFormLabel htmlFor="email">姓名</CFormLabel>
+                      <CFormInput
+                        type="name"
+                        id="name"
+                      />
+                    </div>
+                  </CCol>
+                </CRow>
+                <div className="mb-3">
+                  <CFormLabel htmlFor="exampleFormControlInput1">電子郵件</CFormLabel>
+                  <CFormInput
+                    type="email"
+                    id="email"
+                    placeholder="name@example.com"
+                  />
+                </div>
+                <div className="mb-3">
+                  <CFormLabel htmlFor="exampleFormControlTextarea1">Example textarea</CFormLabel>
+                  <CFormTextarea id="exampleFormControlTextarea1" rows={3}></CFormTextarea>
+                </div>
+              </CForm>
+            </DocsExample>
+          </CCardBody>
+        </CCard>
+      </CCol>
+      
       <CCol xs={12}>
         <CCard className="mb-4">
           <CCardHeader>
