@@ -73,6 +73,18 @@ const _nav = [
     icon: <CIcon icon={cilPencil} customClassName="nav-icon" />,
   },
   {
+    component: CNavItem,
+    name: 'Try_411402601',
+    to: '/theme/try_411402601',
+    icon: <CIcon icon={cilPencil} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: 'FormControl',
+    to: '/theme/form-control',
+    icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
+  },
+  {
     component: CNavTitle,
     name: '帳號管理',
   },
