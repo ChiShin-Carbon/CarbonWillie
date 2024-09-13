@@ -60,7 +60,7 @@ const routes = [
   { path: '/theme/colors', name: 'Colors', element: Colors },
   { path: '/theme/typography', name: 'Typography', element: Typography },
   //新增
-  { path: '/theme/try_411402601', name: 'Try', element: FormControl },
+  { path: '/theme/try_411402601', name: 'Try', element: Try_411402601 },
   //
   { path: '/base', name: 'Base', element: Cards, exact: true },
   { path: '/base/accordion', name: 'Accordion', element: Accordion },
