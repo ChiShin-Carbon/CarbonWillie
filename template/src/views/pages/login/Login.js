@@ -15,18 +15,35 @@ import {
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser } from '@coreui/icons'
+import '../../../scss/login.css';
 
 const Login = () => {
   return (
-    <div className="bg-body-tertiary min-vh-100 d-flex flex-row align-items-center">
+    // <div className="bg-body-tertiary min-vh-100 d-flex flex-row align-items-center">
+    <div class="login">
       <CContainer>
         <CRow className="justify-content-center">
           <CCol md={8}>
             <CCardGroup>
+              <div className="text-white py-5" style={{ width: '44%' }}>
+                <CCardBody className="text-center">
+                  <div>
+                    <h1>Chi Shin</h1>
+                    <p>
+                    Carbon Footprint <br></br>
+                    Verification System
+                    </p>
+                    <hr></hr>
+                    <p>精準碳盤查，全面掌握碳足跡， <br></br>
+                        助您輕鬆邁向永續未來，共同創造綠色明天</p>
+                    
+                  </div>
+                </CCardBody>
+              </div>
               <CCard className="p-4">
                 <CCardBody>
                   <CForm>
-                    <h1>Login</h1>
+                    <h2>登入</h2>
                     <p className="text-body-secondary">Sign In to your account</p>
                     <CInputGroup className="mb-3">
                       <CInputGroupText>
@@ -59,22 +76,7 @@ const Login = () => {
                   </CForm>
                 </CCardBody>
               </CCard>
-              <CCard className="text-white bg-primary py-5" style={{ width: '44%' }}>
-                <CCardBody className="text-center">
-                  <div>
-                    <h2>Sign up</h2>
-                    <p>
-                      Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                      tempor incididunt ut labore et dolore magna aliqua.
-                    </p>
-                    <Link to="/register">
-                      <CButton color="primary" className="mt-3" active tabIndex={-1}>
-                        Register Now!
-                      </CButton>
-                    </Link>
-                  </div>
-                </CCardBody>
-              </CCard>
+              
             </CCardGroup>
           </CCol>
         </CRow>
