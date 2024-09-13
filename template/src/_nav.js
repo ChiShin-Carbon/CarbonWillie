@@ -9,6 +9,7 @@ import {
   cilDescription,
   cilDrop,
   cilFile,
+  cilHappy,
   cilHome,
   cilNotes,
   cilPencil,
@@ -76,7 +77,7 @@ const _nav = [
     component: CNavItem,
     name: 'Try_411402601',
     to: '/theme/try_411402601',
-    icon: <CIcon icon={cilPencil} customClassName="nav-icon" />,
+    icon: <CIcon icon={cilHappy} customClassName="nav-icon" />,
   },
   
   {
