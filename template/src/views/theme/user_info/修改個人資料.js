@@ -37,7 +37,7 @@ const Tabs=()=>{
                     <CCardBody>
                         <CCard className="mb-4">
                             <CCardHeader>
-                                <strong>個人資料</strong>
+                                <strong style={{ fontSize: '1.2rem', borderBottom: '5px solid #d882c0' }}>個人資料</strong>
                             </CCardHeader>
                             <CCardBody>
                                 <CForm>
@@ -95,7 +95,7 @@ const Tabs=()=>{
                     <CCardBody>
                         <CCard className="mb-4">
                             <CCardHeader>
-                                <strong>修改個人資料</strong>
+                                <strong style={{ fontSize: '1.2rem', borderBottom: '5px solid #d882c0' }}>修改個人資料</strong>
                             </CCardHeader>
                             <CCardBody>
                                 <CForm>
@@ -145,7 +145,7 @@ const Tabs=()=>{
                                         </CCol>
                                     </CRow>
                                     <div className="col-auto text-center">
-                                        <CButton color="primary" type="submit" className="mb-3">
+                                    <CButton color="primary" type="submit" className="mb-3">
                                             保存資料
                                         </CButton>
                                     </div>
