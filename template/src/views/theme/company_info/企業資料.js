@@ -33,7 +33,7 @@ const Tabs = () => {
                                 type="name"
                                 id="name"
                                 placeholder="啟新醫事檢驗所"
-                                />
+                                disabled readOnly/>
                             </div>
                             </CCol>
                         </CRow>
@@ -45,7 +45,7 @@ const Tabs = () => {
                                 type="registrationno"
                                 id="registrationno"
                                 placeholder="A39B6572"
-                                />
+                                disabled readOnly/>
                             </div>
                             </CCol>
                             <CCol sm={1}></CCol>
@@ -55,7 +55,7 @@ const Tabs = () => {
                                 <CFormInput
                                 type="permitno"
                                 id="permitno"
-                                />
+                                disabled readOnly/>
                             </div>
                             </CCol>
                         </CRow>
@@ -67,7 +67,7 @@ const Tabs = () => {
                                 type="country"
                                 id="country"
                                 placeholder="台北市"
-                                />
+                                disabled readOnly/>
                             </div>
                             </CCol>
                             <CCol sm={3}>
@@ -77,7 +77,7 @@ const Tabs = () => {
                                 type="township"
                                 id="township"
                                 placeholder="中山區"
-                                />
+                                disabled readOnly/>
                             </div>
                             </CCol>
                             <CCol sm={3}>
@@ -87,7 +87,7 @@ const Tabs = () => {
                                 type="village"
                                 id="village"
                                 placeholder="行政里"
-                                />
+                                disabled readOnly/>
                             </div>
                             </CCol>
                         </CRow>
@@ -99,7 +99,7 @@ const Tabs = () => {
                                 type="address"
                                 id="address"
                                 placeholder="台北市中山區建國北路三段42號5樓"
-                                />
+                                disabled readOnly/>
                             </div>
                             </CCol>
                             <CCol sm={3}>
@@ -109,7 +109,7 @@ const Tabs = () => {
                                 type="postal_code"
                                 id="postal_code"
                                 placeholder="10482"
-                                />
+                                disabled readOnly/>
                             </div>
                             </CCol>
                         </CRow>
@@ -120,7 +120,7 @@ const Tabs = () => {
                                 <CFormInput
                                 type="head"
                                 id="head"
-                                />
+                                disabled readOnly/>
                             </div>
                             </CCol>
                             <CCol sm={1}></CCol>
@@ -131,7 +131,7 @@ const Tabs = () => {
                                 type="telephone"
                                 id="telephone"
                                 placeholder="02-25070723"
-                                />
+                                disabled readOnly/>
                             </div>
                             </CCol>
                         </CRow>
@@ -143,7 +143,7 @@ const Tabs = () => {
                                 type="email"
                                 id="email"
                                 placeholder="name@example.com"
-                                />
+                                disabled readOnly/>
                             </div>
                             </CCol>
                             <CCol sm={1}></CCol>
@@ -153,7 +153,7 @@ const Tabs = () => {
                                 <CFormInput
                                 type="mobile"
                                 id="mobile"
-                                />
+                                disabled readOnly/>
                             </div>
                             </CCol>
                         </CRow>
@@ -164,7 +164,7 @@ const Tabs = () => {
                                 <CFormInput
                                 type="industry_name"
                                 id="industry_name"
-                                />
+                                disabled readOnly/>
                             </div>
                             </CCol>
                             <CCol sm={1}></CCol>
@@ -174,7 +174,7 @@ const Tabs = () => {
                                 <CFormInput
                                 type="industry_code"
                                 id="industry_code"
-                                />
+                                disabled readOnly/>
                             </div>
                             </CCol>
                         </CRow>
