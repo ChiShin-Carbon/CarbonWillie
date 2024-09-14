@@ -14,7 +14,6 @@ import {
   CFormLabel,
   CFormInput,
   CButton,
-  CNav,
 } from '@coreui/react'
 
 const Tabs=()=>{
@@ -146,7 +145,7 @@ const Tabs=()=>{
                                         </CCol>
                                     </CRow>
                                     <div className="col-auto text-center">
-                                    <CButton class="button" className="px-4">
+                                    <CButton color="primary" type="submit" className="mb-3">
                                             保存資料
                                         </CButton>
                                     </div>
