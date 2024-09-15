@@ -78,7 +78,7 @@ const Login = () => {
                       </p>
                     </CCol>
                     <CCol>
-                      <Link to="/register">
+                      <Link to="../register">
                         <p>
                           建立新帳號
                         </p>
@@ -86,7 +86,7 @@ const Login = () => {
                     </CCol>
                   </CRow>
                   <CButton class="button" className="px-4">
-                    Login
+                    登入
                   </CButton>
 
 
