@@ -1,6 +1,11 @@
 // Here you can add other styles
 .custom-tablist .nav-link {
-    color: black !important;
+    color: gray; 
+    font-weight: bold;
+  }
+  
+  .custom-tablist .nav-link.active {
+    color: black; 
     font-weight: bold;
   }
   
