@@ -21,7 +21,7 @@ const Tabs=()=>{
         <CRow>
         <CCol xs={12}>
             <CTabs activeItemKey={1}>
-                <CTabList variant="underline-border">
+                <CTabList variant="underline-border" className="custom-tablist">
                     <CTab aria-controls="home-tab-pane" itemKey={1}>
                     個人資料
                     </CTab>
@@ -37,7 +37,7 @@ const Tabs=()=>{
                     <CCardBody>
                         <CCard className="mb-4">
                             <CCardHeader>
-                                <strong style={{ fontSize: '1.2rem', borderBottom: '5px solid #d882c0' }}>個人資料</strong>
+                                <strong style={{ fontSize: '1.2rem', borderBottom: '5px solid #CA6AAF' }}>個人資料</strong>
                             </CCardHeader>
                             <CCardBody>
                                 <CForm>
@@ -95,7 +95,7 @@ const Tabs=()=>{
                     <CCardBody>
                         <CCard className="mb-4">
                             <CCardHeader>
-                                <strong style={{ fontSize: '1.2rem', borderBottom: '5px solid #d882c0' }}>修改個人資料</strong>
+                                <strong style={{ fontSize: '1.2rem', borderBottom: '5px solid #CA6AAF' }}>修改個人資料</strong>
                             </CCardHeader>
                             <CCardBody>
                                 <CForm>

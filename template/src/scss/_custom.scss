@@ -1,1 +1,10 @@
 // Here you can add other styles
+.custom-tablist .nav-link {
+    color: black !important;
+    font-weight: bold;
+  }
+  
+  .custom-tablist .nav-link.active {
+    border-bottom: 5px solid #9D6B6B !important;
+  }
+  

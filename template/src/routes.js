@@ -4,7 +4,7 @@ const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
 const Typography = React.lazy(() => import('./views/theme/typography/Typography'))
 const Try_411402601 = React.lazy(() => import('./views/theme/try_411402601/Try'))
-const 修改個人資料 = React.lazy(() => import('./views/theme/user_info/修改個人資料'))
+const 個人資料 = React.lazy(() => import('./views/theme/user_info/個人資料'))
 const 企業資料 = React.lazy(() => import('./views/theme/company_info/企業資料'))
 
 // Base
@@ -61,7 +61,7 @@ const routes = [
   { path: '/theme/typography', name: 'Typography', element: Typography },
   //新增
   { path: '/theme/try_411402601', name: 'Try', element: Try_411402601 },
-  { path: '/theme/user_info', name: '修改個人資料', element: 修改個人資料 },
+  { path: '/theme/user_info', name: '個人資料', element: 個人資料 },
   { path: '/theme/company_info', name: '企業資料', element: 企業資料 },
   //
   { path: '/base', name: 'Base', element: Cards, exact: true },
