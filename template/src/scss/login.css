@@ -3,7 +3,6 @@
     min-height: 100vh;
     display: flex;
     align-items: center;
-    justify-content: center;
     min-height: 100vh;
     /* 確保容器的最小高度等於視窗高度 */
     background-size: cover;
@@ -12,7 +11,7 @@
     /* 讓圖片居中對齊 */
     background-repeat: no-repeat;
     /* 避免圖片重複 */
-    
+    position: relative;
 }
 
 
@@ -74,6 +73,7 @@ hr {
     text-shadow:2px 2px 8px rgb(0, 0, 0);
     margin-right:100px;
     width:500px;
+    margin-left:150px;
 }
 
 .text h1{
@@ -122,4 +122,28 @@ hr {
     background-color: white;
     opacity: 1;
 
+  }
+
+  .custominput{
+    border-radius: 30px;
+    background-color: #F0F0F0;
+    
+  }
+  .custominput:focus{
+    background-color: #F0F0F0;
+  }
+
+  
+
+  .customlabel{
+    color:black;
+    font-weight:bold;
+    width:120px;
+    
+  }
+
+  @media (max-width: 800px) {
+    .login{
+      justify-content: center;
+    }
   }

@@ -12,6 +12,7 @@ import {
   CInputGroup,
   CInputGroupText,
   CRow,
+  CFormLabel
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser } from '@coreui/icons'
@@ -50,26 +51,18 @@ const Login = () => {
                   </div>
                   <hr></hr>
 
-                  <CInputGroup className="mb-3">
-                    <CInputGroupText style={{border:'none',backgroundColor:'white'}}>
-                     <b>帳號</b>
-                    </CInputGroupText>
-                    <CFormInput
-                     placeholder="請輸入您的使用者帳號"
-                     autoComplete="username"
-                     style={{borderRadius:'30px',backgroundColor:'#F0F0F0'}} />
-                  </CInputGroup>
-                  <CInputGroup className="mb-4">
-                    <CInputGroupText style={{border:'none',backgroundColor:'white'}}>
-                    <b>密碼</b>
-                    </CInputGroupText>
-                    <CFormInput
-                      type="password"
-                      placeholder="請輸入您的使用者密碼"
-                      autoComplete="current-password"
-                      style={{borderRadius:'30px',backgroundColor:'#F0F0F0'}}
-                    />
-                  </CInputGroup>
+                  <CRow className="mb-3">
+                  <CFormLabel htmlFor="account" className="col-sm-2 col-form-label customlabel" >使用者帳號</CFormLabel>
+                  <CCol>
+                    <CFormInput className="custominput" type="text" id="account" placeholder="請填寫您的使用者帳號" />
+                  </CCol>
+                </CRow>
+                <CRow className="mb-3">
+                  <CFormLabel htmlFor="Password" className="col-sm-2 col-form-label customlabel" >使用者密碼</CFormLabel>
+                  <CCol>
+                    <CFormInput className="custominput" type="password" id="Password" placeholder="請填寫您的密碼" />
+                  </CCol>
+                </CRow>
 
                   <CRow>
                     <CCol>
