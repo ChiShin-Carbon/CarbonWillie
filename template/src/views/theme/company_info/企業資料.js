@@ -8,7 +8,7 @@ const Tabs = () => {
         <CRow>
         <CCol xs={12}>
             <CTabs activeItemKey={1}>
-                <CTabList variant="underline-border">
+                <CTabList variant="underline-border" className="custom-tablist">
                     <CTab aria-controls="home-tab-pane" itemKey={1}>
                     企業資料
                     </CTab>
