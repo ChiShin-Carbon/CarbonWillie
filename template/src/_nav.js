@@ -51,7 +51,7 @@ const _nav = [
   },
   {
     component: CNavItem,
-    name: '盤查系統查詢',
+    name: '盤查結果查詢',
     to: '/theme/search',
     icon: <CIcon icon={cilSearch} customClassName="nav-icon" />,
   },
