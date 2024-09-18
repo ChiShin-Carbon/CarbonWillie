@@ -2,6 +2,7 @@ import React from 'react'
 import {
     CRow, CCol, CCard, CCardBody, CCardHeader, CTab, CTabContent, CTabList, CTabPanel, CTabs, CForm, CFormLabel, CFormInput, CButton,
 } from '@coreui/react'
+import '../../../scss/個人&企業資料.css';
 
 const Tabs = () => {
     return (
@@ -18,9 +19,8 @@ const Tabs = () => {
                     </CTabList>
                     <CTabContent>
                         <CTabPanel className="py-3" aria-labelledby="home-tab-pane" itemKey={1}>
-                            <CCardBody>
                                 <CCard className="mb-4 customCard">
-                                    <CCardBody>
+                                    <CCardBody  className="customCard2">
                                         <div className="customCardHeader">
                                             <strong className="customtitlebottom">企業資料</strong>
                                         </div>
@@ -184,13 +184,12 @@ const Tabs = () => {
                                         </div>
                                     </CCardBody>
                                 </CCard>
-                            </CCardBody>
                         </CTabPanel>
                         <CTabPanel className="py-3" aria-labelledby="profile-tab-pane" itemKey={2}>
-                            <CCardBody>
+                           
                                 <CCard className="mb-4 customCard">
 
-                                    <CCardBody>
+                                    <CCardBody  className="customCard2">
                                         <div className="customCardHeader">
                                             <strong className="customtitlebottom">修改企業資料</strong>
                                         </div>
@@ -345,7 +344,6 @@ const Tabs = () => {
                                         </div>
                                     </CCardBody>
                                 </CCard>
-                            </CCardBody>
                         </CTabPanel>
                         <CTabPanel className="py-3" aria-labelledby="contact-tab-pane" itemKey={3}>
                             Contact tab content
