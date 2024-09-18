@@ -44,14 +44,14 @@ const Tabs = () => {
                                         <div className="customCardBody">
                                             <CForm>
                                                 <CRow className="mb-3">
-                                                    <CCol sm={4}>
+                                                    <CCol sm={5}>
                                                         <div className="mb-3">
                                                             <CFormLabel htmlFor="account"><strong>帳號</strong></CFormLabel>
                                                             <CFormInput type="account" id="account" placeholder='cindy.wang@ch.com' disabled readOnly />
                                                         </div>
                                                     </CCol>
                                                     <CCol sm={2}></CCol>
-                                                    <CCol sm={4}>
+                                                    <CCol sm={5}>
                                                         <div className="mb-3">
                                                             <CFormLabel htmlFor="email"><strong>姓名</strong></CFormLabel>
                                                             <CFormInput type="name" id="name" placeholder='王宥樺' disabled readOnly />
@@ -59,14 +59,14 @@ const Tabs = () => {
                                                     </CCol>
                                                 </CRow>
                                                 <CRow className="mb-3">
-                                                    <CCol sm={4}>
+                                                    <CCol sm={5}>
                                                         <div className="mb-3">
                                                             <CFormLabel htmlFor="account"><strong>電子郵件</strong></CFormLabel>
                                                             <CFormInput type="email" id="email" placeholder="name@example.com" disabled readOnly />
                                                         </div>
                                                     </CCol>
                                                     <CCol sm={2}></CCol>
-                                                    <CCol sm={4}>
+                                                    <CCol sm={5}>
                                                         <div className="mb-3">
                                                             <CFormLabel htmlFor="email"><strong>辦公室電話</strong></CFormLabel>
                                                             <CFormInput type="name" id="phone" placeholder='0968132840' disabled readOnly />
@@ -74,14 +74,14 @@ const Tabs = () => {
                                                     </CCol>
                                                 </CRow>
                                                 <CRow className="mb-3">
-                                                    <CCol sm={4}>
+                                                    <CCol sm={5}>
                                                         <div className="mb-3">
                                                             <CFormLabel htmlFor="account"><strong>所屬部門</strong></CFormLabel>
                                                             <CFormInput type="email" id="email" placeholder='管理部門' disabled readOnly />
                                                         </div>
                                                     </CCol>
                                                     <CCol sm={2}></CCol>
-                                                    <CCol sm={4}>
+                                                    <CCol sm={5}>
                                                         <div className="mb-3">
                                                             <CFormLabel htmlFor="email"><strong>職位</strong></CFormLabel>
                                                             <CFormInput type="phone" id="name" placeholder='主管' disabled readOnly />
@@ -105,14 +105,14 @@ const Tabs = () => {
                                         <div className="customCardBody">
                                             <CForm>
                                                 <CRow className="mb-3">
-                                                    <CCol sm={4}>
+                                                    <CCol sm={5}>
                                                         <div className="mb-3">
                                                             <CFormLabel htmlFor="account"><strong>帳號</strong></CFormLabel>
                                                             <CFormInput type="account" id="account" placeholder='cindy.wang@ch.com' />
                                                         </div>
                                                     </CCol>
                                                     <CCol sm={2}></CCol>
-                                                    <CCol sm={4}>
+                                                    <CCol sm={5}>
                                                         <div className="mb-3">
                                                             <CFormLabel htmlFor="email"><strong>姓名</strong></CFormLabel>
                                                             <CFormInput type="name" id="name" placeholder='王宥樺' />
@@ -120,14 +120,14 @@ const Tabs = () => {
                                                     </CCol>
                                                 </CRow>
                                                 <CRow className="mb-3">
-                                                    <CCol sm={4}>
+                                                    <CCol sm={5}>
                                                         <div className="mb-3">
                                                             <CFormLabel htmlFor="account"><strong>電子郵件</strong></CFormLabel>
                                                             <CFormInput type="email" id="email" placeholder="name@example.com" />
                                                         </div>
                                                     </CCol>
                                                     <CCol sm={2}></CCol>
-                                                    <CCol sm={4}>
+                                                    <CCol sm={5}>
                                                         <div className="mb-3">
                                                             <CFormLabel htmlFor="email"><strong>辦公室電話</strong></CFormLabel>
                                                             <CFormInput type="name" id="phone" placeholder='0968132840' />
@@ -135,14 +135,14 @@ const Tabs = () => {
                                                     </CCol>
                                                 </CRow>
                                                 <CRow className="mb-3">
-                                                    <CCol sm={4}>
+                                                    <CCol sm={5}>
                                                         <div className="mb-3">
                                                             <CFormLabel htmlFor="account"><strong>所屬部門</strong></CFormLabel>
                                                             <CFormInput type="email" id="email" placeholder='管理部門' />
                                                         </div>
                                                     </CCol>
                                                     <CCol sm={2}></CCol>
-                                                    <CCol sm={4}>
+                                                    <CCol sm={5}>
                                                         <div className="mb-3">
                                                             <CFormLabel htmlFor="email"><strong>職業</strong></CFormLabel>
                                                             <CFormInput type="phone" id="name" placeholder='主管' />
@@ -168,25 +168,37 @@ const Tabs = () => {
                                     </div>
                                     <div className="customCardBody">
                                         <CForm>
-                                            <CCol sm={4}>
-                                                <div className="mb-3">
-                                                    <CFormLabel htmlFor="account"><strong>原本密碼</strong></CFormLabel>
-                                                    <CFormInput type="password" id="account" />
-                                                </div>
-                                            </CCol>
+                                            <CRow className="mb-3">
+                                                <CCol sm={3}></CCol>
+                                                <CCol sm={6}>
+                                                    <div className="mb-3">
+                                                        <CFormLabel htmlFor="account"><strong>原本密碼</strong></CFormLabel>
+                                                        <CFormInput type="password" id="account" />
+                                                    </div>
+                                                </CCol>
+                                                <CCol sm={3}></CCol>
+                                            </CRow>
+                                            <CRow className="mb-3">
+                                                <CCol sm={3}></CCol>
 
-                                            <CCol sm={4}>
-                                                <div className="mb-3">
-                                                    <CFormLabel htmlFor="email"><strong>新密碼</strong></CFormLabel>
-                                                    <CFormInput type="password" id="name" />
-                                                </div>
-                                            </CCol>
-                                            <CCol sm={4}>
-                                                <div className="mb-3">
-                                                    <CFormLabel htmlFor="account"><strong>確認新密碼</strong></CFormLabel>
-                                                    <CFormInput type="password" id="email" />
-                                                </div>
-                                            </CCol>
+                                                <CCol sm={6}>
+                                                    <div className="mb-3">
+                                                        <CFormLabel htmlFor="email"><strong>新密碼</strong></CFormLabel>
+                                                        <CFormInput type="password" id="name" />
+                                                    </div>
+                                                </CCol>
+                                                <CCol sm={3}></CCol>
+                                            </CRow>
+                                            <CRow className="mb-3">
+                                                <CCol sm={3}></CCol>
+                                                <CCol sm={6}>
+                                                    <div className="mb-3">
+                                                        <CFormLabel htmlFor="account"><strong>確認新密碼</strong></CFormLabel>
+                                                        <CFormInput type="password" id="email" />
+                                                    </div>
+                                                </CCol>
+                                                <CCol sm={3}></CCol>
+                                            </CRow>
                                             <div className="col-auto text-center">
                                                 <CButton type="submit" className="mb-3 customButton">
                                                     保存資料
