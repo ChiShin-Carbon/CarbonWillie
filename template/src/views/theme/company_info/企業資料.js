@@ -72,7 +72,7 @@ const Tabs = () => {
                             </CCol>
                             <CCol sm={3}>
                             <div className="mb-3">
-                                <CFormLabel htmlFor="email">鄉村地區別</CFormLabel>
+                                <CFormLabel htmlFor="email">鄉鎮別</CFormLabel>
                                 <CFormInput
                                 type="township"
                                 id="township"
@@ -120,6 +120,7 @@ const Tabs = () => {
                                 <CFormInput
                                 type="head"
                                 id="head"
+                                placeholder="楊文仁"
                                 disabled readOnly/>
                             </div>
                             </CCol>
@@ -164,6 +165,7 @@ const Tabs = () => {
                                 <CFormInput
                                 type="industry_name"
                                 id="industry_name"
+                                placeholder='醫學檢驗業'
                                 disabled readOnly/>
                             </div>
                             </CCol>
@@ -174,6 +176,7 @@ const Tabs = () => {
                                 <CFormInput
                                 type="industry_code"
                                 id="industry_code"
+                                placeholder='8691'
                                 disabled readOnly/>
                             </div>
                             </CCol>
@@ -235,7 +238,7 @@ const Tabs = () => {
                     </CCol>
                     <CCol sm={3}>
                     <div className="mb-3">
-                        <CFormLabel htmlFor="email">鄉村地區別</CFormLabel>
+                        <CFormLabel htmlFor="email">鄉鎮別</CFormLabel>
                         <CFormInput
                         type="township"
                         id="township"
