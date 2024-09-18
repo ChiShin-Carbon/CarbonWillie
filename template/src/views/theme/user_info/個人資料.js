@@ -22,13 +22,13 @@ const Tabs=()=>{
         <CCol xs={12}>
             <CTabs activeItemKey={1}>
                 <CTabList variant="underline-border" className="custom-tablist">
-                    <CTab aria-controls="tab1" itemKey={1}>
+                    <CTab aria-controls="tab1" itemKey={1} className="custom-tablist-choose">
                     個人資料
                     </CTab>
-                    <CTab aria-controls="tab2" itemKey={2}>
+                    <CTab aria-controls="tab2" itemKey={2} className="custom-tablist-choose">
                     修改個人資料
                     </CTab>
-                    <CTab aria-controls="tab3" itemKey={3}>
+                    <CTab aria-controls="tab3" itemKey={3} className="custom-tablist-choose">
                     修改密碼
                     </CTab>
                 </CTabList>

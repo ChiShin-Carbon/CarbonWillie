@@ -78,7 +78,7 @@ const Login = () => {
                       </Link>
                     </CCol>
                   </CRow>
-                  <CButton class="button" className="px-4">
+                  <CButton class="custom-button" className="px-4">
                     登入
                   </CButton>
 

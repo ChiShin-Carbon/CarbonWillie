@@ -114,7 +114,7 @@ const Register = () => {
                   </CCol>
                 </CRow>
 
-                <CButton class="button" className="px-4">
+                <CButton class="custom-button" className="px-4">
                   創建帳號
                 </CButton>
               </CForm>
