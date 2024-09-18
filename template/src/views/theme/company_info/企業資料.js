@@ -336,7 +336,7 @@ const Tabs = () => {
                     </CCol>
                 </CRow>
               <div className="col-auto text-center">
-                <CButton color="primary" type="submit" className="mb-3" background-color="#d882c0">
+                <CButton color="primary" type="submit" className="mb-3" style={{backgroundColor: '#CA6AAF', borderColor: '#CA6AAF', color: 'white', }}>
                   保存資料
                 </CButton>
               </div>
