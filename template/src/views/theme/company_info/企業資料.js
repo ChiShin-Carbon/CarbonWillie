@@ -30,7 +30,7 @@ const Tabs = () => {
                                                 <CRow className="mb-3">
                                                     <CCol sm={12}>
                                                         <div className="mb-3">
-                                                            <CFormLabel htmlFor="account">機構名稱</CFormLabel>
+                                                            <CFormLabel htmlFor="account"><strong>機構名稱</strong></CFormLabel>
                                                             <CFormInput
                                                                 type="name"
                                                                 id="name"
@@ -42,7 +42,7 @@ const Tabs = () => {
                                                 <CRow className="mb-3">
                                                     <CCol sm={6}>
                                                         <div className="mb-3">
-                                                            <CFormLabel htmlFor="account">管制編號</CFormLabel>
+                                                            <CFormLabel htmlFor="account"><strong>管制編號</strong></CFormLabel>
                                                             <CFormInput
                                                                 type="registrationno"
                                                                 id="registrationno"
@@ -52,7 +52,7 @@ const Tabs = () => {
                                                     </CCol>
                                                     <CCol sm={6}>
                                                         <div className="mb-3">
-                                                            <CFormLabel htmlFor="email">核准字號</CFormLabel>
+                                                            <CFormLabel htmlFor="email"><strong>核准字號</strong></CFormLabel>
                                                             <CFormInput
                                                                 type="permitno"
                                                                 id="permitno"
@@ -63,7 +63,7 @@ const Tabs = () => {
                                                 <CRow className="mb-3">
                                                     <CCol sm={4}>
                                                         <div className="mb-3">
-                                                            <CFormLabel htmlFor="account">縣市別</CFormLabel>
+                                                            <CFormLabel htmlFor="account"><strong>縣市別</strong></CFormLabel>
                                                             <CFormInput
                                                                 type="country"
                                                                 id="country"
@@ -73,7 +73,7 @@ const Tabs = () => {
                                                     </CCol>
                                                     <CCol sm={4}>
                                                         <div className="mb-3">
-                                                            <CFormLabel htmlFor="email">鄉鎮別</CFormLabel>
+                                                            <CFormLabel htmlFor="email"><strong>鄉鎮別</strong></CFormLabel>
                                                             <CFormInput
                                                                 type="township"
                                                                 id="township"
@@ -83,7 +83,7 @@ const Tabs = () => {
                                                     </CCol>
                                                     <CCol sm={4}>
                                                         <div className="mb-3">
-                                                            <CFormLabel htmlFor="email">里別</CFormLabel>
+                                                            <CFormLabel htmlFor="email"><strong>里別</strong></CFormLabel>
                                                             <CFormInput
                                                                 type="village"
                                                                 id="village"
@@ -95,7 +95,7 @@ const Tabs = () => {
                                                 <CRow className="mb-3">
                                                     <CCol sm={8}>
                                                         <div className="mb-3">
-                                                            <CFormLabel htmlFor="account">地址</CFormLabel>
+                                                            <CFormLabel htmlFor="account"><strong>地址</strong></CFormLabel>
                                                             <CFormInput
                                                                 type="address"
                                                                 id="address"
@@ -105,7 +105,7 @@ const Tabs = () => {
                                                     </CCol>
                                                     <CCol sm={4}>
                                                         <div className="mb-3">
-                                                            <CFormLabel htmlFor="email">郵遞區號</CFormLabel>
+                                                            <CFormLabel htmlFor="email"><strong>郵遞區號</strong></CFormLabel>
                                                             <CFormInput
                                                                 type="postal_code"
                                                                 id="postal_code"
@@ -117,7 +117,7 @@ const Tabs = () => {
                                                 <CRow className="mb-3">
                                                     <CCol sm={6}>
                                                         <div className="mb-3">
-                                                            <CFormLabel htmlFor="account">負責人姓名</CFormLabel>
+                                                            <CFormLabel htmlFor="account"><strong>負責人姓名</strong></CFormLabel>
                                                             <CFormInput
                                                                 type="head"
                                                                 id="head"
@@ -127,7 +127,7 @@ const Tabs = () => {
                                                     </CCol>
                                                     <CCol sm={6}>
                                                         <div className="mb-3">
-                                                            <CFormLabel htmlFor="email">電話</CFormLabel>
+                                                            <CFormLabel htmlFor="email"><strong>電話</strong></CFormLabel>
                                                             <CFormInput
                                                                 type="telephone"
                                                                 id="telephone"
@@ -139,7 +139,7 @@ const Tabs = () => {
                                                 <CRow className="mb-3">
                                                     <CCol sm={6}>
                                                         <div className="mb-3">
-                                                            <CFormLabel htmlFor="account">電子信箱</CFormLabel>
+                                                            <CFormLabel htmlFor="account"><strong>電子信箱</strong></CFormLabel>
                                                             <CFormInput
                                                                 type="email"
                                                                 id="email"
@@ -149,7 +149,7 @@ const Tabs = () => {
                                                     </CCol>
                                                     <CCol sm={6}>
                                                         <div className="mb-3">
-                                                            <CFormLabel htmlFor="email">手機</CFormLabel>
+                                                            <CFormLabel htmlFor="email"><strong>手機</strong></CFormLabel>
                                                             <CFormInput
                                                                 type="mobile"
                                                                 id="mobile"
@@ -160,7 +160,7 @@ const Tabs = () => {
                                                 <CRow className="mb-3">
                                                     <CCol sm={6}>
                                                         <div className="mb-3">
-                                                            <CFormLabel htmlFor="account">行業名稱</CFormLabel>
+                                                            <CFormLabel htmlFor="account"><strong>行業名稱</strong></CFormLabel>
                                                             <CFormInput
                                                                 type="industry_name"
                                                                 id="industry_name"
@@ -170,7 +170,7 @@ const Tabs = () => {
                                                     </CCol>
                                                     <CCol sm={6}>
                                                         <div className="mb-3">
-                                                            <CFormLabel htmlFor="email">行業代碼</CFormLabel>
+                                                            <CFormLabel htmlFor="email"><strong>行業代碼</strong></CFormLabel>
                                                             <CFormInput
                                                                 type="industry_code"
                                                                 id="industry_code"
@@ -198,7 +198,7 @@ const Tabs = () => {
                                                 <CRow className="mb-3">
                                                     <CCol sm={12}>
                                                         <div className="mb-3">
-                                                            <CFormLabel htmlFor="account">機構名稱</CFormLabel>
+                                                            <CFormLabel htmlFor="account"><strong>機構名稱</strong></CFormLabel>
                                                             <CFormInput
                                                                 type="name"
                                                                 id="name"
@@ -209,7 +209,7 @@ const Tabs = () => {
                                                 <CRow className="mb-3">
                                                     <CCol sm={6}>
                                                         <div className="mb-3">
-                                                            <CFormLabel htmlFor="account">管制編號</CFormLabel>
+                                                            <CFormLabel htmlFor="account"><strong>管制編號</strong></CFormLabel>
                                                             <CFormInput
                                                                 type="registrationno"
                                                                 id="registrationno"
@@ -218,7 +218,7 @@ const Tabs = () => {
                                                     </CCol>
                                                     <CCol sm={6}>
                                                         <div className="mb-3">
-                                                            <CFormLabel htmlFor="email">核准字號</CFormLabel>
+                                                            <CFormLabel htmlFor="email"><strong>核准字號</strong></CFormLabel>
                                                             <CFormInput
                                                                 type="permitno"
                                                                 id="permitno"
@@ -229,7 +229,7 @@ const Tabs = () => {
                                                 <CRow className="mb-3">
                                                     <CCol sm={4}>
                                                         <div className="mb-3">
-                                                            <CFormLabel htmlFor="account">縣市別</CFormLabel>
+                                                            <CFormLabel htmlFor="account"><strong>縣市別</strong></CFormLabel>
                                                             <CFormInput
                                                                 type="country"
                                                                 id="country"
@@ -238,7 +238,7 @@ const Tabs = () => {
                                                     </CCol>
                                                     <CCol sm={4}>
                                                         <div className="mb-3">
-                                                            <CFormLabel htmlFor="email">鄉鎮別</CFormLabel>
+                                                            <CFormLabel htmlFor="email"><strong>鄉鎮別</strong></CFormLabel>
                                                             <CFormInput
                                                                 type="township"
                                                                 id="township"
@@ -247,7 +247,7 @@ const Tabs = () => {
                                                     </CCol>
                                                     <CCol sm={4}>
                                                         <div className="mb-3">
-                                                            <CFormLabel htmlFor="email">里別</CFormLabel>
+                                                            <CFormLabel htmlFor="email"><strong>里別</strong></CFormLabel>
                                                             <CFormInput
                                                                 type="village"
                                                                 id="village"
@@ -258,7 +258,7 @@ const Tabs = () => {
                                                 <CRow className="mb-3">
                                                     <CCol sm={8}>
                                                         <div className="mb-3">
-                                                            <CFormLabel htmlFor="account">地址</CFormLabel>
+                                                            <CFormLabel htmlFor="account"><strong>地址</strong></CFormLabel>
                                                             <CFormInput
                                                                 type="postal_code"
                                                                 id="postal_code"
@@ -267,7 +267,7 @@ const Tabs = () => {
                                                     </CCol>
                                                     <CCol sm={4}>
                                                         <div className="mb-3">
-                                                            <CFormLabel htmlFor="email">郵遞區號</CFormLabel>
+                                                            <CFormLabel htmlFor="email"><strong>郵遞區號</strong></CFormLabel>
                                                             <CFormInput
                                                                 type="address"
                                                                 id="address"
@@ -278,7 +278,7 @@ const Tabs = () => {
                                                 <CRow className="mb-3">
                                                     <CCol sm={6}>
                                                         <div className="mb-3">
-                                                            <CFormLabel htmlFor="account">負責人姓名</CFormLabel>
+                                                            <CFormLabel htmlFor="account"><strong>負責人姓名</strong></CFormLabel>
                                                             <CFormInput
                                                                 type="head"
                                                                 id="head"
@@ -287,7 +287,7 @@ const Tabs = () => {
                                                     </CCol>
                                                     <CCol sm={6}>
                                                         <div className="mb-3">
-                                                            <CFormLabel htmlFor="email">電話</CFormLabel>
+                                                            <CFormLabel htmlFor="email"><strong>電話</strong></CFormLabel>
                                                             <CFormInput
                                                                 type="telephone"
                                                                 id="telephone"
@@ -298,7 +298,7 @@ const Tabs = () => {
                                                 <CRow className="mb-3">
                                                     <CCol sm={6}>
                                                         <div className="mb-3">
-                                                            <CFormLabel htmlFor="account">電子信箱</CFormLabel>
+                                                            <CFormLabel htmlFor="account"><strong>電子信箱</strong></CFormLabel>
                                                             <CFormInput
                                                                 type="email"
                                                                 id="email"
@@ -307,7 +307,7 @@ const Tabs = () => {
                                                     </CCol>
                                                     <CCol sm={6}>
                                                         <div className="mb-3">
-                                                            <CFormLabel htmlFor="email">手機</CFormLabel>
+                                                            <CFormLabel htmlFor="email"><strong>手機</strong></CFormLabel>
                                                             <CFormInput
                                                                 type="mobile"
                                                                 id="mobile"
@@ -318,7 +318,7 @@ const Tabs = () => {
                                                 <CRow className="mb-3">
                                                     <CCol sm={6}>
                                                         <div className="mb-3">
-                                                            <CFormLabel htmlFor="account">行業名稱</CFormLabel>
+                                                            <CFormLabel htmlFor="account"><strong>行業名稱</strong></CFormLabel>
                                                             <CFormInput
                                                                 type="industry_name"
                                                                 id="industry_name"
@@ -327,7 +327,7 @@ const Tabs = () => {
                                                     </CCol>
                                                     <CCol sm={6}>
                                                         <div className="mb-3">
-                                                            <CFormLabel htmlFor="email">行業代碼</CFormLabel>
+                                                            <CFormLabel htmlFor="email"><strong>行業代碼</strong></CFormLabel>
                                                             <CFormInput
                                                                 type="industry_code"
                                                                 id="industry_code"
