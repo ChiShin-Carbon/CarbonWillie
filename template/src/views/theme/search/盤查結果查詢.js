@@ -1,8 +1,23 @@
 import React from 'react'
 import {
-    CRow, CCol, CCard, CCardBody, CCardHeader,CFormSelect, CTab, CTabContent, CTabList, CTabPanel, CTabs, CForm, CFormLabel, CFormInput, CButton,
+    CRow, CCol, CCard, CCardBody, CCardHeader,CFormSelect, CTab, CTabContent, CTabList, CTabPanel, CTabs, CForm, CFormLabel, CFormInput,
+    CCardSubtitle,
+    CCardText,
+    CCardTitle, CButton,
+    CTable,
+    CTableBody,
+    CTableCaption,
+    CTableDataCell,
+    CTableHead,
+    CTableHeaderCell,
+    CTableRow,
 } from '@coreui/react'
-import { DocsExample } from 'src/components'
+import CIcon from '@coreui/icons-react'
+import {
+     cilDataTransferDown,
+ } from '@coreui/icons'
+// import { freeSet } from '@coreui/icons'
+// import { getIconsView } from '../brands/Brands.js'
 
 const Tabs = () => {
     return (
@@ -23,7 +38,7 @@ const Tabs = () => {
                 <CCard className="mb-4">
                     <CCardHeader>
                         <CRow>
-                        <strong style={{ fontSize: '1.2rem', borderBottom: '5px solid #d882c0',width: '14%' }}>xx2024盤查報告</strong>
+                        <strong style={{ fontSize: '1.2rem', borderBottom: '5px solid #d882c0',width: '14%'}}>xx2024盤查報告</strong>
                             <CCol>
                             <CFormSelect size="sm" className="mb-3" style={{width:'15%'}}>
                                 <option>全部表格</option>
@@ -34,12 +49,63 @@ const Tabs = () => {
                             </CCol>
                             <div className="col-auto text-center">
                                 <CButton color="primary" type="submit" className="mb-3" style={{backgroundColor: '#CA6AAF', borderColor: '#CA6AAF', color: 'white',width:'120px',height:'50px' }}>
+                                 <CIcon icon={cilDataTransferDown} className="me-2" />
                                 下載全部
                                 </CButton>
                             </div>
                         </CRow>
                     </CCardHeader>
                     <CCardBody>
+                        <CCard style={{ width: '100%' }}>
+                            <CCardBody>
+                                <CRow>
+                                <CCardTitle>總覽
+                                    <CButton color="primary" type="submit" className="mb-3" align="right" style={{backgroundColor: '#CA6AAF', borderColor: '#CA6AAF', color: 'white',width:'120px',height:'50px' }}>
+                                    <b><CIcon icon={cilDataTransferDown} className="me-2" /></b>
+                                    </CButton>
+                                    <div className="d-grid gap-2 d-md-flex justify-content-md-end">
+                                        <CButton color="primary"><CIcon icon={cilDataTransferDown} className="me-2" /></CButton>
+                                    </div>
+                                </CCardTitle>
+                                </CRow>
+
+                                <CTable border='1'>
+                                    <CTableHead>
+                                    <CTableRow>
+                                        <CTableHeaderCell scope="col">#</CTableHeaderCell>
+                                        <CTableHeaderCell scope="col">Class</CTableHeaderCell>
+                                        <CTableHeaderCell scope="col">Heading</CTableHeaderCell>
+                                        <CTableHeaderCell scope="col">Heading</CTableHeaderCell>
+                                    </CTableRow>
+                                    </CTableHead>
+                                    <CTableBody>
+                                    <CTableRow>
+                                        <CTableHeaderCell scope="row">1</CTableHeaderCell>
+                                        <CTableDataCell>Mark</CTableDataCell>
+                                        <CTableDataCell>Otto</CTableDataCell>
+                                        <CTableDataCell>@mdo</CTableDataCell>
+                                    </CTableRow>
+                                    <CTableRow>
+                                        <CTableHeaderCell scope="row">2</CTableHeaderCell>
+                                        <CTableDataCell>Jacob</CTableDataCell>
+                                        <CTableDataCell>Thornton</CTableDataCell>
+                                        <CTableDataCell>@fat</CTableDataCell>
+                                    </CTableRow>
+                                    <CTableRow>
+                                        <CTableHeaderCell scope="row">3</CTableHeaderCell>
+                                        <CTableDataCell colSpan={2}>Larry the Bird</CTableDataCell>
+                                        <CTableDataCell>@twitter</CTableDataCell>
+                                    </CTableRow>
+                                    </CTableBody>
+                                    </CTable>
+
+                                <CCardSubtitle className="mb-2 text-body-secondary">Card subtitle</CCardSubtitle>
+                                <CCardText>
+                                    Some quick example text to build on the card title and make up the bulk of the
+                                    card&#39;s content.
+                                </CCardText>
+                            </CCardBody>
+                        </CCard>
                         <CForm>
                         <CRow className="mb-3">
                             <CCol sm={9}>
