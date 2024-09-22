@@ -35,88 +35,90 @@ const Charts = () => {
             <div className="customCardHeader"><strong>碳排放分析</strong>
             
             </div>
-            <CCol sm={3}>                    
-                <CCard className="mb-4 customCard">
-                <CCardBody className="customCard2">
-                    <div className="customCardHeader">
-                    <strong>碳排總量&nbsp;&nbsp;
-                    <span style={{ fontSize: '0.8rem', color: 'gray'}}>/CO2e</span>
-                    <br />
-                    <h2>725.29</h2>
-                    <br />                    
-                    範疇一&nbsp;&nbsp;
-                    <span style={{ fontSize: '0.8rem', color: 'gray'}}>/CO2e</span>
-                    <br />
-                    <h3>435.85</h3>
-                    <br />
-                    範疇二&nbsp;&nbsp;
-                    <span style={{ fontSize: '0.8rem', color: 'gray'}}>/CO2e</span>
-                    <br />
-                    <h3>249.25</h3>
-                    <br />
-                    範疇三&nbsp;&nbsp;
-                    <span style={{ fontSize: '0.8rem', color: 'gray'}}>/CO2e</span>
-                    <br />
-                    <h3>100.14</h3>
-                    <br />
-                    </strong>                    
-                    </div>
-                </CCardBody>
-                </CCard>
-            </CCol>
+            <div><br /></div>
+            
+                <CCol sm={3}>
+                    <CCard className="mb-4 customCard">
+                    <CCardBody className="customCard2">
+                        <div className="customCardHeader">
+                        <strong>碳排總量&nbsp;&nbsp;
+                        <span style={{ fontSize: '0.8rem', color: 'gray'}}>/CO2e</span>
+                        <br />
+                        <h2>725.29</h2>
+                        <br />                    
+                        範疇一&nbsp;&nbsp;
+                        <span style={{ fontSize: '0.8rem', color: 'gray'}}>/CO2e</span>
+                        <br />
+                        <h3>435.85</h3>
+                        <br />
+                        範疇二&nbsp;&nbsp;
+                        <span style={{ fontSize: '0.8rem', color: 'gray'}}>/CO2e</span>
+                        <br />
+                        <h3>249.25</h3>
+                        <br />
+                        範疇三&nbsp;&nbsp;
+                        <span style={{ fontSize: '0.8rem', color: 'gray'}}>/CO2e</span>
+                        <br />
+                        <h3>100.14</h3>
+                        <br />
+                        </strong>                    
+                        </div>
+                    </CCardBody>
+                    </CCard>
+                </CCol>
 
-            {/* 右侧 3/4 宽度 */}
-            <CCol sm={9}>
-                {/**/}
-                <CCard className="mb-4 customCard">                                
-                    
-                    <CCardBody>
-                        <div><strong>排放源</strong></div>
-                        <CChartBar
-                            data={{
-                                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-                                datasets: [
-                                    {
-                                        label: 'GitHub Commits',
-                                        backgroundColor: [
-                                            '#f87979',
-                                            '#82E0AA',
-                                            '#F4D03F',
-                                            '#f87979',
-                                            '#82E0AA',
-                                            '#F4D03F',
-                                            '#f87979',
-                                        ],
-                                        data: [40, 20, 12, 39, 10, 40, 39],
-                                    },
-                                ],
-                            }}
-                            options={{
-                                indexAxis: 'y',
-                                scales: {
-                                    x: {
-                                        beginAtZero: true,
-                                    },
-                                },
-                                plugins: {
-                                    datalabels: {
-                                        anchor: 'end',
-                                        align: 'end',
-                                        color: 'white',
-                                        font: {
-                                            size: 12,
+                {/* 右侧 3/4 宽度 */}
+                <CCol sm={9}>
+                    {/**/}
+                    <CCard className="mb-4 customCard">                                
+                        
+                        <CCardBody>
+                            <div><strong>排放源</strong></div>
+                            <CChartBar
+                                data={{
+                                    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+                                    datasets: [
+                                        {
+                                            label: 'GitHub Commits',
+                                            backgroundColor: [
+                                                '#f87979',
+                                                '#82E0AA',
+                                                '#F4D03F',
+                                                '#f87979',
+                                                '#82E0AA',
+                                                '#F4D03F',
+                                                '#f87979',
+                                            ],
+                                            data: [40, 20, 12, 39, 10, 40, 39],
+                                        },
+                                    ],
+                                }}
+                                options={{
+                                    indexAxis: 'y',
+                                    scales: {
+                                        x: {
+                                            beginAtZero: true,
                                         },
                                     },
-                                    legend: {
-                                        display: false, // 隱藏圖例
+                                    plugins: {
+                                        datalabels: {
+                                            anchor: 'end',
+                                            align: 'end',
+                                            color: 'white',
+                                            font: {
+                                                size: 12,
+                                            },
+                                        },
+                                        legend: {
+                                            display: false, // 隱藏圖例
+                                        },
                                     },
-                                },
-                            }}
-                            labels="months"
-                        />
-                        </CCardBody>                                
-                </CCard>
-            </CCol>
+                                }}
+                                labels="months"
+                            />
+                            </CCardBody>                                
+                    </CCard>
+                </CCol>
 
             <div className="customCardHeader"><strong>碳排放詳情</strong></div>
             <CCol xs={12}>                
