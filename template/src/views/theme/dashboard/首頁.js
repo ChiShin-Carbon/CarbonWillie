@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react';
 import {
     CRow,
     CCol,
@@ -26,10 +26,28 @@ import {
     CChartRadar,
   } from '@coreui/react-chartjs'
 import '../../../scss/個人&企業資料.css';
+import { MultiSelect } from 'primereact/multiselect'; // Import PrimeReact MultiSelect
+import 'primereact/resources/themes/saga-blue/theme.css'; // PrimeReact CSS (如果還沒引入)
+import 'primereact/resources/primereact.min.css'; 
+import 'primeicons/primeicons.css'; 
+import { InputNumber } from 'primereact/inputnumber';
 
 
 const Charts = () => {
     const random = () => Math.round(Math.random() * 100)
+    const [selectedCities, setSelectedCities] = useState(null);
+
+    // 定義年分數據
+    const years = [
+        { name: '2024', code: 'yy2024' },
+        { name: '2023', code: 'yy2023' },
+        { name: '2022', code: 'yy2022' },
+        { name: '2021', code: 'yy2021' },
+        { name: '2020', code: 'yy2020' }
+    ];
+
+    //年份選擇(+-)
+    const [value3, setValue3] = useState(2024);
     return (
         <CRow>
             <div className="customCardHeader"><strong>碳排放分析</strong>
@@ -73,7 +91,10 @@ const Charts = () => {
                     <CCard className="mb-4 customCard">                                
                         
                         <CCardBody>
-                            <div><strong>排放源</strong></div>
+                            <div>
+                            <strong>排放源</strong>
+                            <InputNumber inputId="minmax-buttons" value={value3} onValueChange={(e) => setValue3(e.value)}  showButtons min={2000} max={2050} />
+                            </div>
                             <CChartBar
                                 data={{
                                     labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
@@ -177,18 +198,36 @@ const Charts = () => {
                                         <CCardHeader>
                                             <div className="d-flex align-items-center">
                                                 <strong className="me-3">趨勢分析 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong>
-                                                <CFormSelect size="sm" style={{ width: '30%', marginRight: '10px' }}>
-                                                    <option>碳排總量</option>
-                                                    <option value="1">表1</option>
-                                                    <option value="2">表2</option>
-                                                    <option value="3">表3</option>
+                                                <CFormSelect 
+                                                size="sm" 
+                                                style={{ 
+                                                    width: '30%', 
+                                                    marginRight: '10px', 
+                                                    height: '38px',  // 調整高度
+                                                    fontSize: '0.875rem' // 調整字體大小
+                                                }}
+                                                >
+                                                <option>碳排總量</option>
+                                                <option value="1">表1</option>
+                                                <option value="2">表2</option>
+                                                <option value="3">表3</option>
                                                 </CFormSelect>
-                                                <CFormSelect size="sm" style={{ width: '45%' }}>
-                                                    <option>年分</option>
-                                                    <option value="1">表1</option>
-                                                    <option value="2">表2</option>
-                                                    <option value="3">表3</option>
-                                                </CFormSelect>
+
+                                                <MultiSelect
+                                                value={selectedCities}
+                                                onChange={(e) => setSelectedCities(e.value)}
+                                                options={years}
+                                                optionLabel="name"
+                                                display="chip"
+                                                placeholder="年分"
+                                                maxSelectedLabels={3}
+                                                className="w-full"
+                                                style={{ 
+                                                    width: '50%', 
+                                                    height: '38px',  // 調整高度
+                                                    fontSize: '0.875rem' // 調整字體大小
+                                                }}
+                                                />
                                             </div>
                                         </CCardHeader>
                                         <CCardBody>
