@@ -48,11 +48,26 @@ const Charts = () => {
 
     //年份選擇(+-)
     const [value3, setValue3] = useState(2024);
+
     return (
         <CRow>
-            <div className="customCardHeader"><strong>碳排放分析</strong>
-            
+            <div className="customCardHeader" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <h5><strong>碳排放分析</strong></h5>
+                <InputNumber 
+                    inputId="minmax-buttons" 
+                    value={value3} 
+                    onValueChange={(e) => setValue3(e.value)}  
+                    showButtons 
+                    min={2000} 
+                    max={2050} 
+                    style={{ 
+                    width: '20%', 
+                    height: '38px',  // 調整高度
+                    fontSize: '0.875rem' // 調整字體大小
+                    }}
+                />
             </div>
+
             <div><br /></div>
             
                 <CCol sm={3}>
@@ -93,7 +108,6 @@ const Charts = () => {
                         <CCardBody>
                             <div>
                             <strong>排放源</strong>
-                            <InputNumber inputId="minmax-buttons" value={value3} onValueChange={(e) => setValue3(e.value)}  showButtons min={2000} max={2050} />
                             </div>
                             <CChartBar
                                 data={{
@@ -140,8 +154,10 @@ const Charts = () => {
                             </CCardBody>                                
                     </CCard>
                 </CCol>
-
-            <div className="customCardHeader"><strong>碳排放詳情</strong></div>
+            <div><br /></div>
+            <div className="customCardHeader"><h5><strong>碳排放詳情</strong></h5>
+            </div>
+            <div><br /></div>
             <CCol xs={12}>                
                 <CTabs activeItemKey={1}>
                     <CTabList variant="underline-border" className="custom-tablist">
@@ -168,11 +184,16 @@ const Charts = () => {
                                         <div className="customCardHeader">
                                         <strong>碳排總量&nbsp;&nbsp;
                                         <span style={{ fontSize: '0.8rem', color: 'gray'}}>/CO2e</span>
+                                        <br /> 
+                                        <h3>725.29</h3>  
+                                        <span style={{ fontSize: '0.8rem', color: 'gray'}}>去年826.21</span>
                                         </strong>
                                         </div>
+                                        {/*
                                         <div className="customCardBody"  style={{ textAlign: 'center' }}>
                                         暫無資料!
                                         </div>
+                                        */}
                                     </CCardBody>
                                     </CCard>
                                     </CCol>
@@ -182,10 +203,17 @@ const Charts = () => {
                                         <div className="customCardHeader">
                                         <strong>各設備比例</strong>
                                         </div>
-                                        <div className="customCardBody" style={{ textAlign: 'center' }}>
-                                        
-                                        暫無資料!
-                                        </div>
+                                        <CChartDoughnut
+                                        data={{
+                                            labels: ['VueJs', 'EmberJs', 'ReactJs', 'AngularJs'],
+                                            datasets: [
+                                            {
+                                                backgroundColor: ['#41B883', '#E46651', '#00D8FF', '#DD1B16'],
+                                                data: [40, 20, 80, 10],
+                                            },
+                                            ],
+                                        }}
+                                        />
                                     </CCardBody>
                                     </CCard>
                                     </CCol>
@@ -282,7 +310,18 @@ const Charts = () => {
                                                 <div className="customCardHeader">
                                                     <strong>各設備比例</strong>
                                                 </div>
-                                                <div className="customCardBody" style={{ textAlign: 'center' }}>暫無資料!</div>
+                                                <CChartPie
+                                                data={{
+                                                    labels: ['Red', 'Green', 'Yellow'],
+                                                    datasets: [
+                                                    {
+                                                        data: [300, 50, 100],
+                                                        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
+                                                        hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
+                                                    },
+                                                    ],
+                                                }}
+                                                />
                                             </CCardBody>
                                         </CCard>
                                     </CCol>
@@ -309,29 +348,19 @@ const Charts = () => {
                                             </div>
                                         </CCardHeader>
                                         <CCardBody>
-                                            <CChartLine
+                                        <CChartBar
                                             data={{
                                                 labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
                                                 datasets: [
                                                 {
-                                                    label: 'My First dataset',
-                                                    backgroundColor: 'rgba(220, 220, 220, 0.2)',
-                                                    borderColor: 'rgba(220, 220, 220, 1)',
-                                                    pointBackgroundColor: 'rgba(220, 220, 220, 1)',
-                                                    pointBorderColor: '#fff',
-                                                    data: [random(), random(), random(), random(), random(), random(), random()],
-                                                },
-                                                {
-                                                    label: 'My Second dataset',
-                                                    backgroundColor: 'rgba(151, 187, 205, 0.2)',
-                                                    borderColor: 'rgba(151, 187, 205, 1)',
-                                                    pointBackgroundColor: 'rgba(151, 187, 205, 1)',
-                                                    pointBorderColor: '#fff',
-                                                    data: [random(), random(), random(), random(), random(), random(), random()],
+                                                    label: 'GitHub Commits',
+                                                    backgroundColor: '#f87979',
+                                                    data: [40, 20, 12, 39, 10, 40, 39, 80, 40],
                                                 },
                                                 ],
                                             }}
-                                            />
+                                            labels="months"
+                                        />
                                         </CCardBody>                                    
                                     </CCard>
                                 </CCol>
@@ -358,7 +387,18 @@ const Charts = () => {
                                                 <div className="customCardHeader">
                                                     <strong>各設備比例</strong>
                                                 </div>
-                                                <div className="customCardBody" style={{ textAlign: 'center' }}>暫無資料!</div>
+                                                <CChartPie
+                                                data={{
+                                                    labels: ['Red', 'Green', 'Yellow'],
+                                                    datasets: [
+                                                    {
+                                                        data: [300, 50, 100],
+                                                        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
+                                                        hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
+                                                    },
+                                                    ],
+                                                }}
+                                                />
                                             </CCardBody>
                                         </CCard>
                                     </CCol>
@@ -385,29 +425,19 @@ const Charts = () => {
                                             </div>
                                         </CCardHeader>
                                         <CCardBody>
-                                            <CChartLine
+                                        <CChartBar
                                             data={{
                                                 labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
                                                 datasets: [
                                                 {
-                                                    label: 'My First dataset',
-                                                    backgroundColor: 'rgba(220, 220, 220, 0.2)',
-                                                    borderColor: 'rgba(220, 220, 220, 1)',
-                                                    pointBackgroundColor: 'rgba(220, 220, 220, 1)',
-                                                    pointBorderColor: '#fff',
-                                                    data: [random(), random(), random(), random(), random(), random(), random()],
-                                                },
-                                                {
-                                                    label: 'My Second dataset',
-                                                    backgroundColor: 'rgba(151, 187, 205, 0.2)',
-                                                    borderColor: 'rgba(151, 187, 205, 1)',
-                                                    pointBackgroundColor: 'rgba(151, 187, 205, 1)',
-                                                    pointBorderColor: '#fff',
-                                                    data: [random(), random(), random(), random(), random(), random(), random()],
+                                                    label: 'GitHub Commits',
+                                                    backgroundColor: '#f87979',
+                                                    data: [40, 20, 12, 39, 10, 40, 39, 80, 40],
                                                 },
                                                 ],
                                             }}
-                                            />
+                                            labels="months"
+                                        />
                                         </CCardBody>
                                     </CCard>
                                 </CCol>
@@ -460,29 +490,19 @@ const Charts = () => {
                                             </div>
                                         </CCardHeader>
                                         <CCardBody>
-                                            <CChartLine
+                                        <CChartBar
                                             data={{
                                                 labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
                                                 datasets: [
                                                 {
-                                                    label: 'My First dataset',
-                                                    backgroundColor: 'rgba(220, 220, 220, 0.2)',
-                                                    borderColor: 'rgba(220, 220, 220, 1)',
-                                                    pointBackgroundColor: 'rgba(220, 220, 220, 1)',
-                                                    pointBorderColor: '#fff',
-                                                    data: [random(), random(), random(), random(), random(), random(), random()],
-                                                },
-                                                {
-                                                    label: 'My Second dataset',
-                                                    backgroundColor: 'rgba(151, 187, 205, 0.2)',
-                                                    borderColor: 'rgba(151, 187, 205, 1)',
-                                                    pointBackgroundColor: 'rgba(151, 187, 205, 1)',
-                                                    pointBorderColor: '#fff',
-                                                    data: [random(), random(), random(), random(), random(), random(), random()],
+                                                    label: 'GitHub Commits',
+                                                    backgroundColor: '#f87979',
+                                                    data: [40, 20, 12, 39, 10, 40, 39, 80, 40],
                                                 },
                                                 ],
                                             }}
-                                            />
+                                            labels="months"
+                                        />
                                         </CCardBody>
                                     </CCard>
                                 </CCol>
