@@ -56,7 +56,8 @@ const Charts = () => {
                 <InputNumber 
                     inputId="minmax-buttons" 
                     value={value3} 
-                    onValueChange={(e) => setValue3(e.value)}  
+                    onValueChange={(e) => setValue3(e.value)}
+                    useGrouping={false}  
                     showButtons 
                     min={2000} 
                     max={2050} 
@@ -201,19 +202,19 @@ const Charts = () => {
                                     <CCard className="mb-4 customCard">
                                     <CCardBody className="customCard2">
                                         <div className="customCardHeader">
-                                        <strong>各設備比例</strong>
+                                            <strong>各設備比例</strong>
+                                            <CChartDoughnut
+                                            data={{
+                                                labels: ['VueJs', 'EmberJs', 'ReactJs', 'AngularJs'],
+                                                datasets: [
+                                                {
+                                                    backgroundColor: ['#41B883', '#E46651', '#00D8FF', '#DD1B16'],
+                                                    data: [40, 20, 80, 10],
+                                                },
+                                                ],
+                                            }}
+                                            />
                                         </div>
-                                        <CChartDoughnut
-                                        data={{
-                                            labels: ['VueJs', 'EmberJs', 'ReactJs', 'AngularJs'],
-                                            datasets: [
-                                            {
-                                                backgroundColor: ['#41B883', '#E46651', '#00D8FF', '#DD1B16'],
-                                                data: [40, 20, 80, 10],
-                                            },
-                                            ],
-                                        }}
-                                        />
                                     </CCardBody>
                                     </CCard>
                                     </CCol>
