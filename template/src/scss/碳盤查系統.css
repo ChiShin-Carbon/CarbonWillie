@@ -1,0 +1,63 @@
+main {
+    margin: 0;
+    padding: 0;
+}
+
+.system-tablist {
+    height: 50px;
+    margin-bottom: 30px;
+    display: flex;
+
+}
+
+.system-tablist-item {
+    display: inline;
+    margin: 10px;
+
+}
+
+.system-tablist-a {
+    text-decoration: none;
+    font-weight: bold;
+    color: gray;
+}
+
+
+
+.system-tablist .active {
+    color: black;
+    font-weight: bold;
+    border-bottom: 5px solid #9D6B6B !important;
+}
+
+
+
+.custom-tablist {
+    background-color: #D9D9D9;
+    box-shadow: 0px 1px 5px 3px rgb(186, 186, 186);
+}
+
+.customtitlebottom {
+    font-Size: 1.6rem;
+    border-Bottom: 5px solid #CA6AAF;
+
+}
+
+.customCard {
+    border: none;
+    box-shadow: 0px 2px 5px rgb(186, 186, 186);
+    border-radius: 15px;
+
+}
+
+
+.customCardHeader {
+    border-bottom: 2px solid rgb(223, 223, 223);
+    padding-top: 10px;
+    padding-left: 15px;
+}
+
+.customCardBody {
+    padding: 20px 30px;
+
+}
