@@ -67,6 +67,7 @@ const Charts = () => {
                     fontSize: '0.875rem' // 調整字體大小
                     }}
                 />
+                
             </div>
 
             <div><br /></div>
@@ -258,8 +259,6 @@ const Charts = () => {
                                                 }}
                                                 />
                                             </div>
-                                        </CCardHeader>
-                                        <CCardBody>
                                             <CChartLine
                                             data={{
                                                 labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
@@ -283,7 +282,7 @@ const Charts = () => {
                                                 ],
                                             }}
                                             />
-                                        </CCardBody>                                    
+                                        </CCardHeader>
                                     </CCard>
                                 </CCol>
                             </CRow>
@@ -309,7 +308,7 @@ const Charts = () => {
                                         <CCard className="mb-4 customCard">
                                             <CCardBody className="customCard2">
                                                 <div className="customCardHeader">
-                                                    <strong>各設備比例</strong>
+                                                    <strong >各設備比例</strong>
                                                 </div>
                                                 <CChartPie
                                                 data={{
@@ -332,24 +331,10 @@ const Charts = () => {
                                 <CCol sm={9}>
                                     <CCard className="mb-4 customCard">                                
                                         <CCardHeader>
-                                            <div className="d-flex align-items-center">
-                                                <strong className="me-3">趨勢分析 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong>
-                                                <CFormSelect size="sm" style={{ width: '30%', marginRight: '10px' }}>
-                                                    <option>碳排總量</option>
-                                                    <option value="1">表1</option>
-                                                    <option value="2">表2</option>
-                                                    <option value="3">表3</option>
-                                                </CFormSelect>
-                                                <CFormSelect size="sm" style={{ width: '45%' }}>
-                                                    <option>年分</option>
-                                                    <option value="1">表1</option>
-                                                    <option value="2">表2</option>
-                                                    <option value="3">表3</option>
-                                                </CFormSelect>
+                                            <div>
+                                                <strong className="me-3">各設備分布 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong>
                                             </div>
-                                        </CCardHeader>
-                                        <CCardBody>
-                                        <CChartBar
+                                            <CChartBar
                                             data={{
                                                 labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
                                                 datasets: [
@@ -362,7 +347,7 @@ const Charts = () => {
                                             }}
                                             labels="months"
                                         />
-                                        </CCardBody>                                    
+                                        </CCardHeader>
                                     </CCard>
                                 </CCol>
                             </CRow>
@@ -410,23 +395,9 @@ const Charts = () => {
                                     <CCard className="mb-4 customCard">                                
                                         <CCardHeader>
                                             <div className="d-flex align-items-center">
-                                                <strong className="me-3">趨勢分析 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong>
-                                                <CFormSelect size="sm" style={{ width: '30%', marginRight: '10px' }}>
-                                                    <option>碳排總量</option>
-                                                    <option value="1">表1</option>
-                                                    <option value="2">表2</option>
-                                                    <option value="3">表3</option>
-                                                </CFormSelect>
-                                                <CFormSelect size="sm" style={{ width: '45%' }}>
-                                                    <option>年分</option>
-                                                    <option value="1">表1</option>
-                                                    <option value="2">表2</option>
-                                                    <option value="3">表3</option>
-                                                </CFormSelect>
+                                                <strong className="me-3">各設備分布 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong>
                                             </div>
-                                        </CCardHeader>
-                                        <CCardBody>
-                                        <CChartBar
+                                            <CChartBar
                                             data={{
                                                 labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
                                                 datasets: [
@@ -439,7 +410,7 @@ const Charts = () => {
                                             }}
                                             labels="months"
                                         />
-                                        </CCardBody>
+                                        </CCardHeader>
                                     </CCard>
                                 </CCol>
                             </CRow>
@@ -475,23 +446,9 @@ const Charts = () => {
                                     <CCard className="mb-4 customCard">                                
                                         <CCardHeader>
                                             <div className="d-flex align-items-center">
-                                                <strong className="me-3">趨勢分析 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong>
-                                                <CFormSelect size="sm" style={{ width: '30%', marginRight: '10px' }}>
-                                                    <option>碳排總量</option>
-                                                    <option value="1">表1</option>
-                                                    <option value="2">表2</option>
-                                                    <option value="3">表3</option>
-                                                </CFormSelect>
-                                                <CFormSelect size="sm" style={{ width: '45%' }}>
-                                                    <option>年分</option>
-                                                    <option value="1">表1</option>
-                                                    <option value="2">表2</option>
-                                                    <option value="3">表3</option>
-                                                </CFormSelect>
+                                                <strong className="me-3">各設備分布 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong>
                                             </div>
-                                        </CCardHeader>
-                                        <CCardBody>
-                                        <CChartBar
+                                            <CChartBar
                                             data={{
                                                 labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
                                                 datasets: [
@@ -504,7 +461,7 @@ const Charts = () => {
                                             }}
                                             labels="months"
                                         />
-                                        </CCardBody>
+                                        </CCardHeader>
                                     </CCard>
                                 </CCol>
                             </CRow>
