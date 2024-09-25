@@ -1,75 +1,87 @@
 import React, { useRef } from 'react'
+import { useState } from 'react';
+
+
 import {
     CRow, CCol, CCard, CCardBody, CCardHeader, CFormSelect, CTab, CTabContent, CTabList, CTabPanel, CTabs, CForm, CFormLabel, CFormInput,
     CCardSubtitle, CCardText, CCardTitle, CButton,
-    CTable, CTableBody, CTableCaption, CTableDataCell, CTableHead, CTableHeaderCell, CTableRow,
+    CTable, CTableBody, CTableCaption, CTableDataCell, CTableHead, CTableHeaderCell, CTableRow, CFormTextarea
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilDataTransferDown } from '@coreui/icons'
 
 import '../../../scss/碳盤查系統.css'
+import { Link } from 'react-router-dom'
+
+
+import 'primereact/resources/themes/saga-blue/theme.css';  // 主题样式
+import 'primereact/resources/primereact.min.css';          // 核心 CSS
+import 'primeicons/primeicons.css';                        // 图标样式
+
+import { Calendar } from 'primereact/calendar';
+
 
 const Tabs = () => {
-    // 定義 useRef 來取得每個 section 的 DOM 節點
-    const section1Ref = useRef(null);
-    const section2Ref = useRef(null);
-    const section3Ref = useRef(null);
+    const [date, setDate] = useState(null);
 
-    // 定義一個函數，用來滾動到指定的 section
-    const scrollToSection = (ref) => {
-        ref.current.scrollIntoView({ behavior: 'smooth' });
-    };
 
     return (
         <main>
-            <div className="system-tablist">
-                <div className="system-tablist-item">
-                    <a className="system-tablist-a" onClick={() => scrollToSection(section1Ref)}>表格呈現</a>
+            <CTabs activeItemKey={1}>
+                <CTabList variant="underline-border" className="system-tablist">
+                    <Link to="." className="system-tablist-link"><CTab aria-controls="tab1" itemKey={1} className="system-tablist-choose">
+                        資訊填寫
+                    </CTab></Link>
+                    <Link to="./邊界設定" className="system-tablist-link"><CTab aria-controls="tab2" itemKey={2} className="system-tablist-choose">
+                        邊界設定
+                    </CTab></Link>
+                    <Link to="." className="system-tablist-link"><CTab aria-controls="tab3" itemKey={3} className="system-tablist-choose">
+                        個人資料
+                    </CTab></Link>
+                </CTabList>
+
+            </CTabs>
+
+
+            <div className="system-titlediv">
+                <div>
+                    <h4 className="system-title">資訊填寫</h4>
+                    <hr className="system-hr"></hr>
                 </div>
-                <div className="system-tablist-item">
-                    <a href="#">表格呈現</a>
-                </div>
+                <button className="system-save">儲存</button>
             </div>
+            <CCard className="mb-4 systemCard">
+                <div className="systemCardBody">
+                    <CRow className="mb-3">
+                        <CFormLabel htmlFor="projectname" className="col-sm-2 col-form-label systemlabel" >使用者帳號</CFormLabel>
+                        <CCol>
+                            <CFormInput className="systeminput" type="text" id="projectname" />
+                        </CCol>
+                    </CRow>
+                    <CRow className="mb-3">
+                        <CFormLabel htmlFor="projectstart" className="col-sm-2 col-form-label systemlabel" >盤查期間(開始)</CFormLabel>
+                        <CCol>
+                            <CFormInput className="systeminput" type="date" id="projectstart" />
+                        </CCol>
 
-            <CCard className="mb-4 customCard">
-                <div className="customCardBody">
-                    <h1>React 書籤範例</h1>
+                        <CCol sm={1}></CCol>
 
-                    {/* 替換 href 書籤為 onClick 滾動功能 */}
-                    <p>
-                        <button >跳轉到 Section 1</button>
-                    </p>
-                    <p>
-                        <button onClick={() => scrollToSection(section2Ref)}>跳轉到 Section 2</button>
-                    </p>
-                    <p>
-                        <button onClick={() => scrollToSection(section3Ref)}>跳轉到 Section 3</button>
-                    </p>
+                        <CFormLabel htmlFor="projectend" className="col-sm-2 col-form-label systemlabel" >盤查期間(結束)</CFormLabel>
+                        <CCol>
+                            <CFormInput className="systeminput" type="date" id="projectend" />
+                        </CCol>
+                    </CRow>
+                    <CRow className="mb-3">
+                        <CFormLabel htmlFor="projectexplain" className="col-sm-2 col-form-label systemlabel" >詳細說明</CFormLabel>
+                        <CCol>
+                            <CFormTextarea className="systeminput" type="text" id="projectexplain" rows={5} />
+                        </CCol>
+                    </CRow>
 
-                    {/* 插入一些空白來展示滾動效果 */}
-                    <div style={{ height: '800px' }}></div>
 
-                    {/* 使用 ref 來標記每個 section 的 DOM 節點 */}
-                    <div ref={section1Ref}>
-                        <h2>Section 1</h2>
-                        <p>這是 Section 1 的內容。</p>
-                    </div>
-
-                    <div style={{ height: '800px' }}></div>
-
-                    <div ref={section2Ref}>
-                        <h2>Section 2</h2>
-                        <p>這是 Section 2 的內容。</p>
-                    </div>
-
-                    <div style={{ height: '800px' }}></div>
-
-                    <div ref={section3Ref}>
-                        <h2>Section 3</h2>
-                        <p>這是 Section 3 的內容。</p>
-                    </div>
                 </div>
             </CCard>
+
         </main>
     );
 }
