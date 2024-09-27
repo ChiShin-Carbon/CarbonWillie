@@ -3,9 +3,9 @@ import { useState } from 'react';
 
 
 import {
-    CRow, CCol, CCard, CCardBody, CCardHeader, CFormSelect, CTab, CTabContent, CTabList, CTabPanel, CTabs, CForm, CFormLabel, CFormInput,
+    CRow, CCol, CCard, CCardBody, CCardHeader, CFormSelect, CTab, CTabContent, CTabList, CTabPanel, CTabs, CForm, CFormLabel, CFormInput,CFormTextarea,
     CCardSubtitle, CCardText, CCardTitle, CButton,
-    CTable, CTableBody, CTableCaption, CTableDataCell, CTableHead, CTableHeaderCell, CTableRow, CFormTextarea
+    CTable, CTableBody, CTableCaption, CTableDataCell, CTableHead, CTableHeaderCell, CTableRow, 
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilDataTransferDown } from '@coreui/icons'
@@ -52,33 +52,34 @@ const Tabs = () => {
             </div>
             <CCard className="mb-4 systemCard">
                 <div className="systemCardBody">
-                    <CRow className="mb-3">
-                        <CFormLabel htmlFor="projectname" className="col-sm-2 col-form-label systemlabel" >使用者帳號</CFormLabel>
-                        <CCol>
-                            <CFormInput className="systeminput" type="text" id="projectname" />
-                        </CCol>
-                    </CRow>
-                    <CRow className="mb-3">
-                        <CFormLabel htmlFor="projectstart" className="col-sm-2 col-form-label systemlabel" >盤查期間(開始)</CFormLabel>
-                        <CCol>
-                            <CFormInput className="systeminput" type="date" id="projectstart" />
-                        </CCol>
+                    <CForm>
+                        <CRow className="mb-3">
+                            <CFormLabel htmlFor="projectname" className="col-sm-2 col-form-label systemlabel" >使用者帳號</CFormLabel>
+                            <CCol>
+                                <CFormInput className="systeminput" type="text" id="projectname" />
+                            </CCol>
+                        </CRow>
+                        <CRow className="mb-3">
+                            <CFormLabel htmlFor="projectstart" className="col-sm-2 col-form-label systemlabel" >盤查期間(開始)</CFormLabel>
+                            <CCol>
+                                <CFormInput className="systeminput" type="date" id="projectstart" />
+                            </CCol>
 
-                        <CCol sm={1}></CCol>
+                            <CCol sm={1}></CCol>
 
-                        <CFormLabel htmlFor="projectend" className="col-sm-2 col-form-label systemlabel" >盤查期間(結束)</CFormLabel>
-                        <CCol>
-                            <CFormInput className="systeminput" type="date" id="projectend" />
-                        </CCol>
-                    </CRow>
-                    <CRow className="mb-3">
-                        <CFormLabel htmlFor="projectexplain" className="col-sm-2 col-form-label systemlabel" >詳細說明</CFormLabel>
-                        <CCol>
-                            <CFormTextarea className="systeminput" type="text" id="projectexplain" rows={5} />
-                        </CCol>
-                    </CRow>
+                            <CFormLabel htmlFor="projectend" className="col-sm-2 col-form-label systemlabel" >盤查期間(結束)</CFormLabel>
+                            <CCol>
+                                <CFormInput className="systeminput" type="date" id="projectend" />
+                            </CCol>
+                        </CRow>
+                        <CRow className="mb-3">
+                            <CFormLabel htmlFor="projectexplain" className="col-sm-2 col-form-label systemlabel" >詳細說明</CFormLabel>
+                            <CCol>
+                                <CFormTextarea className="systeminput" type="text" id="projectexplain" rows={5} />
+                            </CCol>
+                        </CRow>
 
-
+                    </CForm>
                 </div>
             </CCard>
 

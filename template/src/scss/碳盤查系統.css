@@ -39,6 +39,7 @@ main {
     border: none;
     box-shadow: 0px 2px 5px rgb(186, 186, 186);
     border-radius: 15px;
+    min-height:400px;
 
 }
 
@@ -58,7 +59,7 @@ main {
     display: flex;
     justify-content: space-between;
     align-items: center;
-  }
+}
 
 .system-hr {
     height: 1px;
@@ -84,12 +85,92 @@ main {
     background-color: #F0F0F0;
 }
 
-.system-save{
-    border:1px solid black;
+.system-save {
+    border: 1px solid black;
     background-color: white;
-    padding:5px 20px;
+    padding: 5px 20px;
     border-radius: 5px;
 }
-.system-save:hover{
+
+.system-save:hover {
     background-color: #aeaeae;
+}
+
+
+.systemTable {
+    text-align: center
+}
+
+.systemTable th {
+    background-color: #cecece;
+    color: #525151;
+}
+
+.systemTable tr {
+    border-bottom: 1px solid rgb(167, 167, 167);
+    font-weight: 800;
+}
+
+.systemCardBody button {
+    margin-left:10px;
+    width: 100px;
+    height: 35px;
+    border-radius: 20px;
+    border: none;
+    
+}
+
+.systemCardBody .bt1 {
+    background-color: #D2D1D1;
+    color:#B0B0B0;
+    font-weight:bold;
+    box-shadow: 0px 2px 6px rgb(160, 160, 160);
+}
+
+.systemCardBody .bt2 {
+    background-color: #CA6AAF;
+    color:#ffffff;
+    font-weight:bold;
+    box-shadow: 0px 2px 6px rgb(160, 160, 160);
+}
+
+.systemCardBody .bt2:hover {
+    background-color: #a7498d;
+    color:#ffffff;
+    font-weight:bold;
+    box-shadow: 0px 2px 6px rgb(160, 160, 160);
+}
+
+.systemCardBody .select{
+    width:200px;
+    border-radius: 20px;
+}
+
+.modalbutton2{
+    background-color: #CA6AAF;
+    color:#ffffff;
+    font-weight:bold;
+    width:80px;
+    box-shadow: 0px 2px 6px rgb(160, 160, 160);
+}
+.modalbutton2:hover{
+    background-color: #904d7d;
+    color:#ffffff;
+    font-weight:bold;
+    width:80px;
+    box-shadow: 0px 2px 6px rgb(160, 160, 160);
+}
+.modalbutton1{
+    background-color: #9A9898;
+    color:#ffffff;
+    font-weight:bold;
+    width:80px;
+    box-shadow: 0px 2px 6px rgb(160, 160, 160);
+}
+.modalbutton1:hover{
+    background-color: #646263;
+    color:#ffffff;
+    font-weight:bold;
+    width:80px;
+    box-shadow: 0px 2px 6px rgb(160, 160, 160);
 }
