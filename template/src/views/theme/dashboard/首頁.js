@@ -71,46 +71,45 @@ const Charts = () => {
             </div>
 
             <div><br /></div>
-            
-                <CCol sm={3}>
-                    <CCard className="mb-4 customCard">
-                    <CCardBody className="customCard2">
-                        <div className="customCardHeader">
-                        <strong>碳排總量&nbsp;&nbsp;
-                        <span style={{ fontSize: '0.8rem', color: 'gray'}}>/CO2e</span>
-                        <br />
-                        <h2>725.29</h2>
-                        <br />                    
-                        範疇一&nbsp;&nbsp;
-                        <span style={{ fontSize: '0.8rem', color: 'gray'}}>/CO2e</span>
-                        <br />
-                        <h3>435.85</h3>
-                        <br />
-                        範疇二&nbsp;&nbsp;
-                        <span style={{ fontSize: '0.8rem', color: 'gray'}}>/CO2e</span>
-                        <br />
-                        <h3>249.25</h3>
-                        <br />
-                        範疇三&nbsp;&nbsp;
-                        <span style={{ fontSize: '0.8rem', color: 'gray'}}>/CO2e</span>
-                        <br />
-                        <h3>100.14</h3>
-                        <br />
-                        </strong>                    
-                        </div>
-                    </CCardBody>
-                    </CCard>
-                </CCol>
+            <CCol sm={3}>
+                <CCard className="mb-4 customCard h-80">
+                <CCardBody >
+                    <div  style={{height: '420px',fontWeight: 900}}>
+                    <strong>碳排總量&nbsp;&nbsp;
+                    <span style={{ fontSize: '0.8rem', color: 'gray'}}>/CO2e</span>
+                    <br />
+                    <h2 style={{ fontWeight: 900 }}>725.29</h2>
+                    <br />
+                    範疇一&nbsp;&nbsp;
+                    <span style={{ fontSize: '0.8rem', color: 'gray'}}>/CO2e</span>
+                    <br />
+                    <h3 style={{ fontWeight: 900 }}>435.85</h3>
+                    <br />
+                    範疇二&nbsp;&nbsp;
+                    <span style={{ fontSize: '0.8rem', color: 'gray'}}>/CO2e</span>
+                    <br />
+                    <h3 style={{ fontWeight: 900 }}>249.25</h3>
+                    <br />
+                    範疇三&nbsp;&nbsp;
+                    <span style={{ fontSize: '0.8rem', color: 'gray'}}>/CO2e</span>
+                    <br />
+                    <h3 style={{ fontWeight: 900 }}>100.14</h3>
+                    <br /><br />
+                    </strong>                    
+                    </div>
+                </CCardBody>
+                </CCard>
+            </CCol>
 
-                {/* 右侧 3/4 宽度 */}
-                <CCol sm={9}>
-                    {/**/}
-                    <CCard className="mb-4 customCard">                                
-                        
-                        <CCardBody>
-                            <div>
+            {/* 右侧 3/4 宽度 */}
+            <CCol sm={9}>
+                {/**/}
+                <CCard className="mb-4 customCard h-80"> 
+                    <CCardBody>
+                        <div style={{height: '20px' }}>
                             <strong>排放源</strong>
-                            </div>
+                        </div>
+                        <div style={{width:'90%', height: '400px' }}>
                             <CChartBar
                                 data={{
                                     labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
@@ -153,9 +152,10 @@ const Charts = () => {
                                 }}
                                 labels="months"
                             />
-                            </CCardBody>                                
-                    </CCard>
-                </CCol>
+                        </div>
+                    </CCardBody>                                
+                </CCard>
+            </CCol>
             <div><br /></div>
             <div className="customCardHeader"><h5><strong>碳排放詳情</strong></h5>
             </div>
@@ -182,31 +182,32 @@ const Charts = () => {
                                 <CCol sm={3}>
                                     <CCol sm={12}>
                                     <CCard className="mb-4 customCard">
-                                    <CCardBody className="customCard2">
-                                        <div className="customCardHeader">
-                                        <strong>碳排總量&nbsp;&nbsp;
-                                        <span style={{ fontSize: '0.8rem', color: 'gray'}}>/CO2e</span>
-                                        <br /> 
-                                        <h3>725.29</h3>  
-                                        <span style={{ fontSize: '0.8rem', color: 'gray'}}>去年826.21</span>
-                                        </strong>
+                                    <CCardBody>
+                                        <div style={{height:'90px'}}>
+                                            <strong>碳排總量&nbsp;&nbsp;
+                                            <span style={{ fontSize: '0.8rem', color: 'gray'}}>/CO2e</span>
+                                            <br />
+                                            {/*
+                                            <div className="customCardBody"  style={{ textAlign: 'center', color: 'gray' }}>
+                                            暫無資料!
+                                            </div>
+                                            */}
+                                            <h3 style={{ fontWeight: 900 }}>725.29</h3>
+                                            <span style={{ fontSize: '0.8rem', color: 'gray'}}>去年826.21</span>
+                                            
+                                            </strong>
                                         </div>
-                                        {/*
-                                        <div className="customCardBody"  style={{ textAlign: 'center' }}>
-                                        暫無資料!
-                                        </div>
-                                        */}
                                     </CCardBody>
                                     </CCard>
                                     </CCol>
                                     <CCol sm={12}>
                                     <CCard className="mb-4 customCard">
-                                    <CCardBody className="customCard2">
-                                        <div className="customCardHeader">
-                                            <strong>各設備比例</strong>
+                                    <CCardBody>
+                                        <div style={{height:'310px'}}>
+                                            
                                             <CChartDoughnut
                                             data={{
-                                                labels: ['VueJs', 'EmberJs', 'ReactJs', 'AngularJs'],
+                                                
                                                 datasets: [
                                                 {
                                                     backgroundColor: ['#41B883', '#E46651', '#00D8FF', '#DD1B16'],
