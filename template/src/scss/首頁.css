@@ -1,0 +1,22 @@
+.CFVAnalyze-1 {
+    background-color: #CA6AAF;
+    height: 70px;
+    color: white;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 15px;
+    /* 圓角 */
+}
+.CFVAnalyze-2 {
+    background-color: #DA8EC5;
+    height: 70px;
+    color: black;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 15px;
+    /* 圓角 */
+}

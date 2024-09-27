@@ -26,6 +26,7 @@ import {
     CChartRadar,
   } from '@coreui/react-chartjs'
 import '../../../scss/個人&企業資料.css';
+import '../../../scss/首頁.css';
 import { MultiSelect } from 'primereact/multiselect'; // Import PrimeReact MultiSelect
 import 'primereact/resources/themes/saga-blue/theme.css'; // PrimeReact CSS (如果還沒引入)
 import 'primereact/resources/primereact.min.css'; 
@@ -73,8 +74,15 @@ const Charts = () => {
             <div><br /></div>
             <CCol sm={3}>
                 <CCard className="mb-4 customCard h-80">
-                <CCardBody >
+                <CCardBody>
+                    {/*這裡1=>*/}
+                    <strong>
                     <div  style={{height: '420px',fontWeight: 900}}>
+                    <h2 style={{ fontWeight: 900 }}>說明</h2>
+                    <h5 style={{ fontWeight: 900 }}>碳盤查是評估組織或活動所產生的溫室氣體排放量的系統性過程，旨在識別主要碳排放來源並支持制定有效的減排策略</h5>
+                    </div></strong>
+                    {/*結束*/}
+                    {/* <div  style={{height: '420px',fontWeight: 900}}>
                     <strong>碳排總量&nbsp;&nbsp;
                     <span style={{ fontSize: '0.8rem', color: 'gray'}}>/CO2e</span>
                     <br />
@@ -95,8 +103,8 @@ const Charts = () => {
                     <br />
                     <h3 style={{ fontWeight: 900 }}>100.14</h3>
                     <br /><br />
-                    </strong>                    
-                    </div>
+                    </strong>
+                    </div> */}
                 </CCardBody>
                 </CCard>
             </CCol>
@@ -106,6 +114,114 @@ const Charts = () => {
                 {/**/}
                 <CCard className="mb-4 customCard h-80"> 
                     <CCardBody>
+                        {/*這裡2=>*/}
+                        <h2 style={{ fontWeight: 900 }}>常見溫室氣體排放源</h2>
+                        <CRow>
+                            <CCol sm={3}>
+                                <CCard className="mb-4 customCard" >
+                                <CCardBody className="CFVAnalyze-1">
+                                    固定燃燒排放源
+                                </CCardBody>
+                                </CCard>
+                            </CCol>
+                            <CCol sm={5}>
+                                <CCard className="mb-4 customCard">
+                                <CCardBody className="CFVAnalyze-2" >
+                                    藉由燃燒化石燃料產生熱或蒸汽之固定式設備，如：緊急發電機。
+                                </CCardBody>
+                                </CCard>
+                            </CCol>
+
+                            <CCol sm={3}>
+                                <CCard className="mb-4 customCard">
+                                <CCardBody className="CFVAnalyze-2">
+                                    CO2, CH4, N2O
+                                </CCardBody>
+                                </CCard>
+                            </CCol>
+                        </CRow>
+                        <CRow>
+                            <CCol sm={3}>
+                                <CCard className="mb-4 customCard" >
+                                <CCardBody className="CFVAnalyze-1">
+                                    移動燃燒排放源
+                                </CCardBody>
+                                </CCard>
+                            </CCol>
+
+                            <CCol sm={5}>
+                                <CCard className="mb-4 customCard">
+                                <CCardBody className="CFVAnalyze-2">
+                                使用化石燃料之運輸設備，<br/>
+                                如：公務用汽機車等。
+                                </CCardBody>
+                                </CCard>
+                            </CCol>
+
+                            <CCol sm={3}>
+                                <CCard className="mb-4 customCard">
+                                <CCardBody className="CFVAnalyze-2">
+                                    CO2, CH4, N2O
+                                </CCardBody>
+                                </CCard>
+                            </CCol>
+                        </CRow>
+                        <CRow>
+                            <CCol sm={3}>
+                                <CCard className="mb-4 customCard" >
+                                <CCardBody className="CFVAnalyze-1">
+                                    逸散排放源
+                                </CCardBody>
+                                </CCard>
+                            </CCol>
+
+                            <CCol sm={5}>
+                                <CCard className="mb-4 customCard">
+                                <CCardBody className="CFVAnalyze-2">
+                                以逸散方式排放溫室氣體之設備或設施，<br/>
+                                如冷卻系統(冷媒逸散)、廢水處理等設施(甲烷逸散)
+                                </CCardBody>
+                                </CCard>
+                            </CCol>
+
+                            <CCol sm={3}>
+                                <CCard className="mb-4 customCard">
+                                <CCardBody className="CFVAnalyze-2">
+                                CO2, CH4, N2O,<br/>
+                                HFCs,PFCs, SF6
+                                </CCardBody>
+                                </CCard>
+                            </CCol>
+                        </CRow>
+                        <CRow>
+                            <CCol sm={3}>
+                                <CCard className="mb-4 customCard" >
+                                <CCardBody className="CFVAnalyze-1">
+                                外購電力或蒸氣<br/>
+                                之能源間接排放
+                                </CCardBody>
+                                </CCard>
+                            </CCol>
+
+                            <CCol sm={5}>
+                                <CCard className="mb-4 customCard">
+                                <CCardBody className="CFVAnalyze-2">
+                                使用外購能源(電力或蒸汽)之設備，<br/>
+                                如空調設備、照明設備等。
+                                </CCardBody>
+                                </CCard>
+                            </CCol>
+
+                            <CCol sm={3}>
+                                <CCard className="mb-4 customCard">
+                                <CCardBody className="CFVAnalyze-2">
+                                    CO2, CH4, N2O
+                                </CCardBody>
+                                </CCard>
+                            </CCol>
+                        </CRow>
+                        {/*結束2*/}
+                        {/*
                         <div style={{height: '20px' }}>
                             <strong>排放源</strong>
                         </div>
@@ -152,7 +268,7 @@ const Charts = () => {
                                 }}
                                 labels="months"
                             />
-                        </div>
+                        </div>*/}
                     </CCardBody>                                
                 </CCard>
             </CCol>
@@ -202,7 +318,7 @@ const Charts = () => {
                                     </CCol>
                                     <CCol sm={12}>
                                     <CCard className="mb-4 customCard">
-                                    <CCardBody>
+                                    <CCardBody >
                                         <div style={{height:'310px'}}>
                                             
                                             <CChartDoughnut
@@ -226,41 +342,41 @@ const Charts = () => {
                                 <CCol sm={9}>
                                     {/**/}
                                     <CCard className="mb-4 customCard">                                
-                                        <CCardHeader>
+                                        <CCardHeader style={{height:'490px'}}>
                                             <div className="d-flex align-items-center">
                                                 <strong className="me-3">趨勢分析 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong>
                                                 <CFormSelect 
-                                                size="sm" 
-                                                style={{ 
-                                                    width: '30%', 
-                                                    marginRight: '10px', 
-                                                    height: '38px',  // 調整高度
-                                                    fontSize: '0.875rem' // 調整字體大小
-                                                }}
-                                                >
-                                                <option>碳排總量</option>
-                                                <option value="1">表1</option>
-                                                <option value="2">表2</option>
-                                                <option value="3">表3</option>
+                                                    size="sm" 
+                                                    style={{ 
+                                                        width: '30%', 
+                                                        marginRight: '10px', 
+                                                        height: '38px',  // 調整高度
+                                                        fontSize: '0.875rem' // 調整字體大小
+                                                    }}
+                                                    >
+                                                    <option>碳排總量</option>
+                                                    <option value="1">表1</option>
+                                                    <option value="2">表2</option>
+                                                    <option value="3">表3</option>
                                                 </CFormSelect>
 
                                                 <MultiSelect
-                                                value={selectedCities}
-                                                onChange={(e) => setSelectedCities(e.value)}
-                                                options={years}
-                                                optionLabel="name"
-                                                display="chip"
-                                                placeholder="年分"
-                                                maxSelectedLabels={3}
-                                                className="w-full"
-                                                style={{ 
-                                                    width: '50%', 
-                                                    height: '38px',  // 調整高度
-                                                    fontSize: '0.875rem' // 調整字體大小
-                                                }}
+                                                    value={selectedCities}
+                                                    onChange={(e) => setSelectedCities(e.value)}
+                                                    options={years}
+                                                    optionLabel="name"
+                                                    display="chip"
+                                                    placeholder="年分"
+                                                    maxSelectedLabels={3}
+                                                    className="w-full"
+                                                    style={{ 
+                                                        width: '50%', 
+                                                        height: '38px',  // 調整高度
+                                                        fontSize: '0.875rem' // 調整字體大小
+                                                    }}
                                                 />
                                             </div>
-                                            <CChartLine
+                                            <CChartLine style={{height:'430px'}}
                                             data={{
                                                 labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
                                                 datasets: [
