@@ -16,6 +16,7 @@ import {
     CFormInput,
     CButton,
     CFormSelect,
+    CAlert,
 } from '@coreui/react'
 import {
     CChartBar,
@@ -52,6 +53,12 @@ const Charts = () => {
 
     return (
         <CRow>
+            <CAlert color="dark" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span>歡迎回來xxx</span>
+                <CButton style={{backgroundColor:'#9D6B6B',color:'white'}} shape="rounded-pill">開始盤查</CButton>
+            </CAlert>
+
+            {/*碳排分析*/}
             <div className="customCardHeader" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <h5><strong>碳排放分析</strong></h5>
                 <InputNumber 
@@ -74,38 +81,40 @@ const Charts = () => {
             <div><br /></div>
             <CCol sm={3}>
                 <CCard className="mb-4 customCard h-80">
-                <CCardBody>
-                    {/*這裡1=>*/}
-                    <strong>
-                    <div  style={{height: '420px',fontWeight: 900}}>
-                    <h2 style={{ fontWeight: 900 }}>說明</h2>
-                    <h5 style={{ fontWeight: 900 }}>碳盤查是評估組織或活動所產生的溫室氣體排放量的系統性過程，旨在識別主要碳排放來源並支持制定有效的減排策略</h5>
-                    </div></strong>
-                    {/*結束*/}
-                    {/* <div  style={{height: '420px',fontWeight: 900}}>
-                    <strong>碳排總量&nbsp;&nbsp;
-                    <span style={{ fontSize: '0.8rem', color: 'gray'}}>/CO2e</span>
-                    <br />
-                    <h2 style={{ fontWeight: 900 }}>725.29</h2>
-                    <br />
-                    範疇一&nbsp;&nbsp;
-                    <span style={{ fontSize: '0.8rem', color: 'gray'}}>/CO2e</span>
-                    <br />
-                    <h3 style={{ fontWeight: 900 }}>435.85</h3>
-                    <br />
-                    範疇二&nbsp;&nbsp;
-                    <span style={{ fontSize: '0.8rem', color: 'gray'}}>/CO2e</span>
-                    <br />
-                    <h3 style={{ fontWeight: 900 }}>249.25</h3>
-                    <br />
-                    範疇三&nbsp;&nbsp;
-                    <span style={{ fontSize: '0.8rem', color: 'gray'}}>/CO2e</span>
-                    <br />
-                    <h3 style={{ fontWeight: 900 }}>100.14</h3>
-                    <br /><br />
-                    </strong>
-                    </div> */}
-                </CCardBody>
+                    <CCardBody>
+                        {/*這裡未登入=>*/}
+                        <strong>
+                        <div  style={{height: '420px',fontWeight: 900}}>
+                        <h2 style={{ fontWeight: 900 }}>說明</h2>
+                        <h5 style={{ fontWeight: 900 }}>碳盤查是評估組織或活動所產生的溫室氣體排放量的系統性過程，旨在識別主要碳排放來源並支持制定有效的減排策略</h5>
+                        </div></strong>
+                        {/*結束*/}
+                        {/* 已登入
+                        <div  style={{height: '420px',fontWeight: 900}}>
+                        <strong>碳排總量&nbsp;&nbsp;
+                        <span style={{ fontSize: '0.8rem', color: 'gray'}}>/CO2e</span>
+                        <br />
+                        <h2 style={{ fontWeight: 900 }}>725.29</h2>
+                        <br />
+                        範疇一&nbsp;&nbsp;
+                        <span style={{ fontSize: '0.8rem', color: 'gray'}}>/CO2e</span>
+                        <br />
+                        <h3 style={{ fontWeight: 900 }}>435.85</h3>
+                        <br />
+                        範疇二&nbsp;&nbsp;
+                        <span style={{ fontSize: '0.8rem', color: 'gray'}}>/CO2e</span>
+                        <br />
+                        <h3 style={{ fontWeight: 900 }}>249.25</h3>
+                        <br />
+                        範疇三&nbsp;&nbsp;
+                        <span style={{ fontSize: '0.8rem', color: 'gray'}}>/CO2e</span>
+                        <br />
+                        <h3 style={{ fontWeight: 900 }}>100.14</h3>
+                        <br /><br />
+                        </strong>
+                        </div> 
+                        結束*/}
+                    </CCardBody>
                 </CCard>
             </CCol>
 
@@ -114,7 +123,7 @@ const Charts = () => {
                 {/**/}
                 <CCard className="mb-4 customCard h-80"> 
                     <CCardBody>
-                        {/*這裡2=>*/}
+                        {/*這裡未登入=>*/}
                         <h2 style={{ fontWeight: 900 }}>常見溫室氣體排放源</h2>
                         <CRow>
                             <CCol sm={3}>
@@ -155,7 +164,7 @@ const Charts = () => {
                                 使用化石燃料之運輸設備，<br/>
                                 如：公務用汽機車等。
                                 </CCardBody>
-                                </CCard>
+                            </CCard>
                             </CCol>
 
                             <CCol sm={3}>
@@ -221,7 +230,7 @@ const Charts = () => {
                             </CCol>
                         </CRow>
                         {/*結束2*/}
-                        {/*
+                        {/*已登入
                         <div style={{height: '20px' }}>
                             <strong>排放源</strong>
                         </div>
@@ -268,17 +277,19 @@ const Charts = () => {
                                 }}
                                 labels="months"
                             />
-                        </div>*/}
+                        </div>
+                        結束*/}
                     </CCardBody>                                
                 </CCard>
             </CCol>
+            {/*碳排詳情*/}
             <div><br /></div>
             <div className="customCardHeader"><h5><strong>碳排放詳情</strong></h5>
             </div>
             <div><br /></div>
             <CCol xs={12}>                
                 <CTabs activeItemKey={1}>
-                    <CTabList variant="underline-border" className="custom-tablist">
+                    <CTabList variant="underline-border" className="custom-tablist" style={{backgroundColor:'white'}}>
                         <CTab aria-controls="tab1" itemKey={1} className="custom-tablist-choose">
                             總量
                         </CTab>
@@ -297,52 +308,59 @@ const Charts = () => {
                             <CRow>
                                 <CCol sm={3}>
                                     <CCol sm={12}>
-                                    <CCard className="mb-4 customCard">
-                                    <CCardBody>
-                                        <div style={{height:'90px'}}>
-                                            <strong>碳排總量&nbsp;&nbsp;
-                                            <span style={{ fontSize: '0.8rem', color: 'gray'}}>/CO2e</span>
-                                            <br />
-                                            {/*
-                                            <div className="customCardBody"  style={{ textAlign: 'center', color: 'gray' }}>
-                                            暫無資料!
-                                            </div>
-                                            */}
-                                            <h3 style={{ fontWeight: 900 }}>725.29</h3>
-                                            <span style={{ fontSize: '0.8rem', color: 'gray'}}>去年826.21</span>
-                                            
-                                            </strong>
-                                        </div>
-                                    </CCardBody>
-                                    </CCard>
+                                        <CCard className="mb-4 customCard">
+                                            <CCardBody>
+                                                <div >
+                                                    <strong>碳排總量&nbsp;&nbsp;
+                                                        <span style={{ fontSize: '0.8rem', color: 'gray'}}>/CO2e</span>
+                                                        <br />
+                                                        {/*
+                                                        <div className="customCardBody"  style={{ textAlign: 'center', color: 'gray' }}>
+                                                            暫無資料!
+                                                        </div>
+                                                        */}
+                                                        <h3 style={{ fontWeight: 900 }}>725.29</h3>
+                                                        <span style={{ fontSize: '0.8rem', color: 'gray'}}>去年826.21</span>
+                                                    </strong>
+                                                </div>
+                                            </CCardBody>
+                                        </CCard>
                                     </CCol>
                                     <CCol sm={12}>
-                                    <CCard className="mb-4 customCard">
-                                    <CCardBody >
-                                        <div style={{height:'310px'}}>
-                                            
-                                            <CChartDoughnut
-                                            data={{
-                                                
-                                                datasets: [
-                                                {
-                                                    backgroundColor: ['#41B883', '#E46651', '#00D8FF', '#DD1B16'],
-                                                    data: [40, 20, 80, 10],
-                                                },
-                                                ],
-                                            }}
-                                            />
-                                        </div>
-                                    </CCardBody>
-                                    </CCard>
+                                        <CCard className="mb-4 customCard">
+                                            <CCardBody >
+                                                <div style={{height:'300px'}}>
+                                                    {/*無資料 
+                                                    <strong>各設備比例&nbsp;&nbsp;
+                                                        <br /><br /><br /><br /><br />
+                                                        <div className="customCardBody"  style={{ textAlign: 'center', color: 'gray' }}>
+                                                            暫無資料!
+                                                        </div>
+                                                    </strong>
+                                                    結束*/}
+                                                    {/**有資料=> */}
+                                                    <CChartDoughnut
+                                                    data={{
+                                                        
+                                                        datasets: [
+                                                        {
+                                                            backgroundColor: ['#FFF48F', '#E46651', '#AADCB8', '#C2DFF4'],
+                                                            data: [40, 20, 80, 10],
+                                                        },
+                                                        ],
+                                                    }}
+                                                    />
+                                                    {/**結束*/}
+                                                </div>
+                                            </CCardBody>
+                                        </CCard>
                                     </CCol>
                                 </CCol>
 
                                 {/* 右侧 3/4 宽度 */}
                                 <CCol sm={9}>
-                                    {/**/}
                                     <CCard className="mb-4 customCard">                                
-                                        <CCardHeader style={{height:'490px'}}>
+                                        <CCardHeader style={{height:'480px'}}>
                                             <div className="d-flex align-items-center">
                                                 <strong className="me-3">趨勢分析 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong>
                                                 <CFormSelect 
@@ -376,69 +394,88 @@ const Charts = () => {
                                                     }}
                                                 />
                                             </div>
+                                             {/*無資料
+                                            <br/><br/><br/><br/><br/><br/><br/>
+                                            <strong>
+                                                <div className="customCardBody"  style={{ textAlign: 'center', color: 'gray' }}>
+                                                    暫無資料!
+                                                </div>
+                                            </strong>
+                                            無資料結束*/}
+                                            {/*有資料*/}
                                             <CChartLine style={{height:'430px'}}
-                                            data={{
-                                                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-                                                datasets: [
-                                                {
-                                                    label: 'My First dataset',
-                                                    backgroundColor: 'rgba(220, 220, 220, 0.2)',
-                                                    borderColor: 'rgba(220, 220, 220, 1)',
-                                                    pointBackgroundColor: 'rgba(220, 220, 220, 1)',
-                                                    pointBorderColor: '#fff',
-                                                    data: [random(), random(), random(), random(), random(), random(), random()],
-                                                },
-                                                {
-                                                    label: 'My Second dataset',
-                                                    backgroundColor: 'rgba(151, 187, 205, 0.2)',
-                                                    borderColor: 'rgba(151, 187, 205, 1)',
-                                                    pointBackgroundColor: 'rgba(151, 187, 205, 1)',
-                                                    pointBorderColor: '#fff',
-                                                    data: [random(), random(), random(), random(), random(), random(), random()],
-                                                },
-                                                ],
-                                            }}
+                                                data={{
+                                                    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+                                                    datasets: [
+                                                    {
+                                                        label: 'My First dataset',
+                                                        backgroundColor: 'rgba(220, 220, 220, 0.2)',
+                                                        borderColor: 'rgba(220, 220, 220, 1)',
+                                                        pointBackgroundColor: 'rgba(220, 220, 220, 1)',
+                                                        pointBorderColor: '#fff',
+                                                        data: [random(), random(), random(), random(), random(), random(), random()],
+                                                    },
+                                                    {
+                                                        label: 'My Second dataset',
+                                                        backgroundColor: 'rgba(151, 187, 205, 0.2)',
+                                                        borderColor: 'rgba(151, 187, 205, 1)',
+                                                        pointBackgroundColor: 'rgba(151, 187, 205, 1)',
+                                                        pointBorderColor: '#fff',
+                                                        data: [random(), random(), random(), random(), random(), random(), random()],
+                                                    },
+                                                    ],
+                                                }}
                                             />
+                                            {/*有資料結束*/}
                                         </CCardHeader>
                                     </CCard>
                                 </CCol>
                             </CRow>
                         </CTabPanel>
+
                         <CTabPanel className="py-3" aria-labelledby="profile-tab-pane" itemKey={2}>                           
                             <CRow>
                                 <CCol sm={3}>
                                     <CCol sm={12}>
                                         <CCard className="mb-4 customCard">
-                                            <CCardBody className="customCard2">
-                                            <div className="customCardHeader">
-                                            <strong>碳排總量&nbsp;&nbsp;
-                                            <span style={{ fontSize: '0.8rem', color: 'gray'}}>/CO2e</span>
-                                            </strong>
-                                            </div>
-                                            <div className="customCardBody"  style={{ textAlign: 'center' }}>
-                                            暫無資料!
-                                            </div>
+                                            <CCardBody>
+                                                <div>
+                                                    <strong>範疇一總量&nbsp;&nbsp;
+                                                        <span style={{ fontSize: '0.8rem', color: 'gray'}}>/CO2e</span>
+                                                        {/* 無資料=>
+                                                        <div className="customCardBody"  style={{ textAlign: 'center', color: 'gray' }}>
+                                                            暫無資料!
+                                                        </div>
+                                                        無資料結束*/}
+
+                                                        {/*有資料=>*/}
+                                                        <h3 style={{ fontWeight: 900 }}>485.52</h3>
+                                                        <span style={{ fontSize: '0.8rem', color: 'gray'}}>去年356.14</span>
+                                                        {/*有資料結束*/}
+                                                    </strong>
+                                                </div>
                                             </CCardBody>
                                         </CCard>
                                     </CCol>
                                     <CCol sm={12}>
                                         <CCard className="mb-4 customCard">
-                                            <CCardBody className="customCard2">
-                                                <div className="customCardHeader">
-                                                    <strong >各設備比例</strong>
+                                            <CCardBody >
+                                                <div style={{height:'300px'}}>
+                                                    <strong >各設備比例
+                                                        <CChartPie
+                                                        data={{
+                                                            labels: ['Red', 'Green', 'Yellow'],
+                                                            datasets: [
+                                                            {
+                                                                data: [300, 50, 100],
+                                                                backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
+                                                                hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
+                                                            },
+                                                            ],
+                                                        }}
+                                                        />
+                                                    </strong>
                                                 </div>
-                                                <CChartPie
-                                                data={{
-                                                    labels: ['Red', 'Green', 'Yellow'],
-                                                    datasets: [
-                                                    {
-                                                        data: [300, 50, 100],
-                                                        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
-                                                        hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
-                                                    },
-                                                    ],
-                                                }}
-                                                />
                                             </CCardBody>
                                         </CCard>
                                     </CCol>
@@ -469,39 +506,49 @@ const Charts = () => {
                                 </CCol>
                             </CRow>
                         </CTabPanel>
+
                         <CTabPanel className="py-3" aria-labelledby="contact-tab-pane" itemKey={3}>
                             <CRow>
                                 <CCol sm={3}>
                                     <CCol sm={12}>
                                         <CCard className="mb-4 customCard">
-                                            <CCardBody className="customCard2">
-                                                <div className="customCardHeader">
-                                                    <strong>碳排總量&nbsp;&nbsp;
+                                            <CCardBody>
+                                                <div>
+                                                    <strong>範疇二總量&nbsp;&nbsp;
                                                         <span style={{ fontSize: '0.8rem', color: 'gray'}}>/CO2e</span>
+                                                        {/*無資料=>
+                                                        <div className="customCardBody"  style={{ textAlign: 'center', color: 'gray' }}>
+                                                                暫無資料!
+                                                        </div>
+                                                        無資料結束*/}
+                                                        {/*有資料*/}
+                                                        <h3 style={{ fontWeight: 900 }}>485.52</h3>
+                                                        <span style={{ fontSize: '0.8rem', color: 'gray'}}>去年356.14</span>
+                                                        {/*有資料結束*/}
                                                     </strong>
                                                 </div>
-                                                <div className="customCardBody"  style={{ textAlign: 'center' }}>暫無資料!</div>
                                             </CCardBody>
                                         </CCard>
                                     </CCol>
                                     <CCol sm={12}>
                                         <CCard className="mb-4 customCard">
-                                            <CCardBody className="customCard2">
-                                                <div className="customCardHeader">
-                                                    <strong>各設備比例</strong>
+                                            <CCardBody >
+                                                <div style={{height:'300px'}}>
+                                                    <strong >各設備比例
+                                                        <CChartPie
+                                                        data={{
+                                                            labels: ['Red', 'Green', 'Yellow'],
+                                                            datasets: [
+                                                            {
+                                                                data: [300, 50, 100],
+                                                                backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
+                                                                hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
+                                                            },
+                                                            ],
+                                                        }}
+                                                        />
+                                                    </strong>
                                                 </div>
-                                                <CChartPie
-                                                data={{
-                                                    labels: ['Red', 'Green', 'Yellow'],
-                                                    datasets: [
-                                                    {
-                                                        data: [300, 50, 100],
-                                                        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
-                                                        hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
-                                                    },
-                                                    ],
-                                                }}
-                                                />
                                             </CCardBody>
                                         </CCard>
                                     </CCol>
@@ -515,70 +562,115 @@ const Charts = () => {
                                                 <strong className="me-3">各設備分布 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong>
                                             </div>
                                             <CChartBar
-                                            data={{
-                                                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-                                                datasets: [
-                                                {
-                                                    label: 'GitHub Commits',
-                                                    backgroundColor: '#f87979',
-                                                    data: [40, 20, 12, 39, 10, 40, 39, 80, 40],
-                                                },
-                                                ],
-                                            }}
-                                            labels="months"
-                                        />
+                                                data={{
+                                                    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+                                                    datasets: [
+                                                    {
+                                                        label: 'GitHub Commits',
+                                                        backgroundColor: '#f87979',
+                                                        data: [40, 20, 12, 39, 10, 40, 39, 80, 40],
+                                                    },
+                                                    ],
+                                                }}
+                                                labels="months"
+                                            />
                                         </CCardHeader>
                                     </CCard>
                                 </CCol>
                             </CRow>
                         </CTabPanel>
+
                         <CTabPanel className="py-3" aria-labelledby="contact-tab-pane" itemKey={4}>
                             <CRow>
                                 <CCol sm={3}>
                                     <CCol sm={12}>
                                         <CCard className="mb-4 customCard">
-                                            <CCardBody className="customCard2">
-                                                    <div className="customCardHeader">
-                                                        <strong>碳排總量&nbsp;&nbsp;
-                                                            <span style={{ fontSize: '0.8rem', color: 'gray'}}>/CO2e</span>
-                                                        </strong>
-                                                    </div>
-                                                    <div className="customCardBody"  style={{ textAlign: 'center' }}> 暫無資料!</div>
+                                            <CCardBody>
+                                                <div>
+                                                    <strong>範疇三總量&nbsp;&nbsp;
+                                                        <span style={{ fontSize: '0.8rem', color: 'gray'}}>/CO2e</span>
+                                                        {/*無資料=>*/}
+                                                        <br/><br/>
+                                                        <div  style={{ textAlign: 'center', color: 'gray' }}>
+                                                                暫無資料!
+                                                        </div>
+                                                        <br/>
+                                                        {/*無資料結束*/}
+                                                        {/*有資料=>
+                                                        <h3 style={{ fontWeight: 900 }}>0</h3>
+                                                        <span style={{ fontSize: '0.8rem', color: 'gray'}}>去年0</span>
+                                                        有資料結束*/}
+                                                    </strong>
+                                                </div>
                                             </CCardBody>
                                         </CCard>
                                     </CCol>
                                     <CCol sm={12}>
                                         <CCard className="mb-4 customCard">
-                                            <CCardBody className="customCard2">
-                                                <div className="customCardHeader"><strong>各設備比例</strong></div>
-                                                <div className="customCardBody" style={{ textAlign: 'center' }}>暫無資料!</div>
+                                            <CCardBody >
+                                                <div style={{height:'295px'}}>
+                                                    <strong >各設備比例<br/><br/><br/><br/><br/>
+                                                        <div className="customCardBody" style={{ textAlign: 'center',color:'gray' }}>暫無資料!</div>
+                                                    </strong>
+                                                </div>
                                             </CCardBody>
+                                            {/*
+                                            <CCardBody >
+                                                <div style={{height:'300px'}}>
+                                                    <strong >各設備比例
+                                                        <CChartPie
+                                                        data={{
+                                                            labels: ['Red', 'Green', 'Yellow'],
+                                                            datasets: [
+                                                            {
+                                                                data: [300, 50, 100],
+                                                                backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
+                                                                hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
+                                                            },
+                                                            ],
+                                                        }}
+                                                        />
+                                                    </strong>
+                                                </div>
+                                            </CCardBody> 
+                                            */}
                                         </CCard>
+                                        {/*
+                                            <div className="customCardBody" style={{ textAlign: 'center' }}>暫無資料!</div>
+                                        */}
                                     </CCol>
                                 </CCol>
 
                                 {/* 右侧 3/4 宽度 */}
                                 <CCol sm={9}>
                                     {/**/}
-                                    <CCard className="mb-4 customCard">                                
+                                    <CCard className="mb-4 customCard">
+                                        <CCardHeader style={{height:'480px'}}>
+                                                <div className="d-flex align-items-center">
+                                                    <strong className="me-3">各設備分布 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong>
+                                                </div><br/><br/><br/><br/><br/><br/><br/>
+                                                <div className="customCardBody" style={{ textAlign: 'center',color:'gray' }}>暫無資料!</div>
+                                        </CCardHeader>                              
+                                        {/* 
                                         <CCardHeader>
                                             <div className="d-flex align-items-center">
                                                 <strong className="me-3">各設備分布 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong>
                                             </div>
                                             <CChartBar
-                                            data={{
-                                                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-                                                datasets: [
-                                                {
-                                                    label: 'GitHub Commits',
-                                                    backgroundColor: '#f87979',
-                                                    data: [40, 20, 12, 39, 10, 40, 39, 80, 40],
-                                                },
-                                                ],
-                                            }}
-                                            labels="months"
-                                        />
+                                                data={{
+                                                    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+                                                    datasets: [
+                                                    {
+                                                        label: 'GitHub Commits',
+                                                        backgroundColor: '#f87979',
+                                                        data: [40, 20, 12, 39, 10, 40, 39, 80, 40],
+                                                    },
+                                                    ],
+                                                }}
+                                                labels="months"
+                                            /> 
                                         </CCardHeader>
+                                        */}
                                     </CCard>
                                 </CCol>
                             </CRow>
