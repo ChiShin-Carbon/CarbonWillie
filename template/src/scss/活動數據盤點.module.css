@@ -1,22 +1,142 @@
-.activityData{
-    display:flex;
+.activityData {
+    display: flex;
     flex-direction: row
 }
-.activityCard{
+
+.activityCard {
     border: none;
     box-shadow: 0px 2px 5px rgb(186, 186, 186);
     border-radius: 15px;
-    min-height:400px;
-    padding: 20px 30px;
-    margin-right:20px;
-    width:85%
+    min-height: 400px;
+    margin-right: 20px;
+    width: 85%;
+    margin-bottom: 30px;
 }
 
-.activityNav{
+.activityCardBody {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    margin-bottom: 30px;
+    padding: 20px 30px;
+}
+
+.activityCardHead {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.activityCardHeadTitle{
+    background-color: #9D6B6B;
+    width:auto;
+    padding:5px 30px;
+    color:white;
+    font-size:25px;
+    font-weight: bold;
+    display:flex;
+    align-items: center;
+    border-top-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+}
+
+.activityNav {
     border: none;
     box-shadow: 0px 2px 5px rgb(186, 186, 186);
     border-radius: 15px;
-    min-height:400px;
-    padding: 20px 30px;
-    width:15%
+    max-height: 500px;
+    overflow: auto;
+    padding: 10px;
+    width: 15%;
+    display: column;
+    margin-bottom: 30px;
+    position: sticky;
+    top: 100px;
+
+}
+
+.navTitle {
+    margin: 0;
+    font-weight: bold;
+}
+
+.hr {
+    margin: 0 0 15px 0;
+}
+
+.navContent {
+    margin: 0px 0px 8px 0px;
+    padding: 2px 5px;
+    font-weight: bold;
+    color: #6B6B6B;
+}
+
+.navContent:hover {
+    color: #ffffff;
+    background-color: #9D6B6B;
+    cursor: pointer;
+}
+.navContentChoose {
+    color: #ffffff;
+    background-color: #9D6B6B;
+    cursor: pointer;
+}
+
+.activityTable1 {
+    text-align: center;
+    table-layout: auto;
+    min-width: 1000px;
+}
+
+.activityTableHead th {
+    background-color: #cecece;
+    color: #525151;
+}
+
+.activityTableBody tr {
+    border-bottom: 1px solid rgb(167, 167, 167);
+    font-weight: 800;
+    vertical-align: middle;
+}
+
+.activityTableBody tr img {
+    width: 150px;
+}
+
+.activityAddButton {
+    margin: 10px 10px 0 0;
+    width:80px;
+    background-color: #CA6AAF;
+    color:white;
+    font-weight: bold;
+    border:none;
+    padding:5px 5px;
+    border-radius: 50px;
+    font-size:18px;
+    box-shadow:0 1px 5px rgb(144, 144, 144);
+}
+.activityAddButton:hover {
+    background-color: #854b74;
+    color:white;
+}
+
+.iconPen{
+    font-size:20px;
+    background-color: rgb(76, 174, 249);
+    color:white;
+    padding:8px;
+    border-radius: 10px;
+    margin-right:10px;
+    cursor: pointer;
+    box-shadow: 0 1px 7px rgb(209, 208, 208);
+}
+
+.iconTrash{
+    font-size:20px;
+    background-color: rgb(255, 0, 0);
+    color:white;
+    padding:8px;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 1px 7px rgb(209, 208, 208);
 }
