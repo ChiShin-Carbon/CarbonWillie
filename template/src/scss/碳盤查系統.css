@@ -100,11 +100,13 @@ main {
 .systemTable th {
     background-color: #cecece;
     color: #525151;
+    
 }
 
 .systemTable tr {
     border-bottom: 1px solid rgb(167, 167, 167);
     font-weight: 800;
+    vertical-align: middle;
 }
 
 .systemCardBody button {
