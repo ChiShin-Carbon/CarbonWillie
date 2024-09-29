@@ -1,15 +1,26 @@
 from fastapi import FastAPI
-from route import router
-from config.database import connect_to_mongo
+from dotenv import load_dotenv
+import os
+from route import router  # Correct import for the router
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+import logging
+import pyodbc
+import connect
 
 app = FastAPI()
+# Load environment variables from .env file
+load_dotenv()
+connect.connect()
 
-# Connect to MongoDB
-connect_to_mongo()
+# Database connection URL
+SQLALCHEMY_DATABASE_URL = os.getenv('DATABASE_URL')
+print(SQLALCHEMY_DATABASE_URL)
 
-# Include routers
-app.include_router(test_router)
 
 @app.get("/")
-async def read_root():
-    return {"message": "Welcome to the FastAPI MongoDB project!"}
+def read_root():
+    return {"Hello": "World"}
+
+# Include the router from the route module
+app.include_router(router)
