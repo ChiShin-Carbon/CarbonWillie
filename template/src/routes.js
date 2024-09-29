@@ -15,6 +15,7 @@ const 碳盤查系統 = React.lazy(() => import('./views/theme/system/碳盤查�
 const 邊界設定 = React.lazy(() => import('./views/theme/system/邊界設定/邊界設定'))
 const 活動數據盤點 = React.lazy(() => import('./views/theme/system/活動數據盤點/活動數據盤點'))
 
+
 // Base
 const Accordion = React.lazy(() => import('./views/base/accordion/Accordion'))
 const Cards = React.lazy(() => import('./views/base/cards/Cards'))

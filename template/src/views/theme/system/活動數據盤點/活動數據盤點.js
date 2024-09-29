@@ -5,7 +5,7 @@ import { useState } from 'react';
 import {
     CRow, CCol, CCard, CCardBody, CCardHeader, CFormSelect, CTab, CTabContent, CTabList, CTabPanel, CTabs, CForm, CFormLabel, CFormInput, CFormTextarea,
     CCardSubtitle, CCardText, CCardTitle, CButton,
-    CTable, CTableBody, CTableCaption, CTableDataCell, CTableHead, CTableHeaderCell, CTableRow,
+    CTable, CTableBody, CTableCaption, CTableDataCell, CTableHead, CTableHeaderCell, CTableRow, CModal, CModalHeader, CModalBody, CModalFooter, CModalTitle,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilDataTransferDown } from '@coreui/icons'
@@ -24,16 +24,22 @@ import 'primeicons/primeicons.css';                        // 图标样式
 
 import styles from '../../../../scss/活動數據盤點.module.css'
 
+import ActivityModal from './活動數據盤點新增modal.js';
+
 
 const Tabs = () => {
     const [currentFunction, setCurrentFunction] = useState('one');
     const [currentTitle, setCurrentTitle] = useState('公務車(汽油)');
+
 
     // 點擊處理函數
     const handleFunctionChange = (func, title) => {
         setCurrentFunction(func);
         setCurrentTitle(title);
     };
+
+
+    const [isAddModalVisible, setAddModalVisible] = useState(false);
 
 
 
@@ -67,7 +73,7 @@ const Tabs = () => {
                 <CCard className={styles.activityCard}>
                     <div className={styles.activityCardHead}>
                         <div className={styles.activityCardHeadTitle}>{currentTitle}</div>
-                        <button className={styles.activityAddButton}>新增</button>
+                        <button className={styles.activityAddButton} onClick={() => setAddModalVisible(true)}>新增</button>
                     </div>
                     <div className={styles.activityCardBody}>
                         {currentFunction === 'one' && <FunctionOne />}
@@ -121,6 +127,16 @@ const Tabs = () => {
                     </div>
                 </CCard>
             </div>
+
+
+
+
+            <ActivityModal
+                isAddModalVisible={isAddModalVisible}
+                setAddModalVisible={setAddModalVisible}
+                currentFunction={currentFunction}
+            />
+
         </main>
     );
 }

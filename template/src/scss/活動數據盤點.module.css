@@ -32,7 +32,7 @@
     width:auto;
     padding:5px 30px;
     color:white;
-    font-size:25px;
+    font-size:20px;
     font-weight: bold;
     display:flex;
     align-items: center;
@@ -85,7 +85,7 @@
 .activityTable1 {
     text-align: center;
     table-layout: auto;
-    min-width: 1000px;
+    min-width: 1200px;
 }
 
 .activityTableHead th {
@@ -149,3 +149,23 @@
     font-size:20px;
     color: rgb(255, 58, 58);
 }
+
+.addinput{
+    border-radius: 15px;
+    background-color: #ffffff;
+    
+  }
+  .addinput:focus{
+    background-color: #ffffff;
+  }
+
+
+  .addlabel{
+    color:black;
+    font-weight:bold;
+    width:160px
+  }
+
+  .addmodal{
+    margin:0 30px
+  }
