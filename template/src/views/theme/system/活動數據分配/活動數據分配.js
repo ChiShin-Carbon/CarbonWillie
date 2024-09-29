@@ -3,14 +3,17 @@ import { useState } from 'react';
 
 
 import {
-    CRow, CCol, CCard, CCardBody, CCardHeader, CFormSelect, CTab, CTabContent, CTabList, CTabPanel, CTabs, CForm, CFormLabel, CFormInput,CFormTextarea,
+    CRow, CCol, CCard, CCardBody, CCardHeader, CFormSelect, CTab, CTabContent, CTabList, CTabPanel, CTabs, CForm, CFormLabel, CFormInput, CFormTextarea,
     CCardSubtitle, CCardText, CCardTitle, CButton,
-    CTable, CTableBody, CTableCaption, CTableDataCell, CTableHead, CTableHeaderCell, CTableRow, 
+    CTable, CTableBody, CTableCaption, CTableDataCell, CTableHead, CTableHeaderCell, CTableRow, CCollapse,
+    CAccordion, CAccordionItem, CAccordionHeader, CAccordionBody,
+
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilDataTransferDown } from '@coreui/icons'
 
 import '../../../../scss/碳盤查系統.css'
+import styles from '../../../../scss/活動數據盤點.module.css'
 import { Link } from 'react-router-dom'
 
 
@@ -18,11 +21,15 @@ import 'primereact/resources/themes/saga-blue/theme.css';  // 主题样式
 import 'primereact/resources/primereact.min.css';          // 核心 CSS
 import 'primeicons/primeicons.css';                        // 图标样式
 
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPenToSquare, faTrashCan } from '@fortawesome/free-solid-svg-icons';
+
 import { Calendar } from 'primereact/calendar';
 
 
 const Tabs = () => {
-    const [date, setDate] = useState(null);
+    const [visible, setVisible] = useState(false)
 
 
     return (
@@ -53,37 +60,106 @@ const Tabs = () => {
                 </div>
                 <button className="system-save">儲存</button>
             </div>
-            <CCard className="mb-4 systemCard">
-                <div className="systemCardBody">
-                    <CForm>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="projectname" className="col-sm-2 col-form-label systemlabel" >使用者帳號</CFormLabel>
-                            <CCol>
-                                <CFormInput className="systeminput" type="text" id="projectname" />
-                            </CCol>
-                        </CRow>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="projectstart" className="col-sm-2 col-form-label systemlabel" >盤查期間(開始)</CFormLabel>
-                            <CCol>
-                                <CFormInput className="systeminput" type="date" id="projectstart" />
-                            </CCol>
+            <CCard className={`mb-4 ${styles.activityCard2}`}>
+                <div style={{minHeight:'300px'}}>
+                    <div className={styles.activityCard2Head}>
+                        <strong className={styles.activityCard2HeadTitle}>範疇一</strong>
+                    </div>
 
-                            <CCol sm={1}></CCol>
+                    <div className={styles.activityCardBody}>
+                        <div className={styles.activityAccordionDiv}>
+                            <CAccordion className={styles.activityAccordion}>
+                                <CAccordionItem itemKey={1} className={styles.activityAccordionItem}>
+                                    <CAccordionHeader >公務車(汽油)</CAccordionHeader>
+                                    <CAccordionBody>
+                                        <div className={styles.AccordionBodyItem}>
+                                            <h6>各部門填寫人</h6>
+                                            <hr />
+                                            <div className={styles.departmentList}>
+                                                <div className={styles.departmentItem}>
+                                                    <span>管理部門:</span>
+                                                    <span>XXX</span>
+                                                </div>
+                                                <div className={styles.departmentItem}>
+                                                    <span>資訊部門:</span>
+                                                    <span>XXX</span>
+                                                </div>
+                                                <div className={styles.departmentItem}>
+                                                    <span>門診部門:</span>
+                                                    <span>XXX</span>
+                                                </div>
+                                                <div className={styles.departmentItem}>
+                                                    <span>健檢部門:</span>
+                                                    <span>XXX</span>
+                                                </div>
+                                                <div className={styles.departmentItem}>
+                                                    <span>檢驗部門:</span>
+                                                    <span>XXX</span>
+                                                </div>
+                                            </div>
 
-                            <CFormLabel htmlFor="projectend" className="col-sm-2 col-form-label systemlabel" >盤查期間(結束)</CFormLabel>
-                            <CCol>
-                                <CFormInput className="systeminput" type="date" id="projectend" />
-                            </CCol>
-                        </CRow>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="projectexplain" className="col-sm-2 col-form-label systemlabel" >詳細說明</CFormLabel>
-                            <CCol>
-                                <CFormTextarea className="systeminput" type="text" id="projectexplain" rows={5} />
-                            </CCol>
-                        </CRow>
-
-                    </CForm>
+                                            <div style={{ textAlign: 'right' }}>
+                                                <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} />
+                                                <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} /></div>
+                                        </div>
+                                    </CAccordionBody>
+                                </CAccordionItem>
+                            </CAccordion>
+                            
+                        </div>
+                    </div>
                 </div>
+
+
+
+                <div>
+                    <div className={styles.activityCard2Head}>
+                        <strong className={styles.activityCard2HeadTitle}>範疇二</strong>
+                    </div>
+
+                    <div className={styles.activityCardBody}>
+                        <div className={styles.activityAccordionDiv}>
+                            <CAccordion className={styles.activityAccordion}>
+                                <CAccordionItem itemKey={1} className={styles.activityAccordionItem}>
+                                    <CAccordionHeader >間接蒸氣(汽電共生廠有做溫室氣體盤查)</CAccordionHeader>
+                                    <CAccordionBody>
+                                        <div className={styles.AccordionBodyItem}>
+                                            <h6>各部門填寫人</h6>
+                                            <hr />
+                                            <div className={styles.departmentList}>
+                                                <div className={styles.departmentItem}>
+                                                    <span>管理部門:</span>
+                                                    <span>XXX</span>
+                                                </div>
+                                                <div className={styles.departmentItem}>
+                                                    <span>資訊部門:</span>
+                                                    <span>XXX</span>
+                                                </div>
+                                                <div className={styles.departmentItem}>
+                                                    <span>門診部門:</span>
+                                                    <span>XXX</span>
+                                                </div>
+                                                <div className={styles.departmentItem}>
+                                                    <span>健檢部門:</span>
+                                                    <span>XXX</span>
+                                                </div>
+                                                <div className={styles.departmentItem}>
+                                                    <span>檢驗部門:</span>
+                                                    <span>XXX</span>
+                                                </div>
+                                            </div>
+
+                                            <div style={{ textAlign: 'right' }}>
+                                                <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} />
+                                                <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} /></div>
+                                        </div>
+                                    </CAccordionBody>
+                                </CAccordionItem>
+                            </CAccordion>
+                        </div>
+                    </div>
+                </div>
+
             </CCard>
 
         </main>

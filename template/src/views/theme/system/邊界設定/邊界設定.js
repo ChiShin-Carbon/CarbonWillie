@@ -61,7 +61,7 @@ const Tabs = () => {
                         </CCol>
 
                         <CCol style={{ textAlign: 'right' }}>
-                            <button className="bt2" onClick={() => setAddModalVisible(true)}>新增地點</button>
+                            <button className="systembutton" onClick={() => setAddModalVisible(true)}>新增地點</button>
                         </CCol>
                     </CRow>
 

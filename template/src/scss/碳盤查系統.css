@@ -109,35 +109,24 @@ main {
     vertical-align: middle;
 }
 
-.systemCardBody button {
+.systemCardBody .systembutton {
     margin-left:10px;
     width: 100px;
     height: 35px;
     border-radius: 20px;
     border: none;
-    
-}
-
-.systemCardBody .bt1 {
-    background-color: #D2D1D1;
-    color:#B0B0B0;
-    font-weight:bold;
-    box-shadow: 0px 2px 6px rgb(160, 160, 160);
-}
-
-.systemCardBody .bt2 {
     background-color: #CA6AAF;
     color:#ffffff;
     font-weight:bold;
     box-shadow: 0px 2px 6px rgb(160, 160, 160);
+    
 }
 
-.systemCardBody .bt2:hover {
+.systemCardBody .systembutton:hover {
     background-color: #a7498d;
-    color:#ffffff;
-    font-weight:bold;
-    box-shadow: 0px 2px 6px rgb(160, 160, 160);
+   
 }
+
 
 .systemCardBody .select{
     width:200px;
