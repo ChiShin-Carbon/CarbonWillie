@@ -53,6 +53,9 @@ const Tabs = () => {
                     <Link to="/theme/system/邊界設定" className="system-tablist-link"><CTab aria-controls="tab2" itemKey={2} className="system-tablist-choose">
                         邊界設定
                     </CTab></Link>
+                    <Link to="/theme/system/活動數據分配" className="system-tablist-link"><CTab aria-controls="tab3" itemKey={4} className="system-tablist-choose">
+                        活動數據分配
+                    </CTab></Link>
                     <Link to="." className="system-tablist-link"><CTab aria-controls="tab3" itemKey={1} className="system-tablist-choose">
                         活動數據盤點
                     </CTab></Link>
