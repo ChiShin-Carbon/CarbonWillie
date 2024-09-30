@@ -52,7 +52,7 @@ export const FunctionOne = () => {
 
 export const FunctionTwo = () => {
     const [isEditModalVisible, setEditModalVisible] = useState(false);
-    const currentFunction = 'one'; // 定義 currentFunction
+    const currentFunction = 'two'; // 定義 currentFunction
 
     return (
         <div>
@@ -75,7 +75,7 @@ export const FunctionTwo = () => {
                         <td>公升</td>
                         <td>XXXXXX</td>
                         <td>讚</td>
-                        <td><img src="https://i.pinimg.com/564x/2a/4c/cb/2a4ccb65cc3cc47bbccca96dd230bd22.jpg" alt="image" /></td>
+                        <td><img src="https://i.pinimg.com/564x/aa/d2/35/aad235f4fa78994b5cc04b34b57d9047.jpg" alt="image" /></td>
                         <td>
                             <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
                             <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
@@ -102,10 +102,10 @@ export const FunctionThree = () => {
             <CTable hover className={styles.activityTable1}>
                 <CTableHead className={styles.activityTableHead}>
                     <tr>
-                        <th>發票/收據日期</th>
-                        <th>發票號碼/收據編號</th>
-                        <th>單位</th>
-                        <th>公升數/金額</th>
+                        <th>品名</th>
+                        <th>成分</th>
+                        <th>規格(重量)</th>
+                        <th>使用量(支)</th>
                         <th>備註</th>
                         <th>圖片</th>
                         <th>操作</th>
@@ -113,12 +113,12 @@ export const FunctionThree = () => {
                 </CTableHead>
                 <CTableBody className={styles.activityTableBody}>
                     <tr>
-                        <td>2023/01/15</td>
                         <td>XXXXX</td>
-                        <td>公升</td>
-                        <td>XXXXXX</td>
+                        <td>CO2</td>
+                        <td>XXX</td>
+                        <td>5</td>
                         <td>讚</td>
-                        <td><img src="https://i.pinimg.com/564x/2a/4c/cb/2a4ccb65cc3cc47bbccca96dd230bd22.jpg" alt="image" /></td>
+                        <td><img src="https://i.pinimg.com/564x/35/a9/aa/35a9aa483e73b94c8b8605ed9107a381.jpg" alt="image" /></td>
                         <td>
                             <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
                             <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
@@ -136,16 +136,101 @@ export const FunctionThree = () => {
 };
 
 
-export const FunctionFour = () => (
-    <div>
-        <h2>這是功能4的內容</h2>
-    </div>
-);
-export const FunctionFive = () => (
-    <div>
-        <h2>這是功能5的內容</h2>
-    </div>
-);
+export const FunctionFour = () => {
+    const [isEditModalVisible, setEditModalVisible] = useState(false);
+    const currentFunction = 'four'; // 定義 currentFunction
+
+    return (
+        <div>
+            <CTable hover className={styles.activityTable1}>
+                <CTableHead className={styles.activityTableHead}>
+                    <tr>
+                        <th>月份</th>
+                        <th>員工數</th>
+                        <th>每日工時</th>
+                        <th>每月工作日數</th>
+                        <th>總加班時數</th>
+                        <th>總病假時數</th>
+                        <th>總事假時數</th>
+                        <th>總出差時數</th>
+                        <th>總婚喪時數</th>
+                        <th>總特休時數</th>
+                        <th>備註</th>
+                        <th>圖片</th>
+                        <th>操作</th>
+                    </tr>
+                </CTableHead>
+                <CTableBody className={styles.activityTableBody}>
+                    <tr>
+                        <td>一月</td>
+                        <td>24</td>
+                        <td>8</td>
+                        <td>22</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>讚</td>
+                        <td><img src="https://i.pinimg.com/564x/35/a9/aa/35a9aa483e73b94c8b8605ed9107a381.jpg" alt="image" /></td>
+                        <td>
+                            <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
+                            <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
+                        </td>
+                    </tr>
+                </CTableBody>
+            </CTable>
+            <EditModal
+                isEditModalVisible={isEditModalVisible}
+                setEditModalVisible={setEditModalVisible}
+                currentFunction={currentFunction}
+            />
+        </div>
+    );
+};
+
+export const FunctionFive = () => {
+    const [isEditModalVisible, setEditModalVisible] = useState(false);
+    const currentFunction = 'five'; // 定義 currentFunction
+
+    return (
+        <div>
+            <CTable hover className={styles.activityTable1}>
+                <CTableHead className={styles.activityTableHead}>
+                    <tr>
+                        <th>月份</th>
+                        <th>人數</th>
+                        <th>總工作時數</th>
+                        <th>總工作人天</th>
+                        <th>備註</th>
+                        <th>圖片</th>
+                        <th>操作</th>
+                    </tr>
+                </CTableHead>
+                <CTableBody className={styles.activityTableBody}>
+                    <tr>
+                        <td>一月</td>
+                        <td>24</td>
+                        <td>8</td>
+                        <td>22</td>
+                        <td>讚</td>
+                        <td><img src="https://i.pinimg.com/736x/5d/a8/60/5da8608aab2a2ebb0bb9e56ee9401414.jpg" alt="image" /></td>
+                        <td>
+                            <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
+                            <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
+                        </td>
+                    </tr>
+                </CTableBody>
+            </CTable>
+            <EditModal
+                isEditModalVisible={isEditModalVisible}
+                setEditModalVisible={setEditModalVisible}
+                currentFunction={currentFunction}
+            />
+        </div>
+    );
+};
 export const FunctionSix = () => (
     <div>
         <h2>這是功能6的內容</h2>
