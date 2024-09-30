@@ -124,6 +124,7 @@
     border-radius: 50px;
     font-size: 18px;
     box-shadow: 0 1px 5px rgb(144, 144, 144);
+    margin-bottom:2px;
 }
 
 .activityAddButton:hover {
@@ -174,7 +175,7 @@
 
 
 .addlabel {
-    color: black;
+    color: #625F5F;
     font-weight: bold;
     width: 160px
 }
@@ -193,7 +194,6 @@
 .activityAccordion {
     width: 24%;
     margin-bottom: 1.3%;
-
 }
 
 .activityAccordionItem button {
@@ -201,6 +201,8 @@
     font-weight: bold;
     height: 60px;
     font-size: large;
+    
+    box-shadow: 0 3px 5px rgb(169, 169, 169);
 }
 
 .activityAccordionItem {
@@ -239,10 +241,60 @@
     border-bottom:2px solid rgb(223, 223, 223);
     padding-top:10px;
     padding-left:20px;
+    display:flex;
+    flex-direction: row;
+    justify-content:space-between;
+    
   }
 
   .activityCard2HeadTitle{
     font-Size:1.4rem;
     border-Bottom: 5px solid #CA6AAF;
     
+  }
+
+  .activityCard2Head strong{
+    padding-top:10px;
+  }
+
+  /* 滾動條整體的寬度和高度 */
+  .activityNav::-webkit-scrollbar {
+    width: 12px;  /* 設定寬度（適用於垂直滾動條） */
+    height: 12px; /* 設定高度（適用於水平滾動條） */
+  }
+  
+  /* 滾動條的背景 */
+  .activityNav::-webkit-scrollbar-track {
+    border-radius: 10px;  /* 圓角 */
+  }
+  
+  /* 滾動條的滑塊 */
+  .activityNav::-webkit-scrollbar-thumb {
+    background-color: #888; /* 滑塊顏色 */
+    border-radius: 10px;    /* 圓角 */
+    border: 3px solid #f1f1f1; /* 滑塊的邊框（讓滑塊更小，看起來像浮在軌道上） */
+  }
+  .activityNav::-webkit-scrollbar-thumb:hover {
+    background-color: #555; /* 滑鼠懸停時的滑塊顏色 */
+  }
+  
+  .activityCardBody::-webkit-scrollbar {
+    width: 12px;  /* 設定寬度（適用於垂直滾動條） */
+    height: 12px; /* 設定高度（適用於水平滾動條） */
+  }
+  
+  /* 滾動條的背景 */
+  .activityCardBody::-webkit-scrollbar-track {
+    border-radius: 10px;  /* 圓角 */
+  }
+  
+  /* 滾動條的滑塊 */
+  .activityCardBody::-webkit-scrollbar-thumb {
+    background-color: #888; /* 滑塊顏色 */
+    border-radius: 10px;    /* 圓角 */
+    border: 3px solid #f1f1f1; /* 滑塊的邊框（讓滑塊更小，看起來像浮在軌道上） */
+  }
+  
+  .activityCardBody::-webkit-scrollbar-thumb:hover {
+    background-color: #555; /* 滑鼠懸停時的滑塊顏色 */
   }
