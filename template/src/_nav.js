@@ -14,6 +14,7 @@ import {
   cilNotes,
   cilPencil,
   cilPuzzle,
+  cilSatelite,
   cilSearch,
   cilSpeedometer,
   cilStar,
@@ -78,6 +79,12 @@ const _nav = [
     name: 'Try_411402601',
     to: '/theme/try_411402601',
     icon: <CIcon icon={cilHappy} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: '常見問題',
+    to: '/theme/qa',
+    icon: <CIcon icon={cilSatelite} customClassName="nav-icon" />,
   },
   
   {
