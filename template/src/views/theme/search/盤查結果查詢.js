@@ -30,6 +30,8 @@ import {
 
 
 const Tabs = () => {
+    const random = () => Math.round(Math.random() * 100)
+
     return (
         <CRow>
         <CCol xs={12}>
@@ -43,6 +45,7 @@ const Tabs = () => {
                     </CTab>
                 </CTabList>
                 <CTabContent>
+
                 {/* /*表格呈現頁 */}
                 <CTabPanel className="py-3" aria-labelledby="home-tab-pane" itemKey={1}>
                 <CCardBody>
@@ -241,25 +244,166 @@ const Tabs = () => {
 
                 {/* /*圖表呈現頁 */ }
                 <CTabPanel className="py-3" aria-labelledby="profile-tab-pane" itemKey={2}>
-                        <CRow>
-                            <strong style={{ fontSize: '1.2rem', borderBottom: '5px solid #d882c0',width: '14%'}}>xx2024盤查報告</strong>
-                            <CCol>
-                            <CFormSelect size="sm" className="mb-3" style={{width:'15%'}}>
-                                <option>全部表格</option>
-                                <option value="1">表1</option>
-                                <option value="2">表2</option>
-                                <option value="3">表3</option>
-                            </CFormSelect>
-                            </CCol>
-                            <div className="col-auto text-center">
-                                <CButton color="primary" type="submit" className="mb-3" style={{backgroundColor: '#CA6AAF', borderColor: '#CA6AAF', color: 'white',width:'120px',height:'50px' }}>
-                                 <CIcon icon={cilDataTransferDown} className="me-2" />
-                                下載全部
-                                </CButton>
+                    <CRow>
+                        <strong style={{ fontSize: '1.2rem', borderBottom: '5px solid #d882c0',width: '14%'}}>xx2024盤查報告</strong>
+                        <CCol>
+                        <CFormSelect size="sm" className="mb-3" style={{width:'15%'}}>
+                            <option>全部表格</option>
+                            <option value="1">表1</option>
+                            <option value="2">表2</option>
+                            <option value="3">表3</option>
+                        </CFormSelect>
+                        </CCol>
+                        <div className="col-auto text-center">
+                            <CButton color="primary" type="submit" className="mb-3" style={{backgroundColor: '#CA6AAF', borderColor: '#CA6AAF', color: 'white',width:'120px',height:'50px' }}>
+                                <CIcon icon={cilDataTransferDown} className="me-2" />
+                            下載全部
+                            </CButton>
+                        </div>
+                    </CRow>
+                    <CRow>
+                    {/* 圓餅圖 */}
+                    <CCol xs={6}>
+                        <CCard className="mb-4">
+                        <CCardHeader>碳排範疇比例 / 圓餅圖</CCardHeader>
+                        <CCardBody>
+                            <div style={{ width: '350px', height: '350px' }}>
+                            <CChartPie
+                            data={{
+                                labels: ['範疇一', '範疇二', '範疇三'],
+                                datasets: [
+                                {
+                                    data: [300, 50, 100],
+                                    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
+                                    hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
+                                },
+                                ],
+                            }}
+                            options={{
+                                responsive: true,
+                                plugins: {
+                                  legend: {
+                                    position: 'right', // 圖例位置
+                                    
+                                  },
+                                  tooltip: {
+                                    enabled: true, // 顯示提示框
+                                  },
+                                  
+                                },
+                            }}
+                            />
                             </div>
-                        </CRow>
-
-                        
+                        </CCardBody>
+                        </CCard>
+                    </CCol>
+                    {/* 環形圖 */}
+                    <CCol xs={6}>
+                        <CCard className="mb-4">
+                        <CCardHeader>碳排範疇比例 / 半圓環形圖</CCardHeader>
+                        <CCardBody>
+                        <div style={{ width: '350px', height: '350px' }}>
+                            <CChartDoughnut 
+                            data={{
+                                labels: ['範疇一', '範疇二', '範疇三'],
+                                datasets: [
+                                {
+                                    backgroundColor: ['#41B883', '#E46651', '#00D8FF'],
+                                    data: [60, 30, 10],
+                                },
+                                ],
+                            }}
+                            options={{
+                                rotation: -90,
+                                circumference: 180,
+                                cutout: "70%", // 中間空心的部分
+                                plugins: {
+                                legend: {
+                                    display: true,
+                                    position: "bottom",
+                                    labels: {
+                                    boxWidth: 15,
+                                    },
+                                },
+                                },
+                            }}
+                            />
+                        </div>
+                        </CCardBody>
+                        </CCard>
+                    </CCol> 
+                    {/* 柱狀圖 */}
+                    <CCol xs={6}>
+                        <CCard className="mb-4">
+                        <CCardHeader>碳排總量 / 柱狀圖</CCardHeader>
+                        <CCardBody>
+                        <div style={{ width: '350px', height: '350px' }}>
+                            <CChartBar
+                            data={{
+                                labels: ['範疇一', '範疇二', '範疇三'],
+                                datasets: [
+                                {
+                                    labels: ['範疇一', '範疇二', '範疇三'],
+                                    backgroundColor: ['#41B883', '#E46651', '#00D8FF'],
+                                    data: [55.3654, 38.2547, 12.6354],
+                                },
+                                ],
+                            }}
+                            labels="months"
+                            /></div>
+                        </CCardBody>
+                        </CCard>
+                    </CCol>
+                    {/* 環形圖 */}
+                    <CCol xs={6}>
+                        <CCard className="mb-4">
+                        <CCardHeader>碳排範疇比例 / 環形圖</CCardHeader>
+                        <CCardBody>
+                            <div style={{ width: '350px', height: '350px' }}>
+                            <CChartDoughnut 
+                            data={{
+                                labels: ['範疇一', '範疇二', '範疇三'],
+                                datasets: [
+                                {
+                                    backgroundColor: ['#41B883', '#E46651', '#00D8FF'],
+                                    data: [60, 30, 10],
+                                },
+                                ],
+                            }}
+                            options={{
+                                responsive: true,
+                                cutout: '70%', // 調整內圈大小（百分比），越大內圈越大
+                                plugins: {
+                                  legend: {
+                                    position: 'right', // 圖例位置
+                                    
+                                  },
+                                  tooltip: {
+                                    enabled: true, // 顯示提示框
+                                  },
+                                  datalabels: {
+                                    formatter: (value, context) => {
+                                    // 計算百分比
+                                    const total = context.chart.data.datasets[0].data.reduce((acc, val) => acc + val, 0);
+                                    const percentage = ((value / total) * 100).toFixed(1) + '%';
+                                    return percentage;
+                                    },
+                                    color: '#fff', // 字體顏色
+                                    font: {
+                                    size: 16, // 字體大小
+                                    },
+                                    anchor: 'center', // 字體位置
+                                    align: 'center',
+                                },
+                                },
+                              
+                            }}
+                            />
+                            </div>
+                        </CCardBody>
+                        </CCard>
+                    </CCol>
+                    </CRow>            
                 </CTabPanel>
             </CTabContent>
         </CTabs>
