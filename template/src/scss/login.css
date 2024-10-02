@@ -127,10 +127,12 @@ hr {
   .custominput{
     border-radius: 30px;
     background-color: #F0F0F0;
+    color: black;
     
   }
   .custominput:focus{
     background-color: #F0F0F0;
+    color: black;
   }
 
   

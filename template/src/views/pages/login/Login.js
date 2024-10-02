@@ -1,4 +1,3 @@
-import React from 'react'
 import { Link } from 'react-router-dom'
 import {
   CButton,
@@ -17,8 +16,48 @@ import {
 import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser } from '@coreui/icons'
 import '../../../scss/login.css';
+import React, { useState } from 'react';
+
 
 const Login = () => {
+  const [message, setMessage] = useState(''); // State to hold the message
+
+
+  const handleLogin = async (e) => {
+    e.preventDefault();  // Prevent the form from submitting the traditional way
+  
+    // Get the values from the input fields
+    const account = document.getElementById('account').value;
+    const password = document.getElementById('Password').value;
+  
+    try {
+      const response = await fetch('http://localhost:8000/login', {  // Update the URL to match your FastAPI route
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          account: account, 
+          password: password,
+        }),
+      });
+
+      const data = await response.json();
+
+        // Check the response status
+        if (response.ok) {
+            console.log(data);
+            window.location.href = "#/theme/home"; // Redirect to the dashboard page
+        } else {
+            setMessage("帳號或密碼錯誤"); // Use the error message from the response
+            console.log(response.status); // Log the status code for debugging
+        }
+    } catch (error) {
+        console.error('Error during login:', error);
+        setMessage("Error occurred during login process"); // Error message
+    }
+  };
+  
   return (
     // <div className="bg-body-tertiary min-vh-100 d-flex flex-row align-items-center">
     <div class="login">
@@ -52,21 +91,24 @@ const Login = () => {
                   <hr></hr>
 
                   <CRow className="mb-3">
-                  <CFormLabel htmlFor="account" className="col-sm-2 col-form-label customlabel" >使用者帳號</CFormLabel>
-                  <CCol>
-                    <CFormInput className="custominput" type="text" id="account" placeholder="請填寫您的使用者帳號" />
-                  </CCol>
-                </CRow>
-                <CRow className="mb-3">
-                  <CFormLabel htmlFor="Password" className="col-sm-2 col-form-label customlabel" >使用者密碼</CFormLabel>
-                  <CCol>
-                    <CFormInput className="custominput" type="password" id="Password" placeholder="請填寫您的密碼" />
-                  </CCol>
-                </CRow>
+                    <CFormLabel htmlFor="account" className="col-sm-2 col-form-label customlabel" >使用者帳號</CFormLabel>
+                    <CCol>
+                      <CFormInput className="custominput" type="text" id="account" placeholder="請填寫您的使用者帳號" />
+                    </CCol>
+                  </CRow>
+                  <CRow className="mb-3">
+                    <CFormLabel htmlFor="Password" className="col-sm-2 col-form-label customlabel" >使用者密碼</CFormLabel>
+                    <CCol>
+                      <CFormInput className="custominput" type="password" id="Password" placeholder="請填寫您的密碼" />
+                    </CCol>
+                    
+                  </CRow>
+                  
+                  <p>{message}</p>
 
                   <CRow>
                     <CCol>
-                      <p className="px-0" style={{color:'black'}}>
+                      <p className="px-0" style={{ color: 'black' }}>
                         尚未有帳號?
                       </p>
                     </CCol>
@@ -78,8 +120,8 @@ const Login = () => {
                       </Link>
                     </CCol>
                   </CRow>
-                  <CButton class="custom-button" className="px-4">
-                    登入
+                  <CButton className="custom-button px-4" onClick={handleLogin}>
+                  登入
                   </CButton>
 
 
