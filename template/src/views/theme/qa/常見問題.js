@@ -21,15 +21,19 @@ import {
   CTableHeaderCell,
   CTableRow,
   CListGroup,
-  CListGroupItem, CCardImage, CCardTitle, CCardText,
+  CListGroupItem, 
+  CCardImage, 
+  CCardTitle, 
+  CCardText,
 } from '@coreui/react';
-import { MultiSelect } from 'primereact/multiselect'; // Import PrimeReact MultiSelect
 import 'primereact/resources/themes/saga-blue/theme.css'; // PrimeReact CSS (如果還沒引入)
 import 'primereact/resources/primereact.min.css'; 
 import 'primeicons/primeicons.css'; 
 import '../../../scss/常見問題.css';
 import 碳盤查範疇 from 'src/assets/images/常見問題-碳盤查範疇.png'
 //import { cilArrowThickFromBottom } from '@coreui/icons';
+import CIcon from '@coreui/icons-react';
+import * as icon from '@coreui/icons';
 
 
 const FormControl = () => {
@@ -52,7 +56,7 @@ const FormControl = () => {
                     碳盤查是一種蒐集和計算溫室氣體排放數據的方法。依據《溫室氣體排放量盤查作業指引》、溫室氣體盤查議定書(GHG Protocol)以及ISO/CNS 14064-1標準執行。透過蒐集活動數據進行彙整與計算，並檢視和評估營運過程中直接或間接溫室氣體的排放量及其排放源分布對環境之影響，進而識別高排放熱點，制定相應的減排策略，以促進永續發展。
                     <br/>
                     碳足跡是指以二氧化碳當量(CO2e)計量的溫室氣體總排放量，常用於標示個人活動或產品/服務生命週期中的碳排放總量。
-                    <CTable bordered>
+                    <CTable bordered borderColor='dark'>
                         <CTableHead>
                         <CTableRow active>
                             <CTableHeaderCell scope="col"></CTableHeaderCell>
@@ -97,45 +101,49 @@ const FormControl = () => {
                     </CAccordionItem>
                     <CAccordionItem itemKey={3}>
                     <CAccordionHeader>碳盤查流程</CAccordionHeader>
-                    <CAccordionBody>
-                        <CCol sm={12}>
-                            <CCard className="mb-4 customCard" >
+                    <CAccordionBody className="text-center">
+                        <CCol sm={5} className="mx-auto">
+                            <CCard className="mb-4 customCard" style={{borderColor:'black'}}>
                                 <CCardBody >
                                 一、邊界設定
                                 </CCardBody>
                             </CCard>
                         </CCol>
-                        
-                        <CCol sm={12}>
-                            <CCard className="mb-4 customCard" >
+                        <CIcon icon={icon.cilArrowThickBottom} size="xxl"/>
+                        <CCol sm={5} className="mx-auto">
+                            <CCard className="mb-4 customCard" style={{borderColor:'black'}}>
                                 <CCardBody >
                                 二、基準年設定
                                 </CCardBody>
                             </CCard>
                         </CCol>
-                        <CCol sm={12}>
-                            <CCard className="mb-4 customCard" >
+                        <CIcon icon={icon.cilArrowThickBottom} size="xxl"/>
+                        <CCol sm={5} className="mx-auto">
+                            <CCard className="mb-4 customCard" style={{borderColor:'black'}}>
                                 <CCardBody >
                                 三、排放源鑑別
                                 </CCardBody>
                             </CCard>
                         </CCol>
-                        <CCol sm={12}>
-                            <CCard className="mb-4 customCard" >
+                        <CIcon icon={icon.cilArrowThickBottom} size="xxl"/>
+                        <CCol sm={5} className="mx-auto">
+                            <CCard className="mb-4 customCard" style={{borderColor:'black'}}>
                                 <CCardBody >
                                 四、排放量計算
                                 </CCardBody>
                             </CCard>
                         </CCol>
-                        <CCol sm={12}>
-                            <CCard className="mb-4 customCard" >
+                        <CIcon icon={icon.cilArrowThickBottom} size="xxl"/>
+                        <CCol sm={5} className="mx-auto">
+                            <CCard className="mb-4 customCard" style={{borderColor:'black'}}>
                                 <CCardBody >
                                 五、數據品質管理
                                 </CCardBody>
                             </CCard>
                         </CCol>
-                        <CCol sm={12}>
-                            <CCard className="mb-4 customCard" >
+                        <CIcon icon={icon.cilArrowThickBottom} size="xxl"/>
+                        <CCol sm={5} className="mx-auto">
+                            <CCard className="mb-4 customCard" style={{borderColor:'black'}}>
                                 <CCardBody >
                                 六、文件化與紀錄過程
                                 </CCardBody>
