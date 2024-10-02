@@ -1,16 +1,13 @@
-import React from 'react'
+import React,{useState} from 'react'
 import {
-    CRow, CCol, CCard, CCardBody, CCardHeader,CFormSelect, CTab, CTabContent, CTabList, CTabPanel, CTabs, CForm, CFormLabel, CFormInput,
+    CRow, CCol, CCard, CCardBody, CCardHeader,CFormSelect, CNav, CNavItem, CNavLink, CForm, CFormLabel, CFormInput,
     CCardSubtitle,
     CCardText,
     CCardTitle, CButton,
     CTable,
     CTableBody,
     CTableCaption,
-    CTableDataCell,
     CTableHead,
-    CTableHeaderCell,
-    CTableRow,
 } from '@coreui/react'
 import {
     CChartBar,
@@ -33,12 +30,12 @@ import {
 
 const Tabs = () => {
     const random = () => Math.round(Math.random() * 100)
-
+    const [activeTab, setActiveTab] = useState('tab1'); // 記錄當前活動的分頁
+    const  cellStyle = {border: '1px solid white',textAlign: 'center'}; // table設定
     return (
         
         <CRow>
-        <div style={{width:'100%',height:'50px', backgroundColor:'#D9D9D9',display: 'grid',alignItems: 'center',}}>
-            
+        <div style={{width:'100%',height:'50px', backgroundColor:'#D9D9D9',display: 'grid',alignItems: 'center',}}> 
             <CRow>
             <div style={{width:'250px',display: 'flex', justifyContent: 'left'}}>
             <strong style={{ fontSize: '1.0rem',display: 'flex', alignItems: 'center',padding:'5px'}}>
@@ -71,25 +68,27 @@ const Tabs = () => {
                 上傳檔案
             </CButton>
             </CRow>
-            
         </div>
+        <div style={{height:'10px'}}></div>
         <CCol xs={12}>
-            <CTabs activeItemKey={1}>
-                <CTabList variant="underline-border" className="custom-tablist">
-                    <CTab aria-controls="home-tab-pane" itemKey={1}>
-                    表格呈現
-                    </CTab>
-                    <CTab aria-controls="profile-tab-pane" itemKey={2}>
-                    圖形呈現
-                    </CTab>
-                </CTabList>
-                <CTabContent>
-
+                    <CNav variant="tabs" className="card-header-tabs">
+                        <CNavItem>
+                        <CNavLink active={activeTab === 'tab1'}
+                            onClick={() => setActiveTab('tab1')}>
+                        表格呈現
+                        </CNavLink>
+                        </CNavItem><CNavItem>
+                        <CNavLink active={activeTab === 'tab2'}
+                                    onClick={() => setActiveTab('tab2')}>
+                        圖形呈現
+                        </CNavLink>
+                        </CNavItem>
+                    </CNav>
+                <br/>
                 {/* /*表格呈現頁 */}
-                <CTabPanel className="py-3" aria-labelledby="home-tab-pane" itemKey={1}>
-                <CCardBody>
-                <CCard>
-                    <CCardHeader>
+                {activeTab === 'tab1' && (
+                    <>
+                        <div style={{width:'100%'}}>
                         <CRow verticalAlign='cnet'>
                         <strong style={{ fontSize: '1.2rem', borderBottom: '5px solid #d882c0',width: '14%'}}>xx2024盤查報告</strong>
                             <CCol>
@@ -100,174 +99,133 @@ const Tabs = () => {
                                 <option value="3">表3</option>
                             </CFormSelect>
                             </CCol>
-                            <div className="col-auto text-center">
-                                <CButton color="primary" type="submit" className="mb-3" style={{backgroundColor: '#CA6AAF', borderColor: '#CA6AAF', color: 'white',width:'120px',height:'50px' }}>
-                                 <CIcon icon={cilDataTransferDown} className="me-2" />
-                                下載全部
-                                </CButton>
-                            </div>
+                            <CButton type="submit" style={{position: 'absolute', right: '45px',display: 'flex',alignItems: 'center', backgroundColor: '#CA6AAF', borderColor: '#CA6AAF', color: 'white',width:'120px',height:'50px' }}>
+                                <CIcon icon={cilDataTransferDown} className="me-2" />
+                            下載全部
+                            </CButton>
                         </CRow>
-                    </CCardHeader>
-                    <CCardBody>
+                        </div>
+                        <br/>
                         <CCard style={{ width: '100%' }}>
                             <CCardBody>
-                                <CRow>
-                                <CCardTitle>總覽
-                                    <CButton color="primary" type="submit" className="mb-3" align="right" style={{backgroundColor: '#CA6AAF', borderColor: '#CA6AAF', color: 'white',width:'120px',height:'50px' }}>
-                                    <b><CIcon icon={cilDataTransferDown} className="me-2" /></b>
+                                <CCardTitle>
+                                 <CRow>   
+                                <div style={{width:'100%',height:'50px', backgroundColor:'#D9D9D9',display: 'grid',alignItems: 'center',}}> 
+                                <strong style={{ fontSize: '1.4rem',display: 'flex', alignItems: 'center',padding:'5px'}}>總覽</strong>
+                                    
+                                    <CButton style={{position: 'absolute', right: '30px',width:'40px',backgroundColor:'#9D6B6B',color:'white',display: 'flex',alignItems: 'center' }}>
+                                        <b><CIcon icon={cilDataTransferDown} className="me-2" /></b>
                                     </CButton>
-                                    <div className="d-grid gap-2 d-md-flex justify-content-md-end">
-                                        <CButton color="primary"><CIcon icon={cilDataTransferDown} className="me-2" /></CButton>
-                                    </div>
-                                </CCardTitle>
+                                </div>
                                 </CRow>
-                                <table border='1' style={{width: '700px'}}>
-                                    <thead>
+                                </CCardTitle>
+                                <table style={{width: '700px'}}>
+                                    <thead style={{backgroundColor:'#33CCFF',color:'white'}}>
                                     <tr>
-                                        <th scope="col" style={{width: '30%', textAlign: 'center', verticalAlign: 'middle' }}></th>
-                                        <th scope="col" style={{width: '30%',textAlign: 'center', verticalAlign: 'middle' }}>排放當量<br/>(公噸COe/年)</th>
-                                        <th scope="col" style={{width: '20%', textAlign: 'center', verticalAlign: 'middle' }}>百分比<br/>(%)</th>
-                                        <th scope="col" style={{width: '30%', textAlign: 'center', verticalAlign: 'middle' }}>碳費</th>
+                                        <th style={{ border: '1px solid white',width: '30%', textAlign: 'center', verticalAlign: 'middle' }}></th>
+                                        <th style={{ border: '1px solid white',width: '30%',height:'50px',textAlign: 'center', verticalAlign: 'middle' }}>排放當量<br/>(公噸COe/年)</th>
+                                        <th style={{ border: '1px solid white',width: '20%',height:'50px', textAlign: 'center', verticalAlign: 'middle' }}>百分比<br/>(%)</th>
+                                        <th style={{ border: '1px solid white',width: '20%',height:'50px', textAlign: 'center', verticalAlign: 'middle' }}>碳費</th>
                                     </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody style={{backgroundColor:'#CCEEFF'}}>
                                     <tr>
-                                        <td scope="row">總排放量</td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
+                                        <td style={{ border: '1px solid white'}}><b>總排放量</b></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
                                     </tr>
                                     <tr>
-                                        <td scope="row">直接排放/範疇一</td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
+                                        <td style={{ border: '1px solid white'}}><b><div><CRow><div style={{width:'120px'}}>直接排放</div><div style={{width:'80px'}}>/範疇一</div></CRow></div></b></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
                                     </tr>
                                     <tr>
-                                        <td scope="row">間接排放/範疇二</td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
+                                        <td style={{ border: '1px solid white'}}><b><div><CRow><div style={{width:'120px'}}>間接排放</div><div style={{width:'80px'}}>/範疇二</div></CRow></div></b></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
                                     </tr>
                                     <tr>
-                                        <td>其他間接排放/範疇三</td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
+                                        <td style={{ border: '1px solid white'}}><b><div><CRow><div style={{width:'120px'}}>其他間接排放</div><div style={{width:'80px'}}>/範疇三</div></CRow></div></b></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
                                     </tr>
                                     </tbody>
                                 </table>
                                 <br/>
-                                <CTable border='1'>
-                                    <CTableHead>
-                                    <CTableRow>
-                                        <CTableHeaderCell scope="col" style={{ width: '30%', textAlign: 'center', verticalAlign: 'middle' }}></CTableHeaderCell>
-                                        <CTableHeaderCell scope="col" style={{ width: '30%', textAlign: 'center', verticalAlign: 'middle' }}>排放當量<br/>(公噸COe/年)</CTableHeaderCell>
-                                        <CTableHeaderCell scope="col" style={{ width: '20%', textAlign: 'center', verticalAlign: 'middle' }}>百分比<br/>(%)</CTableHeaderCell>
-                                        <CTableHeaderCell scope="col" style={{ width: '30%', textAlign: 'center', verticalAlign: 'middle' }}>碳費</CTableHeaderCell>
-                                    </CTableRow>
-                                    </CTableHead>
-                                    <CTableBody>
-                                    <CTableRow>
-                                        <CTableDataCell>總排放量</CTableDataCell>
-                                        <CTableDataCell>Otto</CTableDataCell>
-                                        <CTableDataCell>@mdo</CTableDataCell>
-                                        <CTableDataCell>@mdo</CTableDataCell>
-                                    </CTableRow>
-                                    <CTableRow>
-                                        <CTableDataCell>直接排放/範疇一</CTableDataCell>
-                                        <CTableDataCell>Otto</CTableDataCell>
-                                        <CTableDataCell>@mdo</CTableDataCell>
-                                        <CTableDataCell>@mdo</CTableDataCell>
-                                    </CTableRow>
-                                    <CTableRow>
-                                        <CTableHeaderCell>間接排放/範疇二</CTableHeaderCell>
-                                        <CTableDataCell>Jacob</CTableDataCell>
-                                        <CTableDataCell>Thornton</CTableDataCell>
-                                        <CTableDataCell>@fat</CTableDataCell>
-                                    </CTableRow>
-                                    <CTableRow>
-                                        <CTableDataCell>其他間接排放/範疇三</CTableDataCell>
-                                        <CTableDataCell>@twitter</CTableDataCell>
-                                        <CTableDataCell>@mdo</CTableDataCell>
-                                        <CTableDataCell>@mdo</CTableDataCell>
-                                    </CTableRow>
-                                    </CTableBody>
-                                    </CTable>
-
-                                <CCardSubtitle className="mb-2 text-body-secondary">Card subtitle</CCardSubtitle>
-                                <CCardText>
-                                    Some quick example text to build on the card title and make up the bulk of the
-                                    card&#39;s content.
-                                </CCardText>
-                            </CCardBody>
+                        </CCardBody>
                         </CCard>
                         <br></br>
                         <CCard style={{ width: '100%' }}>
                             <CCardBody>
                                 <CRow>
-                                <CCardTitle>直接排放 / 範疇一
-                                    <CButton color="primary" type="submit" className="mb-3" align="right" style={{backgroundColor: '#CA6AAF', borderColor: '#CA6AAF', color: 'white',width:'120px',height:'50px' }}>
-                                    <b><CIcon icon={cilDataTransferDown} className="me-2" /></b>
+                                <CCardTitle>
+                                 <CRow>   
+                                <div style={{width:'100%',height:'50px', backgroundColor:'#D9D9D9',display: 'grid',alignItems: 'center',}}> 
+                                <strong style={{ fontSize: '1.4rem',display: 'flex', alignItems: 'center',padding:'5px'}}>直接排放 / 範疇二</strong>
+                                    <CButton style={{position: 'absolute', right: '30px',width:'40px',backgroundColor:'#9D6B6B',color:'white',display: 'flex',alignItems: 'center' }}>
+                                        <b><CIcon icon={cilDataTransferDown} className="me-2" /></b>
                                     </CButton>
-                                    <div className="d-grid gap-2 d-md-flex justify-content-md-end">
-                                        <CButton color="primary"><CIcon icon={cilDataTransferDown} className="me-2" /></CButton>
-                                    </div>
+                                </div>
+                                </CRow>
                                 </CCardTitle>
                                 </CRow>
-                                <CTable border='1'>
-                                    <CTableHead>
-                                    <CTableRow>
-                                        <CTableHeaderCell scope="col" style={{ width: '10%', textAlign: 'center', verticalAlign: 'middle' }}></CTableHeaderCell>
-                                        <CTableHeaderCell scope="col" style={{ width: '30%', textAlign: 'center', verticalAlign: 'middle' }}>設備</CTableHeaderCell>
-                                        <CTableHeaderCell scope="col" style={{ width: '20%', textAlign: 'center', verticalAlign: 'middle' }}>排放當量<br/>(公噸COe/年)</CTableHeaderCell>
-                                        <CTableHeaderCell scope="col" style={{ width: '20%', textAlign: 'center', verticalAlign: 'middle' }}>百分比<br/>(%)</CTableHeaderCell>
-                                        <CTableHeaderCell scope="col" style={{ width: '20%', textAlign: 'center', verticalAlign: 'middle' }}>碳費</CTableHeaderCell>
-                                    </CTableRow>
-                                    </CTableHead>
-                                    <CTableBody>
-                                    <CTableRow>
-                                        <CTableHeaderCell rowSpan={2} style={{ verticalAlign: 'middle' }}>固定排放源</CTableHeaderCell>
-                                        <CTableDataCell>Mark</CTableDataCell>
-                                        <CTableDataCell>Otto</CTableDataCell>
-                                        <CTableDataCell>@mdo</CTableDataCell>
-                                        <CTableDataCell>@mdo</CTableDataCell>
-                                    </CTableRow>
-                                    <CTableRow>
-                                        <CTableDataCell>Mark</CTableDataCell>
-                                        <CTableDataCell>Otto</CTableDataCell>
-                                        <CTableDataCell>@mdo</CTableDataCell>
-                                        <CTableDataCell>@mdo</CTableDataCell>
-                                    </CTableRow>
-                                    <CTableRow>
-                                        <CTableHeaderCell>移動排放</CTableHeaderCell>
-                                        <CTableDataCell>Jacob</CTableDataCell>
-                                        <CTableDataCell>Thornton</CTableDataCell>
-                                        <CTableDataCell>@fat</CTableDataCell>
-                                        <CTableDataCell>@mdo</CTableDataCell>
-                                    </CTableRow>
-                                    <CTableRow>
-                                        <CTableHeaderCell rowSpan={3}>逸散排放</CTableHeaderCell>
-                                        <CTableDataCell>Larry the Bird</CTableDataCell>
-                                        <CTableDataCell>@twitter</CTableDataCell>
-                                        <CTableDataCell>@mdo</CTableDataCell>
-                                        <CTableDataCell>@mdo</CTableDataCell>
-                                    </CTableRow>
-                                    <CTableRow>
-                                        <CTableDataCell>Larry the Bird</CTableDataCell>
-                                        <CTableDataCell>@twitter</CTableDataCell>
-                                        <CTableDataCell>@mdo</CTableDataCell>
-                                        <CTableDataCell>@mdo</CTableDataCell>
-                                    </CTableRow>
-                                    <CTableRow>
-                                        <CTableDataCell>Larry the Bird</CTableDataCell>
-                                        <CTableDataCell>@twitter</CTableDataCell>
-                                        <CTableDataCell>@mdo</CTableDataCell>
-                                        <CTableDataCell>@mdo</CTableDataCell>
-                                    </CTableRow>
-                                    </CTableBody>
-                                    </CTable>
-
+                                <table style={{width: '700px'}}>
+                                    <thead style={{backgroundColor:'#33CCFF',color:'white'}}>
+                                    <tr>
+                                    <th scope="col" style={{ width: '15%', textAlign: 'center', verticalAlign: 'middle' }}></th>
+                                        <th scope="col" style={{ width: '30%', textAlign: 'center', verticalAlign: 'middle' }}>設備</th>
+                                        <th scope="col" style={{ width: '20%', textAlign: 'center', verticalAlign: 'middle' }}>排放當量<br/>(公噸COe/年)</th>
+                                        <th scope="col" style={{ width: '15%', textAlign: 'center', verticalAlign: 'middle' }}>百分比<br/>(%)</th>
+                                        <th scope="col" style={{ width: '20%', textAlign: 'center', verticalAlign: 'middle' }}>碳費</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody style={{backgroundColor:'#CCEEFF'}}>
+                                    <tr>
+                                        <td style={cellStyle} rowSpan={2}><b>固定排放</b></td>
+                                        <td style={cellStyle}>Mark</td>
+                                        <td style={cellStyle}>Otto</td>
+                                        <td style={cellStyle}>@mdo</td>
+                                        <td style={cellStyle}>@mdo</td>
+                                    </tr>
+                                    <tr>
+                                        <td style={cellStyle}>Mark</td>
+                                        <td style={cellStyle}>Otto</td>
+                                        <td style={cellStyle}>@mdo</td>
+                                        <td style={cellStyle}>@mdo</td>
+                                    </tr>
+                                    <tr>
+                                        <td style={cellStyle}><b>移動排放</b></td>
+                                        <td style={cellStyle}>Jacob</td>
+                                        <td style={cellStyle}>Thornton</td>
+                                        <td style={cellStyle}>@fat</td>
+                                        <td style={cellStyle}>@mdo</td>
+                                    </tr>
+                                    <tr>
+                                        <td style={cellStyle} rowSpan={3}><b>逸散排放</b></td>
+                                        <td style={cellStyle}>Larry the Bird</td>
+                                        <td style={cellStyle}>@twitter</td>
+                                        <td style={cellStyle}>@mdo</td>
+                                        <td style={cellStyle}>@mdo</td>
+                                    </tr>
+                                    <tr>
+                                        <td style={cellStyle}>Larry the Bird</td>
+                                        <td style={cellStyle}>@twitter</td>
+                                        <td style={cellStyle}>@mdo</td>
+                                        <td style={cellStyle}>@mdo</td>
+                                    </tr>
+                                    <tr>
+                                        <td style={cellStyle}>Larry the Bird</td>
+                                        <td style={cellStyle}>@twitter</td>
+                                        <td style={cellStyle}>@mdo</td>
+                                        <td style={cellStyle}>@mdo</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <br/>
                                 <CCardSubtitle className="mb-2 text-body-secondary">Card subtitle</CCardSubtitle>
                                 <CCardText>
                                     Some quick example text to build on the card title and make up the bulk of the
@@ -275,31 +233,33 @@ const Tabs = () => {
                                 </CCardText>
                             </CCardBody>
                         </CCard>
-                        <br></br>
-                    </CCardBody>
-                </CCard>
-                </CCardBody>
-                </CTabPanel>
+                    <br></br>
+                </>
+                )}
 
                 {/* /*圖表呈現頁 */ }
-                <CTabPanel className="py-3" aria-labelledby="profile-tab-pane" itemKey={2}>
+                {activeTab === 'tab2' && (
+                    <>
                     <CRow>
+                    <div style={{width:'100%'}}>
+                        <CRow verticalAlign='cnet'>
                         <strong style={{ fontSize: '1.2rem', borderBottom: '5px solid #d882c0',width: '14%'}}>xx2024盤查報告</strong>
-                        <CCol>
-                        <CFormSelect size="sm" className="mb-3" style={{width:'15%'}}>
-                            <option>全部表格</option>
-                            <option value="1">表1</option>
-                            <option value="2">表2</option>
-                            <option value="3">表3</option>
-                        </CFormSelect>
-                        </CCol>
-                        <div className="col-auto text-center">
-                            <CButton color="primary" type="submit" className="mb-3" style={{backgroundColor: '#CA6AAF', borderColor: '#CA6AAF', color: 'white',width:'120px',height:'50px' }}>
+                            <CCol>
+                            <CFormSelect size="sm" className="mb-3" style={{width:'15%'}}>
+                                <option>全部表格</option>
+                                <option value="1">表1</option>
+                                <option value="2">表2</option>
+                                <option value="3">表3</option>
+                            </CFormSelect>
+                            </CCol>
+                            <CButton type="submit" style={{position: 'absolute', right: '45px',display: 'flex',alignItems: 'center', backgroundColor: '#CA6AAF', borderColor: '#CA6AAF', color: 'white',width:'120px',height:'50px' }}>
                                 <CIcon icon={cilDataTransferDown} className="me-2" />
-                                下載全部
+                            下載全部
                             </CButton>
-                        </div>
-                    </CRow>
+                        </CRow>
+                    </div>
+                    
+                    </CRow> <br/>  
                     <CRow>
                     {/* 圓餅圖 */}
                     <CCol xs={6}>
@@ -442,10 +402,9 @@ const Tabs = () => {
                         </CCardBody>
                         </CCard>
                     </CCol>
-                    </CRow>            
-                </CTabPanel>
-            </CTabContent>
-        </CTabs>
+                    </CRow> 
+                    </>           
+                )}
       </CCol>
     </CRow>
     )
