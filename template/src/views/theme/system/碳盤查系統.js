@@ -57,7 +57,7 @@ const Tabs = () => {
                 <div className="systemCardBody">
                     <CForm>
                         <CRow className="mb-3">
-                            <CFormLabel htmlFor="projectname" className="col-sm-2 col-form-label systemlabel" >使用者帳號</CFormLabel>
+                            <CFormLabel htmlFor="projectname" className="col-sm-2 col-form-label systemlabel" >計畫名稱</CFormLabel>
                             <CCol>
                                 <CFormInput className="systeminput" type="text" id="projectname" />
                             </CCol>
