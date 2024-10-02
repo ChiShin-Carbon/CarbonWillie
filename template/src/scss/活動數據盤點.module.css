@@ -99,7 +99,16 @@
     table-layout: auto;
     min-width:1200px;
 }
-
+.activityTableLong {
+    text-align: center;
+    table-layout: auto;
+    min-width:1800px;
+}
+.activityTableShort {
+    text-align: center;
+    table-layout: auto;
+    min-width:800px;
+}
 .activityTableHead th {
     background-color: #cecece;
     color: #525151;
