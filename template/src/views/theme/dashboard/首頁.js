@@ -32,7 +32,6 @@ import { MultiSelect } from 'primereact/multiselect'; // Import PrimeReact Multi
 import 'primereact/resources/themes/saga-blue/theme.css'; // PrimeReact CSS (如果還沒引入)
 import 'primereact/resources/primereact.min.css'; 
 import 'primeicons/primeicons.css'; 
-import { InputNumber } from 'primereact/inputnumber';
 
 
 const Charts = () => {
@@ -48,9 +47,6 @@ const Charts = () => {
         { name: '2020', code: 'yy2020' }
     ];
 
-    //年份選擇(+-)
-    const [value3, setValue3] = useState(2024);
-
     return (
         <CRow>
             <CAlert color="dark" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -61,21 +57,7 @@ const Charts = () => {
             {/*碳排分析*/}
             <div className="customCardHeader" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <h5><strong>碳排放分析</strong></h5>
-                <InputNumber 
-                    inputId="minmax-buttons" 
-                    value={value3} 
-                    onValueChange={(e) => setValue3(e.value)}
-                    useGrouping={false}  
-                    showButtons 
-                    min={2000} 
-                    max={2050} 
-                    style={{ 
-                    width: '20%', 
-                    height: '38px',  // 調整高度
-                    fontSize: '0.875rem' // 調整字體大小
-                    }}
-                />
-                
+                <CFormInput type="number" min='2020' defaultValue='2024' style={{width:'20%',height:'38px',fontSize:'0.875rem'}} required />
             </div>
 
             <div><br /></div>
@@ -490,12 +472,12 @@ const Charts = () => {
                                             </div>
                                             <CChartBar
                                             data={{
-                                                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+                                                labels: ['1', '2', '3', '4'],
                                                 datasets: [
                                                 {
                                                     label: 'GitHub Commits',
-                                                    backgroundColor: '#f87979',
-                                                    data: [40, 20, 12, 39, 10, 40, 39, 80, 40],
+                                                    backgroundColor: ['#FDFF9A','#E78080','#A4A3DE','#83EDD3'],
+                                                    data: [80, 50, 12, 39],
                                                 },
                                                 ],
                                             }}
@@ -566,11 +548,25 @@ const Charts = () => {
                                                     labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
                                                     datasets: [
                                                     {
-                                                        label: 'GitHub Commits',
-                                                        backgroundColor: '#f87979',
+                                                        label: 'Dataset Label', // 單一標籤而不是陣列
+                                                        backgroundColor: ['#EB3737', '#948AD3', '#EBCCD9', '#37EB7F', '#FFF48F', '#FF8833', '#931B4E'],
                                                         data: [40, 20, 12, 39, 10, 40, 39, 80, 40],
                                                     },
                                                     ],
+                                                }}
+                                                options={{
+                                                    scales: {
+                                                    xAxes: [
+                                                        {
+                                                        ticks: {
+                                                            beginAtZero: true,
+                                                            callback: function (value, index, values) {
+                                                            return value; // 保持數字水平顯示
+                                                            },
+                                                        },
+                                                        },
+                                                    ],
+                                                    },
                                                 }}
                                                 labels="months"
                                             />
