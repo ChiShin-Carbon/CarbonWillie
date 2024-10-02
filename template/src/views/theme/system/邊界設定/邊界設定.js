@@ -109,14 +109,14 @@ const Tabs = () => {
                 </CModalHeader>
                 <CModalBody>
                     <CForm >
-                        <CFormLabel htmlFor="sitename" className="col-sm-2 col-form-label systemlabel" >場域名稱</CFormLabel>
-                        <CFormInput className="systeminput" type="text" id="sitename" />
+                        <CFormLabel htmlFor="sitename" className={`col-sm-2 col-form-label ${styles.addlabel}`} >場域名稱</CFormLabel>
+                        <CFormInput className={styles.addinput} type="text" id="sitename" />
 
-                        <CFormLabel htmlFor="site" className="col-sm-2 col-form-label systemlabel" >場域地址</CFormLabel>
-                        <CFormInput className="systeminput" type="text" id="site" />
+                        <CFormLabel htmlFor="site" className={`col-sm-2 col-form-label ${styles.addlabel}`} >場域地址</CFormLabel>
+                        <CFormInput className={styles.addinput} type="text" id="site" />
 
-                        <CFormLabel htmlFor="siteexplain" className="col-sm-2 col-form-label systemlabel" >備註</CFormLabel>
-                        <CFormTextarea className="systeminput" type="text" id="siteexplain" rows={3} />
+                        <CFormLabel htmlFor="siteexplain" className={`col-sm-2 col-form-label ${styles.addlabel}`} >備註</CFormLabel>
+                        <CFormTextarea className={styles.addinput} type="text" id="siteexplain" rows={3} />
 
                         <br />
 
