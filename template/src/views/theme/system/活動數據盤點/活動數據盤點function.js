@@ -92,7 +92,6 @@ export const FunctionTwo = () => {
     );
 };
 
-
 export const FunctionThree = () => {
     const [isEditModalVisible, setEditModalVisible] = useState(false);
     const currentFunction = 'three'; // 定義 currentFunction
@@ -134,7 +133,6 @@ export const FunctionThree = () => {
         </div>
     );
 };
-
 
 export const FunctionFour = () => {
     const [isEditModalVisible, setEditModalVisible] = useState(false);
@@ -196,7 +194,7 @@ export const FunctionFive = () => {
 
     return (
         <div>
-            <CTable hover className={styles.activityTable1}>
+            <CTable hover className={styles.activityTableShort}>
                 <CTableHead className={styles.activityTableHead}>
                     <tr>
                         <th>月份</th>
@@ -408,7 +406,7 @@ export const FunctionTen = () => {
 
     return (
         <div>
-            <CTable hover className={styles.activityTable1}>
+            <CTable hover className={styles.activityTableShort}>
                 <CTableHead className={styles.activityTableHead}>
                     <tr>
                         <th>發票/收據日期</th>

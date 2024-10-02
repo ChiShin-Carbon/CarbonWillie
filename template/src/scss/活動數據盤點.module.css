@@ -188,7 +188,7 @@
 .addlabel {
     color: #625F5F;
     font-weight: bold;
-    width: 160px
+    width: 170px
 }
 
 .addmodal {
@@ -308,4 +308,9 @@
   
   .activityCardBody::-webkit-scrollbar-thumb:hover {
     background-color: #555; /* 滑鼠懸停時的滑塊顏色 */
+  }
+
+  .addlabel .Note{
+    color:rgb(255, 0, 0);
+    font-size:13px;
   }
