@@ -21,9 +21,11 @@ import {
     CChartRadar,
   } from '@coreui/react-chartjs'
 import { DocsCallout } from 'src/components'
+import { DocsExample } from 'src/components'
 import CIcon from '@coreui/icons-react'
 import {
      cilDataTransferDown,
+     cilDataTransferUp
  } from '@coreui/icons'
 // import { freeSet } from '@coreui/icons'
 // import { getIconsView } from '../brands/Brands.js'
@@ -33,7 +35,44 @@ const Tabs = () => {
     const random = () => Math.round(Math.random() * 100)
 
     return (
+        
         <CRow>
+        <div style={{width:'100%',height:'50px', backgroundColor:'#D9D9D9',display: 'grid',alignItems: 'center',}}>
+            
+            <CRow>
+            <div style={{width:'250px',display: 'flex', justifyContent: 'left'}}>
+            <strong style={{ fontSize: '1.0rem',display: 'flex', alignItems: 'center',padding:'5px'}}>
+                選擇年分
+            </strong>
+                <CCol style={{justifyContent: 'left', alignItems: 'center',padding:'0'}}>
+                <CFormSelect style={{width:'120px'}}>
+                    <option>2025</option>
+                    <option value="1">2024</option>
+                    <option value="2">2023</option>
+                    <option value="3">2022</option>
+                </CFormSelect>
+                </CCol>
+            </div>
+            <div style={{width:'300px',display: 'flex', justifyContent: 'left'}}>
+            <strong style={{ fontSize: '1.0rem',display: 'flex', alignItems: 'center',padding:'5px'}}>
+                選擇計畫
+            </strong>
+                <CCol style={{justifyContent: 'left', alignItems: 'center',padding:'0'}}>
+                <CFormSelect style={{width:'180px'}}>
+                    <option>xx2025盤查報告</option>
+                    <option value="1">xx2024盤查報告</option>
+                    <option value="2">xx2023盤查報告</option>
+                    <option value="3">xx2022盤查報告</option>
+                </CFormSelect>
+                </CCol>
+            </div>
+            <CButton style={{position: 'absolute', right: '45px',width:'115px',backgroundColor:'#9D6B6B',color:'white',display: 'flex',alignItems: 'center' }} shape="rounded-pill">
+                <CIcon style={{ display: 'flex'}} icon={cilDataTransferUp} className="me-2" />
+                上傳檔案
+            </CButton>
+            </CRow>
+            
+        </div>
         <CCol xs={12}>
             <CTabs activeItemKey={1}>
                 <CTabList variant="underline-border" className="custom-tablist">
@@ -51,7 +90,7 @@ const Tabs = () => {
                 <CCardBody>
                 <CCard>
                     <CCardHeader>
-                        <CRow>
+                        <CRow verticalAlign='cnet'>
                         <strong style={{ fontSize: '1.2rem', borderBottom: '5px solid #d882c0',width: '14%'}}>xx2024盤查報告</strong>
                             <CCol>
                             <CFormSelect size="sm" className="mb-3" style={{width:'15%'}}>
@@ -257,7 +296,7 @@ const Tabs = () => {
                         <div className="col-auto text-center">
                             <CButton color="primary" type="submit" className="mb-3" style={{backgroundColor: '#CA6AAF', borderColor: '#CA6AAF', color: 'white',width:'120px',height:'50px' }}>
                                 <CIcon icon={cilDataTransferDown} className="me-2" />
-                            下載全部
+                                下載全部
                             </CButton>
                         </div>
                     </CRow>
