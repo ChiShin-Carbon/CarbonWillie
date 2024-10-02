@@ -1,0 +1,30 @@
+.list-group-explanation {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    width:500px ;
+  }
+.list-group-title{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color:  #CA6AAF;
+    color:white;
+    width: 200px;
+}
+.list-group-example {
+    background-color: #fff697;
+    color: black;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 200px;
+    
+}
+.table-background{
+    background-color: rgb(230, 230, 230)  !important;
+}
+  
