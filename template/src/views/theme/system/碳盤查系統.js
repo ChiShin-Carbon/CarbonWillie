@@ -3,14 +3,15 @@ import { useState } from 'react';
 
 
 import {
-    CRow, CCol, CCard, CCardBody, CCardHeader, CFormSelect, CTab, CTabContent, CTabList, CTabPanel, CTabs, CForm, CFormLabel, CFormInput,CFormTextarea,
+    CRow, CCol, CCard, CCardBody, CCardHeader, CFormSelect, CTab, CTabContent, CTabList, CTabPanel, CTabs, CForm, CFormLabel, CFormInput, CFormTextarea,
     CCardSubtitle, CCardText, CCardTitle, CButton,
-    CTable, CTableBody, CTableCaption, CTableDataCell, CTableHead, CTableHeaderCell, CTableRow, 
+    CTable, CTableBody, CTableCaption, CTableDataCell, CTableHead, CTableHeaderCell, CTableRow,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilDataTransferDown } from '@coreui/icons'
 
 import '../../../scss/碳盤查系統.css'
+import styles from '../../../scss/活動數據盤點.module.css'
 import { Link } from 'react-router-dom'
 
 
@@ -29,19 +30,27 @@ const Tabs = () => {
         <main>
             <CTabs activeItemKey={1}>
                 <CTabList variant="underline-border" className="system-tablist">
-                    <Link to="." className="system-tablist-link"><CTab aria-controls="tab1" itemKey={1} className="system-tablist-choose">
-                        資訊填寫
-                    </CTab></Link>
-                    <Link to="./邊界設定" className="system-tablist-link"><CTab aria-controls="tab2" itemKey={2} className="system-tablist-choose">
-                        邊界設定
-                    </CTab></Link>
-                    <Link to="./活動數據分配" className="system-tablist-link"><CTab aria-controls="tab3" itemKey={3} className="system-tablist-choose">
-                        活動數據分配
-                    </CTab></Link>
-                    <Link to="./活動數據盤點" className="system-tablist-link"><CTab aria-controls="tab3" itemKey={4} className="system-tablist-choose">
-                        活動數據盤點
-                    </CTab></Link>
+                    <div className={styles.tabsContainer}>
+                        <div className={styles.tabsLeft}>
+                            <Link to="." className="system-tablist-link"><CTab aria-controls="tab1" itemKey={1} className="system-tablist-choose">
+                                資訊填寫
+                            </CTab></Link>
+                            <Link to="./邊界設定" className="system-tablist-link"><CTab aria-controls="tab2" itemKey={2} className="system-tablist-choose">
+                                邊界設定
+                            </CTab></Link>
+                            <Link to="./活動數據分配" className="system-tablist-link"><CTab aria-controls="tab3" itemKey={3} className="system-tablist-choose">
+                                活動數據分配
+                            </CTab></Link>
+                            <Link to="./活動數據盤點" className="system-tablist-link"><CTab aria-controls="tab3" itemKey={4} className="system-tablist-choose">
+                                活動數據盤點
+                            </CTab></Link>
+                        </div>
+                        <div className={styles.buttonRight}>
+                            <button>盤點完成</button>
+                        </div>
+                    </div>
                 </CTabList>
+
 
             </CTabs>
 

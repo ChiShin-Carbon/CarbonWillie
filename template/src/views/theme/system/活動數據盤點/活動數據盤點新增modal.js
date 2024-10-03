@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
     CModal, CModalHeader, CModalBody, CModalFooter, CModalTitle, CButton, CFormLabel, CFormInput, CFormTextarea, CRow, CCol, CCard, CFormSelect, CTab, CTabList, CTabs,
     CTable, CTableBody, CTableHead, CFormCheck, CCollapse
-    , CForm
+    , CForm,CCardBody,
 } from '@coreui/react';
 
 import styles from '../../../../scss/活動數據盤點.module.css'
@@ -359,7 +359,7 @@ const FunctionForms = ({ currentFunction }) => {
                 </div>
             );
         case 'six':
-
+            const [visible, setVisible] = useState(false)
             return (
                 <div className={styles.addmodal}>
 
@@ -425,11 +425,20 @@ const FunctionForms = ({ currentFunction }) => {
                         </CCol>
                     </CRow>
                     <CRow className="mb-3">
-                        <CFormLabel htmlFor="percent" className={`col-sm-2 col-form-label ${styles.addlabel}`} >逸散率</CFormLabel>
+                        <CFormLabel htmlFor="percent" className={`col-sm-2 col-form-label ${styles.addlabel}`}>
+                            逸散率<br/><span className={styles.Note2} onClick={() => setVisible(!visible)}>逸散率(%)建議表格</span></CFormLabel>
                         <CCol>
                             <CFormInput className={styles.addinput} type="number" min='0' id="percent" required />
                         </CCol>
+                        <CCollapse visible={visible}>
+                        <CCard className="mt-3">
+                            <CCardBody>
+                               <img src='/src/assets/images/逸散率建議表格.png'/>
+                            </CCardBody>
+                        </CCard>
+                    </CCollapse>
                     </CRow>
+                   
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="explain" className={`col-sm-2 col-form-label ${styles.addlabel}`} >備註</CFormLabel>
                         <CCol>
@@ -445,6 +454,7 @@ const FunctionForms = ({ currentFunction }) => {
                     </CRow>
                     <br />
                     <div style={{ textAlign: 'center' }}>*為必填欄位</div>
+                   
 
 
                 </div>
