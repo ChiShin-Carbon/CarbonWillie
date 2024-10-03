@@ -3,21 +3,36 @@ import connect
 
 router = APIRouter()
 
-@router.get("/test/")
+@router.get("/users")
 def read_users():
     conn = connect.connect()
     if conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT ID, name FROM test")  # Replace with your actual table query
+        cursor.execute("SELECT user_id, business_id, username, email, telephone, phone, department, position, account, password FROM users")  # Query the users1 table
         users = cursor.fetchall()
         conn.close()
 
-        # Convert the result into a list of dictionaries
-        result = [{"ID": row[0], "name": row[1]} for row in users]
-        return result
+        # Convert rows into a list of dictionaries
+        user_list = []
+        for row in users:
+            user_dict = {
+                "user_id": row[0],
+                "business_id": row[1],
+                "username": row[2],
+                "email": row[3],
+                "telephone": row[4],
+                "phone": row[5],
+                "department": row[6],
+                "position": row[7],
+                "account": row[8],
+                "password": row[9]
+            }
+            user_list.append(user_dict)
+
+        return {"users": user_list}
+
     else:
         return {"error": "Could not connect to the database."}
-
 @router.post("/create/")
 def create_user(name: str):
     conn = connect.connect()
