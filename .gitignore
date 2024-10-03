@@ -27,3 +27,4 @@ yarn-error.log*
 env
 .env
 __pycache__
+package.json
