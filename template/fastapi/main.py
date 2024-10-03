@@ -11,6 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from route import router
 from login import login
 from userinfo import userinfo
+from edituserinfo import edituserinfo
 
 
 app = FastAPI()
@@ -40,3 +41,4 @@ def read_root():
 app.include_router(router)
 app.include_router(login)
 app.include_router(userinfo)
+app.include_router(edituserinfo)
