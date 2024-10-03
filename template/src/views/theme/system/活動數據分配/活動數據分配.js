@@ -94,6 +94,10 @@ const Tabs = () => {
                                                     <span>檢驗部門:</span>
                                                     <span>XXX</span>
                                                 </div>
+                                                <div className={styles.departmentItem}>
+                                                    <span>業務部門:</span>
+                                                    <span>XXX</span>
+                                                </div>
                                             </div>
 
                                             <div style={{ textAlign: 'right' }}>
@@ -143,6 +147,10 @@ const Tabs = () => {
                                                 </div>
                                                 <div className={styles.departmentItem}>
                                                     <span>檢驗部門:</span>
+                                                    <span>XXX</span>
+                                                </div>
+                                                <div className={styles.departmentItem}>
+                                                    <span>業務部門:</span>
                                                     <span>XXX</span>
                                                 </div>
                                             </div>
@@ -246,6 +254,18 @@ const Tabs = () => {
                         </CRow>
                         <CRow className="mb-3">
                             <CFormLabel htmlFor="sitename" className={`col-sm-2 col-form-label ${styles.addlabel}`} >檢驗部門</CFormLabel>
+                            <CCol>
+                                <CFormSelect aria-label="Default select example" className={styles.addinput}>
+                                    <option value="1">無</option>
+                                    <option value="2">...</option>
+                                    <option value="3">...</option>
+                                    <option value="4">...</option>
+                                    <option value="5">...</option>
+                                </CFormSelect>
+                            </CCol>
+                        </CRow>
+                        <CRow className="mb-3">
+                            <CFormLabel htmlFor="sitename" className={`col-sm-2 col-form-label ${styles.addlabel}`} >業務部門</CFormLabel>
                             <CCol>
                                 <CFormSelect aria-label="Default select example" className={styles.addinput}>
                                     <option value="1">無</option>
