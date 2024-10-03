@@ -1,0 +1,43 @@
+from fastapi import APIRouter, HTTPException, status
+import connect
+from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
+
+
+userinfo = APIRouter()
+
+class User(BaseModel):
+    user_id: int
+
+@userinfo.post("/userinfo")
+def read_user_credentials(user: User):
+    conn = connect.connect()  # Establish connection using your custom connect function
+    if conn:
+        cursor = conn.cursor()
+        try:
+            # Secure SQL query using parameterized query to prevent SQL injection
+            query = "SELECT account, username, email, telephone, phone, department, position FROM users WHERE user_id = ?"
+            cursor.execute(query, (user.user_id,))  # Use the user's input in the query, tuple with trailing comma for a single item
+            user_record = cursor.fetchone()
+            conn.close()
+
+            if user_record:
+                # Convert the result into a dictionary
+                result = {
+                    "account": user_record[0],
+                    "username": user_record[1],
+                    "email": user_record[2],
+                    "telephone": user_record[3],
+                    "phone": user_record[4],
+                    "department": user_record[5],
+                    "position": user_record[6]
+                }
+                return {"user": result}  
+            else:
+                # Raise a 404 error if user not found
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+        
+        except Exception as e:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error reading user credentials: {e}")
+    else:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Could not connect to the database.")
