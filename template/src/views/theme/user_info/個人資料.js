@@ -16,6 +16,8 @@ import {
 } from '@coreui/react'
 import '../../../scss/個人&企業資料.css';
 import { useEffect, useState } from 'react';
+import { Helmet } from 'react-helmet-async';
+
 
 
 const Tabs = () => {
@@ -30,6 +32,8 @@ const Tabs = () => {
     const [department, setDepartment] = useState("");
     const [positionID, setPositionID] = useState("");
     const [position, setPosition] = useState("");
+    const [hash, setHash] = useState("");
+    const [hex, setHex] = useState(false);
 
 
     const getuserinfo = async () => {
@@ -63,7 +67,7 @@ const Tabs = () => {
         }
     }
 
-    const setdept = (e) => {
+    const setdept = () => {
         if (departmentID === 1) {
             setDepartment('管理部門');
         } else if (departmentID === 2) {
@@ -75,7 +79,7 @@ const Tabs = () => {
         }
     }
 
-    const setposition = (e) => {
+    const setposition = () => {
 
         if (positionID === 1) {
             setPosition('主管');
@@ -126,6 +130,57 @@ const Tabs = () => {
     };
 
 
+    const isPasswordCorrect = async (password) => {
+        try {
+            const response = await fetch('http://localhost:8000/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    user_id: window.sessionStorage.getItem('user_id'),
+                    password: password,
+                }),
+            });
+    
+            if (response.ok) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            return false;  // Return false if there’s an error
+        }
+    };
+    
+
+
+
+    const handle_accsubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const user_id = window.sessionStorage.getItem('user_id');
+            const account = document.getElementById('account').value || document.getElementById('account').placeholder;
+            const password = document.getElementById('Password').value || document.getElementById('Password').placeholder;
+
+
+
+            const response = await fetch('http://localhost:8000/editaccount', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    user_id: user_id,
+                    account: account,
+                }),
+            });
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+            
 
 
     useEffect(() => {
@@ -146,6 +201,8 @@ const Tabs = () => {
 
 
     return (
+        
+
         <CRow>
             <CCol xs={12}>
                 <CTabs activeItemKey={1}>
@@ -299,8 +356,44 @@ const Tabs = () => {
                             <CCard className="mb-4 customCard">
                                 <CCardBody className="customCard2">
                                     <div className="customCardHeader">
-                                        <strong className="customtitlebottom">修改密碼</strong>
+                                        <strong className="customtitlebottom">修改帳號密碼</strong>
                                     </div>
+
+
+                                    <div className="customCardBody">
+                                        <CForm>
+                                            <CRow className="mb-3">
+                                                <CCol sm={3}></CCol>
+                                                <CCol sm={6}>
+                                                    <div className="mb-3">
+                                                        <CFormLabel htmlFor="account"><strong>修改帳號</strong></CFormLabel>
+                                                        <CFormInput type="text" id="account" placeholder={account} />
+                                                    </div>
+                                                </CCol>
+                                                <CCol sm={3}></CCol>
+                                            </CRow>
+                                            <CRow className="mb-3">
+                                                <CCol sm={3}></CCol>
+
+                                                <CCol sm={6}>
+                                                    <div className="mb-3">
+                                                        <CFormLabel htmlFor="email"><strong>輸入密碼</strong></CFormLabel>
+                                                        <CFormInput type="password" id="name" />
+                                                    </div>
+                                                </CCol>
+                                                <CCol sm={3}></CCol>
+                                            </CRow>
+                                            <div className="col-auto text-center">
+                                                <CButton type="submit" className="mb-3 customButton" onClick={handle_accsubmit}>
+                                                    保存資料
+                                                </CButton>
+                                            </div>
+                                        </CForm>
+                                    </div>
+
+                                    <hr /> 
+
+
                                     <div className="customCardBody">
                                         <CForm>
                                             <CRow className="mb-3">

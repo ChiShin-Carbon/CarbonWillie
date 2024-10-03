@@ -12,6 +12,7 @@ from route import router
 from login import login
 from userinfo import userinfo
 from edituserinfo import edituserinfo
+from editaccount import editaccount
 
 
 app = FastAPI()
@@ -42,3 +43,4 @@ app.include_router(router)
 app.include_router(login)
 app.include_router(userinfo)
 app.include_router(edituserinfo)
+app.include_router(editaccount)
