@@ -8,6 +8,10 @@ import { faPenToSquare, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 import styles from '../../../../scss/活動數據盤點.module.css';
 import EditModal from './活動數據盤點編輯modal.js';
 
+
+import Zoom from 'react-medium-image-zoom'
+import 'react-medium-image-zoom/dist/styles.css'
+
 export const FunctionOne = () => {
     const [isEditModalVisible, setEditModalVisible] = useState(false);
     const currentFunction = 'one'; // 定義 currentFunction
@@ -33,7 +37,7 @@ export const FunctionOne = () => {
                         <td>公升</td>
                         <td>XXXXXX</td>
                         <td>讚</td>
-                        <td><img src="https://i.pinimg.com/564x/2a/4c/cb/2a4ccb65cc3cc47bbccca96dd230bd22.jpg" alt="image" /></td>
+                        <td><Zoom><img src="https://i.pinimg.com/564x/2a/4c/cb/2a4ccb65cc3cc47bbccca96dd230bd22.jpg" alt="image" /></Zoom></td>
                         <td>
                             <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
                             <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
@@ -75,7 +79,7 @@ export const FunctionTwo = () => {
                         <td>公升</td>
                         <td>XXXXXX</td>
                         <td>讚</td>
-                        <td><img src="https://i.pinimg.com/564x/aa/d2/35/aad235f4fa78994b5cc04b34b57d9047.jpg" alt="image" /></td>
+                        <td><Zoom><img src="https://i.pinimg.com/564x/aa/d2/35/aad235f4fa78994b5cc04b34b57d9047.jpg" alt="image" /></Zoom></td>
                         <td>
                             <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
                             <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
@@ -117,7 +121,7 @@ export const FunctionThree = () => {
                         <td>XXX</td>
                         <td>5</td>
                         <td>讚</td>
-                        <td><img src="https://i.pinimg.com/564x/35/a9/aa/35a9aa483e73b94c8b8605ed9107a381.jpg" alt="image" /></td>
+                        <td><Zoom><img src="https://i.pinimg.com/564x/35/a9/aa/35a9aa483e73b94c8b8605ed9107a381.jpg" alt="image" /></Zoom></td>
                         <td>
                             <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
                             <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
@@ -171,7 +175,7 @@ export const FunctionFour = () => {
                         <td>0</td>
                         <td>0</td>
                         <td>讚</td>
-                        <td><img src="https://i.pinimg.com/564x/35/a9/aa/35a9aa483e73b94c8b8605ed9107a381.jpg" alt="image" /></td>
+                        <td><Zoom><img src="https://i.pinimg.com/564x/35/a9/aa/35a9aa483e73b94c8b8605ed9107a381.jpg" alt="image" /></Zoom></td>
                         <td>
                             <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
                             <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
@@ -213,7 +217,7 @@ export const FunctionFive = () => {
                         <td>8</td>
                         <td>22</td>
                         <td>讚</td>
-                        <td><img src="https://i.pinimg.com/736x/5d/a8/60/5da8608aab2a2ebb0bb9e56ee9401414.jpg" alt="image" /></td>
+                        <td><Zoom><img src="https://i.pinimg.com/736x/5d/a8/60/5da8608aab2a2ebb0bb9e56ee9401414.jpg" alt="image" /></Zoom></td>
                         <td>
                             <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
                             <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
@@ -259,7 +263,7 @@ export const FunctionSix = () => {
                         <td>X</td>
                         <td>X</td>
                         <td>讚</td>
-                        <td><img src="https://i.pinimg.com/736x/c9/be/70/c9be70ef20f18513f025856d69034dcb.jpg" alt="image" /></td>
+                        <td><Zoom><img src="https://i.pinimg.com/736x/c9/be/70/c9be70ef20f18513f025856d69034dcb.jpg" alt="image" /></Zoom></td>
                         <td>
                             <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
                             <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
@@ -301,7 +305,7 @@ export const FunctionSeven = () => {
                         <td>1月</td>
                         <td>XXX</td>
                         <td>讚</td>
-                        <td><img src="https://i.pinimg.com/564x/8b/7d/0c/8b7d0c88227abf5a237870b047677b4b.jpg" alt="image" /></td>
+                        <td><Zoom><img src="https://i.pinimg.com/564x/8b/7d/0c/8b7d0c88227abf5a237870b047677b4b.jpg" alt="image" /></Zoom></td>
                         <td>
                             <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
                             <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
@@ -341,7 +345,7 @@ export const FunctionEight = () => {
                         <td>天然氣</td>
                         <td>XXX</td>
                         <td>讚</td>
-                        <td><img src="https://i.pinimg.com/564x/e7/c8/4a/e7c84a29e5b0d84c8230ea5fd487495b.jpg" alt="image" /></td>
+                        <td><Zoom><img src="https://i.pinimg.com/564x/e7/c8/4a/e7c84a29e5b0d84c8230ea5fd487495b.jpg" alt="image" /></Zoom></td>
                         <td>
                             <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
                             <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
@@ -383,7 +387,7 @@ export const FunctionNine = () => {
                         <td>1月</td>
                         <td>XXX</td>
                         <td>讚</td>
-                        <td><img src="https://i.pinimg.com/564x/9c/30/c7/9c30c7c2e3d7b90544f4b3e3f59e3ca0.jpg" alt="image" /></td>
+                        <td><Zoom><img src="https://i.pinimg.com/564x/9c/30/c7/9c30c7c2e3d7b90544f4b3e3f59e3ca0.jpg" alt="image" /></Zoom></td>
                         <td>
                             <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
                             <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
@@ -423,7 +427,7 @@ export const FunctionTen = () => {
                         <td>XXXXX</td>
                         <td>XXX</td>
                         <td>讚</td>
-                        <td><img src="https://i.pinimg.com/564x/d3/40/13/d340135e73f8ffcc48667c3063fb9f25.jpg" alt="image" /></td>
+                        <td><Zoom><img src="https://i.pinimg.com/564x/d3/40/13/d340135e73f8ffcc48667c3063fb9f25.jpg" alt="image" /></Zoom></td>
                         <td>
                             <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
                             <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
@@ -469,7 +473,7 @@ export const FunctionEleven = () => {
                         <td>X</td>
                         <td>X</td>
                         <td>讚</td>
-                        <td><img src="https://i.pinimg.com/736x/cd/fb/de/cdfbde16d8860668c51c5a5e3b0ce482.jpg" alt="image" /></td>
+                        <td><Zoom><img src="https://i.pinimg.com/736x/cd/fb/de/cdfbde16d8860668c51c5a5e3b0ce482.jpg" alt="image" /></Zoom></td>
                         <td>
                             <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
                             <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
@@ -509,7 +513,7 @@ export const FunctionTwelve = () => {
                         <td>2023/01/15</td>
                         <td>X</td>
                         <td>讚</td>
-                        <td><img src="https://i.pinimg.com/564x/5a/7a/d6/5a7ad69d72d35dd45659fbf04bd96217.jpg" alt="image" /></td>
+                        <td><Zoom><img src="https://i.pinimg.com/564x/5a/7a/d6/5a7ad69d72d35dd45659fbf04bd96217.jpg" alt="image" /></Zoom></td>
                         <td>
                             <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
                             <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
@@ -572,7 +576,7 @@ export const FunctionForteen = () => {
                         <td>20600</td>
                         <td>20600</td>
                         <td>讚</td>
-                        <td><img src="https://i.pinimg.com/564x/6a/e2/41/6ae2418f5b68d216f68e7ed2ab349e0c.jpg" alt="image" /></td>
+                        <td><Zoom><img src="https://i.pinimg.com/564x/6a/e2/41/6ae2418f5b68d216f68e7ed2ab349e0c.jpg" alt="image" /></Zoom></td>
                         <td>
                             <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
                             <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
@@ -618,7 +622,7 @@ export const FunctionFifteen = () => {
                         <td>1月</td>
                         <td>kg CO2e/kg蒸氣</td>
                         <td>讚</td>
-                        <td><img src="https://i.pinimg.com/564x/f3/d9/27/f3d92764f7e4d8ab25835b39f20e2e0f.jpg" alt="image" /></td>
+                        <td><Zoom><img src="https://i.pinimg.com/564x/f3/d9/27/f3d92764f7e4d8ab25835b39f20e2e0f.jpg" alt="image" /></Zoom></td>
                         <td>
                             <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
                             <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
@@ -656,7 +660,7 @@ export const FunctionSixteen = () => {
                         <td>XXXXX</td>
                         <td>XXX</td>
                         <td>讚</td>
-                        <td><img src="https://i.pinimg.com/564x/37/80/8a/37808aacec53abf11e28412f452ffb20.jpg" alt="image" /></td>
+                        <td><Zoom><img src="https://i.pinimg.com/564x/37/80/8a/37808aacec53abf11e28412f452ffb20.jpg" alt="image" /></Zoom></td>
                         <td>
                             <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
                             <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
