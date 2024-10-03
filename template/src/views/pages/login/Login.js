@@ -16,7 +16,7 @@ import {
 import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser } from '@coreui/icons'
 import '../../../scss/login.css';
-import React, { useState } from 'react';
+import React, { createContext,useState } from 'react';
 
 
 const Login = () => {
@@ -48,7 +48,10 @@ const Login = () => {
         if (response.ok) {
             console.log(data);
             window.location.href = "#/theme/home"; // Redirect to the dashboard page
-        } else {
+            window.sessionStorage.setItem('user_id', data.user.user_id); // Store the user_id
+            window.sessionStorage.setItem('username', data.user.username); 
+            console.log('Stored user_id:', data.user.user_id);
+            } else {
             setMessage("帳號或密碼錯誤"); // Use the error message from the response
             console.log(response.status); // Log the status code for debugging
         }
@@ -104,7 +107,7 @@ const Login = () => {
                     
                   </CRow>
                   
-                  <p>{message}</p>
+                  <p style={{ color: 'red' }}>{message}</p>
 
                   <CRow>
                     <CCol>

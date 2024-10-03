@@ -37,6 +37,8 @@ import 'primeicons/primeicons.css';
 const Charts = () => {
     const random = () => Math.round(Math.random() * 100)
     const [selectedCities, setSelectedCities] = useState(null);
+    const username = window.sessionStorage.getItem('username');
+
 
     // 定義年分數據
     const years = [
@@ -50,7 +52,7 @@ const Charts = () => {
     return (
         <CRow>
             <CAlert color="dark" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span>歡迎回來xxx</span>
+                <span>歡迎回來{username}</span>
                 <CButton style={{backgroundColor:'#9D6B6B',color:'white'}} shape="rounded-pill">開始盤查</CButton>
             </CAlert>
 
