@@ -50,10 +50,7 @@ const Tabs = () => {
                     <div className={styles.tabsContainer}>
                         <div className={styles.tabsLeft}>
                             <Link to="/theme/system" className="system-tablist-link"><CTab aria-controls="tab1" itemKey={3} className="system-tablist-choose">
-                                資訊填寫
-                            </CTab></Link>
-                            <Link to="/theme/system/邊界設定" className="system-tablist-link"><CTab aria-controls="tab2" itemKey={2} className="system-tablist-choose">
-                                邊界設定
+                                基準年&邊界設定
                             </CTab></Link>
                             <Link to="/theme/system/活動數據分配" className="system-tablist-link"><CTab aria-controls="tab3" itemKey={4} className="system-tablist-choose">
                                 活動數據分配
