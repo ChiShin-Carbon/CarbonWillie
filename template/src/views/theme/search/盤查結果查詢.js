@@ -63,7 +63,7 @@ const Tabs = () => {
                 </CFormSelect>
                 </CCol>
             </div>
-            <CButton style={{position: 'absolute', right: '45px',width:'115px',backgroundColor:'#9D6B6B',color:'white',display: 'flex',alignItems: 'center' }} shape="rounded-pill">
+            <CButton style={{position: 'absolute', right: '35px',width:'115px',backgroundColor:'#9D6B6B',color:'white',display: 'flex',alignItems: 'center' }} shape="rounded-pill">
                 <CIcon style={{ display: 'flex'}} icon={cilDataTransferUp} className="me-2" />
                 上傳檔案
             </CButton>
@@ -99,7 +99,7 @@ const Tabs = () => {
                                 <option value="3">表3</option>
                             </CFormSelect>
                             </CCol>
-                            <CButton type="submit" style={{position: 'absolute', right: '45px',display: 'flex',alignItems: 'center', backgroundColor: '#CA6AAF', borderColor: '#CA6AAF', color: 'white',width:'120px',height:'50px' }}>
+                            <CButton type="submit" style={{position: 'absolute', right: '30px',display: 'flex',alignItems: 'center', backgroundColor: '#CA6AAF', borderColor: '#CA6AAF', color: 'white',width:'120px',height:'50px' }}>
                                 <CIcon icon={cilDataTransferDown} className="me-2" />
                             下載全部
                             </CButton>
@@ -110,7 +110,7 @@ const Tabs = () => {
                             <CCardBody>
                                 <CCardTitle>
                                  <CRow>   
-                                <div style={{width:'100%',height:'50px', backgroundColor:'#D9D9D9',display: 'grid',alignItems: 'center',}}> 
+                                <div style={{width:'100%',height:'50px',display: 'grid',alignItems: 'center',}}> 
                                 <strong style={{ fontSize: '1.4rem',display: 'flex', alignItems: 'center',padding:'5px'}}>總覽</strong>
                                     
                                     <CButton style={{position: 'absolute', right: '30px',width:'40px',backgroundColor:'#9D6B6B',color:'white',display: 'flex',alignItems: 'center' }}>
@@ -164,7 +164,7 @@ const Tabs = () => {
                                 <CRow>
                                 <CCardTitle>
                                  <CRow>   
-                                <div style={{width:'100%',height:'50px', backgroundColor:'#D9D9D9',display: 'grid',alignItems: 'center',}}> 
+                                <div style={{width:'100%',height:'50px',display: 'grid',alignItems: 'center',}}> 
                                 <strong style={{ fontSize: '1.4rem',display: 'flex', alignItems: 'center',padding:'5px'}}>直接排放 / 範疇二</strong>
                                     <CButton style={{position: 'absolute', right: '30px',width:'40px',backgroundColor:'#9D6B6B',color:'white',display: 'flex',alignItems: 'center' }}>
                                         <b><CIcon icon={cilDataTransferDown} className="me-2" /></b>
@@ -226,11 +226,6 @@ const Tabs = () => {
                                     </tbody>
                                 </table>
                                 <br/>
-                                <CCardSubtitle className="mb-2 text-body-secondary">Card subtitle</CCardSubtitle>
-                                <CCardText>
-                                    Some quick example text to build on the card title and make up the bulk of the
-                                    card&#39;s content.
-                                </CCardText>
                             </CCardBody>
                         </CCard>
                     <br></br>
@@ -252,7 +247,7 @@ const Tabs = () => {
                                 <option value="3">表3</option>
                             </CFormSelect>
                             </CCol>
-                            <CButton type="submit" style={{position: 'absolute', right: '45px',display: 'flex',alignItems: 'center', backgroundColor: '#CA6AAF', borderColor: '#CA6AAF', color: 'white',width:'120px',height:'50px' }}>
+                            <CButton type="submit" style={{position: 'absolute', right: '30px',display: 'flex',alignItems: 'center', backgroundColor: '#CA6AAF', borderColor: '#CA6AAF', color: 'white',width:'120px',height:'50px' }}>
                                 <CIcon icon={cilDataTransferDown} className="me-2" />
                             下載全部
                             </CButton>
@@ -264,8 +259,14 @@ const Tabs = () => {
                     {/* 圓餅圖 */}
                     <CCol xs={6}>
                         <CCard className="mb-4">
-                        <CCardHeader>碳排範疇比例 / 圓餅圖</CCardHeader>
-                        <CCardBody>
+                        <CCardHeader style={{backgroundColor:'#9D6B6B',height:'50px',display: 'flex',alignItems: 'center',}}>
+                            <strong style={{ fontSize: '1.2rem',color:'white',display: 'flex', alignItems: 'center',padding:'5px'}}>碳排範疇比例 / </strong>
+                            <strong style={{ fontSize: '1.0rem',color:'white',padding:'5px'}}>圓餅圖</strong> 
+                            <CButton style={{position: 'absolute', right: '10px',color:'white',display: 'flex',alignItems: 'center' }}>
+                                <b><CIcon icon={cilDataTransferDown} style={{ fontSize: '24px' }} /></b>
+                            </CButton>
+                        </CCardHeader>
+                        <CCardBody style={{ display: 'flex',justifyContent: 'center',alignItems: 'center',flexDirection: 'column',}}>
                             <div style={{ width: '350px', height: '350px' }}>
                             <CChartPie
                             data={{
@@ -273,8 +274,8 @@ const Tabs = () => {
                                 datasets: [
                                 {
                                     data: [300, 50, 100],
-                                    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
-                                    hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
+                                    backgroundColor: ['#d882c0', '#FFB3FF', '#FFB6C1'],
+                                    hoverBackgroundColor: ['#d882c0', '#FFB3FF', '#FFB6C1'],
                                 },
                                 ],
                             }}
@@ -296,18 +297,24 @@ const Tabs = () => {
                         </CCardBody>
                         </CCard>
                     </CCol>
-                    {/* 環形圖 */}
+                    {/* 半圓環形圖 */}
                     <CCol xs={6}>
                         <CCard className="mb-4">
-                        <CCardHeader>碳排範疇比例 / 半圓環形圖</CCardHeader>
-                        <CCardBody>
-                        <div style={{ width: '350px', height: '350px' }}>
+                        <CCardHeader style={{backgroundColor:'#9D6B6B',height:'50px',display: 'flex',alignItems: 'center',}}>
+                            <strong style={{ fontSize: '1.2rem',color:'white',display: 'flex', alignItems: 'center',padding:'5px'}}>碳排總量/ </strong>
+                            <strong style={{ fontSize: '1.0rem',color:'white',padding:'5px'}}>半圓環形圖</strong>
+                            
+                            <CButton style={{position: 'absolute', right: '10px',color:'white',display: 'flex',alignItems: 'center' }}>
+                                <b><CIcon icon={cilDataTransferDown} style={{ fontSize: '24px' }} /></b>
+                            </CButton>
+                        </CCardHeader>
+                        <CCardBody style={{ display: 'flex',justifyContent: 'center',alignItems: 'center',flexDirection: 'column',}}>
+                        <div style={{ width: '350px', height: '350px',margin: '0 auto',position: 'relative', }}>
                             <CChartDoughnut 
                             data={{
-                                labels: ['範疇一', '範疇二', '範疇三'],
                                 datasets: [
                                 {
-                                    backgroundColor: ['#41B883', '#E46651', '#00D8FF'],
+                                    backgroundColor: ['#d882c0', '#FFB3FF', '#FFB6C1'],
                                     data: [60, 30, 10],
                                 },
                                 ],
@@ -318,37 +325,92 @@ const Tabs = () => {
                                 cutout: "70%", // 中間空心的部分
                                 plugins: {
                                 legend: {
-                                    display: true,
-                                    position: "bottom",
-                                    labels: {
-                                    boxWidth: 15,
-                                    },
+                                    position: "bottom", // 圖例位置
+                                },
+                                tooltip: {
+                                    enabled: true, // 顯示提示框
                                 },
                                 },
                             }}
+                            height={300} // 設置高度為 300px
                             />
+                        {/* 中間的數字 */}
+                        <div
+                        style={{
+                            position: 'absolute',
+                            top: '65%',
+                            left: '50%',
+                            transform: 'translate(-50%, -50%)',
+                            fontSize: '1.8rem',
+                            fontWeight: 'bold',
+                        }}
+                        >
+                        96.54
                         </div>
-                        </CCardBody>
+                    </div>
+                    {/* 自定義圖例 */}
+                    <div style={{ marginTop: '10px', textAlign: 'center' }}>
+                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '5px' }}>
+                        <div
+                            style={{
+                            width: '20px',
+                            height: '20px',
+                            backgroundColor: '#d882c0',
+                            marginRight: '10px',
+                            }}
+                        ></div>
+                        <span>範疇一 - 55.3654 (60%)</span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '5px' }}>
+                        <div
+                            style={{
+                            width: '20px',
+                            height: '20px',
+                            backgroundColor: '#FFB3FF',
+                            marginRight: '10px',
+                            }}
+                        ></div>
+                        <span>範疇二 - 38.2547 (30%)</span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        <div
+                            style={{
+                            width: '20px',
+                            height: '20px',
+                            backgroundColor: '#FFB6C1',
+                            marginRight: '10px',
+                            }}
+                        ></div>
+                        <span>範疇三 - 12.6354 (10%)</span>
+                        </div>
+                    </div>
+                    </CCardBody>
                         </CCard>
                     </CCol> 
                     {/* 柱狀圖 */}
                     <CCol xs={6}>
                         <CCard className="mb-4">
-                        <CCardHeader>碳排總量 / 柱狀圖</CCardHeader>
-                        <CCardBody>
+                        <CCardHeader style={{backgroundColor:'#9D6B6B',height:'50px',display: 'flex',alignItems: 'center',}}>
+                            <strong style={{ fontSize: '1.2rem',color:'white',display: 'flex', alignItems: 'center',padding:'5px'}}>碳排總量 / </strong>
+                            <strong style={{ fontSize: '1.0rem',color:'white',padding:'5px'}}>柱狀圖</strong>
+                            <CButton style={{position: 'absolute', right: '10px',color:'white',display: 'flex',alignItems: 'center' }}>
+                                <b><CIcon icon={cilDataTransferDown} style={{ fontSize: '24px' }} /></b>
+                            </CButton>
+                        </CCardHeader>
+                        <CCardBody style={{ display: 'flex',justifyContent: 'center',alignItems: 'center',}}>
                         <div style={{ width: '350px', height: '350px' }}>
                             <CChartBar
                             data={{
                                 labels: ['範疇一', '範疇二', '範疇三'],
                                 datasets: [
                                 {
-                                    labels: ['範疇一', '範疇二', '範疇三'],
-                                    backgroundColor: ['#41B883', '#E46651', '#00D8FF'],
+                                    backgroundColor: ['#d882c0', '#FFB3FF', '#FFB6C1'],
                                     data: [55.3654, 38.2547, 12.6354],
                                 },
                                 ],
                             }}
                             labels="months"
+                            height={300} // 設置高度為 300px
                             /></div>
                         </CCardBody>
                         </CCard>
@@ -356,15 +418,21 @@ const Tabs = () => {
                     {/* 環形圖 */}
                     <CCol xs={6}>
                         <CCard className="mb-4">
-                        <CCardHeader>碳排範疇比例 / 環形圖</CCardHeader>
-                        <CCardBody>
+                        <CCardHeader style={{backgroundColor:'#9D6B6B',height:'50px',display: 'flex',alignItems: 'center',}}>
+                            <strong style={{ fontSize: '1.2rem',color:'white',display: 'flex', alignItems: 'center',padding:'5px'}}>碳排範疇比例 / </strong>
+                            <strong style={{ fontSize: '1.0rem',color:'white',padding:'5px'}}>環形圖</strong>     
+                            <CButton style={{position: 'absolute', right: '10px',color:'white',display: 'flex',alignItems: 'center' }}>
+                                <b><CIcon icon={cilDataTransferDown} style={{ fontSize: '24px' }} /></b>
+                            </CButton>
+                        </CCardHeader>
+                        <CCardBody style={{ display: 'flex',justifyContent: 'center',alignItems: 'center',flexDirection: 'column',}}>
                             <div style={{ width: '350px', height: '350px' }}>
                             <CChartDoughnut 
                             data={{
                                 labels: ['範疇一', '範疇二', '範疇三'],
                                 datasets: [
                                 {
-                                    backgroundColor: ['#41B883', '#E46651', '#00D8FF'],
+                                    backgroundColor: ['#d882c0', '#FFB3FF', '#FFB6C1'],
                                     data: [60, 30, 10],
                                 },
                                 ],
