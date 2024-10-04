@@ -16,6 +16,7 @@ import {
 } from '@coreui/react'
 import '../../../scss/個人&企業資料.css';
 import { useEffect, useState } from 'react';
+import {poseidon1} from "poseidon-lite";
 
 
 
@@ -31,8 +32,6 @@ const Tabs = () => {
     const [department, setDepartment] = useState("");
     const [positionID, setPositionID] = useState("");
     const [position, setPosition] = useState("");
-    const [hash, setHash] = useState("");
-    const [hex, setHex] = useState(false);
     const [accmessage, setaccMessage] = useState('');
     const [newpassword, setNewPassword] = useState('');
     const [pwmessage, setpwMessage] = useState('');
@@ -41,6 +40,44 @@ const Tabs = () => {
     const [originpwempty, setOriginpwEmpty] = useState(false);
     const [newpwempty, setNewpwEmpty] = useState(false);
     const [checknewpwempty, setChecknewpwEmpty] = useState(false);
+
+    const [hash, setHash] = useState("");
+    const [hex, setHex] = useState(false);
+
+    function computeHash(password, hex = false) {
+        const len = password.length;
+    
+        // Check if password is empty
+        if (len === 0) {
+            setHash("");
+            return;
+        }
+    
+        // Validate the length of the password
+        if (len < 1 || len > 16) {
+            setHash("Invalid number of hash elements");
+            return;
+        }
+    
+        try {
+            // Choose base: 16 for hex, 10 for decimal
+            const base = hex ? 16 : 10;
+    
+            // Convert password to BigInt by converting each character to its ASCII value
+            const values = password.split('').map(char => BigInt(char.charCodeAt(0)));
+    
+            // Compute the hash using Poseidon
+            // const result = (poseidon[`poseidon${len}`](values)).toString(base);
+    
+            // Set the computed hash
+            // setHash(result);
+        } catch (error) {
+            console.error('Error computing hash:', error);
+            setHash("Cannot convert characters");
+        }
+    }
+    
+    
 
     const getuserinfo = async () => {
         try {
@@ -184,7 +221,27 @@ const Tabs = () => {
         setNewPassword(e.target.value);
     };
 
+    function stringToBigInt(str) {
+        let concatenatedString = '';
+
+        // Loop through each character of the string
+        for (let char of str) {
+            // Get the Unicode (or ASCII) value and concatenate it as a string
+            concatenatedString += char.charCodeAt(0).toString();
+        }
+    
+        // Convert the concatenated string of numbers to a BigInt
+        const bigIntValue = BigInt(concatenatedString);
+    
+        return bigIntValue;
+    }
+
     const editpassword = async (e) => {
+        console.log(document.getElementById('NewPassword').value);
+        const hash = computeHash(document.getElementById('NewPassword').value);
+        console.log(stringToBigInt(document.getElementById('NewPassword').value))
+        console.log(poseidon1([stringToBigInt(document.getElementById('NewPassword').value)]));
+        console.log("Computed Hash:", hash);
         e.preventDefault(); // Prevent form submission
 
         const isCorrect = await isPasswordCorrect(document.getElementById('OriginPassword').value);
@@ -211,6 +268,7 @@ const Tabs = () => {
             if (isCorrect) {
                 if (newpassword === document.getElementById('checkNewPassword').value) {
                     try {
+                        const HashPassword = poseidon1([stringToBigInt(document.getElementById('NewPassword').value)]);
                         const response = await fetch('http://localhost:8000/editpassword', {
                             method: 'POST',
                             headers: {
@@ -218,7 +276,7 @@ const Tabs = () => {
                             },
                             body: JSON.stringify({
                                 user_id: window.sessionStorage.getItem('user_id'),
-                                password: newpassword,
+                                password: HashPassword.toString(),
                             }),
                         });
 
@@ -311,6 +369,7 @@ const Tabs = () => {
         setposition();
     }
         , [positionID]);
+
 
 
 
