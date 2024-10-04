@@ -25,13 +25,13 @@ const Tabs = () => {
         <main>
             <CTabs activeItemKey={1}>
                 <CTabList variant="underline-border" className="system-tablist">
-                            <Link to="/theme/system" className="system-tablist-link">
+                            <Link to="/碳盤查系統/system" className="system-tablist-link">
                                 <CTab aria-controls="tab1" itemKey={1} className="system-tablist-choose">基準年&邊界設定</CTab>
                             </Link>
-                            <Link to="/theme/system/活動數據分配" className="system-tablist-link">
+                            <Link to="/碳盤查系統/system/活動數據分配" className="system-tablist-link">
                                 <CTab aria-controls="tab3" itemKey={4} className="system-tablist-choose">活動數據分配</CTab>
                             </Link>
-                            <Link to="/theme/system/活動數據盤點" className="system-tablist-link">
+                            <Link to="/碳盤查系統/system/活動數據盤點" className="system-tablist-link">
                                 <CTab aria-controls="tab3" itemKey={2} className="system-tablist-choose">活動數據盤點</CTab>
                             </Link>
                 </CTabList>

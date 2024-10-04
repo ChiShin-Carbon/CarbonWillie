@@ -12,10 +12,9 @@ const 首頁 = React.lazy(() => import('./views/theme/dashboard/首頁'))
 
 //碳盤查系統
 
-const 碳盤查系統 = React.lazy(() => import('./views/theme/system/碳盤查系統'))
-const 邊界設定 = React.lazy(() => import('./views/theme/system/邊界設定/邊界設定'))
-const 活動數據盤點 = React.lazy(() => import('./views/theme/system/活動數據盤點/活動數據盤點'))
-const 活動數據分配 = React.lazy(() => import('./views/theme/system/活動數據分配/活動數據分配'))
+const 碳盤查系統 = React.lazy(() => import('./views/碳盤查系統/system/碳盤查系統'))
+const 活動數據盤點 = React.lazy(() => import('./views/碳盤查系統/system/活動數據盤點/活動數據盤點'))
+const 活動數據分配 = React.lazy(() => import('./views/碳盤查系統/system/活動數據分配/活動數據分配'))
 
 
 // Base
@@ -78,10 +77,9 @@ const routes = [
   { path: '/theme/company_info', name: '企業資料', element: 企業資料 },
   { path: '/theme/search', name: '盤查結果查詢', element: 盤查結果查詢 },
    //碳盤查系統
-  { path: '/theme/system', name: '碳盤查系統', element: 碳盤查系統 },
-  { path: '/theme/system/邊界設定', name: '邊界設定', element: 邊界設定 },
-  { path: '/theme/system/活動數據盤點', name: '活動數據盤點', element: 活動數據盤點 },
-  { path: '/theme/system/活動數據分配', name: '活動數據分配', element: 活動數據分配 },
+  { path: '/碳盤查系統/system', name: '碳盤查系統', element: 碳盤查系統 },
+  { path: '/碳盤查系統/system/活動數據盤點', name: '活動數據盤點', element: 活動數據盤點 },
+  { path: '/碳盤查系統/system/活動數據分配', name: '活動數據分配', element: 活動數據分配 },
   //
   { path: '/base', name: 'Base', element: Cards, exact: true },
   { path: '/base/accordion', name: 'Accordion', element: Accordion },
