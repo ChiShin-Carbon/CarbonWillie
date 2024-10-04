@@ -33,7 +33,9 @@ const Tabs = () => {
     const [position, setPosition] = useState("");
     const [hash, setHash] = useState("");
     const [hex, setHex] = useState(false);
-    const [message, setMessage] = useState('');
+    const [accmessage, setaccMessage] = useState('');
+    const [newpassword, setNewPassword] = useState('');
+    const [pwmessage, setpwMessage] = useState('');
 
 
     const getuserinfo = async () => {
@@ -131,9 +133,9 @@ const Tabs = () => {
 
     const editaccount = async (e) => {
         e.preventDefault(); // Prevent form submission
-    
+
         const isCorrect = await isPasswordCorrect(document.getElementById('checkpw').value);
-    
+
         if (isCorrect) {
             try {
                 const response = await fetch('http://localhost:8000/editaccount', {
@@ -146,7 +148,7 @@ const Tabs = () => {
                         account: document.getElementById('editaccount').value,
                     }),
                 });
-    
+
                 if (response.ok) {
                     alert('修改成功');
                     window.location.reload(); // Refresh the page
@@ -159,6 +161,46 @@ const Tabs = () => {
             }
         }
     };
+
+    const handleNewPasswordChange = (e) => {
+        setNewPassword(e.target.value);
+    };
+
+    const editpassword = async (e) => {
+        e.preventDefault(); // Prevent form submission
+
+        const isCorrect = await isPasswordCorrect(document.getElementById('OriginPassword').value);
+
+        if (isCorrect) {
+            if (newpassword === document.getElementById('checkNewPassword').value) {
+                try {
+                    const response = await fetch('http://localhost:8000/editpassword', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            user_id: window.sessionStorage.getItem('user_id'),
+                            password: newpassword,
+                        }),
+                    });
+
+                    if (response.ok) {
+                        alert('密碼修改成功');
+                        window.location.reload(); // Refresh the page
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            } else {
+                setpwMessage('密碼不一致');
+            }
+        }
+        else {
+            setpwMessage('原始密碼錯誤');
+        }
+    };
+
 
 
 
@@ -179,13 +221,13 @@ const Tabs = () => {
             if (pwresponse.ok) {
                 return true;
             } else {
-                setMessage("密碼錯誤");
+                setaccMessage("密碼錯誤");
                 return false;
             }
 
         } catch (error) {
             console.error('密碼錯誤');
-            return false; 
+            return false;
         }
     };
 
@@ -402,7 +444,11 @@ const Tabs = () => {
                                                 <CCol sm={6}>
                                                     <div className="mb-3">
                                                         <CFormLabel htmlFor="account"><strong>修改帳號</strong></CFormLabel>
-                                                        <CFormInput type="text" id="editaccount" placeholder={window.sessionStorage.getItem('account')} />
+                                                        <CFormInput
+                                                            type="text"
+                                                            id="editaccount"
+                                                            placeholder={window.sessionStorage.getItem('account')}
+                                                        />
                                                     </div>
                                                 </CCol>
                                                 <CCol sm={3}></CCol>
@@ -413,7 +459,7 @@ const Tabs = () => {
                                                 <CCol sm={6}>
                                                     <div className="mb-3">
                                                         <CFormLabel htmlFor="email"><strong>輸入密碼</strong></CFormLabel>
-                                                        <CFormInput type="password" id="checkpw" />
+                                                        <CFormInput type="password" id="checkpw" required />
                                                     </div>
                                                 </CCol>
                                                 <CCol sm={3}></CCol>
@@ -423,14 +469,15 @@ const Tabs = () => {
 
                                             <CRow className="mb-3">
                                                 <CCol sm={3}></CCol>
-
                                                 <CCol sm={6}>
                                                     <div className="mb-3" align="center">
-                                                        <p style={{ color: 'red' }}>{message}</p>
+                                                        <p style={{ color: 'red' }}>{accmessage}</p>
                                                     </div>
                                                 </CCol>
                                                 <CCol sm={3}></CCol>
                                             </CRow>
+
+
                                             <div className="col-auto text-center">
                                                 <CButton type="submit" className="mb-3 customButton" onClick={editaccount}>
                                                     保存資料
@@ -449,7 +496,7 @@ const Tabs = () => {
                                                 <CCol sm={6}>
                                                     <div className="mb-3">
                                                         <CFormLabel htmlFor="account"><strong>原本密碼</strong></CFormLabel>
-                                                        <CFormInput type="password" id="account" />
+                                                        <CFormInput type="password" id="OriginPassword" />
                                                     </div>
                                                 </CCol>
                                                 <CCol sm={3}></CCol>
@@ -460,7 +507,7 @@ const Tabs = () => {
                                                 <CCol sm={6}>
                                                     <div className="mb-3">
                                                         <CFormLabel htmlFor="email"><strong>新密碼</strong></CFormLabel>
-                                                        <CFormInput type="password" id="name" />
+                                                        <CFormInput type="password" id="NewPassword" onChange={handleNewPasswordChange} />
                                                     </div>
                                                 </CCol>
                                                 <CCol sm={3}></CCol>
@@ -470,13 +517,26 @@ const Tabs = () => {
                                                 <CCol sm={6}>
                                                     <div className="mb-3">
                                                         <CFormLabel htmlFor="account"><strong>確認新密碼</strong></CFormLabel>
-                                                        <CFormInput type="password" id="email" />
+                                                        <CFormInput type="password" id="checkNewPassword" />
                                                     </div>
                                                 </CCol>
                                                 <CCol sm={3}></CCol>
                                             </CRow>
+
+
+                                            <CRow className="mb-3">
+                                                <CCol sm={3}></CCol>
+                                                <CCol sm={6}>
+                                                    <div className="mb-3" align="center">
+                                                        <p style={{ color: 'red' }}>{pwmessage}</p>
+                                                    </div>
+                                                </CCol>
+                                                <CCol sm={3}></CCol>
+                                            </CRow>
+
+
                                             <div className="col-auto text-center">
-                                                <CButton type="submit" className="mb-3 customButton">
+                                                <CButton type="submit" className="mb-3 customButton" onClick={editpassword}>
                                                     保存資料
                                                 </CButton>
                                             </div>

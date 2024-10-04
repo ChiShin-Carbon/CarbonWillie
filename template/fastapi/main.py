@@ -13,6 +13,7 @@ from login import login
 from userinfo import userinfo
 from edituserinfo import edituserinfo
 from editaccount import editaccount
+from editpassword import editpassword
 
 
 app = FastAPI()
@@ -43,3 +44,4 @@ app.include_router(login)
 app.include_router(userinfo)
 app.include_router(edituserinfo)
 app.include_router(editaccount)
+app.include_router(editpassword)
