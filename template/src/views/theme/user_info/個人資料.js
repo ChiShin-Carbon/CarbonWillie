@@ -130,8 +130,11 @@ const Tabs = () => {
     };
 
     const editaccount = async (e) => {
-
-        if (isPasswordCorrect(document.getElementById('checkpw').value) == true) {
+        e.preventDefault(); // Prevent form submission
+    
+        const isCorrect = await isPasswordCorrect(document.getElementById('checkpw').value);
+    
+        if (isCorrect) {
             try {
                 const response = await fetch('http://localhost:8000/editaccount', {
                     method: 'POST',
@@ -143,11 +146,13 @@ const Tabs = () => {
                         account: document.getElementById('editaccount').value,
                     }),
                 });
-
+    
                 if (response.ok) {
                     alert('修改成功');
                     window.location.reload(); // Refresh the page
                     window.sessionStorage.setItem('account', document.getElementById('editaccount').value);
+                } else {
+                    console.error('Failed to update account:', response.status);
                 }
             } catch (error) {
                 console.error('Error:', error);
@@ -157,10 +162,9 @@ const Tabs = () => {
 
 
 
-
     const isPasswordCorrect = async (password) => {
         try {
-            const response = await fetch('http://localhost:8000/login', {
+            const pwresponse = await fetch('http://localhost:8000/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -172,7 +176,7 @@ const Tabs = () => {
                 }),
             });
 
-            if (response.ok) {
+            if (pwresponse.ok) {
                 return true;
             } else {
                 setMessage("密碼錯誤");
