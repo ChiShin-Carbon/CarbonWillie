@@ -44,11 +44,29 @@ const _nav = [
     to: '/theme/home',
     icon: <CIcon icon={cilHome} customClassName="nav-icon" />,
   },
+  // {
+  //   component: CNavItem,
+  //   name: '碳盤查系統',
+  //   to: '/theme/system',
+  //   icon: <CIcon icon={cilPencil} customClassName="nav-icon" />,
+  // },
   {
-    component: CNavItem,
+    component: CNavGroup,
     name: '碳盤查系統',
-    to: '/theme/system',
+    to: '/碳盤查系統',
     icon: <CIcon icon={cilPencil} customClassName="nav-icon" />,
+    items: [
+      {
+        component: CNavItem,
+        name: 'Buttons',
+        to: '/碳盤查系統/system',
+      },
+      {
+        component: CNavItem,
+        name: 'Buttons groups',
+        to: '/碳盤查系統/顧問system',
+      },
+    ],
   },
   {
     component: CNavItem,
