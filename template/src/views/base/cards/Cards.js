@@ -459,7 +459,9 @@ const Cards = () => {
                       </CNavLink>
                     </CNavItem>
                     <CNavItem>
-                      <CNavLink href="#">Link</CNavLink>
+                      <CNavLink href="#">
+                        Link
+                      </CNavLink>
                     </CNavItem>
                     <CNavItem>
                       <CNavLink href="#" disabled>

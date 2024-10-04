@@ -37,10 +37,7 @@ const Tabs = () => {
             <CTabs activeItemKey={1}>
                 <CTabList variant="underline-border" className="system-tablist">
                     <Link to="/theme/system" className="system-tablist-link"><CTab aria-controls="tab1" itemKey={3} className="system-tablist-choose">
-                        資訊填寫
-                    </CTab></Link>
-                    <Link to="/theme/system/邊界設定" className="system-tablist-link"><CTab aria-controls="tab2" itemKey={2} className="system-tablist-choose">
-                        邊界設定
+                        基準年&邊界設定
                     </CTab></Link>
                     <Link to="." className="system-tablist-link"><CTab aria-controls="tab3" itemKey={1} className="system-tablist-choose">
                         活動數據分配
@@ -97,10 +94,14 @@ const Tabs = () => {
                                                     <span>檢驗部門:</span>
                                                     <span>XXX</span>
                                                 </div>
+                                                <div className={styles.departmentItem}>
+                                                    <span>業務部門:</span>
+                                                    <span>XXX</span>
+                                                </div>
                                             </div>
 
                                             <div style={{ textAlign: 'right' }}>
-                                                <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)}/>
+                                                <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
                                                 <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} /></div>
                                         </div>
                                     </CAccordionBody>
@@ -148,10 +149,14 @@ const Tabs = () => {
                                                     <span>檢驗部門:</span>
                                                     <span>XXX</span>
                                                 </div>
+                                                <div className={styles.departmentItem}>
+                                                    <span>業務部門:</span>
+                                                    <span>XXX</span>
+                                                </div>
                                             </div>
 
                                             <div style={{ textAlign: 'right' }}>
-                                                <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)}/>
+                                                <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
                                                 <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} /></div>
                                         </div>
                                     </CAccordionBody>
@@ -249,6 +254,18 @@ const Tabs = () => {
                         </CRow>
                         <CRow className="mb-3">
                             <CFormLabel htmlFor="sitename" className={`col-sm-2 col-form-label ${styles.addlabel}`} >檢驗部門</CFormLabel>
+                            <CCol>
+                                <CFormSelect aria-label="Default select example" className={styles.addinput}>
+                                    <option value="1">無</option>
+                                    <option value="2">...</option>
+                                    <option value="3">...</option>
+                                    <option value="4">...</option>
+                                    <option value="5">...</option>
+                                </CFormSelect>
+                            </CCol>
+                        </CRow>
+                        <CRow className="mb-3">
+                            <CFormLabel htmlFor="sitename" className={`col-sm-2 col-form-label ${styles.addlabel}`} >業務部門</CFormLabel>
                             <CCol>
                                 <CFormSelect aria-label="Default select example" className={styles.addinput}>
                                     <option value="1">無</option>

@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@coreui/react": "^5.4.0",
     "chartjs-plugin-datalabels": "^2.2.0"
   }
 }

@@ -47,18 +47,22 @@ const Tabs = () => {
         <main>
             <CTabs activeItemKey={1}>
                 <CTabList variant="underline-border" className="system-tablist">
-                    <Link to="/theme/system" className="system-tablist-link"><CTab aria-controls="tab1" itemKey={3} className="system-tablist-choose">
-                        資訊填寫
-                    </CTab></Link>
-                    <Link to="/theme/system/邊界設定" className="system-tablist-link"><CTab aria-controls="tab2" itemKey={2} className="system-tablist-choose">
-                        邊界設定
-                    </CTab></Link>
-                    <Link to="/theme/system/活動數據分配" className="system-tablist-link"><CTab aria-controls="tab3" itemKey={4} className="system-tablist-choose">
-                        活動數據分配
-                    </CTab></Link>
-                    <Link to="." className="system-tablist-link"><CTab aria-controls="tab3" itemKey={1} className="system-tablist-choose">
-                        活動數據盤點
-                    </CTab></Link>
+                    <div className={styles.tabsContainer}>
+                        <div className={styles.tabsLeft}>
+                            <Link to="/theme/system" className="system-tablist-link"><CTab aria-controls="tab1" itemKey={3} className="system-tablist-choose">
+                                基準年&邊界設定
+                            </CTab></Link>
+                            <Link to="/theme/system/活動數據分配" className="system-tablist-link"><CTab aria-controls="tab3" itemKey={4} className="system-tablist-choose">
+                                活動數據分配
+                            </CTab></Link>
+                            <Link to="." className="system-tablist-link"><CTab aria-controls="tab3" itemKey={1} className="system-tablist-choose">
+                                活動數據盤點
+                            </CTab></Link>
+                        </div>
+                        <div className={styles.buttonRight}>
+                            <button>盤點完成</button>
+                        </div>
+                    </div>
                 </CTabList>
 
             </CTabs>

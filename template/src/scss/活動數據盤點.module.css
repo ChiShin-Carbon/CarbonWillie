@@ -188,7 +188,7 @@
 .addlabel {
     color: #625F5F;
     font-weight: bold;
-    width: 170px
+    width: 190px
 }
 
 .addmodal {
@@ -313,4 +313,61 @@
   .addlabel .Note{
     color:rgb(255, 0, 0);
     font-size:13px;
+  }
+  .addlabel .Note2{
+    color:rgb(255, 0, 0);
+    font-size:13px;
+    text-decoration:underline;
+    cursor: pointer;
+  }
+
+  
+  .tablistContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+  }
+  
+  .tabsleft {
+    display: flex;
+    gap: 10px; /* 可根據需要調整間距 */
+  }
+  
+  .buttonRight {
+    margin-left: auto;
+  }
+
+  
+  .tabsContainer {
+    display: flex;
+    justify-content: space-between; /* 在兩邊對齊 */
+    align-items: center;
+    width: 100%; /* 占滿整個tablist的寬度 */
+  }
+  
+  .tabsLeft {
+    display: flex;
+    gap: 10px; /* 調整tabs之間的距離 */
+  }
+  
+  .buttonRight {
+    margin-left: auto; /* 將按鈕推到右側 */
+    margin-right:10px;
+  }
+  .buttonRight button{
+    background-color:#9D6B6B;
+    color:white;
+    font-weight: bold;
+    border:none;
+    box-shadow: 0 2px 5px rgb(67, 67, 67);
+    border-radius: 30px;
+    padding:7px 15px;
+  }
+  
+  .buttonRight button:hover{
+    background-color:#8c5454;
+  }
+  .addmodal img{
+    width:100%;
   }

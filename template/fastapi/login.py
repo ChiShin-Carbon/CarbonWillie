@@ -12,7 +12,7 @@ class User(BaseModel):
 
 @login.post("/login")
 def read_user_credentials(user: User):
-    conn = connectDB()  # Establish connection using your custom connect function
+    conn = connectDB()
     if conn:
         cursor = conn.cursor()
         try:
