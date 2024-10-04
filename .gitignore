@@ -4,7 +4,6 @@
 /node_modules
 package-lock.json
 yarn.lock
-package.json
 
 # testing
 /coverage
@@ -27,4 +26,5 @@ yarn-error.log*
 env
 .env
 __pycache__
-package.json
+
+template/fastapi/connect
