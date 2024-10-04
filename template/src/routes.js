@@ -16,6 +16,8 @@ const 碳盤查系統 = React.lazy(() => import('./views/碳盤查系統/system/
 const 活動數據盤點 = React.lazy(() => import('./views/碳盤查系統/system/活動數據盤點/活動數據盤點'))
 const 活動數據分配 = React.lazy(() => import('./views/碳盤查系統/system/活動數據分配/活動數據分配'))
 
+//碳盤查系統顧問
+const 排放源鑑別 = React.lazy(() => import('./views/碳盤查系統/顧問system/排放源鑑別/排放源鑑別'))
 
 // Base
 const Accordion = React.lazy(() => import('./views/base/accordion/Accordion'))
@@ -76,10 +78,12 @@ const routes = [
   { path: '/theme/user_info', name: '個人資料', element: 個人資料 },
   { path: '/theme/company_info', name: '企業資料', element: 企業資料 },
   { path: '/theme/search', name: '盤查結果查詢', element: 盤查結果查詢 },
-   //碳盤查系統
+  //碳盤查系統
   { path: '/碳盤查系統/system', name: '碳盤查系統', element: 碳盤查系統 },
   { path: '/碳盤查系統/system/活動數據盤點', name: '活動數據盤點', element: 活動數據盤點 },
   { path: '/碳盤查系統/system/活動數據分配', name: '活動數據分配', element: 活動數據分配 },
+  //碳盤查系統顧問
+  { path: '/碳盤查系統/顧問system/排放源鑑別', name: '活排放源鑑別', element: 排放源鑑別 },
   //
   { path: '/base', name: 'Base', element: Cards, exact: true },
   { path: '/base/accordion', name: 'Accordion', element: Accordion },
