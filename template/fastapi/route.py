@@ -1,6 +1,5 @@
 from fastapi import APIRouter
 from connect.connect import connectDB
-
 router = APIRouter()
 
 @router.get("/users")

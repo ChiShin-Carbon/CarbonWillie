@@ -1,8 +1,6 @@
 from fastapi import FastAPI, Depends, HTTPException
 from dotenv import load_dotenv
 import os
-from route import router
-from login import login
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import logging
@@ -10,10 +8,17 @@ import pyodbc
 from connect.connect import connectDB
 from fastapi.middleware.cors import CORSMiddleware
 
+from route import router
+from login import login
+from userinfo import userinfo
+from edituserinfo import edituserinfo
+from editaccount import editaccount
+from editpassword import editpassword
+
+
 app = FastAPI()
 load_dotenv()
 connectDB()
-
 
 app.add_middleware(
     CORSMiddleware,
@@ -36,3 +41,7 @@ def read_root():
 # Include the router from the route module
 app.include_router(router)
 app.include_router(login)
+app.include_router(userinfo)
+app.include_router(edituserinfo)
+app.include_router(editaccount)
+app.include_router(editpassword)

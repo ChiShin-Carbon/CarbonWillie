@@ -50,6 +50,7 @@ const Login = () => {
             window.location.href = "#/theme/home"; // Redirect to the dashboard page
             window.sessionStorage.setItem('user_id', data.user.user_id); // Store the user_id
             window.sessionStorage.setItem('username', data.user.username); 
+            window.sessionStorage.setItem('account', data.user.account);
             console.log('Stored user_id:', data.user.user_id);
             } else {
             setMessage("帳號或密碼錯誤"); // Use the error message from the response
