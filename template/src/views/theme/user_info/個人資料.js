@@ -16,7 +16,6 @@ import {
 } from '@coreui/react'
 import '../../../scss/個人&企業資料.css';
 import { useEffect, useState } from 'react';
-import { Helmet } from 'react-helmet-async';
 
 
 
@@ -34,6 +33,7 @@ const Tabs = () => {
     const [position, setPosition] = useState("");
     const [hash, setHash] = useState("");
     const [hex, setHex] = useState(false);
+    const [message, setMessage] = useState('');
 
 
     const getuserinfo = async () => {
@@ -129,6 +129,34 @@ const Tabs = () => {
         }
     };
 
+    const editaccount = async (e) => {
+
+        if (isPasswordCorrect(document.getElementById('checkpw').value) == true) {
+            try {
+                const response = await fetch('http://localhost:8000/editaccount', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        user_id: window.sessionStorage.getItem('user_id'),
+                        account: document.getElementById('editaccount').value,
+                    }),
+                });
+
+                if (response.ok) {
+                    alert('修改成功');
+                    window.location.reload(); // Refresh the page
+                    window.sessionStorage.setItem('account', document.getElementById('editaccount').value);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+    };
+
+
+
 
     const isPasswordCorrect = async (password) => {
         try {
@@ -139,21 +167,24 @@ const Tabs = () => {
                 },
                 body: JSON.stringify({
                     user_id: window.sessionStorage.getItem('user_id'),
+                    account: window.sessionStorage.getItem('account'),
                     password: password,
                 }),
             });
-    
+
             if (response.ok) {
                 return true;
             } else {
+                setMessage("密碼錯誤");
                 return false;
             }
+
         } catch (error) {
-            console.error('Error:', error);
-            return false;  // Return false if there’s an error
+            console.error('密碼錯誤');
+            return false; 
         }
     };
-    
+
 
 
 
@@ -180,7 +211,7 @@ const Tabs = () => {
             console.error('Error:', error);
         }
     };
-            
+
 
 
     useEffect(() => {
@@ -201,7 +232,7 @@ const Tabs = () => {
 
 
     return (
-        
+
 
         <CRow>
             <CCol xs={12}>
@@ -314,14 +345,14 @@ const Tabs = () => {
                                                     <div className="mb-3">
                                                         <CFormLabel htmlFor="username"><strong>姓名</strong></CFormLabel>
                                                         <CFormInput type="text" id="editusername" placeholder={name} />
-                                                        </div>
+                                                    </div>
                                                 </CCol>
                                                 <CCol sm={2}></CCol>
                                                 <CCol sm={5}>
                                                     <div className="mb-3">
                                                         <CFormLabel htmlFor="email"><strong>電子郵件</strong></CFormLabel>
                                                         <CFormInput type="email" id="editemail" placeholder={email} />
-                                                        </div>
+                                                    </div>
                                                 </CCol>
                                             </CRow>
 
@@ -332,14 +363,14 @@ const Tabs = () => {
                                                     <div className="mb-3">
                                                         <CFormLabel htmlFor="telephone"><strong>辦公室電話</strong></CFormLabel>
                                                         <CFormInput type="text" id="edittelephone" placeholder={telephone} />
-                                                        </div>
+                                                    </div>
                                                 </CCol>
                                                 <CCol sm={2}></CCol>
                                                 <CCol sm={5}>
                                                     <div className="mb-3">
                                                         <CFormLabel htmlFor="phone"><strong>手機</strong></CFormLabel>
                                                         <CFormInput type="phone" id="editphone" placeholder={phone} />
-                                                        </div>
+                                                    </div>
                                                 </CCol>
                                             </CRow>
                                             <div className="col-auto text-center">
@@ -367,7 +398,7 @@ const Tabs = () => {
                                                 <CCol sm={6}>
                                                     <div className="mb-3">
                                                         <CFormLabel htmlFor="account"><strong>修改帳號</strong></CFormLabel>
-                                                        <CFormInput type="text" id="account" placeholder={account} />
+                                                        <CFormInput type="text" id="editaccount" placeholder={window.sessionStorage.getItem('account')} />
                                                     </div>
                                                 </CCol>
                                                 <CCol sm={3}></CCol>
@@ -378,20 +409,33 @@ const Tabs = () => {
                                                 <CCol sm={6}>
                                                     <div className="mb-3">
                                                         <CFormLabel htmlFor="email"><strong>輸入密碼</strong></CFormLabel>
-                                                        <CFormInput type="password" id="name" />
+                                                        <CFormInput type="password" id="checkpw" />
+                                                    </div>
+                                                </CCol>
+                                                <CCol sm={3}></CCol>
+                                            </CRow>
+
+
+
+                                            <CRow className="mb-3">
+                                                <CCol sm={3}></CCol>
+
+                                                <CCol sm={6}>
+                                                    <div className="mb-3" align="center">
+                                                        <p style={{ color: 'red' }}>{message}</p>
                                                     </div>
                                                 </CCol>
                                                 <CCol sm={3}></CCol>
                                             </CRow>
                                             <div className="col-auto text-center">
-                                                <CButton type="submit" className="mb-3 customButton" onClick={handle_accsubmit}>
+                                                <CButton type="submit" className="mb-3 customButton" onClick={editaccount}>
                                                     保存資料
                                                 </CButton>
                                             </div>
                                         </CForm>
                                     </div>
 
-                                    <hr /> 
+                                    <hr />
 
 
                                     <div className="customCardBody">

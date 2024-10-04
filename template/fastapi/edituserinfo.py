@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, status
-import connect
+from connect.connect import connectDB
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -15,7 +15,7 @@ class User(BaseModel):
 
 @edituserinfo.post("/edituserinfo")
 def read_user_credentials(user: User):
-    conn = connect.connect()  # Establish connection using your custom connect function
+    conn = connectDB()  # Establish connection using your custom connect function
     if conn:
         cursor = conn.cursor()
         try:

@@ -5,7 +5,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import logging
 import pyodbc
-import connect
+from connect.connect import connectDB
 from fastapi.middleware.cors import CORSMiddleware
 
 from route import router
@@ -17,8 +17,7 @@ from editaccount import editaccount
 
 app = FastAPI()
 load_dotenv()
-connect.connect()
-
+connectDB()
 
 app.add_middleware(
     CORSMiddleware,

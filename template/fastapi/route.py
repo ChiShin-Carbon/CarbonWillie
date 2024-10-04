@@ -1,11 +1,10 @@
 from fastapi import APIRouter
-import connect
-
+from connect.connect import connectDB
 router = APIRouter()
 
 @router.get("/users")
 def read_users():
-    conn = connect.connect()
+    conn = connectDB()
     if conn:
         cursor = conn.cursor()
         cursor.execute("SELECT user_id, business_id, username, email, telephone, phone, department, position, account, password FROM users")  # Query the users1 table
@@ -35,7 +34,7 @@ def read_users():
         return {"error": "Could not connect to the database."}
 @router.post("/create/")
 def create_user(name: str):
-    conn = connect.connect()
+    conn = connectDB()
     if conn:
         cursor = conn.cursor()
         cursor.execute("INSERT INTO test (name) VALUES (?)", name)
