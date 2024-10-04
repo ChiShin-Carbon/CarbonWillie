@@ -36,7 +36,11 @@ const Tabs = () => {
     const [accmessage, setaccMessage] = useState('');
     const [newpassword, setNewPassword] = useState('');
     const [pwmessage, setpwMessage] = useState('');
-
+    const [accountempty, setAccountEmpty] = useState(false);
+    const [checkpwempty, setCheckpwEmpty] = useState(false);
+    const [originpwempty, setOriginpwEmpty] = useState(false);
+    const [newpwempty, setNewpwEmpty] = useState(false);
+    const [checknewpwempty, setChecknewpwEmpty] = useState(false);
 
     const getuserinfo = async () => {
         try {
@@ -135,29 +139,43 @@ const Tabs = () => {
         e.preventDefault(); // Prevent form submission
 
         const isCorrect = await isPasswordCorrect(document.getElementById('checkpw').value);
+        const AccnotEmpty = document.getElementById('editaccount').value !== '';
+        const CheckpwnotEmpty = document.getElementById('checkpw').value !== '';
 
-        if (isCorrect) {
-            try {
-                const response = await fetch('http://localhost:8000/editaccount', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        user_id: window.sessionStorage.getItem('user_id'),
-                        account: document.getElementById('editaccount').value,
-                    }),
-                });
+        const AccAndPwNotEmpty = AccnotEmpty && CheckpwnotEmpty;
 
-                if (response.ok) {
-                    alert('修改成功');
-                    window.location.reload(); // Refresh the page
-                    window.sessionStorage.setItem('account', document.getElementById('editaccount').value);
-                } else {
-                    console.error('Failed to update account:', response.status);
+        if (!AccnotEmpty) {
+            setAccountEmpty("請輸入帳號");
+        }
+
+        if (!CheckpwnotEmpty) {
+            setCheckpwEmpty("請輸入密碼");
+        }
+
+        if (AccAndPwNotEmpty) {
+            if (isCorrect) {
+                try {
+                    const response = await fetch('http://localhost:8000/editaccount', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            user_id: window.sessionStorage.getItem('user_id'),
+                            account: document.getElementById('editaccount').value,
+                        }),
+                    });
+
+                    if (response.ok) {
+                        alert('修改成功');
+                        window.location.reload(); // Refresh the page
+                        window.sessionStorage.setItem('account', document.getElementById('editaccount').value);
+                    } else {
+                        console.error('Failed to update account:', response.status);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
                 }
-            } catch (error) {
-                console.error('Error:', error);
             }
         }
     };
@@ -171,33 +189,53 @@ const Tabs = () => {
 
         const isCorrect = await isPasswordCorrect(document.getElementById('OriginPassword').value);
 
-        if (isCorrect) {
-            if (newpassword === document.getElementById('checkNewPassword').value) {
-                try {
-                    const response = await fetch('http://localhost:8000/editpassword', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            user_id: window.sessionStorage.getItem('user_id'),
-                            password: newpassword,
-                        }),
-                    });
+        const originnotEmpty = document.getElementById('OriginPassword').value !== '';
+        const newpwnotEmpty = document.getElementById('NewPassword').value !== '';
+        const checknewpwnotEmpty = document.getElementById('checkNewPassword').value !== '';
 
-                    if (response.ok) {
-                        alert('密碼修改成功');
-                        window.location.reload(); // Refresh the page
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                }
-            } else {
-                setpwMessage('密碼不一致');
-            }
+        const isNotEmpty = originnotEmpty && newpwnotEmpty && checknewpwnotEmpty;
+
+        if (!originnotEmpty) {
+            setOriginpwEmpty('請輸入原密碼');
         }
-        else {
-            setpwMessage('原始密碼錯誤');
+
+        if (!newpwnotEmpty) {
+            setNewpwEmpty('請輸入新密碼');
+        }
+
+        if (!checknewpwnotEmpty) {
+            setChecknewpwEmpty('請輸入確認新密碼');
+        }
+
+        if (isNotEmpty) {
+            if (isCorrect) {
+                if (newpassword === document.getElementById('checkNewPassword').value) {
+                    try {
+                        const response = await fetch('http://localhost:8000/editpassword', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                user_id: window.sessionStorage.getItem('user_id'),
+                                password: newpassword,
+                            }),
+                        });
+
+                        if (response.ok) {
+                            alert('密碼修改成功');
+                            window.location.reload(); // Refresh the page
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                    }
+                } else {
+                    setpwMessage('密碼不一致');
+                }
+            }
+            else {
+                setpwMessage('原始密碼錯誤');
+            }
         }
     };
 
@@ -449,6 +487,7 @@ const Tabs = () => {
                                                             id="editaccount"
                                                             placeholder={window.sessionStorage.getItem('account')}
                                                         />
+                                                        <p style={{ color: 'red' }}>{accountempty}</p>
                                                     </div>
                                                 </CCol>
                                                 <CCol sm={3}></CCol>
@@ -459,7 +498,8 @@ const Tabs = () => {
                                                 <CCol sm={6}>
                                                     <div className="mb-3">
                                                         <CFormLabel htmlFor="email"><strong>輸入密碼</strong></CFormLabel>
-                                                        <CFormInput type="password" id="checkpw" required />
+                                                        <CFormInput type="password" id="checkpw" />
+                                                        <p style={{ color: 'red' }}>{checkpwempty}</p>
                                                     </div>
                                                 </CCol>
                                                 <CCol sm={3}></CCol>
@@ -497,6 +537,7 @@ const Tabs = () => {
                                                     <div className="mb-3">
                                                         <CFormLabel htmlFor="account"><strong>原本密碼</strong></CFormLabel>
                                                         <CFormInput type="password" id="OriginPassword" />
+                                                        <p style={{ color: 'red' }}>{originpwempty}</p>
                                                     </div>
                                                 </CCol>
                                                 <CCol sm={3}></CCol>
@@ -508,6 +549,7 @@ const Tabs = () => {
                                                     <div className="mb-3">
                                                         <CFormLabel htmlFor="email"><strong>新密碼</strong></CFormLabel>
                                                         <CFormInput type="password" id="NewPassword" onChange={handleNewPasswordChange} />
+                                                        <p style={{ color: 'red' }}>{newpwempty}</p>
                                                     </div>
                                                 </CCol>
                                                 <CCol sm={3}></CCol>
@@ -518,6 +560,7 @@ const Tabs = () => {
                                                     <div className="mb-3">
                                                         <CFormLabel htmlFor="account"><strong>確認新密碼</strong></CFormLabel>
                                                         <CFormInput type="password" id="checkNewPassword" />
+                                                        <p style={{ color: 'red' }}>{checknewpwempty}</p>
                                                     </div>
                                                 </CCol>
                                                 <CCol sm={3}></CCol>
