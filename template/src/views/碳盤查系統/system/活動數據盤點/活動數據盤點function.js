@@ -23,6 +23,7 @@ export const FunctionOne = () => {
                     <tr>
                         <th>發票/收據日期</th>
                         <th>發票號碼/收據編號</th>
+                        <th>油種</th>
                         <th>單位</th>
                         <th>公升數/金額</th>
                         <th>備註</th>
@@ -34,6 +35,7 @@ export const FunctionOne = () => {
                     <tr>
                         <td>2023/01/15</td>
                         <td>XXXXX</td>
+                        <td>柴油</td>
                         <td>公升</td>
                         <td>XXXXXX</td>
                         <td>讚</td>
