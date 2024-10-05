@@ -36,7 +36,15 @@ const FunctionForms = ({ currentFunction }) => {
                             <CFormInput className={styles.addinput} type="text" id="num" required />
                         </CCol>
                     </CRow>
-
+                    <CRow className="mb-3">
+                        <CFormLabel htmlFor="type" className={`col-sm-2 col-form-label ${styles.addlabel}`} >油種*</CFormLabel>
+                        <CCol>
+                            <CFormSelect aria-label="Default select example" id="type" className={styles.addinput}>
+                                <option value="1">汽油</option>
+                                <option value="2">柴油</option>
+                            </CFormSelect>
+                        </CCol>
+                    </CRow>
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="unit" className={`col-sm-2 col-form-label ${styles.addlabel}`} >單位*<span className={styles.Note}> 選擇單位請以*公升*做為優先填寫項目</span></CFormLabel>
                         <CCol>
@@ -73,7 +81,7 @@ const FunctionForms = ({ currentFunction }) => {
 
                 </div>
             );
-        case 'two':
+       
             return (
                 <div className={styles.addmodal}>
 
