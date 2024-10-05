@@ -58,12 +58,12 @@ const _nav = [
     items: [
       {
         component: CNavItem,
-        name: 'Buttons',
+        name: '碳盤查–啟新',
         to: '/碳盤查系統/system',
       },
       {
         component: CNavItem,
-        name: 'Buttons groups',
+        name: '碳盤查–顧問',
         to: '/碳盤查系統/顧問system/排放源鑑別',
       },
     ],

@@ -8,18 +8,21 @@
     border: none;
     box-shadow: 0px 2px 5px rgb(186, 186, 186);
     border-radius: 15px;
-    min-height: 500px;
     width: 85%;
+    height: 500px;
     margin-bottom: 30px;
-    
-    padding: 20px 30px;
+    max-height: 500px;
+    overflow: auto;
 }
 
-/* .cardBody {
+
+.cardBody {
     width: 100%;
     height: 100%;
     overflow: auto;
-} */
+    
+    padding: 20px 30px;
+}
 
 .table {
     text-align: center;
@@ -52,3 +55,65 @@
     color: rgb(255, 58, 58);
 }
 
+.block{
+    margin-bottom:20px;
+}
+
+.blockHead{
+    border-bottom: 2px solid rgb(206, 206, 206);
+    width:70%
+}
+
+.blockHead h5{
+    margin-bottom:0px;
+    display: inline-block;
+    font-weight: bolder;
+    border-bottom: 5px solid #8CC0D6;
+    padding:0 20px;
+    margin: 20px 0 0 10px;
+}
+
+.blockBody{
+    padding:20px 50px 0 50px;
+    display: grid;
+    align-items: center; /* 垂直居中對齊 */
+    grid-template-columns: 30% 30% 30%;
+    column-gap:5%;
+    row-gap: 20px;
+}
+.blockBody1{
+    padding:20px 50px 0 50px;
+}
+
+.blockBody p{
+    margin-bottom:0px;
+}
+.blockBody span{
+    color:#625F5F;
+    font-weight: bolder;
+    font-size: 18px;
+}
+
+.blockBody .input{
+    width:130px;
+}
+
+.submit{
+    text-align: center;
+    margin:50px 0 20px 0;
+}
+.submit .button{
+    background-Color:#CA6AAF;
+    border-radius:10px;
+    border:none;
+    color:white;
+    font-weight:bold;
+    font-size:1.2rem;
+    width:6em;
+    height:2.5em;
+}
+
+.submit .button:hover{
+    background-color:#ca8fb9;
+    transition: 0.5s;
+}
