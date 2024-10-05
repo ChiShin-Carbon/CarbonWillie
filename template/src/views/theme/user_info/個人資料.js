@@ -31,8 +31,6 @@ const Tabs = () => {
     const [department, setDepartment] = useState("");
     const [positionID, setPositionID] = useState("");
     const [position, setPosition] = useState("");
-    const [hash, setHash] = useState("");
-    const [hex, setHex] = useState(false);
     const [accmessage, setaccMessage] = useState('');
     const [newpassword, setNewPassword] = useState('');
     const [pwmessage, setpwMessage] = useState('');
@@ -138,6 +136,9 @@ const Tabs = () => {
     const editaccount = async (e) => {
         e.preventDefault(); // Prevent form submission
 
+        setAccountEmpty("");
+        setCheckpwEmpty("");
+
         const isCorrect = await isPasswordCorrect(document.getElementById('checkpw').value);
         const AccnotEmpty = document.getElementById('editaccount').value !== '';
         const CheckpwnotEmpty = document.getElementById('checkpw').value !== '';
@@ -177,6 +178,9 @@ const Tabs = () => {
                     console.error('Error:', error);
                 }
             }
+            else {
+                setaccMessage('密碼錯誤');
+            }
         }
     };
 
@@ -186,6 +190,10 @@ const Tabs = () => {
 
     const editpassword = async (e) => {
         e.preventDefault(); // Prevent form submission
+
+        setOriginpwEmpty("");
+        setNewpwEmpty("");
+        setChecknewpwEmpty("");
 
         const isCorrect = await isPasswordCorrect(document.getElementById('OriginPassword').value);
 
@@ -259,12 +267,10 @@ const Tabs = () => {
             if (pwresponse.ok) {
                 return true;
             } else {
-                setaccMessage("密碼錯誤");
                 return false;
             }
 
         } catch (error) {
-            console.error('密碼錯誤');
             return false;
         }
     };
