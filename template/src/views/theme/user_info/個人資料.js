@@ -21,7 +21,7 @@ import { useEffect, useState } from 'react';
 
 const Tabs = () => {
 
-    const [account, setAccount] = useState("");
+    const [address, setAddress] = useState("");
     const [businessID, setBusinessID] = useState("");
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
@@ -34,7 +34,7 @@ const Tabs = () => {
     const [accmessage, setaccMessage] = useState('');
     const [newpassword, setNewPassword] = useState('');
     const [pwmessage, setpwMessage] = useState('');
-    const [accountempty, setAccountEmpty] = useState(false);
+    const [addressempty, setAddressEmpty] = useState(false);
     const [checkpwempty, setCheckpwEmpty] = useState(false);
     const [originpwempty, setOriginpwEmpty] = useState(false);
     const [newpwempty, setNewpwEmpty] = useState(false);
@@ -55,7 +55,7 @@ const Tabs = () => {
             console.log(data);
             if (response.ok) {
                 console.log(data);
-                setAccount(data.user.account);
+                setAddress(data.user.address);
                 setBusinessID(data.user.business_id);
                 setName(data.user.username);
                 setEmail(data.user.email);
@@ -133,20 +133,20 @@ const Tabs = () => {
         }
     };
 
-    const editaccount = async (e) => {
+    const editaddress = async (e) => {
         e.preventDefault(); // Prevent form submission
 
-        setAccountEmpty("");
+        setAddressEmpty("");
         setCheckpwEmpty("");
 
         const isCorrect = await isPasswordCorrect(document.getElementById('checkpw').value);
-        const AccnotEmpty = document.getElementById('editaccount').value !== '';
+        const AccnotEmpty = document.getElementById('editaddress').value !== '';
         const CheckpwnotEmpty = document.getElementById('checkpw').value !== '';
 
         const AccAndPwNotEmpty = AccnotEmpty && CheckpwnotEmpty;
 
         if (!AccnotEmpty) {
-            setAccountEmpty("請輸入帳號");
+            setAddressEmpty("請輸入帳號");
         }
 
         if (!CheckpwnotEmpty) {
@@ -156,23 +156,23 @@ const Tabs = () => {
         if (AccAndPwNotEmpty) {
             if (isCorrect) {
                 try {
-                    const response = await fetch('http://localhost:8000/editaccount', {
+                    const response = await fetch('http://localhost:8000/editaddress', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                         },
                         body: JSON.stringify({
                             user_id: window.sessionStorage.getItem('user_id'),
-                            account: document.getElementById('editaccount').value,
+                            address: document.getElementById('editaddress').value,
                         }),
                     });
 
                     if (response.ok) {
                         alert('修改成功');
                         window.location.reload(); // Refresh the page
-                        window.sessionStorage.setItem('account', document.getElementById('editaccount').value);
+                        window.sessionStorage.setItem('address', document.getElementById('editaddress').value);
                     } else {
-                        console.error('Failed to update account:', response.status);
+                        console.error('Failed to update address:', response.status);
                     }
                 } catch (error) {
                     console.error('Error:', error);
@@ -259,7 +259,7 @@ const Tabs = () => {
                 },
                 body: JSON.stringify({
                     user_id: window.sessionStorage.getItem('user_id'),
-                    account: window.sessionStorage.getItem('account'),
+                    address: window.sessionStorage.getItem('address'),
                     password: password,
                 }),
             });
@@ -282,19 +282,19 @@ const Tabs = () => {
         e.preventDefault();
         try {
             const user_id = window.sessionStorage.getItem('user_id');
-            const account = document.getElementById('account').value || document.getElementById('account').placeholder;
+            const address = document.getElementById('address').value || document.getElementById('address').placeholder;
             const password = document.getElementById('Password').value || document.getElementById('Password').placeholder;
 
 
 
-            const response = await fetch('http://localhost:8000/editaccount', {
+            const response = await fetch('http://localhost:8000/editaddress', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
                     user_id: user_id,
-                    account: account,
+                    address: address,
                 }),
             });
         } catch (error) {
@@ -353,8 +353,8 @@ const Tabs = () => {
                                             <CRow className="mb-3">
                                                 <CCol sm={5}>
                                                     <div className="mb-3">
-                                                        <CFormLabel htmlFor="account"><strong>帳號</strong></CFormLabel>
-                                                        <CFormInput type="text" id="account" value={account} disabled readOnly />
+                                                        <CFormLabel htmlFor="address"><strong>帳號</strong></CFormLabel>
+                                                        <CFormInput type="text" id="address" value={address} disabled readOnly />
                                                     </div>
                                                 </CCol>
                                                 <CCol sm={2}></CCol>
@@ -490,10 +490,10 @@ const Tabs = () => {
                                                         <CFormLabel htmlFor="account"><strong>修改帳號</strong></CFormLabel>
                                                         <CFormInput
                                                             type="text"
-                                                            id="editaccount"
-                                                            placeholder={window.sessionStorage.getItem('account')}
+                                                            id="editaddress"
+                                                            placeholder={window.sessionStorage.getItem('address')}
                                                         />
-                                                        <p style={{ color: 'red' }}>{accountempty}</p>
+                                                        <p style={{ color: 'red' }}>{addressempty}</p>
                                                     </div>
                                                 </CCol>
                                                 <CCol sm={3}></CCol>
@@ -525,7 +525,7 @@ const Tabs = () => {
 
 
                                             <div className="col-auto text-center">
-                                                <CButton type="submit" className="mb-3 customButton" onClick={editaccount}>
+                                                <CButton type="submit" className="mb-3 customButton" onClick={editaddress}>
                                                     保存資料
                                                 </CButton>
                                             </div>

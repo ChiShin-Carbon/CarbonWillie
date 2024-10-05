@@ -7,7 +7,7 @@ def read_users():
     conn = connectDB()
     if conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT user_id, business_id, username, email, telephone, phone, department, position, account, password FROM users")  # Query the users1 table
+        cursor.execute("SELECT user_id, business_id, username, email, telephone, phone, department, position, address, password FROM users")  # Query the users1 table
         users = cursor.fetchall()
         conn.close()
 
@@ -23,7 +23,7 @@ def read_users():
                 "phone": row[5],
                 "department": row[6],
                 "position": row[7],
-                "account": row[8],
+                "address": row[8],
                 "password": row[9]
             }
             user_list.append(user_dict)
