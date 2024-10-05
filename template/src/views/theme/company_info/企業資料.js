@@ -452,15 +452,7 @@ const Tabs = () => {
                                                     <CCol sm={3}>
                                                         <div className="mb-3">
                                                             <CFormLabel><strong>登錄原因</strong></CFormLabel>
-                                                            <CFormSelect 
-                                                                type="reason"
-                                                                id="reason"
-                                                                size="sm" 
-                                                                style={{ 
-                                                                    fontSize: '0.875rem',
-                                                                    height: '38px', 
-                                                                }}
-                                                                >
+                                                            <CFormSelect>
                                                                 <option value="0">自願性登錄</option>
                                                                 <option value="1">環評承諾</option>
                                                                 <option value="2">依法登錄</option>
@@ -473,15 +465,7 @@ const Tabs = () => {
                                                     <CCol sm={12}>
                                                         <div className="mb-3">
                                                             <CFormLabel><strong>盤查依據規範</strong></CFormLabel>
-                                                            <CFormSelect 
-                                                                type="specification"
-                                                                id="specification"
-                                                                size="sm" 
-                                                                style={{ 
-                                                                    fontSize: '0.875rem',
-                                                                    height: '38px', 
-                                                                }}
-                                                                >
+                                                            <CFormSelect>
                                                                 <option value="0">溫室氣體排放量盤查登錄管理辦法/溫室氣體盤查登錄作業指引</option>
                                                                 <option value="1">ISO / CNS 14064-1</option>
                                                                 <option value="2">溫室氣體盤查議定書-企業會計與報告標準</option>
@@ -493,15 +477,7 @@ const Tabs = () => {
                                                     <CCol sm={4}>
                                                         <div className="mb-3">
                                                             <CFormLabel><strong>是否經第三方查證</strong></CFormLabel>
-                                                            <CFormSelect 
-                                                                type="verification"
-                                                                id="verification"
-                                                                size="sm" 
-                                                                style={{ 
-                                                                    fontSize: '0.875rem',
-                                                                    height: '38px', 
-                                                                }}
-                                                                >
+                                                            <CFormSelect>
                                                                 <option value="0">是</option>
                                                                 <option value="1">否</option>
                                                             </CFormSelect>
@@ -510,15 +486,7 @@ const Tabs = () => {
                                                     <CCol sm={8}>
                                                         <div className="mb-3">
                                                             <CFormLabel><strong>查驗機構名稱</strong></CFormLabel>
-                                                            <CFormSelect 
-                                                                type="inspection_agency"
-                                                                id="inspection_agency"
-                                                                size="sm" 
-                                                                style={{ 
-                                                                    fontSize: '0.875rem',
-                                                                    height: '38px', 
-                                                                }}
-                                                                >
+                                                            <CFormSelect>
                                                                 <option value="0">艾法諾國際股份有限公司(AFNOR)</option>
                                                                 <option value="1">香港商英國標準協會太平洋有限公司台灣分公司(Bsi)</option>
                                                                 <option value="2">台灣衛理國際品保驗證股份有限公司(BV)</option>
