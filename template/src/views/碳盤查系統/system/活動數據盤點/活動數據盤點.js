@@ -84,7 +84,6 @@ const Tabs = () => {
                     </div>
                     <div className={styles.activityCardBody}>
                         {currentFunction === 'one' && <FunctionOne />}
-                        {currentFunction === 'two' && <FunctionTwo />}
                         {currentFunction === 'three' && <FunctionThree />}
                         {currentFunction === 'four' && <FunctionFour />}
                         {currentFunction === 'five' && <FunctionFive />}
@@ -109,8 +108,7 @@ const Tabs = () => {
                         <h5 className={styles.navTitle}>範疇一</h5>
                         <hr className={styles.hr}></hr>
 
-                        <div className={`${styles.navContent} ${currentFunction === 'one' ? styles.navContentChoose : ''}`} onClick={() => handleFunctionChange('one', '公務車(汽油)')} > 公務車(汽油)</div>
-                        <div className={`${styles.navContent} ${currentFunction === 'two' ? styles.navContentChoose : ''}`} onClick={() => handleFunctionChange('two', '公務車(柴油)')}>公務車(柴油)</div>
+                        <div className={`${styles.navContent} ${currentFunction === 'one' ? styles.navContentChoose : ''}`} onClick={() => handleFunctionChange('one', '公務車(汽油)')} > 公務車</div>
                         <div className={`${styles.navContent} ${currentFunction === 'three' ? styles.navContentChoose : ''}`} onClick={() => handleFunctionChange('three', '滅火器')}>滅火器</div>
                         <div className={`${styles.navContent} ${currentFunction === 'four' ? styles.navContentChoose : ''}`} onClick={() => handleFunctionChange('four', '工作時數(員工)')}>工作時數(員工)</div>
                         <div className={`${styles.navContent} ${currentFunction === 'five' ? styles.navContentChoose : ''}`} onClick={() => handleFunctionChange('five', '工作時數(非員工)')}>工作時數(非員工)</div>
