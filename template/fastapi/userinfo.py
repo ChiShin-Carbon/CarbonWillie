@@ -16,7 +16,7 @@ def read_user_credentials(user: User):
         cursor = conn.cursor()
         try:
             # Secure SQL query using parameterized query to prevent SQL injection
-            query = "SELECT account,business_id, username, email, telephone, phone, department, position FROM users WHERE user_id = ?"
+            query = "SELECT address,business_id, username, email, telephone, phone, department, position FROM users WHERE user_id = ?"
             cursor.execute(query, (user.user_id,))  # Use the user's input in the query, tuple with trailing comma for a single item
             user_record = cursor.fetchone()
             conn.close()
@@ -24,7 +24,7 @@ def read_user_credentials(user: User):
             if user_record:
                 # Convert the result into a dictionary
                 result = {
-                    "account": user_record[0],
+                    "address": user_record[0],
                     "business_id": user_record[1],
                     "username": user_record[2],
                     "email": user_record[3],

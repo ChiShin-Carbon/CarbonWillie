@@ -4,21 +4,21 @@ from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 
 
-editaccount = APIRouter()
+editaddress = APIRouter()
 
 class User(BaseModel):
     user_id: int
-    account: str
+    address: str
 
-@editaccount.post("/editaccount")
+@editaddress.post("/editaddress")
 def read_user_credentials(user: User):
     conn = connectDB()  # Establish connection using your custom connect function
     if conn:
         cursor = conn.cursor()
         try:
             # Secure SQL query using parameterized query to prevent SQL injection
-            query = "update users set account = ? WHERE user_id = ?"
-            cursor.execute(query, (user.account, user.user_id))
+            query = "update users set address = ? WHERE user_id = ?"
+            cursor.execute(query, (user.address, user.user_id))
             conn.commit()  # Commit the changes
 
 

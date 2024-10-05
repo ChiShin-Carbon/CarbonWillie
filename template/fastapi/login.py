@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 login = APIRouter()
 
 class User(BaseModel):
-    account: str
+    address: str
     password: str
 
 @login.post("/login")
@@ -17,14 +17,14 @@ def read_user_credentials(user: User):
         cursor = conn.cursor()
         try:
             # Secure SQL query using parameterized query to prevent SQL injection
-            query = "SELECT user_id, account, password, username FROM users WHERE account = ? AND password = ?"
-            cursor.execute(query, (user.account, user.password))  # Use the user's input in the query
+            query = "SELECT user_id, address, password, username FROM users WHERE address = ? AND password = ?"
+            cursor.execute(query, (user.address, user.password))  # Use the user's input in the query
             user_record = cursor.fetchone()
             conn.close()
 
             if user_record:
                 # Convert the result into a dictionary
-                result = {"user_id": user_record[0], "account": user_record[1], "password": user_record[2], "username": user_record[3]}
+                result = {"user_id": user_record[0], "address": user_record[1], "password": user_record[2], "username": user_record[3]}
                 return {"user": result}  
             else:
                 # Raise a 404 error if user not found

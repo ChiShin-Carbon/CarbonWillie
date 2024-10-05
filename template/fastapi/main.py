@@ -12,7 +12,7 @@ from route import router
 from login import login
 from userinfo import userinfo
 from edituserinfo import edituserinfo
-from editaccount import editaccount
+from editaddress import editaddress
 from editpassword import editpassword
 
 
@@ -43,5 +43,5 @@ app.include_router(router)
 app.include_router(login)
 app.include_router(userinfo)
 app.include_router(edituserinfo)
-app.include_router(editaccount)
+app.include_router(editaddress)
 app.include_router(editpassword)

@@ -27,7 +27,7 @@ const Login = () => {
     e.preventDefault();  // Prevent the form from submitting the traditional way
   
     // Get the values from the input fields
-    const account = document.getElementById('account').value;
+    const address = document.getElementById('address').value;
     const password = document.getElementById('Password').value;
   
     try {
@@ -37,7 +37,7 @@ const Login = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          account: account, 
+          address: address, 
           password: password,
         }),
       });
@@ -50,7 +50,7 @@ const Login = () => {
             window.location.href = "#/theme/home"; // Redirect to the dashboard page
             window.sessionStorage.setItem('user_id', data.user.user_id); // Store the user_id
             window.sessionStorage.setItem('username', data.user.username); 
-            window.sessionStorage.setItem('account', data.user.account);
+            window.sessionStorage.setItem('address', data.user.address);
             console.log('Stored user_id:', data.user.user_id);
             } else {
             setMessage("帳號或密碼錯誤"); // Use the error message from the response
@@ -97,7 +97,7 @@ const Login = () => {
                   <CRow className="mb-3">
                     <CFormLabel htmlFor="account" className="col-sm-2 col-form-label customlabel" >使用者帳號</CFormLabel>
                     <CCol>
-                      <CFormInput className="custominput" type="text" id="account" placeholder="請填寫您的使用者帳號" />
+                      <CFormInput className="custominput" type="text" id="address" placeholder="請填寫您的使用者帳號" />
                     </CCol>
                   </CRow>
                   <CRow className="mb-3">
