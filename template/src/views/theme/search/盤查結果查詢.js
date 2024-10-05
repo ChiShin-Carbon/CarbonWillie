@@ -8,6 +8,9 @@ import {
     CTableBody,
     CTableCaption,
     CTableHead,
+    CTableHeaderCell,
+    CTableDataCell,
+    CTableRow,
 } from '@coreui/react'
 import {
     CChartBar,
@@ -22,7 +25,9 @@ import { DocsExample } from 'src/components'
 import CIcon from '@coreui/icons-react'
 import {
      cilDataTransferDown,
-     cilDataTransferUp
+     cilDataTransferUp,
+     cilMenu,
+     cilChartPie
  } from '@coreui/icons'
 // import { freeSet } from '@coreui/icons'
 // import { getIconsView } from '../brands/Brands.js'
@@ -31,7 +36,8 @@ import {
 const Tabs = () => {
     const random = () => Math.round(Math.random() * 100)
     const [activeTab, setActiveTab] = useState('tab1'); // 記錄當前活動的分頁
-    const  cellStyle = {border: '1px solid white',textAlign: 'center'}; // table設定
+    const cellStyle={ border: '1px solid white',textAlign: 'center', verticalAlign: 'middle',height:'40px' }; // table_th設定
+
     return (
         
         <CRow>
@@ -75,12 +81,15 @@ const Tabs = () => {
                         <CNavItem>
                         <CNavLink active={activeTab === 'tab1'}
                             onClick={() => setActiveTab('tab1')}>
-                        表格呈現
+                            <div>
+                            {/* <CIcon style={{ display: 'flex'}} icon={cilMenu} className="me-2" /> */}
+                            表格呈現</div>
                         </CNavLink>
                         </CNavItem><CNavItem>
                         <CNavLink active={activeTab === 'tab2'}
-                                    onClick={() => setActiveTab('tab2')}>
-                        圖形呈現
+                            onClick={() => setActiveTab('tab2')}>
+                            {/* <CIcon style={{ display: 'flex'}} icon={cilChartPie} className="me-2" /> */}
+                            圖形呈現
                         </CNavLink>
                         </CNavItem>
                     </CNav>
@@ -106,7 +115,343 @@ const Tabs = () => {
                         </CRow>
                         </div>
                         <br/>
+                        {/* 全廠電力 */}
                         <CCard style={{ width: '100%' }}>
+                            <CCardBody>
+                                <CRow>
+                                <CCardTitle>
+                                 <CRow>   
+                                <div style={{width:'100%',height:'50px',display: 'grid',alignItems: 'center',}}> 
+                                <strong style={{ fontSize: '1.4rem',display: 'flex', alignItems: 'center',padding:'5px'}}>全廠電力</strong>
+                                    <CButton style={{position: 'absolute', right: '30px',width:'40px',backgroundColor:'#9D6B6B',color:'white',display: 'flex',alignItems: 'center' }}>
+                                        <b><CIcon icon={cilDataTransferDown} className="me-2" /></b>
+                                    </CButton>
+                                </div>
+                                </CRow>
+                                </CCardTitle>
+                                </CRow>
+                                <table style={{width: '700px'}}>
+                                    <thead style={{border: '1px solid white',backgroundColor:'#33CCFF',color:'white'}}>
+                                    <tr>
+                                    <th scope="col" style={cellStyle}></th>
+                                        <th scope="col" style={cellStyle}>全廠火力電力(仟度)</th>
+                                        <th scope="col" style={cellStyle}>風力(仟度)</th>
+                                        <th scope="col" style={cellStyle}>水力(仟度)</th>
+                                        <th scope="col" style={cellStyle}>地熱(仟度)</th >
+                                        <th scope="col" style={cellStyle}>水力(仟度)</th >
+                                        <th scope="col" style={cellStyle}>水力(仟度)</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody style={{border: '1px solid white',backgroundColor:'#CCEEFF'}}>
+                                    <tr>
+                                        <td style={{ border: '1px solid white',textAlign: 'center', verticalAlign: 'middle',height:'40px',width:'70px'}}>
+                                            <b>電力</b></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <br/>
+                            </CCardBody>
+                        </CCard>
+                        <br></br>
+                        {/* 全廠 七大溫室氣體排放量統計表 */}
+                        <CCard style={{ width: '100%' }}>
+                            <CCardBody>
+                                <CRow>
+                                <CCardTitle>
+                                 <CRow>   
+                                <div style={{width:'100%',height:'50px',display: 'grid',alignItems: 'center',}}> 
+                                <strong style={{ fontSize: '1.4rem',display: 'flex', alignItems: 'center',padding:'5px'}}>全廠&nbsp;七大溫室氣體排放量統計表</strong>
+                                    <CButton style={{position: 'absolute', right: '30px',width:'40px',backgroundColor:'#9D6B6B',color:'white',display: 'flex',alignItems: 'center' }}>
+                                        <b><CIcon icon={cilDataTransferDown} className="me-2" /></b>
+                                    </CButton>
+                                </div>
+                                </CRow>
+                                </CCardTitle>
+                                </CRow>
+                                <table style={{width: '1100px'}}>
+                                    <thead style={{border: '1px solid white',backgroundColor:'#33CCFF',color:'white'}}>
+                                    <tr>
+                                        <th scope="col" style={cellStyle}></th>
+                                        <th scope="col" style={cellStyle}>CO2</th>
+                                        <th scope="col" style={cellStyle}>CH4</th>
+                                        <th scope="col" style={cellStyle}>N2O</th>
+                                        <th scope="col" style={cellStyle}>HFCs</th>
+                                        <th scope="col" style={cellStyle}>PFCs</th>
+                                        <th scope="col" style={cellStyle}>SF6</th>
+                                        <th scope="col" style={cellStyle}>NF3</th>
+                                        <th scope="col" style={cellStyle}>七種溫室氣體年總排放當量</th>
+                                        <th scope="col" style={cellStyle}>生質排放當量</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody style={{border: '1px solid white',backgroundColor:'#CCEEFF'}}>
+                                    <tr>
+                                        <td style={{ border: '1px solid white',textAlign: 'center', verticalAlign: 'middle',height:'40px',width:'150px'}}>
+                                            <b>排放當量<br/>(公噸CO2e/年)</b></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                    </tr>
+                                    <tr>
+                                        <td style={{ border: '1px solid white',textAlign: 'center', verticalAlign: 'middle',height:'40px',width:'70px'}}>
+                                            <b>氣體別占比<br/>(%)</b></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <br/>
+                            </CCardBody>
+                        </CCard>
+                        <br></br>
+                        {/* 類別一 七大溫室氣體排放量統計表 */}
+                        <CCard style={{ width: '100%' }}>
+                            <CCardBody>
+                                <CRow>
+                                <CCardTitle>
+                                 <CRow>   
+                                <div style={{width:'100%',height:'50px',display: 'grid',alignItems: 'center',}}> 
+                                <strong style={{ fontSize: '1.4rem',display: 'flex', alignItems: 'center',padding:'5px'}}>類別一&nbsp;&nbsp;七大溫室氣體排放量統計表</strong>
+                                    <CButton style={{position: 'absolute', right: '30px',width:'40px',backgroundColor:'#9D6B6B',color:'white',display: 'flex',alignItems: 'center' }}>
+                                        <b><CIcon icon={cilDataTransferDown} className="me-2" /></b>
+                                    </CButton>
+                                </div>
+                                </CRow>
+                                </CCardTitle>
+                                </CRow>
+                                <table style={{width: '1100px'}}>
+                                    <thead style={{border: '1px solid white',backgroundColor:'#33CCFF',color:'white'}}>
+                                    <tr>
+                                        <th scope="col" style={cellStyle}></th>
+                                        <th scope="col" style={cellStyle}>CO2</th>
+                                        <th scope="col" style={cellStyle}>CH4</th>
+                                        <th scope="col" style={cellStyle}>N2O</th>
+                                        <th scope="col" style={cellStyle}>HFCs</th>
+                                        <th scope="col" style={cellStyle}>PFCs</th>
+                                        <th scope="col" style={cellStyle}>SF6</th>
+                                        <th scope="col" style={cellStyle}>NF3</th>
+                                        <th scope="col" style={cellStyle}>七種溫室氣體年總排放當量</th>
+                                        <th scope="col" style={cellStyle}>生質排放當量</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody style={{border: '1px solid white',backgroundColor:'#CCEEFF'}}>
+                                    <tr>
+                                        <td style={{ border: '1px solid white',textAlign: 'center', verticalAlign: 'middle',height:'40px',width:'150px'}}>
+                                            <b>排放當量<br/>(公噸CO2e/年)</b></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                    </tr>
+                                    <tr>
+                                        <td style={{ border: '1px solid white',textAlign: 'center', verticalAlign: 'middle',height:'40px',width:'70px'}}>
+                                            <b>氣體別占比<br/>(%)</b></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <br/>
+                            </CCardBody>
+                        </CCard>
+                        <br></br>
+                        {/* 類別一及類別二排放形式排放量統計表 */}
+                        <CCard style={{ width: '100%' }}>
+                            <CCardBody>
+                                <CRow>
+                                <CCardTitle>
+                                 <CRow>   
+                                <div style={{width:'100%',height:'50px',display: 'grid',alignItems: 'center',}}> 
+                                <strong style={{ fontSize: '1.4rem',display: 'flex', alignItems: 'center',padding:'5px'}}>類別一及類別二&nbsp;&nbsp;排放形式排放量統計表</strong>
+                                    <CButton style={{position: 'absolute', right: '30px',width:'40px',backgroundColor:'#9D6B6B',color:'white',display: 'flex',alignItems: 'center' }}>
+                                        <b><CIcon icon={cilDataTransferDown} className="me-2" /></b>
+                                    </CButton>
+                                </div>
+                                </CRow>
+                                </CCardTitle>
+                                </CRow>
+                                <table style={{width: '1100px'}}>
+                                    <thead style={{border: '1px solid white',backgroundColor:'#33CCFF',color:'white'}}>
+                                    <tr>
+                                        <th scope="col" style={cellStyle} rowSpan={2}></th>
+                                        <th scope="col" style={cellStyle} colSpan={4}>類別1</th>
+                                        <th scope="col" style={cellStyle} colSpan={2}>類別2</th>
+                                        <th scope="col" style={cellStyle} colSpan={2} rowSpan={2}>類別一及類別二排放量</th>
+                                    </tr>
+                                    <tr>
+                                        <th scope="col" style={cellStyle}>固定排放</th>
+                                        <th scope="col" style={cellStyle}>製程排放</th>
+                                        <th scope="col" style={cellStyle}>移動排放</th>
+                                        <th scope="col" style={cellStyle}>逸散排放</th>
+                                        <th scope="col" style={cellStyle}>外購電力</th>
+                                        <th scope="col" style={cellStyle}>外購蒸氣</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody style={{border: '1px solid white',backgroundColor:'#CCEEFF'}}>
+                                    <tr>
+                                        <td  rowSpan={2} style={{ border: '1px solid white',textAlign: 'center', verticalAlign: 'middle',height:'40px',width:'150px'}}>
+                                            <b>排放當量<br/>(公噸CO2e/年)</b></td>
+                                        <td style={cellStyle} colSpan={4}></td>
+                                        <td style={cellStyle} colSpan={2}></td>
+                                        <td style={cellStyle}></td>
+                                    </tr>
+                                    <tr>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                    </tr>
+                                    <tr>
+                                        <td rowSpan={2} style={{ border: '1px solid white',textAlign: 'center', verticalAlign: 'middle',height:'40px',width:'70px'}}>
+                                            <b>氣體別占比<br/>(%)</b></td>
+                                        <td style={cellStyle} colSpan={4}></td>
+                                        <td style={cellStyle} colSpan={2}></td>
+                                        <td style={cellStyle}></td>
+                                    </tr>
+                                    <tr>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <br/>
+                            </CCardBody>
+                        </CCard>
+                        <br></br>
+                        {/* 全廠溫室氣體數據等級評估結果 */}
+                        <CCard style={{ width: '100%' }}>
+                            <CCardBody>
+                                <CRow>
+                                <CCardTitle>
+                                 <CRow>   
+                                <div style={{width:'100%',height:'50px',display: 'grid',alignItems: 'center',}}> 
+                                <strong style={{ fontSize: '1.4rem',display: 'flex', alignItems: 'center',padding:'5px'}}>全廠&nbsp;溫室氣體數據等級評估結果</strong>
+                                    <CButton style={{position: 'absolute', right: '30px',width:'40px',backgroundColor:'#9D6B6B',color:'white',display: 'flex',alignItems: 'center' }}>
+                                        <b><CIcon icon={cilDataTransferDown} className="me-2" /></b>
+                                    </CButton>
+                                </div>
+                                </CRow>
+                                </CCardTitle>
+                                </CRow>
+                                <table style={{width: '1100px'}}>
+                                <thead style={{border: '1px solid white',backgroundColor:'#33CCFF',color:'white'}}>
+                                    <tr style={{height:'80px'}}>
+                                        <th scope="col" style={cellStyle}>等級</th>
+                                        <th scope="col" style={cellStyle}>第一級</th>
+                                        <th scope="col" style={cellStyle}>第二級</th>
+                                        <th scope="col" style={cellStyle}>第三級</th>
+                                    </tr>
+                                    <tr>
+                                        <th scope="col" style={cellStyle}>評分範圍</th>
+                                        <th scope="col" style={cellStyle}>X{'<'}10分</th>
+                                        <th scope="col" style={cellStyle}>10分{'≦'}X{'<'}19分</th>
+                                        <th scope="col" style={cellStyle}>19{'≦'}X{'≦'}27分</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody style={{border: '1px solid white',backgroundColor:'#CCEEFF'}}>
+                                    <tr>
+                                        <td style={{ border: '1px solid white',textAlign: 'center', verticalAlign: 'middle',height:'40px',width:'150px'}}>
+                                            <b>個數</b></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                    </tr>
+                                    <tr style={{height:'80px'}}>
+                                        <td style={{ border: '1px solid white',textAlign: 'center', verticalAlign: 'middle',height:'40px',width:'70px'}}>
+                                            <b>清冊等級<br/>總平均分數</b></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <br/>
+                            </CCardBody>
+                        </CCard>
+                        <br></br>
+                         {/* 溫室氣體不確定性量化評估結果 */}
+                         <CCard style={{ width: '100%' }}>
+                            <CCardBody>
+                                <CRow>
+                                <CCardTitle>
+                                 <CRow>   
+                                <div style={{width:'100%',height:'50px',display: 'grid',alignItems: 'center',}}> 
+                                <strong style={{ fontSize: '1.4rem',display: 'flex', alignItems: 'center',padding:'5px'}}>溫室氣體不確定性量化評估結果</strong>
+                                    <CButton style={{position: 'absolute', right: '30px',width:'40px',backgroundColor:'#9D6B6B',color:'white',display: 'flex',alignItems: 'center' }}>
+                                        <b><CIcon icon={cilDataTransferDown} className="me-2" /></b>
+                                    </CButton>
+                                </div>
+                                </CRow>
+                                </CCardTitle>
+                                </CRow>
+                                <table style={{width: '1100px'}}>
+                                <thead style={{border: '1px solid white',backgroundColor:'#33CCFF',color:'white'}}>
+                                    <tr style={{height:'80px'}}>
+                                        <th scope="col" style={cellStyle}>進行不確定性評估之排放量<br/>絕對值加總</th>
+                                        <th scope="col" style={cellStyle}>排放總量絕對值加總</th>
+                                        <th scope="col" style={cellStyle} rowSpan={2} colSpan={2}>本清冊之總不確定性</th>
+                                    </tr>
+                                    <tr style={{border: '1px solid white',backgroundColor:'#CCEEFF'}}>
+                                        <td scope="col" style={cellStyle}></td>
+                                        <td scope="col" style={cellStyle}></td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="col" style={cellStyle} colSpan={2}>進行不確定性評估之排放量佔總排放量之比例</th>
+                                        <th scope="col" style={cellStyle}>95%信賴區間下限</th>
+                                        <th scope="col" style={cellStyle}>95%信賴區間上限</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody style={{border: '1px solid white',backgroundColor:'#CCEEFF'}}>
+                                    <tr>
+                                        <td style={cellStyle} colSpan={2}></td>
+                                        <td style={cellStyle}></td>
+                                        <td style={cellStyle}></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <br/>
+                            </CCardBody>
+                        </CCard>
+                        <br></br>
+                        {/* <CCard style={{ width: '100%' }}>
                             <CCardBody>
                                 <CCardTitle>
                                  <CRow>   
@@ -227,7 +572,9 @@ const Tabs = () => {
                                 </table>
                                 <br/>
                             </CCardBody>
-                        </CCard>
+                        </CCard> 
+                        <br></br>*/}
+                        
                     <br></br>
                 </>
                 )}
