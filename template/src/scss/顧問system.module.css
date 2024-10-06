@@ -8,7 +8,7 @@
     border: none;
     box-shadow: 0px 2px 5px rgb(186, 186, 186);
     border-radius: 15px;
-    width: 85%;
+    width: 50%;
     height: 500px;
     margin-bottom: 30px;
     max-height: 500px;
@@ -114,6 +114,26 @@
 }
 
 .submit .button:hover{
+    background-color:#ca8fb9;
+    transition: 0.5s;
+}
+
+.submitTable{
+    text-align: center;
+    margin:10px 0 10px 0;
+}
+.submitTable .button{
+    background-Color:#CA6AAF;
+    border-radius:10px;
+    border:none;
+    color:white;
+    font-weight:bold;
+    font-size:1.2rem;
+    width:6em;
+    height:2.5em;
+}
+
+.submitTable .button:hover{
     background-color:#ca8fb9;
     transition: 0.5s;
 }
