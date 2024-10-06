@@ -75,11 +75,16 @@
 
 .blockBody{
     padding:20px 50px 0 50px;
-    display: grid;
+    display: flex;
     align-items: center; /* 垂直居中對齊 */
-    grid-template-columns: 30% 30% 30%;
-    column-gap:5%;
+    flex-wrap:wrap;
+    column-gap:80px;
     row-gap: 20px;
+}
+
+.blockBody div{
+    flex-basis: 40%;   /* 設定每個元素佔30%寬度 */
+    box-sizing: border-box; /* 確保 padding 和 border 不會影響寬度 */
 }
 .blockBody1{
     padding:20px 50px 0 50px;

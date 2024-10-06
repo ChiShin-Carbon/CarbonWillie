@@ -35,7 +35,7 @@ const Tabs = () => {
             }
         },
         {
-            status: "not completed", process: "冷媒補充", equipment: "家用冷凍、冷藏裝備", material: "HFC-134a", details: {
+            status: "not completed", process: "冷媒補充", equipment: "家用冷凍、冷藏裝備", material: "HFC-134a/R-134a，四氟乙烷HFC-134a/R-1", details: {
                 processNum: 'G02', processCode: 'G00099', processName: '冷媒補充',
                 equipNum: 'GF02', equipCode: '4097', equipName: '家用冷凍、冷藏裝備',
                 matType: '原燃物料', matCode: 'GG1835', matName: 'HFC-134a/R-134a，四氟乙烷HFC-134a/R-1', matbio: 'no',
@@ -107,11 +107,11 @@ const Tabs = () => {
                     <Link to="." className="system-tablist-link">
                         <CTab aria-controls="tab1" itemKey={1} className="system-tablist-choose">排放源鑑別</CTab>
                     </Link>
-                    <Link to="/碳盤查系統/system/活動數據分配" className="system-tablist-link">
-                        <CTab aria-controls="tab3" itemKey={4} className="system-tablist-choose">ddd</CTab>
+                    <Link to="/碳盤查系統/顧問system/活動數據" className="system-tablist-link">
+                        <CTab aria-controls="tab3" className="system-tablist-choose">活動數據</CTab>
                     </Link>
                     <Link to="/碳盤查系統/system/活動數據盤點" className="system-tablist-link">
-                        <CTab aria-controls="tab3" itemKey={2} className="system-tablist-choose">ddd</CTab>
+                        <CTab aria-controls="tab3" className="system-tablist-choose">ddd</CTab>
                     </Link>
                 </CTabList>
             </CTabs>
@@ -122,7 +122,7 @@ const Tabs = () => {
                     <h4 className="system-title">排放源鑑別</h4>
                     <hr className="system-hr"></hr>
                 </div>
-                <button className="system-save">儲存</button>
+                {/* <button className="system-save">儲存</button> */}
             </div>
             <div className={styles.cardRow}>
                 <CCard className={styles.card}>
