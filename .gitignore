@@ -28,3 +28,4 @@ env
 __pycache__
 
 template/fastapi/connect
+template/fastapi/connect/connect.py
