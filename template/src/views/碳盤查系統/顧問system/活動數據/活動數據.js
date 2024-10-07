@@ -107,6 +107,10 @@ const Tabs = () => {
                     <Link to="/碳盤查系統/system/活動數據盤點" className="system-tablist-link">
                         <CTab aria-controls="tab3" className="system-tablist-choose">ddd</CTab>
                     </Link>
+                    <Link to="/碳盤查系統/顧問system/全廠電力蒸汽供需情況 " className="system-tablist-link">
+                        <CTab aria-controls="tab3" className="system-tablist-choose">全廠電力蒸汽供需情況 </CTab>
+                    </Link>
+                    
                 </CTabList>
             </CTabs>
 
