@@ -20,6 +20,8 @@ import {
     CChartPolarArea,
     CChartRadar,
   } from '@coreui/react-chartjs'
+  import { Chart } from 'chart.js';
+  import ChartDataLabels from 'chartjs-plugin-datalabels'
 import { DocsCallout } from 'src/components'
 import { DocsExample } from 'src/components'
 import CIcon from '@coreui/icons-react'
@@ -620,7 +622,7 @@ const Tabs = () => {
                                 labels: ['範疇一', '範疇二', '範疇三'],
                                 datasets: [
                                 {
-                                    data: [300, 50, 100],
+                                    data: [60, 30, 10],
                                     backgroundColor: ['#d882c0', '#FFB3FF', '#FFB6C1'],
                                     hoverBackgroundColor: ['#d882c0', '#FFB3FF', '#FFB6C1'],
                                 },
@@ -630,14 +632,28 @@ const Tabs = () => {
                                 responsive: true,
                                 plugins: {
                                   legend: {
+                                    display: true,
                                     position: 'right', // 圖例位置
-                                    
+                                    labels: {
+                                        boxWidth: 25,
+                                      },
                                   },
                                   tooltip: {
                                     enabled: true, // 顯示提示框
                                   },
                                   
                                 },
+                                // 開啟數據標籤
+                                datalabels: {
+                                    display: true,
+                                    color: 'black',  // 設定標籤顏色
+                                    font: {
+                                    weight: 'bold',  // 設定字體粗細
+                                    },
+                                    formatter: (value) => `${value}%`,  // 顯示百分比或其他格式
+                                },    
+                                responsive: true,
+                                maintainAspectRatio: true,
                             }}
                             />
                             </div>
@@ -677,7 +693,9 @@ const Tabs = () => {
                                 tooltip: {
                                     enabled: true, // 顯示提示框
                                 },
-                                },
+                                },   
+                                responsive: true,
+                                maintainAspectRatio: true,
                             }}
                             height={300} // 設置高度為 300px
                             />
@@ -756,7 +774,33 @@ const Tabs = () => {
                                 },
                                 ],
                             }}
-                            labels="months"
+                            options={{
+                                plugins: {
+                                  legend: {
+                                    display: false,
+                                    position: 'bottom',
+                                  },
+                                  datalabels: {
+                                    display: true,
+                                    color: 'black',
+                                    anchor: 'end', // 標籤位置
+                                    align: 'start', // 標籤對齊方式
+                                    formatter: function(value) {
+                                      return value.toFixed(2); // 格式化數值顯示，保留兩位小數
+                                    },
+                                  },
+                                },
+                                responsive: true,
+                                maintainAspectRatio: false, // 不維持比例，可以自由調整大小
+                                scales: {
+                                  y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                      precision: 0, // Y 軸上顯示的數字無小數點
+                                    },
+                                  },
+                                },
+                              }}
                             height={300} // 設置高度為 300px
                             /></div>
                         </CCardBody>
