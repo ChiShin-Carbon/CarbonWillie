@@ -21,7 +21,6 @@ import {
     CChartRadar,
   } from '@coreui/react-chartjs'
   import { Chart } from 'chart.js';
-  import ChartDataLabels from 'chartjs-plugin-datalabels'
 import { DocsCallout } from 'src/components'
 import { DocsExample } from 'src/components'
 import CIcon from '@coreui/icons-react'
