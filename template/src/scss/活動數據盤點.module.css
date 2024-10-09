@@ -321,24 +321,7 @@
     cursor: pointer;
   }
 
-  
-  .tablistContainer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    
-  }
-  
-  .tabsleft {
-    display: flex;
-    gap: 10px; /* 可根據需要調整間距 */
-  }
-  
-  .buttonRight {
-    margin-left: auto;
-  }
 
-  
   .tabsContainer {
     display: flex;
     justify-content: space-between; /* 在兩邊對齊 */
@@ -367,6 +350,7 @@
   
   .buttonRight button:hover{
     background-color:#8c5454;
+    transition:0.5s;
   }
   .addmodal img{
     width:100%;
