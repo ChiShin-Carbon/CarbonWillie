@@ -29,15 +29,16 @@ const Tabs = () => {
                 processNum: 'G01', processCode: '370004', processName: '水肥處理程序',
                 equipNum: 'GF01', equipCode: '9795', equipName: '化糞池',
                 matCode: '36006', matName: '水肥', matbio: '否',
-                sourceClass: '類別1', sourceType: '逸散', sourcePower: '化糞池排放源', sourceSupply: '',
-                annual1: '23802.5', annual2: '100%', annual3: '人小時', annual4: '', annual5: '人事考勤系統',
-                annual6: '管理部', annual7: '自行評估', annual8: '', annual9: 'Kcal/人小時',
-                annual10: '', annual11: '',
-                remark: '化糞池'
+                sourceClass: '類別1', sourceType: '逸散',
+                activity: '23,802.50', activityUnit: '人小時',
+                emiCoe1: 'CH4', emiCoeType: '自訂', emiCoeNum: '0.0000015938', emiCoeSource: 'GHG排放係數管理表(6.04版),CH4公噸人-年0.003825,換算成每工時0.0000015938~!係數單位:公噸-CH4/人-每工時',
+                emiCoeUnit: 'TCH4/人小時', emiCoeClass: '國家排放係數', emiCoeEmission: '0.0379', emiCoeGWP: '條件不符合', emiCoeEqu: '',
+                other1: '', other2: '', other3: '',
             }
         },
         {
-            status: "completed", process: "冷媒補充", equipment: "家用冷凍、冷藏裝備", material: "HFC-134a/R-134a，四氟乙烷HFC-134a/R-1", details: {
+            status: "completed", process: "冷媒補充", equipment: "家用冷凍、冷藏裝備", material: "HFC-134a/R-134a，四氟乙烷HFC-134a/R-1",
+            details: {
                 processNum: 'G02', processCode: 'G00099', processName: '冷媒補充',
                 equipNum: 'GF02', equipCode: '4097', equipName: '家用冷凍、冷藏裝備',
                 matCode: 'GG1835', matName: 'HFC-134a/R-134a，四氟乙烷HFC-134a/R-1', matbio: '否',
@@ -72,18 +73,18 @@ const Tabs = () => {
             <CTabs activeItemKey={1}>
                 <CTabList variant="underline-border" className="system-tablist">
                     <Link to="/碳盤查系統/顧問system/排放源鑑別" className="system-tablist-link">
-                        <CTab aria-controls="tab1" itemKey={3}  className="system-tablist-choose">排放源鑑別</CTab>
+                        <CTab aria-controls="tab1" itemKey={3} className="system-tablist-choose">排放源鑑別</CTab>
                     </Link>
                     <Link to="/碳盤查系統/顧問system/排放源鑑別" className="system-tablist-link">
-                        <CTab aria-controls="tab3" itemKey={4}  className="system-tablist-choose">活動數據</CTab>
+                        <CTab aria-controls="tab3" itemKey={4} className="system-tablist-choose">活動數據</CTab>
                     </Link>
                     <Link to="." className="system-tablist-link">
                         <CTab aria-controls="tab3" itemKey={1} className="system-tablist-choose">定量盤查</CTab>
                     </Link>
                     <Link to="/碳盤查系統/顧問system/全廠電力蒸汽供需情況 " className="system-tablist-link">
-                        <CTab aria-controls="tab3" itemKey={2}  className="system-tablist-choose">全廠電力蒸汽供需情況 </CTab>
+                        <CTab aria-controls="tab3" itemKey={2} className="system-tablist-choose">全廠電力蒸汽供需情況 </CTab>
                     </Link>
-                    
+
                 </CTabList>
             </CTabs>
 
@@ -137,7 +138,6 @@ const Tabs = () => {
                                     </div>
                                     <div className={styles.blockBody}>
                                         <div><span>編號:</span><p>{selectedRowData.processCode}</p></div>
-                                        <div><span>代碼:</span><p>{selectedRowData.processNum}</p></div>
                                         <div><span>名稱:</span><p>{selectedRowData.processName}</p></div>
 
                                     </div>
@@ -148,7 +148,6 @@ const Tabs = () => {
                                     </div>
                                     <div className={styles.blockBody}>
                                         <div><span>編號:</span><p>{selectedRowData.equipCode}</p></div>
-                                        <div><span>代碼:</span><p>{selectedRowData.equipNum}</p></div>
                                         <div><span>名稱:</span><p>{selectedRowData.equipName}</p></div>
                                     </div>
                                 </div>
@@ -168,91 +167,76 @@ const Tabs = () => {
                                         <h5>排放源資料</h5>
                                     </div>
                                     <div className={styles.blockBody}>
-                                        <div><span>範疇別:</span><p>{selectedRowData.sourceClass}</p></div>
+                                        <div><span>類別別:</span><p>{selectedRowData.sourceClass}</p></div>
                                         <div><span>排放型式:</span><p>{selectedRowData.sourceType}</p></div>
-                                        <div><span>製程/逸散/外購電力類別:</span><p>{selectedRowData.sourcePower}</p></div>
-                                        <div><span>電力/蒸汽供應商名稱:</span>
-                                            <CFormInput className={styles.input} value={selectedRowData.sourceSupply}
-                                                onChange={(e) => handleInputChange(e, 'sourceSupply')} />
-                                        </div>
                                     </div>
                                 </div>
 
                                 <div className={styles.block}>
                                     <div className={styles.blockHead}>
-                                        <h5>年活動數據資訊</h5>
+                                        <h5>活動數據</h5>
                                     </div>
                                     <div className={styles.blockBody}>
-                                        <div><span>活動數據:</span>
-                                            <CFormInput className={styles.input} value={selectedRowData.annual1}
-                                                onChange={(e) => handleInputChange(e, 'annual1')} />
-                                        </div>
-                                        <div><span>活動數據分配比率%:</span>
-                                            <CFormInput className={styles.input} value={selectedRowData.annual2}
-                                                onChange={(e) => handleInputChange(e, 'annual2')} />
-                                        </div>
-                                        <div><span>活動數據單位:</span>
-                                            <CFormSelect className={styles.input} value={selectedRowData.annual3}
-                                                onChange={(e) => handleInputChange(e, 'annual3')}>
-                                                <option value="公秉">公秉</option>
-                                                <option value="千立方公尺">千立方公尺</option>
-                                                <option value="千度">千度</option>
-                                                <option value="人小時">人小時</option>
-                                                <option value="tkm">tkm</option>
-                                                <option value="pkm">pkm</option>
-                                                <option value="tCO2e">tCO2e</option>
-                                                <option value="其他">其他</option>
-                                            </CFormSelect>
-                                        </div>
-                                        <div><span>其他單位名稱:</span>
-                                            <CFormInput className={styles.input} value={selectedRowData.annual4}
-                                                onChange={(e) => handleInputChange(e, 'annual4')} />
-                                        </div>
-                                        <div><span>數據來源表單名稱:</span>
-                                            <CFormInput className={styles.input} value={selectedRowData.annual5}
-                                                onChange={(e) => handleInputChange(e, 'annual5')} />
-                                        </div>
-                                        <div><span>保存單位:</span>
-                                            <CFormInput className={styles.input} value={selectedRowData.annual6}
-                                                onChange={(e) => handleInputChange(e, 'annual6')} />
-                                        </div>
-                                        <div><span>活動數據種類:</span>
-                                            <CFormSelect className={styles.input} value={selectedRowData.annual7}
-                                                onChange={(e) => handleInputChange(e, 'annual7')}>
-                                                <option value="連續量測">連續量測</option>
-                                                <option value="定期(間歇)量測">定期(間歇)量測</option>
-                                                <option value="財務會計推估">財務會計推估</option>
-                                                <option value="自行評估">自行評估</option>
-                                            </CFormSelect>
-                                        </div>
-                                        <div><span>燃料熱值數值:</span>
-                                            <CFormInput className={styles.input} value={selectedRowData.annual8}
-                                                onChange={(e) => handleInputChange(e, 'annual8')} />
-                                        </div>
-                                        <div><span>燃料熱值單位:</span><p>{selectedRowData.annual9}</p></div>
-
-                                        <div><span>含水量(%):</span>
-                                            <CFormInput className={styles.input} value={selectedRowData.annual10}
-                                                onChange={(e) => handleInputChange(e, 'annual10')} />
-                                        </div>
-                                        <div><span>含碳量(%):</span>
-                                            <CFormInput className={styles.input} value={selectedRowData.annual11}
-                                                onChange={(e) => handleInputChange(e, 'annual11')} />
-                                        </div>
-
+                                        <div><span>活動數據:</span><p>{selectedRowData.activity}</p></div>
+                                        <div><span>單位:</span><p>{selectedRowData.activityUnit}</p></div>
                                     </div>
                                 </div>
                                 <div className={styles.block}>
                                     <div className={styles.blockHead}>
-                                        <h5>備註</h5>
+                                        <h5>排放係數數據</h5>
+                                    </div>
+
+
+                                    <div className={styles.blockBodySpecial}>
+                                        <div className={styles.blockBodyTitle}>
+                                            <div className={styles.line}></div>
+                                            <div className={styles.titleBox}><span>溫室氣體#1:{selectedRowData.emiCoe1}</span></div>
+                                            <div className={styles.line}></div>
+                                        </div>
+                                        <div className={styles.blockBody}>
+                                            <div><span>係數類型:</span>
+                                                <CFormSelect className={styles.input} value={selectedRowData.emiCoeType}
+                                                    onChange={(e) => handleInputChange(e, 'emiCoeType')}>
+                                                    <option value="預設">預設</option>
+                                                    <option value="自訂">自訂</option>
+                                                </CFormSelect>
+                                            </div>
+                                            <div><span>{selectedRowData.emiCoeType === "自訂" ? "自訂排放係數" : "預設排放係數"}</span><p>{selectedRowData.emiCoeNum}</p></div>
+                                            <div><span>{selectedRowData.emiCoeType === "自訂" ? "自訂排放來源" : "預設排放來源"}</span><p>{selectedRowData.emiCoeSource}</p></div>
+                                            <div><span>係數單位:</span><p>{selectedRowData.emiCoeUnit}</p></div>
+                                            <div><span>係數種類:</span>
+                                                <CFormSelect className={styles.input} value={selectedRowData.emiCoeClass}
+                                                    onChange={(e) => handleInputChange(e, 'emiCoeClas')}>
+                                                    <option value="自廠發展係數/質量平衡所得係數">自廠發展係數/質量平衡所得係數</option>
+                                                    <option value="同製程/設備經驗係數">同製程/設備經驗係數</option>
+                                                    <option value="製造廠提供係數">製造廠提供係數</option>
+                                                    <option value="區域排放係數">區域排放係數</option>
+                                                    <option value="國家排放係數">國家排放係數</option>
+                                                    <option value="國際排放係數">國際排放係數</option>
+                                                </CFormSelect>
+                                            </div>
+                                            <div><span>排放量(公噸/年):</span><p>{selectedRowData.emiCoeEmission}</p></div>
+                                            <div><span>GWP:</span><p>{selectedRowData.emiCoeEmission}</p></div>
+                                            <div><span>排放當量(公噸CO2e/年):</span><p>{selectedRowData.emiCoeEqu}</p></div>
+                                        </div>
+                                        <hr />
+                                    </div>
+                                    
+
+
+                                </div>
+
+                                <div className={styles.block}>
+                                    <div className={styles.blockHead}>
+                                        <h5>其他</h5>
                                     </div>
                                     <div className={styles.blockBody1}>
-                                        <div>
-                                            <CFormTextarea className={styles.input} type="text" rows={2} value={selectedRowData.remark}
-                                                onChange={(e) => handleInputChange(e, 'remark')} />
-                                        </div>
+                                        <div><span>單一排放源排放當量小計(CO2e公噸/年):</span><p>{selectedRowData.other1}</p></div>
+                                        <div><span>單一排放源生質燃料之CO2排放當量小計(CO2e公噸/年):</span><p>{selectedRowData.other2}</p></div>
+                                        <div><span>單一排放源占排放總量比(%):</span><p>{selectedRowData.other3}</p></div>
                                     </div>
                                 </div>
+
 
                                 <div className={styles.submit}><button className={styles.button} type='submit'>儲存</button></div>
                             </CForm>

@@ -99,16 +99,20 @@
     display: flex;
     align-items: center; /* 垂直居中對齊 */
     flex-wrap:wrap;
-    column-gap:80px;
+    column-gap:45px;
     row-gap: 20px;
 }
 
 .blockBody div{
-    flex-basis: 40%;   /* 設定每個元素佔30%寬度 */
+    flex-basis: 45%;   /* 設定每個元素佔30%寬度 */
     box-sizing: border-box; /* 確保 padding 和 border 不會影響寬度 */
 }
+
 .blockBody1{
     padding:20px 50px 0 50px;
+    display: flex;
+    flex-direction: column;
+    row-gap: 20px;
 }
 
 .blockBody p{
@@ -120,9 +124,16 @@
     font-size: 18px;
 }
 
-.blockBody .input{
-    width:130px;
+.blockBody1 p{
+    margin-bottom:0px;
 }
+.blockBody1 span{
+    color:#625F5F;
+    font-weight: bolder;
+    font-size: 18px;
+}
+
+
 
 .submit{
     text-align: center;
@@ -167,6 +178,7 @@
 .input {
     border-radius: 15px;
     background-color: #ffffff;
+    width:150px;
 
 }
 
@@ -176,3 +188,29 @@
     font-weight: bold;
     width: 190px
 }
+
+.blockBodyTitle{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .line {
+    height: 1px;
+    background-color: rgb(126, 126, 126);
+    flex-grow: 1;
+  }
+  
+  .titleBox {
+    padding: 0 20px;
+    margin: 0 10px;
+  }
+  .titleBox span{
+    color:#000000;
+    font-weight: bolder;
+    font-size: 18px;
+  }
+  .blockBodySpecial{
+    background-color: rgb(245, 250, 255);
+    margin-top:10px;
+  }
