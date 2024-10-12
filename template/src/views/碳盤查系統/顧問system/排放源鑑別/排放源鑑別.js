@@ -108,13 +108,13 @@ const Tabs = () => {
                         <CTab aria-controls="tab1" itemKey={1} className="system-tablist-choose">排放源鑑別</CTab>
                     </Link>
                     <Link to="/碳盤查系統/顧問system/活動數據" className="system-tablist-link">
-                        <CTab aria-controls="tab3" className="system-tablist-choose">活動數據</CTab>
+                        <CTab aria-controls="tab3"  itemKey={2}className="system-tablist-choose">活動數據</CTab>
                     </Link>
-                    <Link to="/碳盤查系統/system/活動數據盤點" className="system-tablist-link">
-                        <CTab aria-controls="tab3" className="system-tablist-choose">ddd</CTab>
+                    <Link to="/碳盤查系統/顧問system/定量盤查" className="system-tablist-link">
+                        <CTab aria-controls="tab3" itemKey={3} className="system-tablist-choose">定量盤查</CTab>
                     </Link>
                     <Link to="/碳盤查系統/顧問system/全廠電力蒸汽供需情況 " className="system-tablist-link">
-                        <CTab aria-controls="tab3" className="system-tablist-choose">全廠電力蒸汽供需情況</CTab>
+                        <CTab aria-controls="tab3" itemKey={4} className="system-tablist-choose">全廠電力蒸汽供需情況</CTab>
                     </Link>
                 </CTabList>
             </CTabs>
