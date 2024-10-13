@@ -14,6 +14,7 @@ from userinfo import userinfo
 from edituserinfo import edituserinfo
 from editaddress import editaddress
 from editpassword import editpassword
+from companyinfo import companyinfo
 
 
 app = FastAPI()
@@ -45,3 +46,4 @@ app.include_router(userinfo)
 app.include_router(edituserinfo)
 app.include_router(editaddress)
 app.include_router(editpassword)
+app.include_router(companyinfo)
