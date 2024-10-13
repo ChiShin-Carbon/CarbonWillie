@@ -80,6 +80,12 @@ const Tabs = () => {
                     <Link to="/碳盤查系統/顧問system/定量盤查" className="system-tablist-link">
                         <CTab aria-controls="tab3" itemKey={2} className="system-tablist-choose">定量盤查</CTab>
                     </Link>
+                    <Link to="/碳盤查系統/顧問system/數據品質管理" className="system-tablist-link">
+                        <CTab aria-controls="tab3" itemKey={5} className="system-tablist-choose">數據品質管理</CTab>
+                    </Link>
+                    <Link to="/碳盤查系統/顧問system/不確定性量化評估" className="system-tablist-link">
+                        <CTab aria-controls="tab3" itemKey={6} className="system-tablist-choose">不確定性量化評估</CTab>
+                    </Link>
                     <Link to="/碳盤查系統/顧問system/全廠電力蒸汽供需情況 " className="system-tablist-link">
                         <CTab aria-controls="tab3" itemKey={3} className="system-tablist-choose">全廠電力蒸汽供需情況 </CTab>
                     </Link>

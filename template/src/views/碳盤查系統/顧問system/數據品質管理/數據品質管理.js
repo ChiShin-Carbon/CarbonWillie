@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
     CRow, CCol, CCard, CFormSelect, CTab, CTabList, CTabs,
     CTable, CTableBody, CTableHead, CModal, CModalHeader, CModalBody, CModalFooter, CModalTitle, CButton, CFormCheck
@@ -24,29 +24,27 @@ const Tabs = () => {
     // 模擬表格數據
     const tableData = [
         {
-            status: "not completed", process: "水肥處理程序", equipment: "化糞池", material: "水肥",
+            status: "completed", process: "水肥處理程序", equipment: "化糞池", material: "水肥",
             details: {
-                processNum: 'G01', processName: '水肥處理程序',
-                equipNum: 'GF01',  equipName: '化糞池',
-                matCode: '36006', matName: '水肥', matbio: '否',
+                processNum: 'G01', processCode: '370004',
+                equipNum: 'GF01', equipCode: '9795',
+                matCode: '36006', matName: '水肥', matClassLevel: '3', matBelType: '未進行儀器校正或未進行紀錄彙整者', matBelLevel: '3',
+                matInfo: '', matUnit: '',
                 sourceClass: '類別1', sourceType: '逸散',
-                activity: '23,802.50', activityUnit: '人小時',
-                emiCoe1: 'CH4', emiCoeType: '自訂', emiCoeNum: '0.0000015938', emiCoeSource: 'GHG排放係數管理表(6.04版),CH4公噸人-年0.003825,換算成每工時0.0000015938~!係數單位:公噸-CH4/人-每工時',
-                emiCoeUnit: 'TCH4/人小時', emiCoeClass: '國家排放係數', emiCoeEmission: '0.0379', emiCoeGWP: '條件不符合', emiCoeEqu: '',
-                other1: '', other2: '', other3: '',
+                emiCoeClass: '國家排放係數', emiLevel: '3',
+                manage1: '27', manage2: '', manage3: '3', manage4: '',
             }
         },
         {
             status: "completed", process: "冷媒補充", equipment: "家用冷凍、冷藏裝備", material: "HFC-134a/R-134a，四氟乙烷HFC-134a/R-1",
             details: {
-                processNum: 'G02',  processName: '冷媒補充',
-                equipNum: 'GF02',  equipName: '家用冷凍、冷藏裝備',
-                matCode: 'GG1835', matName: 'HFC-134a/R-134a，四氟乙烷HFC-134a/R-1', matbio: '否',
+                processNum: 'G02', processCode: 'G00099',
+                equipNum: 'GF02', equipCode: '4097',
+                matCode: 'GG1835', matName: 'HFC-134a/R-134a，四氟乙烷HFC-134a/R-1', matClassLevel: '3', matBelType: '未進行儀器校正或未進行紀錄彙整者', matBelLevel: '3',
+                matInfo: '', matUnit: '',
                 sourceClass: '類別1', sourceType: '逸散',
-                activity: '0.0002', activityUnit: '公噸',
-                emiCoe1: 'HFCS', emiCoeType: '自訂', emiCoeNum: '1.000', emiCoeSource: '溫室氣體排放係數管理表6.0.4',
-                emiCoeUnit: '公噸/公噸', emiCoeClass: '國家排放係數', emiCoeEmission: '0.0000', emiCoeGWP: '條件不符合', emiCoeEqu: '',
-                other1: '', other2: '', other3: '',
+                emiCoeClass: '國家排放係數', emiLevel: '3',
+                manage1: '27', manage2: '', manage3: '3', manage4: '',
             }
         },
     ];
@@ -61,12 +59,45 @@ const Tabs = () => {
         setSelectedRowData((prevData) => ({
             ...prevData,
             [field]: value,
-            ...(field === 'annual3' && { annual9: `Kcal/${value}` }),
-
+            ...(field === 'matBelType' && {
+                matBelLevel: value === "有進行外部校正或有多組數據茲佐證者" ? '1' :
+                    value === "有進行內部校正或經過會計簽證等証明者" ? '2' :
+                        '3'
+            }),
         }));
     };
+    useEffect(() => {
+        if (selectedRowData) {
+            const { matBelLevel, matClassLevel, emiLevel } = selectedRowData;
+            if (matBelLevel && matClassLevel && emiLevel) {
+                const manage1Value = parseInt(matBelLevel) * parseInt(matClassLevel) * parseInt(emiLevel);
+                setSelectedRowData((prevData) => ({
+                    ...prevData,
+                    manage1: manage1Value,
+                }));
+            }
+        }
+    }, [selectedRowData?.matBelLevel, selectedRowData?.matClassLevel, selectedRowData?.emiLevel]);
 
-
+    useEffect(() => {
+        if (selectedRowData) {
+            const manage1Value = parseInt(selectedRowData.manage1, 10);
+            let manage3Value;
+            if (manage1Value < 10) {
+                manage3Value = "1";
+            } else if (manage1Value < 19) {
+                manage3Value = "2";
+            } else if (manage1Value >= 27) {
+                manage3Value = "3";
+            } else {
+                manage3Value = "";
+            }
+            setSelectedRowData((prevData) => ({
+                ...prevData,
+                manage3: manage3Value,
+            }));
+        }
+    }, [selectedRowData?.manage1]);
 
     return (
         <main>
@@ -78,13 +109,13 @@ const Tabs = () => {
                     <Link to="/碳盤查系統/顧問system/活動數據" className="system-tablist-link">
                         <CTab aria-controls="tab3" itemKey={4} className="system-tablist-choose">活動數據</CTab>
                     </Link>
+                    <Link to="/碳盤查系統/顧問system/定量盤查" className="system-tablist-link">
+                        <CTab aria-controls="tab3" itemKey={5} className="system-tablist-choose">定量盤查</CTab>
+                    </Link>
                     <Link to="." className="system-tablist-link">
-                        <CTab aria-controls="tab3" itemKey={1} className="system-tablist-choose">定量盤查</CTab>
+                        <CTab aria-controls="tab3" itemKey={1} className="system-tablist-choose">數據品質管理</CTab>
                     </Link>
-                    <Link to="/碳盤查系統/顧問system/數據品質管理" className="system-tablist-link">
-                        <CTab aria-controls="tab3" itemKey={5} className="system-tablist-choose">數據品質管理</CTab>
-                    </Link>
-                     <Link to="/碳盤查系統/顧問system/不確定性量化評估" className="system-tablist-link">
+                    <Link to="/碳盤查系統/顧問system/不確定性量化評估" className="system-tablist-link">
                         <CTab aria-controls="tab3" itemKey={6} className="system-tablist-choose">不確定性量化評估</CTab>
                     </Link>
                     <Link to="/碳盤查系統/顧問system/全廠電力蒸汽供需情況 " className="system-tablist-link">
@@ -97,7 +128,7 @@ const Tabs = () => {
 
             <div className="system-titlediv">
                 <div>
-                    <h4 className="system-title">定量盤查</h4>
+                    <h4 className="system-title">數據品質管理</h4>
                     <hr className="system-hr"></hr>
                 </div>
                 {/* <button className="system-save">儲存</button> */}
@@ -144,7 +175,7 @@ const Tabs = () => {
                                     </div>
                                     <div className={styles.blockBody}>
                                         <div><span>編號:</span><p>{selectedRowData.processNum}</p></div>
-                                        <div><span>名稱:</span><p>{selectedRowData.processName}</p></div>
+                                        <div><span>代碼:</span><p>{selectedRowData.processCode}</p></div>
 
                                     </div>
                                 </div>
@@ -154,7 +185,7 @@ const Tabs = () => {
                                     </div>
                                     <div className={styles.blockBody}>
                                         <div><span>編號:</span><p>{selectedRowData.equipNum}</p></div>
-                                        <div><span>名稱:</span><p>{selectedRowData.equipName}</p></div>
+                                        <div><span>代碼:</span><p>{selectedRowData.equipCode}</p></div>
                                     </div>
                                 </div>
                                 <div className={styles.block}>
@@ -163,9 +194,25 @@ const Tabs = () => {
                                     </div>
                                     <div className={styles.blockBody}>
 
-                                        <div><span>代碼:</span><p>{selectedRowData.matNum}</p></div>
+                                        <div><span>代碼:</span><p>{selectedRowData.matCode}</p></div>
                                         <div><span>名稱:</span><p>{selectedRowData.matName}</p></div>
-                                        <div><span>是否屬生質能源:</span><p>{selectedRowData.matbio}</p></div>
+                                        <div><span>活動數據種類等級:</span><p>{selectedRowData.matClassLevel}</p></div>
+                                        <div><span>活動數據可信種類(儀器校正誤差等級):</span>
+                                            <CFormSelect className={styles.input} value={selectedRowData.matBelType}
+                                                onChange={(e) => handleInputChange(e, 'matBelType')}>
+                                                <option value="有進行外部校正或有多組數據茲佐證者">有進行外部校正或有多組數據茲佐證者</option>
+                                                <option value="有進行內部校正或經過會計簽證等証明者">有進行內部校正或經過會計簽證等証明者</option>
+                                                <option value="未進行儀器校正或未進行紀錄彙整者">未進行儀器校正或未進行紀錄彙整者</option>
+                                            </CFormSelect>
+                                        </div>
+                                        <div><span>活動數據可信等級:</span><p>{selectedRowData.matBelLevel}</p></div>
+                                        <div><span>數據可信度資訊說明:</span>
+                                            <CFormInput className={styles.input} value={selectedRowData.matInfo}
+                                                onChange={(e) => handleInputChange(e, 'matInfo')} /></div>
+                                        <div><span>負責單位或保存單位:</span>
+                                            <CFormInput className={styles.input} value={selectedRowData.matUnit}
+                                                onChange={(e) => handleInputChange(e, 'matUnit')} />
+                                        </div>
                                     </div>
                                 </div>
                                 <div className={styles.block}>
@@ -173,76 +220,32 @@ const Tabs = () => {
                                         <h5>排放源資料</h5>
                                     </div>
                                     <div className={styles.blockBody}>
-                                        <div><span>類別別:</span><p>{selectedRowData.sourceClass}</p></div>
+                                        <div><span>範疇別:</span><p>{selectedRowData.sourceClass}</p></div>
                                         <div><span>排放型式:</span><p>{selectedRowData.sourceType}</p></div>
                                     </div>
                                 </div>
 
                                 <div className={styles.block}>
                                     <div className={styles.blockHead}>
-                                        <h5>活動數據</h5>
+                                        <h5>排放係數</h5>
                                     </div>
                                     <div className={styles.blockBody}>
-                                        <div><span>活動數據:</span><p>{selectedRowData.activity}</p></div>
-                                        <div><span>單位:</span><p>{selectedRowData.activityUnit}</p></div>
+                                        <div><span>係數種類:</span><p>{selectedRowData.emiCoeClass}</p></div>
+                                        <div><span>係數種類等級:</span><p>{selectedRowData.emiLevel}</p></div>
                                     </div>
-                                </div>
-                                <div className={styles.block}>
-                                    <div className={styles.blockHead}>
-                                        <h5>排放係數數據</h5>
-                                    </div>
-
-
-                                    <div className={styles.blockBodySpecial}>
-                                        <div className={styles.blockBodyTitle}>
-                                            <div className={styles.line}></div>
-                                            <div className={styles.titleBox}><span>溫室氣體#1:{selectedRowData.emiCoe1}</span></div>
-                                            <div className={styles.line}></div>
-                                        </div>
-                                        <div className={styles.blockBody}>
-                                            <div><span>係數類型:</span>
-                                                <CFormSelect className={styles.input} value={selectedRowData.emiCoeType}
-                                                    onChange={(e) => handleInputChange(e, 'emiCoeType')}>
-                                                    <option value="預設">預設</option>
-                                                    <option value="自訂">自訂</option>
-                                                </CFormSelect>
-                                            </div>
-                                            <div><span>{selectedRowData.emiCoeType === "自訂" ? "自訂排放係數" : "預設排放係數"}</span><p>{selectedRowData.emiCoeNum}</p></div>
-                                            <div><span>{selectedRowData.emiCoeType === "自訂" ? "自訂排放來源" : "預設排放來源"}</span><p>{selectedRowData.emiCoeSource}</p></div>
-                                            <div><span>係數單位:</span><p>{selectedRowData.emiCoeUnit}</p></div>
-                                            <div><span>係數種類:</span>
-                                                <CFormSelect className={styles.input} value={selectedRowData.emiCoeClass}
-                                                    onChange={(e) => handleInputChange(e, 'emiCoeClass')}>
-                                                    <option value="自廠發展係數/質量平衡所得係數">自廠發展係數/質量平衡所得係數</option>
-                                                    <option value="同製程/設備經驗係數">同製程/設備經驗係數</option>
-                                                    <option value="製造廠提供係數">製造廠提供係數</option>
-                                                    <option value="區域排放係數">區域排放係數</option>
-                                                    <option value="國家排放係數">國家排放係數</option>
-                                                    <option value="國際排放係數">國際排放係數</option>
-                                                </CFormSelect>
-                                            </div>
-                                            <div><span>排放量(公噸/年):</span><p>{selectedRowData.emiCoeEmission}</p></div>
-                                            <div><span>GWP:</span><p>{selectedRowData.emiCoeEmission}</p></div>
-                                            <div><span>排放當量(公噸CO2e/年):</span><p>{selectedRowData.emiCoeEqu}</p></div>
-                                        </div>
-                                        <hr />
-                                    </div>
-                                    
-
-
                                 </div>
 
                                 <div className={styles.block}>
                                     <div className={styles.blockHead}>
-                                        <h5>其他</h5>
+                                        <h5>數據品質管理</h5>
                                     </div>
-                                    <div className={styles.blockBody1}>
-                                        <div><span>單一排放源排放當量小計(CO2e公噸/年):</span><p>{selectedRowData.other1}</p></div>
-                                        <div><span>單一排放源生質燃料之CO2排放當量小計(CO2e公噸/年):</span><p>{selectedRowData.other2}</p></div>
-                                        <div><span>單一排放源占排放總量比(%):</span><p>{selectedRowData.other3}</p></div>
+                                    <div className={styles.blockBody}>
+                                        <div><span>單一排放源數據誤差等級:</span><p>{selectedRowData.manage1}</p></div>
+                                        <div><span>單一排放源占排放總量比(%):</span><p>{selectedRowData.manage2}</p></div>
+                                        <div><span>評分區間範圍:</span><p>{selectedRowData.manage3}</p></div>
+                                        <div><span>排放量占比加權平均:</span><p>{selectedRowData.manage4}</p></div>
                                     </div>
                                 </div>
-
 
                                 <div className={styles.submit}><button className={styles.button} type='submit'>儲存</button></div>
                             </CForm>
