@@ -26,8 +26,8 @@ const Tabs = () => {
         {
             status: "not completed", process: "水肥處理程序", equipment: "化糞池", material: "水肥",
             details: {
-                processNum: 'G01', processName: '水肥處理程序',
-                equipNum: 'GF01',  equipName: '化糞池',
+                processNum: 'G01', processCode: '370004', processName: '水肥處理程序',
+                equipNum: 'GF01', equipCode: '9795', equipName: '化糞池',
                 matCode: '36006', matName: '水肥', matbio: '否',
                 sourceClass: '類別1', sourceType: '逸散',
                 activity: '23,802.50', activityUnit: '人小時',
@@ -39,14 +39,14 @@ const Tabs = () => {
         {
             status: "completed", process: "冷媒補充", equipment: "家用冷凍、冷藏裝備", material: "HFC-134a/R-134a，四氟乙烷HFC-134a/R-1",
             details: {
-                processNum: 'G02',  processName: '冷媒補充',
-                equipNum: 'GF02',  equipName: '家用冷凍、冷藏裝備',
+                processNum: 'G02', processCode: 'G00099', processName: '冷媒補充',
+                equipNum: 'GF02', equipCode: '4097', equipName: '家用冷凍、冷藏裝備',
                 matCode: 'GG1835', matName: 'HFC-134a/R-134a，四氟乙烷HFC-134a/R-1', matbio: '否',
-                sourceClass: '類別1', sourceType: '逸散',
-                activity: '0.0002', activityUnit: '公噸',
-                emiCoe1: 'HFCS', emiCoeType: '自訂', emiCoeNum: '1.000', emiCoeSource: '溫室氣體排放係數管理表6.0.4',
-                emiCoeUnit: '公噸/公噸', emiCoeClass: '國家排放係數', emiCoeEmission: '0.0000', emiCoeGWP: '條件不符合', emiCoeEqu: '',
-                other1: '', other2: '', other3: '',
+                sourceClass: '類別1', sourceType: '逸散', sourcePower: '溶劑、噴霧劑及冷媒排放源', sourceSupply: '',
+                annual1: '0.00015', annual2: '0.3%', annual3: '千度', annual4: '', annual5: '冷媒銘牌填充量',
+                annual6: '管理部', annual7: '自行評估', annual8: '', annual9: 'Kcal/千度',
+                annual10: '', annual11: '',
+                remark: '二樓冰箱，西屋/RT-5603GSC(2004出產)'
             }
         },
     ];
@@ -78,17 +78,17 @@ const Tabs = () => {
                     <Link to="/碳盤查系統/顧問system/活動數據" className="system-tablist-link">
                         <CTab aria-controls="tab3" itemKey={4} className="system-tablist-choose">活動數據</CTab>
                     </Link>
-                    <Link to="." className="system-tablist-link">
-                        <CTab aria-controls="tab3" itemKey={1} className="system-tablist-choose">定量盤查</CTab>
+                    <Link to="/碳盤查系統/顧問system/定量盤查" className="system-tablist-link">
+                        <CTab aria-controls="tab3" itemKey={6} className="system-tablist-choose">定量盤查</CTab>
                     </Link>
                     <Link to="/碳盤查系統/顧問system/數據品質管理" className="system-tablist-link">
                         <CTab aria-controls="tab3" itemKey={5} className="system-tablist-choose">數據品質管理</CTab>
                     </Link>
-                     <Link to="/碳盤查系統/顧問system/不確定性量化評估" className="system-tablist-link">
-                        <CTab aria-controls="tab3" itemKey={6} className="system-tablist-choose">不確定性量化評估</CTab>
+                    <Link to="." className="system-tablist-link">
+                        <CTab aria-controls="tab3" itemKey={1} className="system-tablist-choose">不確定性量化評估</CTab>
                     </Link>
                     <Link to="/碳盤查系統/顧問system/全廠電力蒸汽供需情況 " className="system-tablist-link">
-                        <CTab aria-controls="tab3" itemKey={2} className="system-tablist-choose">全廠電力蒸汽供需情況 </CTab>
+                        <CTab aria-controls="tab3" itemKey={2} className="system-tablist-choose">全廠電力蒸汽供需情況</CTab>
                     </Link>
 
                 </CTabList>

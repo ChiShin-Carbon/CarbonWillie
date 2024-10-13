@@ -97,10 +97,10 @@
 .blockBody{
     padding:20px 50px 0 50px;
     display: flex;
-    align-items: center; /* 垂直居中對齊 */
+    align-items: top; /* 垂直居中對齊 */
     flex-wrap:wrap;
     column-gap:45px;
-    row-gap: 20px;
+    row-gap: 30px;
 }
 
 .blockBody div{
@@ -178,7 +178,6 @@
 .input {
     border-radius: 15px;
     background-color: #ffffff;
-    width:150px;
 
 }
 
