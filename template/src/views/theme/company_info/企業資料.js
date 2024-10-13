@@ -41,7 +41,7 @@ const Tabs = () => {
   const [GHG_Reg_Guide, setGHGRegGuide] = useState(false)
   const [ISO_CNS_14064_1, setISOCNS] = useState(false)
   const [GHG_Protocol, setGHGProtocol] = useState(false)
-  const [specifications, setSpecifications] = useState('')
+  const [specifications, setSpecifications] = useState('') // 盤查依據規範(GHG_Reg_Guide、ISO_CNS_14064_1、GHG_Protocol)
   const [verification, setVerification] = useState(false)
   const [inspection_agencyID, setInspectionAgencyID] = useState('')
   const [inspection_agency, setInspectionAgency] = useState('')
@@ -157,10 +157,6 @@ const Tabs = () => {
   useEffect(() => {
     setreason()
   }, [reasonID])
-
-  // useEffect(() => {
-  //   setGHG()
-  // }, [GHG_Protocol])
 
   useEffect(() => {
     setSpecifications(setSpec())
@@ -432,10 +428,18 @@ const Tabs = () => {
                             <CFormLabel>
                               <strong>登錄原因</strong>
                             </CFormLabel>
+                            <CFormInput type="text" id="reason" value={reason} disabled readOnly />
+                          </div>
+                        </CCol>
+                        <CCol sm={8}>
+                          <div className="mb-3">
+                            <CFormLabel>
+                              <strong>選用GWP版本</strong>
+                            </CFormLabel>
                             <CFormInput
-                              type="reason"
-                              id="reason"
-                              value={reason}
+                              type="text"
+                              id="GWP_version"
+                              value={GWP_version}
                               disabled
                               readOnly
                             />
@@ -479,7 +483,7 @@ const Tabs = () => {
                               <strong>查驗機構名稱</strong>
                             </CFormLabel>
                             <CFormInput
-                              type="inspection_agency"
+                              type="text"
                               id="inspection_agency"
                               value={inspection_agency}
                               disabled
@@ -495,7 +499,7 @@ const Tabs = () => {
                               <strong>顯著性門檻</strong>
                             </CFormLabel>
                             <CFormInput
-                              type="significance"
+                              type="text"
                               id="significance"
                               value={significance}
                               disabled
@@ -509,7 +513,7 @@ const Tabs = () => {
                               <strong>實質性門檻</strong>
                             </CFormLabel>
                             <CFormInput
-                              type="materiality"
+                              type="text"
                               id="materiality"
                               value={materiality}
                               disabled
@@ -523,7 +527,7 @@ const Tabs = () => {
                               <strong>排除門檻</strong>
                             </CFormLabel>
                             <CFormInput
-                              type="exclusion"
+                              type="text"
                               id="exclusion"
                               value={exclusion}
                               disabled
