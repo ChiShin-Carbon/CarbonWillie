@@ -38,11 +38,11 @@ const Tabs = () => {
   const [phone, setPhone] = useState('')
   const [reasonID, setReasonID] = useState('')
   const [reason, setReason] = useState('')
-  const [GHG_Reg_Guide, setGHGRegGuide] = useState(0)
-  const [ISO_CNS_14064_1, setISOCNS] = useState(0)
-  const [GHG_Protocol, setGHGProtocol] = useState(0)
+  const [GHG_Reg_Guide, setGHGRegGuide] = useState(false)
+  const [ISO_CNS_14064_1, setISOCNS] = useState(false)
+  const [GHG_Protocol, setGHGProtocol] = useState(false)
   const [specifications, setSpecifications] = useState('')
-  const [verification, setVerification] = useState(0)
+  const [verification, setVerification] = useState(false)
   const [inspection_agencyID, setInspectionAgencyID] = useState('')
   const [inspection_agency, setInspectionAgency] = useState('')
   const [significance, setSignificance] = useState('')
@@ -83,13 +83,6 @@ const Tabs = () => {
         setGHGRegGuide(data.company.GHG_Reg_Guide)
         setISOCNS(data.company.ISO_CNS_14064_1)
         setGHGProtocol(data.company.GHG_Protocol)
-        setSpecifications(
-          getSpecifications(
-            data.company.GHG_Reg_Guide,
-            data.company.ISO_CNS_14064_1,
-            data.company.GHG_Protocol,
-          ),
-        )
         setVerification(data.company.verification)
         setInspectionAgencyID(data.company.inspection_agency)
         setSignificance(data.company.significance)
@@ -116,18 +109,21 @@ const Tabs = () => {
     }
   }
 
-  const getSpecifications = (GHG_Reg_Guide, ISO_CNS_14064_1, GHG_Protocol) => {
-    const SpecList = []
-    if (GHG_Reg_Guide === 1) {
-      SpecList.push('溫室氣體排放量盤查登錄管理辦法/溫室氣體盤查登錄指引')
+  const setSpec = () => {
+    let SpecList = []
+    if (GHG_Reg_Guide === true) {
+      SpecList.push('溫室氣體排放量盤查登錄管理辦法/溫室氣體盤查登錄作業指引')
     }
-    if (ISO_CNS_14064_1 === 1) {
+    if (ISO_CNS_14064_1 === true) {
       SpecList.push('ISO/CNS 14064-1')
     }
-    if (GHG_Protocol === 1) {
+    if (GHG_Protocol === true) {
       SpecList.push('溫室氣體盤查議定書-企業會計與報告標準')
     }
-    return SpecList.join('與')
+    if (SpecList.length === false) {
+      return '無'
+    }
+    return SpecList.join('、')
   }
 
   const setIA = () => {
@@ -151,7 +147,7 @@ const Tabs = () => {
   }
 
   const setverification = () => {
-    setVerification(verification === 0 ? '否' : '是')
+    setVerification(verification === false ? '否' : '是')
   }
 
   useEffect(() => {
@@ -162,8 +158,12 @@ const Tabs = () => {
     setreason()
   }, [reasonID])
 
+  // useEffect(() => {
+  //   setGHG()
+  // }, [GHG_Protocol])
+
   useEffect(() => {
-    // Now, the specifications are set during data fetching
+    setSpecifications(setSpec())
   }, [GHG_Reg_Guide, ISO_CNS_14064_1, GHG_Protocol])
 
   useEffect(() => {
