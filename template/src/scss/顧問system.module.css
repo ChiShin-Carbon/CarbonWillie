@@ -213,3 +213,9 @@
     background-color: rgb(245, 250, 255);
     margin-top:10px;
   }
+
+  .blockBody h6{
+    font-weight: bold;
+    font-size:20px;
+    margin-bottom:0
+  }
