@@ -19,7 +19,9 @@ import {
   CTableRow,
   CFormCheck,
   CInputGroup,
-  CInputGroupText
+  CInputGroupText,
+  CPagination,
+  CPaginationItem
 } from '@coreui/react';
 import 'primereact/resources/themes/saga-blue/theme.css'; 
 import 'primereact/resources/primereact.min.css'; 
@@ -37,11 +39,11 @@ const FormControl = () => {
 
   // 表格資料
   const tableData = [
-    { item: '公務車', fuel: '燃料油-車用汽油', department: '資訊部門', person: '蔡xx', date: '2024/10/5', status:<FontAwesomeIcon icon={faCircleCheck} className={styles.iconCorrect} />, feedback: '已審核', overtime: '未超時' },
-    { item: '冷氣', fuel: '冷媒', department: '管理部門', person: '陳xx', date: '2024/9/30', status: <FontAwesomeIcon icon={faCircleXmark} className={styles.iconWrong} />, feedback: '待補件', overtime: '已超時' },
-    { item: '公務車', fuel: '燃料油-車用汽油', department: '健檢部門', person: '陳xx', date: '2024/9/1', status: <FontAwesomeIcon icon={faCircleCheck} className={styles.iconCorrect} />, feedback: '已審核', overtime: '未超時' },
-    { item: '冷氣', fuel: '冷媒', department: '健檢部門', person: '詹xx', date: '2024/8/31', status: <FontAwesomeIcon icon={faCircleCheck} className={styles.iconCorrect} />, feedback: '已審核', overtime: '未超時' },
-    { item: '公務車', fuel: '燃料油-車用汽油', department: '健檢部門', person: '鄭xx', date: '2024/9/3', status: <FontAwesomeIcon icon={faCircleXmark} className={styles.iconWrong} />, feedback: '尚未審核', overtime: '未超時' }
+    { item: '公務車', fuel: '燃料油-車用汽油', department: '資訊部門', person: '蔡xx', date: '2024/10/5', status:<FontAwesomeIcon icon={faCircleCheck} className={styles.iconCorrect} />, feedback: '已審核' },
+    { item: '冷氣', fuel: '冷媒', department: '管理部門', person: '陳xx', date: '2024/9/30', status: <FontAwesomeIcon icon={faCircleXmark} className={styles.iconWrong} />, feedback: '待補件'},
+    { item: '公務車', fuel: '燃料油-車用汽油', department: '健檢部門', person: '陳xx', date: '2024/9/1', status: <FontAwesomeIcon icon={faCircleCheck} className={styles.iconCorrect} />, feedback: '已審核' },
+    { item: '冷氣', fuel: '冷媒', department: '健檢部門', person: '詹xx', date: '2024/8/31', status: <FontAwesomeIcon icon={faCircleCheck} className={styles.iconCorrect} />, feedback: '已審核' },
+    { item: '公務車', fuel: '燃料油-車用汽油', department: '健檢部門', person: '鄭xx', date: '2024/9/3', status: <FontAwesomeIcon icon={faCircleXmark} className={styles.iconWrong} />, feedback: '尚未審核' }
   ];
 
   // 過濾後的表格資料，排除 status 欄位的搜尋
@@ -51,8 +53,7 @@ const FormControl = () => {
     row.department.includes(searchValue) ||
     row.person.includes(searchValue) ||
     row.date.includes(searchValue) ||
-    row.feedback.includes(searchValue) ||  
-    row.overtime.includes(searchValue)     
+    row.feedback.includes(searchValue)    
   );
 
   // handleSearch 函數處理輸入變化
@@ -66,10 +67,10 @@ const FormControl = () => {
       <h4><strong>資料進度管理</strong></h4>
       <CCol xs={12}>
         <div className="d-flex align-items-center">
-          <CCol sm={6}>
+          <CCol sm={8}>
             {/* 搜尋框與圖標 */}
             <CInputGroup>
-              <CInputGroupText style={{ borderRadius: '25px 0 0 25px', padding: '0.5rem' }}>
+              <CInputGroupText style={{ borderRadius: '25px 0 0 25px', padding: '0.5rem',backgroundColor:'white' }}>
                 <i className="pi pi-search" />
               </CInputGroupText>
               <CFormInput 
@@ -81,7 +82,7 @@ const FormControl = () => {
               />
             </CInputGroup>
           </CCol>
-          
+          <CCol sm={1}></CCol>
           <CCol sm={3}>
             <CFormSelect aria-label="Default select example" style={{borderRadius: '25px'}}>
               <option>資料回報狀態</option>
@@ -90,16 +91,9 @@ const FormControl = () => {
               <option value="3">編輯中</option>
             </CFormSelect>
           </CCol>
-          
-          <CCol sm={3}>
-            <CFormSelect floatingLabel="是否超時" aria-label="Default select example" style={{borderRadius: '25px'}}> 
-              <option>全部</option>
-              <option value="1">是</option>
-              <option value="2">否</option>
-            </CFormSelect>
-          </CCol>
         </div>
       </CCol>
+      <CRow><br/></CRow>
       <CCol xs={12}>
         <CCard className="mb-4">
           <CCardBody>
@@ -115,7 +109,6 @@ const FormControl = () => {
                     <CTableHeaderCell scope="col">資料蒐集完成日</CTableHeaderCell>
                     <CTableHeaderCell scope="col">狀態</CTableHeaderCell>
                     <CTableHeaderCell scope="col">資料回饋狀態</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">是否超時</CTableHeaderCell>
                   </CTableRow>
                 </CTableHead>
                 <CTableBody>
@@ -129,7 +122,6 @@ const FormControl = () => {
                       <CTableDataCell>{row.date}</CTableDataCell>
                       <CTableDataCell>{row.status}</CTableDataCell>
                       <CTableDataCell>{row.feedback}</CTableDataCell>
-                      <CTableDataCell>{row.overtime}</CTableDataCell>
                     </CTableRow>
                   )) : (
                     <CTableRow>

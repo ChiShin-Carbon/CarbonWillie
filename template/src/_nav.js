@@ -9,6 +9,7 @@ import {
   cilDescription,
   cilDrop,
   cilFile,
+  cilGroup,
   cilHappy,
   cilHome,
   cilNotes,
@@ -94,9 +95,9 @@ const _nav = [
   },
   {
     component: CNavItem,
-    name: 'Try_411402601',
+    name: '盤查進度管理',
     to: '/theme/try_411402601',
-    icon: <CIcon icon={cilHappy} customClassName="nav-icon" />,
+    icon: <CIcon icon={cilGroup} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
