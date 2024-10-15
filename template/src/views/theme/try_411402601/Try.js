@@ -26,12 +26,10 @@ import {
 import 'primereact/resources/themes/saga-blue/theme.css'; 
 import 'primereact/resources/primereact.min.css'; 
 import 'primeicons/primeicons.css'; 
+import CIcon from '@coreui/icons-react'
+import '../../../scss/盤查進度管理.css'
 
-import '../../../scss/碳盤查系統.css'
-import styles from '../../../scss/活動數據盤點.module.css'
-
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCircleCheck, faCircleXmark, faPenToSquare, faTrashCan } from '@fortawesome/free-solid-svg-icons';
+import { cilCheckAlt, cilPenAlt, cilPencil, cilX } from '@coreui/icons';
 
 const FormControl = () => {
   const [selectedCities, setSelectedCities] = useState(null);
@@ -39,11 +37,11 @@ const FormControl = () => {
 
   // 表格資料
   const tableData = [
-    { item: '公務車', fuel: '燃料油-車用汽油', department: '資訊部門', person: '蔡xx', date: '2024/10/5', status:<FontAwesomeIcon icon={faCircleCheck} className={styles.iconCorrect} />, feedback: '已審核' },
-    { item: '冷氣', fuel: '冷媒', department: '管理部門', person: '陳xx', date: '2024/9/30', status: <FontAwesomeIcon icon={faCircleXmark} className={styles.iconWrong} />, feedback: '待補件'},
-    { item: '公務車', fuel: '燃料油-車用汽油', department: '健檢部門', person: '陳xx', date: '2024/9/1', status: <FontAwesomeIcon icon={faCircleCheck} className={styles.iconCorrect} />, feedback: '已審核' },
-    { item: '冷氣', fuel: '冷媒', department: '健檢部門', person: '詹xx', date: '2024/8/31', status: <FontAwesomeIcon icon={faCircleCheck} className={styles.iconCorrect} />, feedback: '已審核' },
-    { item: '公務車', fuel: '燃料油-車用汽油', department: '健檢部門', person: '鄭xx', date: '2024/9/3', status: <FontAwesomeIcon icon={faCircleXmark} className={styles.iconWrong} />, feedback: '尚未審核' }
+    { item: '公務車', fuel: '燃料油-車用汽油', department: '資訊部門', person: '蔡xx', date: '2024/10/5', status:<div className="check_icon"><CIcon icon={cilCheckAlt} className="check"/></div>, feedback: '已審核' },
+    { item: '冷氣', fuel: '冷媒', department: '管理部門', person: '陳xx', date: '2024/9/30', status: <div className="x_icon"><CIcon icon={cilX} className="x"/></div>, feedback: '待補件'},
+    { item: '公務車', fuel: '燃料油-車用汽油', department: '健檢部門', person: '陳xx', date: '2024/9/1', status: <div className="check_icon"><CIcon icon={cilCheckAlt} className="check"/></div>, feedback: '已審核' },
+    { item: '冷氣', fuel: '冷媒', department: '健檢部門', person: '詹xx', date: '2024/8/31', status: <div className="check_icon"><CIcon icon={cilCheckAlt} className="check"/></div>, feedback: '已審核' },
+    { item: '公務車', fuel: '燃料油-車用汽油', department: '健檢部門', person: '鄭xx', date: '2024/9/3', status: <div className="edit_icon"><CIcon icon={cilPencil} className="edit"/></div>, feedback: '尚未審核' }
   ];
 
   // 過濾後的表格資料，排除 status 欄位的搜尋
