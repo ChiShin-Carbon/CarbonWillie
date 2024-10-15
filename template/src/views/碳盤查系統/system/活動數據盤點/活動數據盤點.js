@@ -13,10 +13,10 @@ import { cilDataTransferDown } from '@coreui/icons'
 import '../../../../scss/碳盤查系統.css'
 import { Link } from 'react-router-dom'
 import {
-    FunctionOne, FunctionTwo, FunctionThree, FunctionFour, FunctionFive, FunctionSix, FunctionSeven, FunctionEight,
-    FunctionNine, FunctionTen, FunctionEleven, FunctionTwelve, FunctionThirteen, FunctionForteen, FunctionFifteen, FunctionSixteen
-    , FunctionSeventeen
+    FunctionOne, FunctionTwo, FunctionThree, FunctionFour, FunctionFive, FunctionSix, FunctionSeven, FunctionEight, FunctionNine,
+     FunctionTen,  FunctionEleven, FunctionTwelve, FunctionThirteen, FunctionForteen
 } from './活動數據盤點function.js';
+
 
 import 'primereact/resources/themes/saga-blue/theme.css';  // 主题样式
 import 'primereact/resources/primereact.min.css';          // 核心 CSS
@@ -84,6 +84,7 @@ const Tabs = () => {
                     </div>
                     <div className={styles.activityCardBody}>
                         {currentFunction === 'one' && <FunctionOne />}
+                        {currentFunction === 'two' && <FunctionTwo />}
                         {currentFunction === 'three' && <FunctionThree />}
                         {currentFunction === 'four' && <FunctionFour />}
                         {currentFunction === 'five' && <FunctionFive />}
@@ -96,39 +97,38 @@ const Tabs = () => {
                         {currentFunction === 'twelve' && <FunctionTwelve />}
                         {currentFunction === 'thirteen' && <FunctionThirteen />}
                         {currentFunction === 'forteen' && <FunctionForteen />}
-                        {currentFunction === 'fifteen' && <FunctionFifteen />}
-                        {currentFunction === 'sixteen' && <FunctionSixteen />}
-                        {currentFunction === 'seventeen' && <FunctionSeventeen />}
                     </div>
                 </CCard>
 
 
                 <CCard className={styles.activityNav}>
                     <div>
-                        <h5 className={styles.navTitle}>範疇一</h5>
+                        <h5 className={styles.navTitle}>健檢主要項目</h5>
                         <hr className={styles.hr}></hr>
-
+                        <h6>範疇一</h6>
                         <div className={`${styles.navContent} ${currentFunction === 'one' ? styles.navContentChoose : ''}`} onClick={() => handleFunctionChange('one', '公務車(汽油)')} > 公務車</div>
-                        <div className={`${styles.navContent} ${currentFunction === 'three' ? styles.navContentChoose : ''}`} onClick={() => handleFunctionChange('three', '滅火器')}>滅火器</div>
-                        <div className={`${styles.navContent} ${currentFunction === 'four' ? styles.navContentChoose : ''}`} onClick={() => handleFunctionChange('four', '工作時數(員工)')}>工作時數(員工)</div>
-                        <div className={`${styles.navContent} ${currentFunction === 'five' ? styles.navContentChoose : ''}`} onClick={() => handleFunctionChange('five', '工作時數(非員工)')}>工作時數(非員工)</div>
-                        <div className={`${styles.navContent} ${currentFunction === 'six' ? styles.navContentChoose : ''}`} onClick={() => handleFunctionChange('six', '冷媒')}>冷媒</div>
-                        <div className={`${styles.navContent} ${currentFunction === 'seven' ? styles.navContentChoose : ''}`} onClick={() => handleFunctionChange('seven', '固定式燃燒')}>固定式燃燒</div>
-                        <div className={`${styles.navContent} ${currentFunction === 'eight' ? styles.navContentChoose : ''}`} onClick={() => handleFunctionChange('eight', '產生溫室氣體的排放製程')}>產生溫室氣體的排放製程</div>
-                        <div className={`${styles.navContent} ${currentFunction === 'nine' ? styles.navContentChoose : ''}`} onClick={() => handleFunctionChange('nine', '廠內機具')}>廠內機具</div>
-                        <div className={`${styles.navContent} ${currentFunction === 'ten' ? styles.navContentChoose : ''}`} onClick={() => handleFunctionChange('ten', '緊急發電機')}>緊急發電機</div>
-                        <div className={`${styles.navContent} ${currentFunction === 'eleven' ? styles.navContentChoose : ''}`} onClick={() => handleFunctionChange('eleven', '焊條')}>焊條</div>
-                        <div className={`${styles.navContent} ${currentFunction === 'twelve' ? styles.navContentChoose : ''}`} onClick={() => handleFunctionChange('twelve', '氣體斷路器(GCB)')}>氣體斷路器(GCB)</div>
-                        <div className={`${styles.navContent} ${currentFunction === 'thirteen' ? styles.navContentChoose : ''}`} onClick={() => handleFunctionChange('thirteen', '其他')}>其他</div>
+                        <div className={`${styles.navContent} ${currentFunction === 'two' ? styles.navContentChoose : ''}`} onClick={() => handleFunctionChange('two', '滅火器')}>滅火器</div>
+                        <div className={`${styles.navContent} ${currentFunction === 'three' ? styles.navContentChoose : ''}`} onClick={() => handleFunctionChange('three', '工作時數(員工)')}>工作時數(員工)</div>
+                        <div className={`${styles.navContent} ${currentFunction === 'four' ? styles.navContentChoose : ''}`} onClick={() => handleFunctionChange('four', '工作時數(非員工)')}>工作時數(非員工)</div>
+                        <div className={`${styles.navContent} ${currentFunction === 'five' ? styles.navContentChoose : ''}`} onClick={() => handleFunctionChange('five', '冷媒')}>冷媒</div>
+
+                        <div className={`${styles.navContent} ${currentFunction === 'six' ? styles.navContentChoose : ''}`} onClick={() => handleFunctionChange('six', '廠內機具')}>廠內機具</div>
+                        <div className={`${styles.navContent} ${currentFunction === 'seven' ? styles.navContentChoose : ''}`} onClick={() => handleFunctionChange('seven', '緊急發電機')}>緊急發電機</div>
+                        <h6>範疇二</h6>
+                        <div className={`${styles.navContent} ${currentFunction === 'eight' ? styles.navContentChoose : ''}`} onClick={() => handleFunctionChange('eight', '電力使用量')}>電力使用量</div>
                     </div>
                     <div>
-                        <h5 className={styles.navTitle}>範疇二</h5>
+                        <h5 className={styles.navTitle}>其他</h5>
                         <hr className={styles.hr}></hr>
+                        <h6>範疇一</h6>
+                        <div className={`${styles.navContent} ${currentFunction === 'nine' ? styles.navContentChoose : ''}`} onClick={() => handleFunctionChange('nine', '固定式燃燒')}>固定式燃燒</div>
+                        <div className={`${styles.navContent} ${currentFunction === 'ten' ? styles.navContentChoose : ''}`} onClick={() => handleFunctionChange('ten', '產生溫室氣體的排放製程')}>產生溫室氣體的排放製程</div>
+                        <div className={`${styles.navContent} ${currentFunction === 'eleven' ? styles.navContentChoose : ''}`} onClick={() => handleFunctionChange('eleven', '焊條')}>焊條</div>
+                        <div className={`${styles.navContent} ${currentFunction === 'twelve' ? styles.navContentChoose : ''}`} onClick={() => handleFunctionChange('twelve', '氣體斷路器(GCB)')}>氣體斷路器(GCB)</div>
+                        <h6>範疇二</h6>
+                        <div className={`${styles.navContent} ${currentFunction === 'thirteen' ? styles.navContentChoose : ''}`} onClick={() => handleFunctionChange('thirteen', '間接蒸氣(有做溫室氣體盤查)')}>間接蒸氣<span>(汽電共生廠有做溫室氣體盤查)</span></div>
+                        <div className={`${styles.navContent} ${currentFunction === 'forteen' ? styles.navContentChoose : ''}`} onClick={() => handleFunctionChange('forteen', '間接蒸氣(沒有做溫室氣體盤查)')}>間接蒸氣<span>(汽電共生廠沒有做溫室氣體盤查)</span></div>
 
-                        <div className={`${styles.navContent} ${currentFunction === 'forteen' ? styles.navContentChoose : ''}`} onClick={() => handleFunctionChange('forteen', '電力使用量')}>電力使用量</div>
-                        <div className={`${styles.navContent} ${currentFunction === 'fiteen' ? styles.navContentChoose : ''}`} onClick={() => handleFunctionChange('fifteen', '間接蒸氣(有做溫室氣體盤查)')}>間接蒸氣<span>(汽電共生廠有做溫室氣體盤查)</span></div>
-                        <div className={`${styles.navContent} ${currentFunction === 'sixteen' ? styles.navContentChoose : ''}`} onClick={() => handleFunctionChange('sixteen', '間接蒸氣(沒有做溫室氣體盤查)')}>間接蒸氣<span>(汽電共生廠沒有做溫室氣體盤查)</span></div>
-                        <div className={`${styles.navContent} ${currentFunction === 'seventeen' ? styles.navContentChoose : ''}`} onClick={() => handleFunctionChange('seventeen', '其他')}>其他</div>
                     </div>
                 </CCard>
             </div>
