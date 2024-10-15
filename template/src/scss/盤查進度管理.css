@@ -1,0 +1,36 @@
+.check_icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 25px; /* 圓形的寬度 */
+  height: 25px; /* 圓形的高度 */
+  border-radius: 50%; /* 圓形 */
+  background-color: #63C453; /* 塗滿紅色 */
+  }
+  .check_icon .check {
+    color: white; /* 將圖標變為白色 */
+  }
+  .x_icon{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 25px; /* 圓形的寬度 */
+  height: 25px; /* 圓形的高度 */
+  border-radius: 50%; /* 圓形 */
+  background-color: red; /* 塗滿紅色 */
+  }
+  .x_icon .x {
+    color: white; /* 將圖標變為白色 */
+  }
+  .edit_icon{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 25px; /* 圓形的寬度 */
+    height: 25px; /* 圓形的高度 */
+    border-radius: 50%; /* 圓形 */
+    background-color: #FFCC00; /* 塗滿紅色 */
+    }
+    .edit_icon .edit {
+        color: white; /* 將圖標變為白色 */
+    }
