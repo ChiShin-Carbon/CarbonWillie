@@ -17,21 +17,7 @@ const FunctionForms = ({ currentFunction }) => {
 
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="month" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票/收據日期*</CFormLabel>
-                        <CCol>
-                            <CFormSelect aria-label="Default select example" id="month" className={styles.addinput} >
-                                <option value="1">1月</option>
-                                <option value="2">2月</option>
-                                <option value="3">3月</option>
-                                <option value="4">4月</option>
-                                <option value="5">5月</option>
-                                <option value="6">6月</option>
-                                <option value="7">7月</option>
-                                <option value="8">8月</option>
-                                <option value="9">9月</option>
-                                <option value="10">10月</option>
-                                <option value="11">11月</option>
-                                <option value="12">12月</option>
-                            </CFormSelect>
+                        <CCol><CFormInput className={styles.addinput} type="date" id="date" required />
                         </CCol>
                     </CRow>
                     <CRow className="mb-3">
@@ -154,7 +140,17 @@ const FunctionForms = ({ currentFunction }) => {
         case 'two':
             return (
                 <div className={styles.addmodal}>
-
+                    <CRow className="mb-3">
+                        <CFormLabel htmlFor="month" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票/收據日期*</CFormLabel>
+                        <CCol><CFormInput className={styles.addinput} type="date" id="date" required />
+                        </CCol>
+                    </CRow>
+                    <CRow className="mb-3">
+                        <CFormLabel htmlFor="num" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票號碼/收據編號*</CFormLabel>
+                        <CCol>
+                            <CFormInput className={styles.addinput} type="text" id="num" required />
+                        </CCol>
+                    </CRow>
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="name" className={`col-sm-2 col-form-label ${styles.addlabel}`} >品名*</CFormLabel>
                         <CCol>
@@ -370,7 +366,17 @@ const FunctionForms = ({ currentFunction }) => {
             const [visible, setVisible] = useState(false)
             return (
                 <div className={styles.addmodal}>
-
+                    <CRow className="mb-3">
+                        <CFormLabel htmlFor="month" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票/收據日期*</CFormLabel>
+                        <CCol><CFormInput className={styles.addinput} type="date" id="date" required />
+                        </CCol>
+                    </CRow>
+                    <CRow className="mb-3">
+                        <CFormLabel htmlFor="num" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票號碼/收據編號*</CFormLabel>
+                        <CCol>
+                            <CFormInput className={styles.addinput} type="text" id="num" required />
+                        </CCol>
+                    </CRow>
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="type" className={`col-sm-2 col-form-label ${styles.addlabel}`} >設備類型*</CFormLabel>
                         <CCol>
@@ -470,7 +476,17 @@ const FunctionForms = ({ currentFunction }) => {
         case 'six':
             return (
                 <div className={styles.addmodal}>
-
+                    <CRow className="mb-3">
+                        <CFormLabel htmlFor="month" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票/收據日期*</CFormLabel>
+                        <CCol><CFormInput className={styles.addinput} type="date" id="date" required />
+                        </CCol>
+                    </CRow>
+                    <CRow className="mb-3">
+                        <CFormLabel htmlFor="num" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票號碼/收據編號*</CFormLabel>
+                        <CCol>
+                            <CFormInput className={styles.addinput} type="text" id="num" required />
+                        </CCol>
+                    </CRow>
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="site" className={`col-sm-2 col-form-label ${styles.addlabel}`} >設備位置*</CFormLabel>
                         <CCol>
@@ -488,27 +504,6 @@ const FunctionForms = ({ currentFunction }) => {
                             </CFormSelect>
                         </CCol>
                     </CRow>
-                    <CRow className="mb-3">
-                        <CFormLabel htmlFor="month" className={`col-sm-2 col-form-label ${styles.addlabel}`} >月份*</CFormLabel>
-                        <CCol>
-                            <CFormSelect aria-label="Default select example" id="month" className={styles.addinput} >
-                                <option value="all">全年</option>
-                                <option value="1">1月</option>
-                                <option value="2">2月</option>
-                                <option value="3">3月</option>
-                                <option value="4">4月</option>
-                                <option value="5">5月</option>
-                                <option value="6">6月</option>
-                                <option value="7">7月</option>
-                                <option value="8">8月</option>
-                                <option value="9">9月</option>
-                                <option value="10">10月</option>
-                                <option value="11">11月</option>
-                                <option value="12">12月</option>
-                            </CFormSelect>
-                        </CCol>
-                    </CRow>
-
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="quantity" className={`col-sm-2 col-form-label ${styles.addlabel}`} >使用量(公克)*</CFormLabel>
                         <CCol>
@@ -580,22 +575,14 @@ const FunctionForms = ({ currentFunction }) => {
             return (
                 <div className={styles.addmodal}>
                     <CRow className="mb-3">
-                        <CFormLabel htmlFor="month" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票/收據月份*</CFormLabel>
+                        <CFormLabel htmlFor="month" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票/收據日期*</CFormLabel>
+                        <CCol><CFormInput className={styles.addinput} type="date" id="date" required />
+                        </CCol>
+                    </CRow>
+                    <CRow className="mb-3">
+                        <CFormLabel htmlFor="num" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票號碼/收據編號*</CFormLabel>
                         <CCol>
-                            <CFormSelect aria-label="Default select example" id="month" className={styles.addinput} >
-                                <option value="1">1月</option>
-                                <option value="2">2月</option>
-                                <option value="3">3月</option>
-                                <option value="4">4月</option>
-                                <option value="5">5月</option>
-                                <option value="6">6月</option>
-                                <option value="7">7月</option>
-                                <option value="8">8月</option>
-                                <option value="9">9月</option>
-                                <option value="10">10月</option>
-                                <option value="11">11月</option>
-                                <option value="12">12月</option>
-                            </CFormSelect>
+                            <CFormInput className={styles.addinput} type="text" id="num" required />
                         </CCol>
                     </CRow>
                     <CRow className="mb-3">
@@ -671,7 +658,17 @@ const FunctionForms = ({ currentFunction }) => {
             return (
                 <div className={styles.addmodal}>
 
-
+                    <CRow className="mb-3">
+                        <CFormLabel htmlFor="month" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票/收據日期*</CFormLabel>
+                        <CCol><CFormInput className={styles.addinput} type="date" id="date" required />
+                        </CCol>
+                    </CRow>
+                    <CRow className="mb-3">
+                        <CFormLabel htmlFor="num" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票號碼/收據編號*</CFormLabel>
+                        <CCol>
+                            <CFormInput className={styles.addinput} type="text" id="num" required />
+                        </CCol>
+                    </CRow>
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="type" className={`col-sm-2 col-form-label ${styles.addlabel}`} >設備類型*</CFormLabel>
                         <CCol>
@@ -689,26 +686,6 @@ const FunctionForms = ({ currentFunction }) => {
                                 <option value="5">生質燃料</option>
                                 <option value="6">木精</option>
                                 <option value="7">其他</option>
-                            </CFormSelect>
-                        </CCol>
-                    </CRow>
-                    <CRow className="mb-3">
-                        <CFormLabel htmlFor="month" className={`col-sm-2 col-form-label ${styles.addlabel}`} >時期*</CFormLabel>
-                        <CCol>
-                            <CFormSelect aria-label="Default select example" id="month" className={styles.addinput} >
-                                <option value="all">全年</option>
-                                <option value="1">1月</option>
-                                <option value="2">2月</option>
-                                <option value="3">3月</option>
-                                <option value="4">4月</option>
-                                <option value="5">5月</option>
-                                <option value="6">6月</option>
-                                <option value="7">7月</option>
-                                <option value="8">8月</option>
-                                <option value="9">9月</option>
-                                <option value="10">10月</option>
-                                <option value="11">11月</option>
-                                <option value="12">12月</option>
                             </CFormSelect>
                         </CCol>
                     </CRow>
@@ -738,14 +715,17 @@ const FunctionForms = ({ currentFunction }) => {
         case 'ten':
             return (
                 <div className={styles.addmodal}>
-
                     <CRow className="mb-3">
-                        <CFormLabel htmlFor="date" className={`col-sm-2 col-form-label ${styles.addlabel}`} >日期*</CFormLabel>
-                        <CCol>
-                            <CFormInput className={styles.addinput} type="date" id="date" required />
+                        <CFormLabel htmlFor="month" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票/收據日期*</CFormLabel>
+                        <CCol><CFormInput className={styles.addinput} type="date" id="date" required />
                         </CCol>
                     </CRow>
-
+                    <CRow className="mb-3">
+                        <CFormLabel htmlFor="num" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票號碼/收據編號*</CFormLabel>
+                        <CCol>
+                            <CFormInput className={styles.addinput} type="text" id="num" required />
+                        </CCol>
+                    </CRow>
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="type2" className={`col-sm-2 col-form-label ${styles.addlabel}`} >使用原料*</CFormLabel>
                         <CCol>
@@ -788,11 +768,15 @@ const FunctionForms = ({ currentFunction }) => {
         case 'eleven':
             return (
                 <div className={styles.addmodal}>
-
                     <CRow className="mb-3">
-                        <CFormLabel htmlFor="date" className={`col-sm-2 col-form-label ${styles.addlabel}`} >進貨日期</CFormLabel>
+                        <CFormLabel htmlFor="month" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票/收據日期*</CFormLabel>
+                        <CCol><CFormInput className={styles.addinput} type="date" id="date" required />
+                        </CCol>
+                    </CRow>
+                    <CRow className="mb-3">
+                        <CFormLabel htmlFor="num" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票號碼/收據編號*</CFormLabel>
                         <CCol>
-                            <CFormInput className={styles.addinput} type="date" id="date" />
+                            <CFormInput className={styles.addinput} type="text" id="num" required />
                         </CCol>
                     </CRow>
                     <CRow className="mb-3">
@@ -851,18 +835,22 @@ const FunctionForms = ({ currentFunction }) => {
             return (
                 <div className={styles.addmodal}>
                     <CRow className="mb-3">
+                        <CFormLabel htmlFor="month" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票/收據日期*</CFormLabel>
+                        <CCol><CFormInput className={styles.addinput} type="date" id="date" required />
+                        </CCol>
+                    </CRow>
+                    <CRow className="mb-3">
+                        <CFormLabel htmlFor="num" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票號碼/收據編號*</CFormLabel>
+                        <CCol>
+                            <CFormInput className={styles.addinput} type="text" id="num" required />
+                        </CCol>
+                    </CRow>
+                    <CRow className="mb-3">
                         <CFormLabel htmlFor="name" className={`col-sm-2 col-form-label ${styles.addlabel}`} >品名*</CFormLabel>
                         <CCol>
                             <CFormInput className={styles.addinput} type="text" id="name" />
                         </CCol>
                     </CRow>
-                    <CRow className="mb-3">
-                        <CFormLabel htmlFor="date" className={`col-sm-2 col-form-label ${styles.addlabel}`} >填充日期*</CFormLabel>
-                        <CCol>
-                            <CFormInput className={styles.addinput} type="date" id="date" required />
-                        </CCol>
-                    </CRow>
-
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="quantity" className={`col-sm-2 col-form-label ${styles.addlabel}`} >填充量(公克)*</CFormLabel>
                         <CCol>
@@ -890,6 +878,17 @@ const FunctionForms = ({ currentFunction }) => {
             return (
                 <div className={styles.addmodal}>
                     <CRow className="mb-3">
+                        <CFormLabel htmlFor="month" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票/收據日期*</CFormLabel>
+                        <CCol><CFormInput className={styles.addinput} type="date" id="date" required />
+                        </CCol>
+                    </CRow>
+                    <CRow className="mb-3">
+                        <CFormLabel htmlFor="num" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票號碼/收據編號*</CFormLabel>
+                        <CCol>
+                            <CFormInput className={styles.addinput} type="text" id="num" required />
+                        </CCol>
+                    </CRow>
+                    <CRow className="mb-3">
                         <CFormLabel htmlFor="main" className={`col-sm-2 col-form-label ${styles.addlabel}`} >主要燃料*</CFormLabel>
                         <CCol>
                             <CFormInput className={styles.addinput} type="text" min='0' id="main" />
@@ -911,26 +910,6 @@ const FunctionForms = ({ currentFunction }) => {
                         <CFormLabel htmlFor="factor" className={`col-sm-2 col-form-label ${styles.addlabel}`} >蒸氣排放係數*</CFormLabel>
                         <CCol>
                             <CFormInput className={styles.addinput} type="number" min='0' id="factor" required />
-                        </CCol>
-                    </CRow>
-                    <CRow className="mb-3">
-                        <CFormLabel htmlFor="month" className={`col-sm-2 col-form-label ${styles.addlabel}`} >月份*</CFormLabel>
-                        <CCol>
-                            <CFormSelect aria-label="Default select example" id="month" className={styles.addinput} >
-                                <option value="all">全年</option>
-                                <option value="1">1月</option>
-                                <option value="2">2月</option>
-                                <option value="3">3月</option>
-                                <option value="4">4月</option>
-                                <option value="5">5月</option>
-                                <option value="6">6月</option>
-                                <option value="7">7月</option>
-                                <option value="8">8月</option>
-                                <option value="9">9月</option>
-                                <option value="10">10月</option>
-                                <option value="11">11月</option>
-                                <option value="12">12月</option>
-                            </CFormSelect>
                         </CCol>
                     </CRow>
                     <CRow className="mb-3">
@@ -962,6 +941,17 @@ const FunctionForms = ({ currentFunction }) => {
         case 'forteen':
             return (
                 <div className={styles.addmodal}>
+                    <CRow className="mb-3">
+                        <CFormLabel htmlFor="month" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票/收據日期*</CFormLabel>
+                        <CCol><CFormInput className={styles.addinput} type="date" id="date" required />
+                        </CCol>
+                    </CRow>
+                    <CRow className="mb-3">
+                        <CFormLabel htmlFor="num" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票號碼/收據編號*</CFormLabel>
+                        <CCol>
+                            <CFormInput className={styles.addinput} type="text" id="num" required />
+                        </CCol>
+                    </CRow>
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="name" className={`col-sm-2 col-form-label ${styles.addlabel}`} >原燃物料名稱*</CFormLabel>
                         <CCol>
