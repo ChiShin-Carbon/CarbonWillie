@@ -20,6 +20,7 @@ import {
   cilSpeedometer,
   cilStar,
   cilUser,
+  cilCash
 } from '@coreui/icons'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 
@@ -80,6 +81,12 @@ const _nav = [
     name: '盤查報告書',
     to: '/theme/report',
     icon: <CIcon icon={cilFile} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: '碳費資訊',
+    to: '/theme/carbon_fee',
+    icon: <CIcon icon={cilCash} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
