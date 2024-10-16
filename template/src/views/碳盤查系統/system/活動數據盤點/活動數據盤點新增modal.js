@@ -141,17 +141,6 @@ const FunctionForms = ({ currentFunction }) => {
             return (
                 <div className={styles.addmodal}>
                     <CRow className="mb-3">
-                        <CFormLabel htmlFor="month" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票/收據日期*</CFormLabel>
-                        <CCol><CFormInput className={styles.addinput} type="date" id="date" required />
-                        </CCol>
-                    </CRow>
-                    <CRow className="mb-3">
-                        <CFormLabel htmlFor="num" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票號碼/收據編號*</CFormLabel>
-                        <CCol>
-                            <CFormInput className={styles.addinput} type="text" id="num" required />
-                        </CCol>
-                    </CRow>
-                    <CRow className="mb-3">
                         <CFormLabel htmlFor="name" className={`col-sm-2 col-form-label ${styles.addlabel}`} >品名*</CFormLabel>
                         <CCol>
                             <CFormInput className={styles.addinput} type="text" id="name" required />
@@ -175,12 +164,6 @@ const FunctionForms = ({ currentFunction }) => {
                         <CFormLabel htmlFor="weight" className={`col-sm-2 col-form-label ${styles.addlabel}`} >規格(重量)*</CFormLabel>
                         <CCol>
                             <CFormInput className={styles.addinput} type="number" min='0' id="weight" required />
-                        </CCol>
-                    </CRow>
-                    <CRow className="mb-3">
-                        <CFormLabel htmlFor="use" className={`col-sm-2 col-form-label ${styles.addlabel}`} >使用量(支)*</CFormLabel>
-                        <CCol>
-                            <CFormInput className={styles.addinput} type="number" min='0' id="use" required />
                         </CCol>
                     </CRow>
                     <CRow className="mb-3">

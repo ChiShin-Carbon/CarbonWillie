@@ -1,7 +1,8 @@
 // functions.js
 import React, { useState } from 'react'; // 確保引入 useState
 import {
-    CTable, CTableHead, CTableBody, CFormSelect,
+    CTable, CTableHead, CTableBody, CFormSelect, CModal, CModalBody, CModalFooter, CModalHeader, CForm, CButton,
+    CFormLabel, CFormInput, CFormTextarea, CRow, CCol,CCollapse,CCard,CCardBody
 } from '@coreui/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPenToSquare, faTrashCan } from '@fortawesome/free-solid-svg-icons';
@@ -60,15 +61,51 @@ export const FunctionOne = () => {
 
 export const FunctionTwo = () => {
     const [isEditModalVisible, setEditModalVisible] = useState(false);
-    const currentFunction = 'two'; // 定義 currentFunction
+    const [selectedRow, setSelectedRow] = useState(null); // 用於追蹤展開的列
+    const currentFunction = 'two';
+
+    const [isEditFillVisible, setEditFillVisible] = useState(false);
+    const editFillClose = () => setEditFillVisible(false);
+    const [isAddFillVisible, setAddFillVisible] = useState(false);
+    const addFillClose = () => setAddFillVisible(false);
+
+    const mockData = [
+        {
+            id: 1,
+            date: '2023/01/15',
+            invoiceNumber: '12345',
+            productName: '產品A',
+            ingredient: 'CO2',
+            spec: '500g',
+            note: '無',
+            imageUrl: 'https://i.pinimg.com/564x/35/a9/aa/35a9aa483e73b94c8b8605ed9107a381.jpg',
+            lastEditor: '蔡沂庭',
+            lastEditDate: '2024/10/16 12:09'
+        },
+        {
+            id: 2,
+            date: '2023/02/20',
+            invoiceNumber: '67890',
+            productName: '產品B',
+            ingredient: 'H2O',
+            spec: '250ml',
+            note: '重要',
+            imageUrl: 'https://i.pinimg.com/564x/35/a9/aa/35a9aa483e73b94c8b8605ed9107a381.jpg',
+            lastEditor: '張偉',
+            lastEditDate: '2024/10/17 09:15'
+        },
+        // 可以添加更多假資料
+    ];
+
+    const toggleRow = (index) => {
+        setSelectedRow(selectedRow === index ? null : index);
+    };
 
     return (
         <div>
             <CTable hover className={styles.activityTable1}>
                 <CTableHead className={styles.activityTableHead}>
                     <tr>
-                        <th>發票/收據日期</th>
-                        <th>發票號碼/收據編號</th>
                         <th>品名</th>
                         <th>成分</th>
                         <th>規格(重量)</th>
@@ -79,20 +116,57 @@ export const FunctionTwo = () => {
                     </tr>
                 </CTableHead>
                 <CTableBody className={styles.activityTableBody}>
-                    <tr>
-                        <td>2023/01/15</td>
-                        <td>XXXXX</td>
-                        <td>XXXXX</td>
-                        <td>CO2</td>
-                        <td>XXX</td>
-                        <td>讚</td>
-                        <td><Zoom><img src="https://i.pinimg.com/564x/35/a9/aa/35a9aa483e73b94c8b8605ed9107a381.jpg" alt="image" /></Zoom></td>
-                        <td>蔡沂庭<br />2024/10/16 12:09</td>
-                        <td>
-                            <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
-                            <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
-                        </td>
-                    </tr>
+                    {mockData.map((item, index) => (
+                        <React.Fragment key={item.id}>
+                            <tr onClick={() => toggleRow(index)} className={styles.trChoose}>
+                                <td>{item.productName}</td>
+                                <td>{item.ingredient}</td>
+                                <td>{item.spec}</td>
+                                <td>{item.note}</td>
+                                <td><Zoom><img src={item.imageUrl} alt="image" /></Zoom></td>
+                                <td>{item.lastEditor}<br />{item.lastEditDate}</td>
+                                <td>
+                                    <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
+                                    <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
+                                </td>
+                            </tr>
+                            {selectedRow === index && (
+                                <td colSpan="9">
+                                    <div className={styles.expandedContent}>
+                                        {/* 在展開的區塊中放置你需要的內容 */}
+                                        <div className={styles.fill}>
+                                            <div>填充紀錄</div>
+                                            <button onClick={() => setAddFillVisible(true)}>新增</button>
+                                        </div>
+                                        <table>
+                                            <tr>
+                                                <th>發票/收據日期</th>
+                                                <th>發票號碼/收據編號</th>
+                                                <th>填充量</th>
+                                                <th>備註</th>
+                                                <th>圖片</th>
+                                                <th>最近編輯</th>
+                                                <th>操作</th>
+                                            </tr>
+                                            <tr>
+                                                <td>2023/01/15</td>
+                                                <td>XXXXX</td>
+                                                <td>XXX</td>
+                                                <td>讚</td>
+                                                <td><Zoom><img src="https://i.pinimg.com/564x/f3/d9/27/f3d92764f7e4d8ab25835b39f20e2e0f.jpg" alt="image" /></Zoom></td>
+                                                <td>蔡沂庭<br />2024/10/16 12:09</td>
+                                                <td>
+                                                    <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditFillVisible(true)} />
+                                                    <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
+                                                </td>
+                                            </tr>
+                                        </table>
+
+                                    </div>
+                                </td>
+                            )}
+                        </React.Fragment>
+                    ))}
                 </CTableBody>
             </CTable>
             <EditModal
@@ -100,6 +174,108 @@ export const FunctionTwo = () => {
                 setEditModalVisible={setEditModalVisible}
                 currentFunction={currentFunction}
             />
+
+
+            {/* 填充新增編輯modal */}
+            <CModal visible={isEditFillVisible} onClose={editFillClose} className={styles.modal}>
+                <CModalHeader>
+                    <h5><b>編輯填充紀錄</b></h5>
+                </CModalHeader>
+                <CForm>
+                    <CModalBody>
+                        <div className={styles.addmodal}>
+                            <CRow className="mb-3">
+                                <CFormLabel htmlFor="month" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票/收據日期*</CFormLabel>
+                                <CCol><CFormInput className={styles.addinput} type="date" id="date" required />
+                                </CCol>
+                            </CRow>
+                            <CRow className="mb-3">
+                                <CFormLabel htmlFor="num" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票號碼/收據編號*</CFormLabel>
+                                <CCol>
+                                    <CFormInput className={styles.addinput} type="text" id="num" required />
+                                </CCol>
+                            </CRow>
+                            <CRow className="mb-3">
+                                <CFormLabel htmlFor="num" className={`col-sm-2 col-form-label ${styles.addlabel}`} >填充量*</CFormLabel>
+                                <CCol>
+                                    <CFormInput className={styles.addinput} type="number" id="num" required />
+                                </CCol>
+                            </CRow>
+                            <CRow className="mb-3">
+                                <CFormLabel htmlFor="explain" className={`col-sm-2 col-form-label ${styles.addlabel}`} >備註</CFormLabel>
+                                <CCol>
+                                    <CFormTextarea className={styles.addinput} type="text" id="explain" rows={3} />
+
+                                </CCol>
+                            </CRow>
+                            <CRow className="mb-3">
+                                <CFormLabel htmlFor="photo" className={`col-sm-2 col-form-label ${styles.addlabel}`} >圖片*</CFormLabel>
+                                <CCol>
+                                    <CFormInput type="file" id="photo" required />
+                                </CCol>
+                            </CRow>
+                            <br />
+                            <div style={{ textAlign: 'center' }}>*為必填欄位</div>
+
+                        </div>
+                    </CModalBody>
+                    <CModalFooter>
+                        <CButton className="modalbutton1" onClick={editFillClose}>取消</CButton>
+                        <CButton className="modalbutton2" type="submit">儲存</CButton>
+                    </CModalFooter>
+                </CForm>
+            </CModal>
+
+            <CModal visible={isAddFillVisible} onClose={addFillClose} className={styles.modal}>
+                <CModalHeader>
+                    <h5><b>新增填充紀錄</b></h5>
+                </CModalHeader>
+                <CForm>
+                    <CModalBody>
+                        <div className={styles.addmodal}>
+                            <CRow className="mb-3">
+                                <CFormLabel htmlFor="month" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票/收據日期*</CFormLabel>
+                                <CCol><CFormInput className={styles.addinput} type="date" id="date" required />
+                                </CCol>
+                            </CRow>
+                            <CRow className="mb-3">
+                                <CFormLabel htmlFor="num" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票號碼/收據編號*</CFormLabel>
+                                <CCol>
+                                    <CFormInput className={styles.addinput} type="text" id="num" required />
+                                </CCol>
+                            </CRow>
+                            <CRow className="mb-3">
+                                <CFormLabel htmlFor="num" className={`col-sm-2 col-form-label ${styles.addlabel}`} >填充量*</CFormLabel>
+                                <CCol>
+                                    <CFormInput className={styles.addinput} type="number" id="num" required />
+                                </CCol>
+                            </CRow>
+                            <CRow className="mb-3">
+                                <CFormLabel htmlFor="explain" className={`col-sm-2 col-form-label ${styles.addlabel}`} >備註</CFormLabel>
+                                <CCol>
+                                    <CFormTextarea className={styles.addinput} type="text" id="explain" rows={3} />
+
+                                </CCol>
+                            </CRow>
+                            <CRow className="mb-3">
+                                <CFormLabel htmlFor="photo" className={`col-sm-2 col-form-label ${styles.addlabel}`} >圖片*</CFormLabel>
+                                <CCol>
+                                    <CFormInput type="file" id="photo" required />
+                                </CCol>
+                            </CRow>
+                            <br />
+                            <div style={{ textAlign: 'center' }}>*為必填欄位</div>
+
+                        </div>
+                    </CModalBody>
+                    <CModalFooter>
+                        <CButton className="modalbutton1" onClick={addFillClose}>取消</CButton>
+                        <CButton className="modalbutton2" type="submit">儲存</CButton>
+                    </CModalFooter>
+                </CForm>
+            </CModal>
+
+
         </div>
     );
 };
@@ -202,15 +378,49 @@ export const FunctionFour = () => {
 
 export const FunctionFive = () => {
     const [isEditModalVisible, setEditModalVisible] = useState(false);
-    const currentFunction = 'five'; // 定義 currentFunction
+    const [selectedRow, setSelectedRow] = useState(null); // 用於追蹤展開的列
+    const currentFunction = 'five';
+
+    const [isEditFillVisible, setEditFillVisible] = useState(false);
+    const editFillClose = () => setEditFillVisible(false);
+    const [isAddFillVisible, setAddFillVisible] = useState(false);
+    const addFillClose = () => setAddFillVisible(false);
+
+    const mockData = [
+        {
+            id: 1,
+            equipmentType: '冰箱',
+            location: 'XXX',
+            refrigerantType: 'R11',
+            note: '讚',
+            imageUrl: 'https://i.pinimg.com/736x/c9/be/70/c9be70ef20f18513f025856d69034dcb.jpg',
+            lastEditor: '蔡沂庭',
+            lastEditDate: '2024/10/16 12:09'
+        },
+        {
+            id: 1,
+            equipmentType: '冷氣',
+            location: 'XXX',
+            refrigerantType: 'R11',
+            note: '讚',
+            imageUrl: 'https://i.pinimg.com/736x/c9/be/70/c9be70ef20f18513f025856d69034dcb.jpg',
+            lastEditor: '張偉',
+            lastEditDate: '2024/10/16 12:09'
+        },
+        // 可以添加更多假資料
+    ];
+
+    const toggleRow = (index) => {
+        setSelectedRow(selectedRow === index ? null : index);
+    };
+
+    const [collapseVisible, setCollapseVisible] = useState(false)
 
     return (
         <div>
             <CTable hover className={styles.activityTable1}>
                 <CTableHead className={styles.activityTableHead}>
                     <tr>
-                        <th>發票/收據日期</th>
-                        <th>發票號碼/收據編號</th>
                         <th>設備類型</th>
                         <th>設備位置</th>
                         <th>冷媒類型</th>
@@ -221,20 +431,58 @@ export const FunctionFive = () => {
                     </tr>
                 </CTableHead>
                 <CTableBody className={styles.activityTableBody}>
-                    <tr>
-                        <td>2023/01/15</td>
-                        <td>XXXXX</td>
-                        <td>冰箱</td>
-                        <td>XXX</td>
-                        <td>R11</td>
-                        <td>讚</td>
-                        <td><Zoom><img src="https://i.pinimg.com/736x/c9/be/70/c9be70ef20f18513f025856d69034dcb.jpg" alt="image" /></Zoom></td>
-                        <td>蔡沂庭<br />2024/10/16 12:09</td>
-                        <td>
-                            <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
-                            <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
-                        </td>
-                    </tr>
+                    {mockData.map((item, index) => (
+                        <React.Fragment key={item.id}>
+                            <tr onClick={() => toggleRow(index)} className={styles.trChoose}>
+                                <td>{item.equipmentType}</td>
+                                <td>{item.location}</td>
+                                <td>{item.refrigerantType}</td>
+                                <td>{item.note}</td>
+                                <td><Zoom><img src={item.imageUrl} alt="image" /></Zoom></td>
+                                <td>{item.lastEditor}<br />{item.lastEditDate}</td>
+                                <td>
+                                    <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
+                                    <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
+                                </td>
+                            </tr>
+                            {selectedRow === index && (
+                                <td colSpan="7">
+                                    <div className={styles.expandedContent}>
+                                        {/* 在展開的區塊中放置你需要的內容 */}
+                                        <div className={styles.fill}>
+                                            <div>填充紀錄</div>
+                                            <button onClick={() => setAddFillVisible(true)}>新增</button>
+                                        </div>
+                                        <table>
+                                            <tr>
+                                                <th>發票/收據日期</th>
+                                                <th>發票號碼/收據編號</th>
+                                                <th>填充量</th>
+                                                <th>逸散率(%)</th>
+                                                <th>備註</th>
+                                                <th>圖片</th>
+                                                <th>最近編輯</th>
+                                                <th>操作</th>
+                                            </tr>
+                                            <tr>
+                                                <td>2023/01/15</td>
+                                                <td>XXXXX</td>
+                                                <td>XXX</td>
+                                                <td>XXX</td>
+                                                <td>讚</td>
+                                                <td><Zoom><img src="https://i.pinimg.com/564x/f3/d9/27/f3d92764f7e4d8ab25835b39f20e2e0f.jpg" alt="image" /></Zoom></td>
+                                                <td>蔡沂庭<br />2024/10/16 12:09</td>
+                                                <td>
+                                                    <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditFillVisible(true)} />
+                                                    <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </td>
+                            )}
+                        </React.Fragment>
+                    ))}
                 </CTableBody>
             </CTable>
             <EditModal
@@ -242,8 +490,115 @@ export const FunctionFive = () => {
                 setEditModalVisible={setEditModalVisible}
                 currentFunction={currentFunction}
             />
+
+
+            {/* 填充新增編輯modal */}
+            <CModal visible={isEditFillVisible} onClose={editFillClose} className={styles.modal}>
+                <CModalHeader>
+                    <h5><b>編輯填充紀錄</b></h5>
+                </CModalHeader>
+                <CForm>
+                    <CModalBody>
+                        <div className={styles.addmodal}>
+                            <CRow className="mb-3">
+                                <CFormLabel htmlFor="month" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票/收據日期*</CFormLabel>
+                                <CCol><CFormInput className={styles.addinput} type="date" id="date" required /></CCol>
+                            </CRow>
+                            <CRow className="mb-3">
+                                <CFormLabel htmlFor="num" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票號碼/收據編號*</CFormLabel>
+                                <CCol><CFormInput className={styles.addinput} type="text" id="num" required /></CCol>
+                            </CRow>
+                            <CRow className="mb-3">
+                                <CFormLabel htmlFor="num" className={`col-sm-2 col-form-label ${styles.addlabel}`} >填充量*</CFormLabel>
+                                <CCol><CFormInput className={styles.addinput} type="number" id="num" required /></CCol>
+                            </CRow>
+                            <CRow className="mb-3">
+                                <CFormLabel htmlFor="percent" className={`col-sm-2 col-form-label ${styles.addlabel}`}>
+                                    逸散率<br /><span className={styles.Note2} onClick={() => setCollapseVisible(!collapseVisible)}>逸散率(%)建議表格</span></CFormLabel>
+                                <CCol>
+                                    <CFormInput className={styles.addinput} type="number" min='0' id="percent" required />
+                                </CCol>
+                                <CCollapse visible={collapseVisible}>
+                                    <CCard className="mt-3">
+                                        <CCardBody>
+                                            <img src='/src/assets/images/逸散率建議表格.png' />
+                                        </CCardBody>
+                                    </CCard>
+                                </CCollapse>
+                            </CRow>
+                            <CRow className="mb-3">
+                                <CFormLabel htmlFor="explain" className={`col-sm-2 col-form-label ${styles.addlabel}`} >備註</CFormLabel>
+                                <CCol><CFormTextarea className={styles.addinput} type="text" id="explain" rows={3} /></CCol>
+                            </CRow>
+                            <CRow className="mb-3">
+                                <CFormLabel htmlFor="photo" className={`col-sm-2 col-form-label ${styles.addlabel}`} >圖片*</CFormLabel>
+                                <CCol><CFormInput type="file" id="photo" required /></CCol>
+                            </CRow>
+                            <br />
+                            <div style={{ textAlign: 'center' }}>*為必填欄位</div>
+                        </div>
+                    </CModalBody>
+                    <CModalFooter>
+                        <CButton className="modalbutton1" onClick={editFillClose}>取消</CButton>
+                        <CButton className="modalbutton2" type="submit">儲存</CButton>
+                    </CModalFooter>
+                </CForm>
+            </CModal>
+
+            <CModal visible={isAddFillVisible} onClose={addFillClose} className={styles.modal}>
+                <CModalHeader>
+                    <h5><b>新增填充紀錄</b></h5>
+                </CModalHeader>
+                <CForm>
+                    <CModalBody>
+                        <div className={styles.addmodal}>
+                            <CRow className="mb-3">
+                                <CFormLabel htmlFor="month" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票/收據日期*</CFormLabel>
+                                <CCol><CFormInput className={styles.addinput} type="date" id="date" required /></CCol>
+                            </CRow>
+                            <CRow className="mb-3">
+                                <CFormLabel htmlFor="num" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票號碼/收據編號*</CFormLabel>
+                                <CCol><CFormInput className={styles.addinput} type="text" id="num" required /></CCol>
+                            </CRow>
+                            <CRow className="mb-3">
+                                <CFormLabel htmlFor="num" className={`col-sm-2 col-form-label ${styles.addlabel}`} >填充量*</CFormLabel>
+                                <CCol><CFormInput className={styles.addinput} type="number" id="num" required /></CCol>
+                            </CRow>
+                            <CRow className="mb-3">
+                                <CFormLabel htmlFor="percent" className={`col-sm-2 col-form-label ${styles.addlabel}`}>
+                                    逸散率<br /><span className={styles.Note2} onClick={() => setCollapseVisible(!collapseVisible)}>逸散率(%)建議表格</span></CFormLabel>
+                                <CCol>
+                                    <CFormInput className={styles.addinput} type="number" min='0' id="percent" required />
+                                </CCol>
+                                <CCollapse visible={collapseVisible}>
+                                    <CCard className="mt-3">
+                                        <CCardBody>
+                                            <img src='/src/assets/images/逸散率建議表格.png' />
+                                        </CCardBody>
+                                    </CCard>
+                                </CCollapse>
+                            </CRow>
+                            <CRow className="mb-3">
+                                <CFormLabel htmlFor="explain" className={`col-sm-2 col-form-label ${styles.addlabel}`} >備註</CFormLabel>
+                                <CCol><CFormTextarea className={styles.addinput} type="text" id="explain" rows={3} /></CCol>
+                            </CRow>
+                            <CRow className="mb-3">
+                                <CFormLabel htmlFor="photo" className={`col-sm-2 col-form-label ${styles.addlabel}`} >圖片*</CFormLabel>
+                                <CCol><CFormInput type="file" id="photo" required /></CCol>
+                            </CRow>
+                            <br />
+                            <div style={{ textAlign: 'center' }}>*為必填欄位</div>
+                        </div>
+                    </CModalBody>
+                    <CModalFooter>
+                        <CButton className="modalbutton1" onClick={addFillClose}>取消</CButton>
+                        <CButton className="modalbutton2" type="submit">新增</CButton>
+                    </CModalFooter>
+                </CForm>
+            </CModal>
+
         </div>
-    );
+    )
 };
 
 export const FunctionSix = () => {
