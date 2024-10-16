@@ -15,6 +15,8 @@ from edituserinfo import edituserinfo
 from editaddress import editaddress
 from editpassword import editpassword
 from companyinfo import companyinfo
+from ocrapi import ocrapi
+
 
 
 app = FastAPI()
@@ -47,3 +49,4 @@ app.include_router(edituserinfo)
 app.include_router(editaddress)
 app.include_router(editpassword)
 app.include_router(companyinfo)
+app.include_router(ocrapi)
