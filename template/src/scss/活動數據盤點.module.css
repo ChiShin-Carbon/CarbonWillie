@@ -421,3 +421,13 @@
     background-color: #854b74;
     color: white;
 }
+
+.noChoose{
+    height: 100%;
+    display:flex;
+    
+    justify-content: center;
+    align-items: center;
+    font-size:20px;
+    font-weight: bold;
+}

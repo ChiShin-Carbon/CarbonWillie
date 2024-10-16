@@ -14,7 +14,7 @@ import '../../../../scss/碳盤查系統.css'
 import { Link } from 'react-router-dom'
 import {
     FunctionOne, FunctionTwo, FunctionThree, FunctionFour, FunctionFive, FunctionSix, FunctionSeven, FunctionEight, FunctionNine,
-     FunctionTen,  FunctionEleven, FunctionTwelve, FunctionThirteen, FunctionForteen
+    FunctionTen, FunctionEleven, FunctionTwelve, FunctionThirteen, FunctionForteen,
 } from './活動數據盤點function.js';
 
 
@@ -28,8 +28,8 @@ import ActivityModal from './活動數據盤點新增modal.js';
 
 
 const Tabs = () => {
-    const [currentFunction, setCurrentFunction] = useState('one');
-    const [currentTitle, setCurrentTitle] = useState('公務車(汽油)');
+    const [currentFunction, setCurrentFunction] = useState('');
+    const [currentTitle, setCurrentTitle] = useState('');
 
 
     // 點擊處理函數
@@ -78,26 +78,32 @@ const Tabs = () => {
 
             <div className={styles.activityData}>
                 <CCard className={styles.activityCard}>
-                    <div className={styles.activityCardHead}>
-                        <div className={styles.activityCardHeadTitle}>{currentTitle}</div>
-                        <button className={styles.activityAddButton} onClick={() => setAddModalVisible(true)}>新增</button>
-                    </div>
-                    <div className={styles.activityCardBody}>
-                        {currentFunction === 'one' && <FunctionOne />}
-                        {currentFunction === 'two' && <FunctionTwo />}
-                        {currentFunction === 'three' && <FunctionThree />}
-                        {currentFunction === 'four' && <FunctionFour />}
-                        {currentFunction === 'five' && <FunctionFive />}
-                        {currentFunction === 'six' && <FunctionSix />}
-                        {currentFunction === 'seven' && <FunctionSeven />}
-                        {currentFunction === 'eight' && <FunctionEight />}
-                        {currentFunction === 'nine' && <FunctionNine />}
-                        {currentFunction === 'ten' && <FunctionTen />}
-                        {currentFunction === 'eleven' && <FunctionEleven />}
-                        {currentFunction === 'twelve' && <FunctionTwelve />}
-                        {currentFunction === 'thirteen' && <FunctionThirteen />}
-                        {currentFunction === 'forteen' && <FunctionForteen />}
-                    </div>
+                    {currentFunction ? (
+                        <>
+                            <div className={styles.activityCardHead}>
+                                <div className={styles.activityCardHeadTitle}>{currentTitle}</div>
+                                <button className={styles.activityAddButton} onClick={() => setAddModalVisible(true)}>新增</button>
+                            </div>
+                            <div className={styles.activityCardBody}>
+                                {currentFunction === 'one' && <FunctionOne />}
+                                {currentFunction === 'two' && <FunctionTwo />}
+                                {currentFunction === 'three' && <FunctionThree />}
+                                {currentFunction === 'four' && <FunctionFour />}
+                                {currentFunction === 'five' && <FunctionFive />}
+                                {currentFunction === 'six' && <FunctionSix />}
+                                {currentFunction === 'seven' && <FunctionSeven />}
+                                {currentFunction === 'eight' && <FunctionEight />}
+                                {currentFunction === 'nine' && <FunctionNine />}
+                                {currentFunction === 'ten' && <FunctionTen />}
+                                {currentFunction === 'eleven' && <FunctionEleven />}
+                                {currentFunction === 'twelve' && <FunctionTwelve />}
+                                {currentFunction === 'thirteen' && <FunctionThirteen />}
+                                {currentFunction === 'forteen' && <FunctionForteen />}
+                            </div>
+                        </>
+                    ) : (
+                        <div className={styles.noChoose}>請先選擇項目!</div>
+                    )}
                 </CCard>
 
 
