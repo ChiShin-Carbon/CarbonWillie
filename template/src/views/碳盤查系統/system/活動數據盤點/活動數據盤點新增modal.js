@@ -9,7 +9,7 @@ import styles from '../../../../scss/活動數據盤點.module.css'
 
 
 const FunctionForms = ({ currentFunction }) => {
-
+    const [recognizedText, setRecognizedText] = useState("");
 
     const handleC1image = async (e) => {
         e.preventDefault();
@@ -85,14 +85,14 @@ const FunctionForms = ({ currentFunction }) => {
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="explain" className={`col-sm-2 col-form-label ${styles.addlabel}`} >備註</CFormLabel>
                         <CCol>
-                            <CFormTextarea className={styles.addinput} type="text" id="explain" rows={3} />
+                            <CFormTextarea className={styles.addinput} type="text" id="explain" rows={3}  value={recognizedText} />
 
                         </CCol>
                     </CRow>
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="photo" className={`col-sm-2 col-form-label ${styles.addlabel}`}  >圖片*</CFormLabel>
                         <CCol>
-                            <CFormInput type="file" id="photo" required />
+                            <CFormInput type="file" id="image" onChange={handleC1image} required />
                         </CCol>
                     </CRow>
                     <br />
