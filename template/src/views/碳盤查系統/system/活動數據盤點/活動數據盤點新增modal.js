@@ -9,6 +9,38 @@ import styles from '../../../../scss/活動數據盤點.module.css'
 
 
 const FunctionForms = ({ currentFunction }) => {
+
+
+    const handleC1image = async (e) => {
+        e.preventDefault();
+    
+        const imageElement = document.getElementById("image");
+    
+        if (!imageElement || !imageElement.files) {
+          console.error("Form elements or image files not found");
+          return;
+        }
+    
+        const formData = new FormData();
+        formData.append("image", imageElement.files[0]);
+    
+        try {
+          const res = await fetch("http://localhost:8000/ocrapi", {
+            method: "POST",
+            body: formData,
+          });
+    
+          if (res.ok) {
+            const data = await res.json();
+            setRecognizedText(data.recognized_text); // Set the recognized text in state
+            console.log("Data submitted successfully");
+          } else {
+            console.error("Failed to submit data");
+          }
+        } catch (error) {
+          console.error("Error submitting data", error);
+        }
+      };
     switch (currentFunction) {
 
         case 'one':
