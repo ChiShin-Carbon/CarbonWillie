@@ -628,7 +628,12 @@ const Tabs = () => {
                             <CFormLabel>
                               <strong>機構名稱</strong>
                             </CFormLabel>
-                            <CFormInput type="text" id="edit_org_name" placeholder={org_name} />
+                            <CFormInput
+                              type="text"
+                              id="edit_org_name"
+                              value={org_name}
+                              onChange={(e) => setOrgName(e.target.value)}
+                            />
                           </div>
                         </CCol>
                       </CRow>
@@ -656,7 +661,12 @@ const Tabs = () => {
                             <CFormLabel>
                               <strong>縣市別</strong>
                             </CFormLabel>
-                            <CFormInput type="county" id="edit_county" placeholder={county} />
+                            <CFormInput
+                              type="county"
+                              id="edit_county"
+                              value={county}
+                              onChange={(e) => setCounty(e.target.value)}
+                            />
                           </div>
                         </CCol>
                         <CCol sm={4}>
@@ -664,7 +674,12 @@ const Tabs = () => {
                             <CFormLabel>
                               <strong>鄉鎮別</strong>
                             </CFormLabel>
-                            <CFormInput type="township" id="edit_town" placeholder={town} />
+                            <CFormInput
+                              type="township"
+                              id="edit_town"
+                              value={town}
+                              onChange={(e) => setTown(e.target.value)}
+                            />
                           </div>
                         </CCol>
                         <CCol sm={4}>
@@ -675,7 +690,8 @@ const Tabs = () => {
                             <CFormInput
                               type="text"
                               id="edit_postal_code"
-                              placeholder={postal_code}
+                              value={postal_code}
+                              onChange={(e) => setPostalCode(e.target.value)}
                             />
                           </div>
                         </CCol>
@@ -689,7 +705,8 @@ const Tabs = () => {
                             <CFormInput
                               type="text"
                               id="edit_org_address"
-                              placeholder={org_address}
+                              value={org_address}
+                              onChange={(e) => setOrgAddress(e.target.value)}
                             />
                           </div>
                         </CCol>
@@ -703,7 +720,8 @@ const Tabs = () => {
                             <CFormInput
                               type="text"
                               id="edit_charge_person"
-                              placeholder={charge_person}
+                              value={charge_person}
+                              onChange={(e) => setChargePerson(e.target.value)}
                             />
                           </div>
                         </CCol>
@@ -712,7 +730,12 @@ const Tabs = () => {
                             <CFormLabel>
                               <strong>公私場所電子信箱</strong>
                             </CFormLabel>
-                            <CFormInput type="text" id="edit_org_email" placeholder={org_email} />
+                            <CFormInput
+                              type="text"
+                              id="edit_org_email"
+                              value={org_email}
+                              onChange={(e) => setOrgEmail(e.target.value)}
+                            />
                           </div>
                         </CCol>
                       </CRow>
@@ -725,7 +748,8 @@ const Tabs = () => {
                             <CFormInput
                               type="text"
                               id="edit_contact_person"
-                              placeholder={contact_person}
+                              value={contact_person}
+                              onChange={(e) => setContactPerson(e.target.value)}
                             />
                           </div>
                         </CCol>
@@ -734,7 +758,12 @@ const Tabs = () => {
                             <CFormLabel>
                               <strong>Email</strong>
                             </CFormLabel>
-                            <CFormInput type="email" id="edit_email" placeholder={email} />
+                            <CFormInput
+                              type="email"
+                              id="edit_email"
+                              value={email}
+                              onChange={(e) => setEmail(e.target.value)}
+                            />
                           </div>
                         </CCol>
                       </CRow>
@@ -744,7 +773,12 @@ const Tabs = () => {
                             <CFormLabel>
                               <strong>電話</strong>
                             </CFormLabel>
-                            <CFormInput type="text" id="edit_telephone" placeholder={telephone} />
+                            <CFormInput
+                              type="text"
+                              id="edit_telephone"
+                              value={telephone}
+                              onChange={(e) => setTelephone(e.target.value)}
+                            />
                           </div>
                         </CCol>
                         <CCol sm={6}>
@@ -752,7 +786,12 @@ const Tabs = () => {
                             <CFormLabel>
                               <strong>手機</strong>
                             </CFormLabel>
-                            <CFormInput type="text" id="edit_phone" placeholder={phone} />
+                            <CFormInput
+                              type="text"
+                              id="edit_phone"
+                              value={phone}
+                              onChange={(e) => setPhone(e.target.value)}
+                            />
                           </div>
                         </CCol>
                       </CRow>
