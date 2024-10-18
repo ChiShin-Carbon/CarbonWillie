@@ -38,16 +38,14 @@ import {
     cilDataTransferUp,
     cilMenu,
     cilChartPie,
-    cilNewspaper,
     cilSearch,
     cilArrowCircleRight
 } from '@coreui/icons'
 // import { freeSet } from '@coreui/icons'
 // import { getIconsView } from '../brands/Brands.js'
 
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTableList, faChartPie } from '@fortawesome/free-solid-svg-icons';
+import { faTableList, faChartPie ,faNewspaper} from '@fortawesome/free-solid-svg-icons';
 
 
 import styles from '../../../scss/盤查結果查詢.module.css';
@@ -124,7 +122,7 @@ const Tabs = () => {
                             onClick={() => setActiveTab('tab3')}
                             className={activeTab === 'tab3' ? styles.tabChoose : styles.tabNoChoose}>
                             <div>
-                                <FontAwesomeIcon icon={cilNewspaper} />
+                                <FontAwesomeIcon icon={faNewspaper} />
                                 &nbsp;碳費新聞
                             </div>
                         </CNavLink>
@@ -153,7 +151,7 @@ const Tabs = () => {
                                     </button>
                                 </div>
                             </div>
-                            {/* 類別一及類別二排放形式排放量統計表 */}
+                            {/* 總覽 */}
                             <CCard style={{ width: '100%' }}>
                                 <CCardBody>
                                     <CRow>
@@ -290,7 +288,6 @@ const Tabs = () => {
                     {/* /*碳費分析&圖表呈現頁 */}
                     {activeTab === 'tab2' && (
                         <>
-                        
                             <div className={styles.titleContainer}>
                                 <div className={styles.leftItem}>
                                     <div><strong>xx2024碳費分析</strong></div>
@@ -509,7 +506,7 @@ const Tabs = () => {
                     {activeTab === 'tab3' && (
                         <>
                             {/* 第一版 */}
-                            <div className={styles.titleContainer}>
+                            <div style={{width:'100%'}}>
                             <CInputGroup className="mb-3">
                                 <CFormInput type="text" placeholder="搜尋..." className="search-input" />
                                 {/* <CButton type="submit" className="search-button" style={{width: '40px', backgroundColor: 'white', color: 'black', alignItems: 'center' }}>
@@ -518,20 +515,21 @@ const Tabs = () => {
                                 <CInputGroupText style={{backgroundColor:'white' }}>
                                     <i className="pi pi-search" />
                                 </CInputGroupText>
-                                <CDropdown alignment="end" variant="input-group">
+                                <CDropdown  style={{backgroundColor:'white' }}>
                                 <CDropdownToggle color="secondary" variant="outline">
-                                    Dropdown
+                                    篩選
                                 </CDropdownToggle>
                                 <CDropdownMenu>
-                                    <CDropdownItem href="#">Action</CDropdownItem>
-                                    <CDropdownItem href="#">Another action</CDropdownItem>
+                                    <CDropdownItem href="#">台灣</CDropdownItem>
+                                    <CDropdownItem href="#">國際</CDropdownItem>
                                     <CDropdownItem href="#">Something else here</CDropdownItem>
-                                    <CDropdownDivider />
-                                    <CDropdownItem href="#">Separated link</CDropdownItem>
                                 </CDropdownMenu>
                                 </CDropdown>
-                            </CInputGroup></div>
-                            {/* 第二版 */}
+                            </CInputGroup>
+                            <CInputGroup className="mb-3">
+              </CInputGroup>
+                            </div>
+                            {/* 第二版
                             <div className={styles.titleContainer}>
                                 <div className={styles.leftItem} style={{width:'1000px'}}>
                                 <CInputGroup className="mb-3">
@@ -549,8 +547,8 @@ const Tabs = () => {
                                         <option value="3">表3</option>
                                     </CFormSelect>
                                 </div>
-                            </div>
-                            {/* 類別一及類別二排放形式排放量統計表 */}
+                            </div> */}
+                            {/* 碳費新聞 */}
                             <CCard style={{ width: '100%' }}>
                                 <CCardBody>
                                     <CRow>
@@ -568,15 +566,21 @@ const Tabs = () => {
                                             <CCard style={{width: '1100px'}}>
                                                 <CCardBody>
                                                     <CRow>
-                                                    <div style={{ width: '100%', height: '40px', display: 'grid', alignItems: 'center', }}>
-                                                    <strong style={{ fontSize: '1.0rem', display: 'flex', alignItems: 'center', padding: '5px' }}>
-                                                        <p className="item-date" style={{color:'green'}}>2024-2-26</p>
-                                                        <p className="item-title">碳新聞new!</p>
-                                                    </strong>
-                                                    <CButton style={{ position: 'absolute', right: '15px', color: 'grey', display: 'flex', alignItems: 'center' }}>
-                                                        <b><CIcon icon={cilArrowCircleRight} className="me-2"  size="xl" /></b>
-                                                    </CButton>
-                                                    </div></CRow>
+                                                        <div style={{ width: '100%', height: '50px', display: 'flex', justifyContent: 'space-between' }}>
+                                                        <div style={{width: '10px', height: '100%', backgroundColor: '#00a000', borderRadius: '4px',}}></div> {/* 左側綠色 bar */}
+                                                        {/* 左側：日期與標題 */}
+                                                        <div style={{ display: 'flex',flex: 1, marginLeft: '20px', flexDirection: 'column' }}>
+                                                            {/* 日期 */}
+                                                            <p style={{ color: 'green', fontWeight: 'bold', margin: 0 }}>2022/12/01</p>
+                                                            {/* 標題 */}
+                                                            <p style={{ fontWeight: 'bold', margin: 0 }}>水環境巡守20年 作伙來瞭「水」環境</p>
+                                                        </div>
+                                                        {/* 右側：箭頭按鈕 */}
+                                                        <CButton style={{ height: '50px', width: '50px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                                            <CIcon icon={cilArrowCircleRight}   style={{ width: '50px', height: '50px' }} />
+                                                        </CButton>
+                                                        </div>
+                                                    </CRow>
                                                 </CCardBody>
                                             </CCard>
                                             </CCol>
@@ -588,23 +592,50 @@ const Tabs = () => {
                                 </CCardBody>
                             </CCard>
                             <br></br>
-                            <CRow>
-                                {/* 柱狀圖 */}
-                                <CCol xs={12}>
-                                    <CCard className="mb-4">
-                                        <CCardHeader style={{ backgroundColor: '#9D6B6B', height: '50px', display: 'flex', alignItems: 'center', }}>
-                                            <strong style={{ fontSize: '1.2rem', color: 'white', display: 'flex', alignItems: 'center', padding: '5px' }}>碳排總量 / </strong>
-                                            <strong style={{ fontSize: '1.0rem', color: 'white', padding: '5px' }}>柱狀圖</strong>
-                                            <CButton style={{ position: 'absolute', right: '10px', color: 'white', display: 'flex', alignItems: 'center' }}>
-                                                <b><CIcon icon={cilDataTransferDown} style={{ fontSize: '24px' }} /></b>
-                                            </CButton>
-                                        </CCardHeader>
-                                        <CCardBody style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', }}>
-                                            
-                                        </CCardBody>
-                                    </CCard>
-                                </CCol>
-                            </CRow>
+                            {/* 碳費百科 */}
+                            <CCard style={{ width: '100%' }}>
+                                <CCardBody>
+                                    <CRow>
+                                    <CCol sm={12}>
+                                        <CCardTitle>
+                                                <CRow>
+                                                    <div style={{ width: '100%', height: '50px', display: 'grid', alignItems: 'center', }}>
+                                                        <strong style={{ fontSize: '1.4rem', display: 'flex', alignItems: 'center', padding: '5px' }}>碳費百科</strong>
+                                                    </div>
+                                                </CRow>
+                                            </CCardTitle>
+                                            <CCardBody style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', }}>
+                                            <CRow>
+                                                <CCol sm={12}>
+                                                <CCard style={{width: '1100px'}}>
+                                                    <CCardBody>
+                                                        <CRow>
+                                                            <div style={{ width: '100%', height: '50px', display: 'flex', justifyContent: 'space-between' }}>
+                                                            <div style={{width: '10px', height: '100%', backgroundColor: '#f5a5c5', borderRadius: '4px',}}></div> {/* 左側粉色 bar */}
+                                                            {/* 左側：日期與標題 */}
+                                                            <div style={{ display: 'flex',flex: 1, marginLeft: '20px', flexDirection: 'column' }}>
+                                                                {/* 日期 */}
+                                                                <p style={{ color: '#f5a5c5', fontWeight: 'bold', margin: 0 }}>2022/12/01</p>
+                                                                {/* 標題 */}
+                                                                <p style={{ fontWeight: 'bold', margin: 0 }}>2024各國碳費標準</p>
+                                                            </div>
+                                                            {/* 右側：箭頭按鈕 */}
+                                                            <CButton style={{ height: '50px', width: '50px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                                                <CIcon icon={cilArrowCircleRight}   style={{ width: '50px', height: '50px' }} />
+                                                            </CButton>
+                                                            </div>
+                                                        </CRow>
+                                                    </CCardBody>
+                                                </CCard>
+                                                </CCol>
+                                            </CRow>
+                                            </CCardBody>
+                                    </CCol>
+                                    </CRow>
+                                    <br />
+                                </CCardBody>
+                            </CCard>
+                            <br></br>
                         </>
                     )}
                 </div>
