@@ -244,7 +244,7 @@ const Tabs = () => {
                                             </tr>
                                         </thead>
                                         <tbody style={{ border: '1px solid white', backgroundColor: '#ccffcc' }}>
-                                        <tr>
+                                        {/* <tr>
                                             <td style={{ border: '1px solid white', width:'200px', textAlign: 'center', verticalAlign: 'middle'}} colSpan={2}><b>直接排放：<br></br>固定燃燒排放源</b></td>
                                             <td style={cellStyle}></td>
                                             <td style={cellStyle}></td>
@@ -268,7 +268,7 @@ const Tabs = () => {
                                             <td style={cellStyle}></td>
                                             <td style={cellStyle}></td>
                                             <td style={cellStyle}>3%</td>
-                                        </tr>
+                                        </tr> */}
                                         <tr>
                                             <td style={{ border: '1px solid white', width:'200px', textAlign: 'center', verticalAlign: 'middle'}} colSpan={2}><b>使用電力間接排放</b></td>
                                             <td style={cellStyle}></td>
@@ -388,56 +388,6 @@ const Tabs = () => {
                                             <td style={cellStyle}></td>
                                             <td style={cellStyle}></td>
                                         </tr>
-                                        <tr>
-                                            <td style={rankingstyle}><b>6</b></td>
-                                            <td style={cellStyle}></td>
-                                            <td style={cellStyle}></td>
-                                            <td style={cellStyle}></td>
-                                            <td style={cellStyle}></td>
-                                            <td style={cellStyle}></td>
-                                            <td style={cellStyle}></td>
-                                            <td style={cellStyle}></td>
-                                        </tr>
-                                        <tr>
-                                            <td style={rankingstyle}><b>7</b></td>
-                                            <td style={cellStyle}></td>
-                                            <td style={cellStyle}></td>
-                                            <td style={cellStyle}></td>
-                                            <td style={cellStyle}></td>
-                                            <td style={cellStyle}></td>
-                                            <td style={cellStyle}></td>
-                                            <td style={cellStyle}></td>
-                                        </tr>
-                                        <tr>
-                                            <td style={rankingstyle}><b>8</b></td>
-                                            <td style={cellStyle}></td>
-                                            <td style={cellStyle}></td>
-                                            <td style={cellStyle}></td>
-                                            <td style={cellStyle}></td>
-                                            <td style={cellStyle}></td>
-                                            <td style={cellStyle}></td>
-                                            <td style={cellStyle}></td>
-                                        </tr>
-                                        <tr>
-                                            <td style={rankingstyle}><b>9</b></td>
-                                            <td style={cellStyle}></td>
-                                            <td style={cellStyle}></td>
-                                            <td style={cellStyle}></td>
-                                            <td style={cellStyle}></td>
-                                            <td style={cellStyle}></td>
-                                            <td style={cellStyle}></td>
-                                            <td style={cellStyle}></td>
-                                        </tr>
-                                        <tr>
-                                            <td style={rankingstyle}><b>10</b></td>
-                                            <td style={cellStyle}></td>
-                                            <td style={cellStyle}></td>
-                                            <td style={cellStyle}></td>
-                                            <td style={cellStyle}></td>
-                                            <td style={cellStyle}></td>
-                                            <td style={cellStyle}></td>
-                                            <td style={cellStyle}></td>
-                                        </tr>
                                         </tbody>
                                     </table>
                                     <br />
@@ -445,57 +395,58 @@ const Tabs = () => {
                             </CCard>
                             <br></br>
                             <CRow>
-                                {/* 柱狀圖 */}
-                                <CCol xs={12}>
+                               {/* 圓餅圖 */}
+                               <CCol xs={12}>
                                     <CCard className="mb-4">
                                         <CCardHeader style={{ backgroundColor: '#9D6B6B', height: '50px', display: 'flex', alignItems: 'center', }}>
-                                            <strong style={{ fontSize: '1.2rem', color: 'white', display: 'flex', alignItems: 'center', padding: '5px' }}>碳排總量 / </strong>
-                                            <strong style={{ fontSize: '1.0rem', color: 'white', padding: '5px' }}>柱狀圖</strong>
+                                            <strong style={{ fontSize: '1.2rem', color: 'white', display: 'flex', alignItems: 'center', padding: '5px' }}>統計圖表 / </strong>
+                                            <strong style={{ fontSize: '1.0rem', color: 'white', padding: '5px' }}>圓餅圖</strong>
                                             <CButton style={{ position: 'absolute', right: '10px', color: 'white', display: 'flex', alignItems: 'center' }}>
                                                 <b><CIcon icon={cilDataTransferDown} style={{ fontSize: '24px' }} /></b>
                                             </CButton>
                                         </CCardHeader>
-                                        <CCardBody style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', }}>
-                                            <div style={{ width: '1000px', height: '350px' }}>
-                                                <CChartBar
+                                        <CCardBody style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', }}>
+                                            <div style={{ width: '350px', height: '350px' }}>
+                                                <CChartPie
                                                     data={{
-                                                        labels: ['電力使用', '範疇二', '範疇三','範疇一', '範疇二', '範疇三','範疇一', '範疇二', '範疇三','範疇一'],
+                                                        labels: ['電力使用', '冷媒', '公務車'],
                                                         datasets: [
                                                             {
-                                                                backgroundColor: ['#d882c0', '#FFB3FF', '#FFB6C1','#d882c0', '#FFB3FF', '#FFB6C1','#d882c0', '#FFB3FF', '#FFB6C1','#d882c0'],
-                                                                data: [55.3654, 38.2547, 12.6354,55.3654, 38.2547, 12.6354,55.3654, 38.2547, 12.6354,55.3654],
+                                                                data: [60, 30, 10],
+                                                                backgroundColor: ['#d882c0', '#FFB3FF', '#FFB6C1'],
+                                                                hoverBackgroundColor: ['#d882c0', '#FFB3FF', '#FFB6C1'],
                                                             },
                                                         ],
                                                     }}
                                                     options={{
+                                                        responsive: true,
                                                         plugins: {
                                                             legend: {
-                                                                display: false,
-                                                                position: 'bottom',
-                                                            },
-                                                            datalabels: {
                                                                 display: true,
-                                                                color: 'black',
-                                                                anchor: 'end', // 標籤位置
-                                                                align: 'start', // 標籤對齊方式
-                                                                formatter: function (value) {
-                                                                    return value.toFixed(2); // 格式化數值顯示，保留兩位小數
+                                                                position: 'right', // 圖例位置
+                                                                labels: {
+                                                                    boxWidth: 25,
                                                                 },
                                                             },
+                                                            tooltip: {
+                                                                enabled: true, // 顯示提示框
+                                                            },
+
+                                                        },
+                                                        // 開啟數據標籤
+                                                        datalabels: {
+                                                            display: true,
+                                                            color: 'black',  // 設定標籤顏色
+                                                            font: {
+                                                                weight: 'bold',  // 設定字體粗細
+                                                            },
+                                                            formatter: (value) => `${value}%`,  // 顯示百分比或其他格式
                                                         },
                                                         responsive: true,
-                                                        maintainAspectRatio: false, // 不維持比例，可以自由調整大小
-                                                        scales: {
-                                                            y: {
-                                                                beginAtZero: true,
-                                                                ticks: {
-                                                                    precision: 0, // Y 軸上顯示的數字無小數點
-                                                                },
-                                                            },
-                                                        },
+                                                        maintainAspectRatio: true,
                                                     }}
-                                                    height={300} // 設置高度為 300px
-                                                /></div>
+                                                />
+                                            </div>
                                         </CCardBody>
                                     </CCard>
                                 </CCol>
