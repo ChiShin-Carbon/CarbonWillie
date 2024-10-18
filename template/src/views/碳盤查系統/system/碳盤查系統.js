@@ -25,15 +25,24 @@ const Tabs = () => {
         <main>
             <CTabs activeItemKey={1}>
                 <CTabList variant="underline-border" className="system-tablist">
-                            <Link to="/碳盤查系統/system" className="system-tablist-link">
-                                <CTab aria-controls="tab1" itemKey={1} className="system-tablist-choose">基準年&邊界設定</CTab>
-                            </Link>
-                            <Link to="/碳盤查系統/system/活動數據分配" className="system-tablist-link">
-                                <CTab aria-controls="tab3" itemKey={4} className="system-tablist-choose">活動數據分配</CTab>
-                            </Link>
-                            <Link to="/碳盤查系統/system/活動數據盤點" className="system-tablist-link">
-                                <CTab aria-controls="tab3" itemKey={2} className="system-tablist-choose">活動數據盤點</CTab>
-                            </Link>
+                    <div className={styles.tabsContainer}>
+                        <div className={styles.tabsLeft}>
+                            <Link to="." className="system-tablist-link"><CTab aria-controls="tab1" itemKey={1} className="system-tablist-choose">
+                                基準年&邊界設定
+                            </CTab></Link>
+                            <Link to="/碳盤查系統/system/活動數據分配" className="system-tablist-link"><CTab aria-controls="tab3" itemKey={4} className="system-tablist-choose">
+                                活動數據分配
+                            </CTab></Link>
+                            <Link to="/碳盤查系統/system/活動數據盤點" className="system-tablist-link"><CTab aria-controls="tab3" itemKey={2} className="system-tablist-choose">
+                                活動數據盤點
+                            </CTab></Link>
+                        </div>
+                        <div className={styles.tabsRight}>
+                            <Link to="/碳盤查系統/system/盤查進度管理" className="system-tablist-link"><CTab aria-controls="tab3" itemKey={5} className="system-tablist-choose">
+                                盤查進度管理
+                            </CTab></Link>
+                        </div>
+                    </div>
                 </CTabList>
             </CTabs>
 
@@ -45,10 +54,10 @@ const Tabs = () => {
                 </div>
                 <button className="system-save">儲存</button>
             </div>
-            <CCard className="mb-4 systemCard1" style={{height:'100px'}}>
+            <CCard className="mb-4 systemCard1" style={{ height: '100px' }}>
                 <div className="systemCardBody" >
                     <CForm>
-                        
+
                         <CRow className="mb-3">
                             <CFormLabel htmlFor="projectstart" className="col-sm-2 col-form-label systemlabel" >盤查期間(開始)</CFormLabel>
                             <CCol>

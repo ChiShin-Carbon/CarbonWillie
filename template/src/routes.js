@@ -16,6 +16,7 @@ const 首頁 = React.lazy(() => import('./views/theme/dashboard/首頁'))
 const 碳盤查系統 = React.lazy(() => import('./views/碳盤查系統/system/碳盤查系統'))
 const 活動數據盤點 = React.lazy(() => import('./views/碳盤查系統/system/活動數據盤點/活動數據盤點'))
 const 活動數據分配 = React.lazy(() => import('./views/碳盤查系統/system/活動數據分配/活動數據分配'))
+const 盤查進度管理 = React.lazy(() => import('./views/碳盤查系統/system/盤查進度管理/盤查進度管理'))
 
 //碳盤查系統顧問
 const 排放源鑑別 = React.lazy(() => import('./views/碳盤查系統/顧問system/排放源鑑別/排放源鑑別'))
@@ -89,6 +90,7 @@ const routes = [
   { path: '/碳盤查系統/system', name: '碳盤查系統', element: 碳盤查系統 },
   { path: '/碳盤查系統/system/活動數據盤點', name: '活動數據盤點', element: 活動數據盤點 },
   { path: '/碳盤查系統/system/活動數據分配', name: '活動數據分配', element: 活動數據分配 },
+  { path: '/碳盤查系統/system/盤查進度管理', name: '盤查進度管理', element: 盤查進度管理 },
   //碳盤查系統顧問
   { path: '/碳盤查系統/顧問system/排放源鑑別', name: '活排放源鑑別', element: 排放源鑑別 },
   { path: '/碳盤查系統/顧問system/活動數據', name: '活動數據', element: 活動數據 },

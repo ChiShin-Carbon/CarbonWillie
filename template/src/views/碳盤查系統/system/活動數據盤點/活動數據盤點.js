@@ -13,8 +13,7 @@ import { cilDataTransferDown } from '@coreui/icons'
 import '../../../../scss/碳盤查系統.css'
 import { Link } from 'react-router-dom'
 import {
-    FunctionOne, FunctionTwo, FunctionThree, FunctionFour, FunctionFive, FunctionSix, FunctionSeven, FunctionEight, FunctionNine,
-    FunctionTen, FunctionEleven, FunctionTwelve, FunctionThirteen, FunctionForteen,
+    FunctionOne, FunctionTwo, FunctionThree, FunctionFour, FunctionFive, FunctionSix, FunctionSeven, FunctionEight
 } from './活動數據盤點function.js';
 
 
@@ -59,8 +58,10 @@ const Tabs = () => {
                                 活動數據盤點
                             </CTab></Link>
                         </div>
-                        <div className={styles.buttonRight}>
-                            <button>盤點完成</button>
+                        <div className={styles.tabsRight}>
+                            <Link to="/碳盤查系統/system/盤查進度管理" className="system-tablist-link"><CTab aria-controls="tab3" itemKey={5} className="system-tablist-choose">
+                                盤查進度管理
+                            </CTab></Link>
                         </div>
                     </div>
                 </CTabList>
@@ -93,12 +94,6 @@ const Tabs = () => {
                                 {currentFunction === 'six' && <FunctionSix />}
                                 {currentFunction === 'seven' && <FunctionSeven />}
                                 {currentFunction === 'eight' && <FunctionEight />}
-                                {currentFunction === 'nine' && <FunctionNine />}
-                                {currentFunction === 'ten' && <FunctionTen />}
-                                {currentFunction === 'eleven' && <FunctionEleven />}
-                                {currentFunction === 'twelve' && <FunctionTwelve />}
-                                {currentFunction === 'thirteen' && <FunctionThirteen />}
-                                {currentFunction === 'forteen' && <FunctionForteen />}
                             </div>
                         </>
                     ) : (
@@ -122,19 +117,7 @@ const Tabs = () => {
                         <div className={`${styles.navContent} ${currentFunction === 'seven' ? styles.navContentChoose : ''}`} onClick={() => handleFunctionChange('seven', '緊急發電機')}>緊急發電機</div>
                         <h6>範疇二</h6>
                         <div className={`${styles.navContent} ${currentFunction === 'eight' ? styles.navContentChoose : ''}`} onClick={() => handleFunctionChange('eight', '電力使用量')}>電力使用量</div>
-                    </div>
-                    <div>
-                        <h5 className={styles.navTitle}>其他</h5>
-                        <hr className={styles.hr}></hr>
-                        <h6>範疇一</h6>
-                        <div className={`${styles.navContent} ${currentFunction === 'nine' ? styles.navContentChoose : ''}`} onClick={() => handleFunctionChange('nine', '固定式燃燒')}>固定式燃燒</div>
-                        <div className={`${styles.navContent} ${currentFunction === 'ten' ? styles.navContentChoose : ''}`} onClick={() => handleFunctionChange('ten', '產生溫室氣體的排放製程')}>產生溫室氣體的排放製程</div>
-                        <div className={`${styles.navContent} ${currentFunction === 'eleven' ? styles.navContentChoose : ''}`} onClick={() => handleFunctionChange('eleven', '焊條')}>焊條</div>
-                        <div className={`${styles.navContent} ${currentFunction === 'twelve' ? styles.navContentChoose : ''}`} onClick={() => handleFunctionChange('twelve', '氣體斷路器(GCB)')}>氣體斷路器(GCB)</div>
-                        <h6>範疇二</h6>
-                        <div className={`${styles.navContent} ${currentFunction === 'thirteen' ? styles.navContentChoose : ''}`} onClick={() => handleFunctionChange('thirteen', '間接蒸氣(有做溫室氣體盤查)')}>間接蒸氣<span>(汽電共生廠有做溫室氣體盤查)</span></div>
-                        <div className={`${styles.navContent} ${currentFunction === 'forteen' ? styles.navContentChoose : ''}`} onClick={() => handleFunctionChange('forteen', '間接蒸氣(沒有做溫室氣體盤查)')}>間接蒸氣<span>(汽電共生廠沒有做溫室氣體盤查)</span></div>
-
+                        <h6>範疇三</h6>
                     </div>
                 </CCard>
             </div>

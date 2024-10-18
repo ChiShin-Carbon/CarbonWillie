@@ -30,6 +30,13 @@
     padding: 20px 30px;
 }
 
+.activityCardBody2 {
+    width: 100%;
+    min-height:200px;
+    padding: 20px 30px;
+}
+
+
 .activityCardHead {
     display: flex;
     flex-direction: row;
@@ -341,10 +348,16 @@
     gap: 10px; /* 調整tabs之間的距離 */
   }
   
+  .tabsRight{
+    margin-left: auto; /* 將按鈕推到右側 */
+    margin-right:10px;
+  }
+  
   .buttonRight {
     margin-left: auto; /* 將按鈕推到右側 */
     margin-right:10px;
   }
+
   .buttonRight button{
     background-color:#9D6B6B;
     color:white;
@@ -431,3 +444,18 @@
     font-size:20px;
     font-weight: bold;
 }
+
+.complete{
+    background-color:#9D6B6B;
+    color:white;
+    font-weight: bold;
+    border:none;
+    box-shadow: 0 2px 5px rgb(67, 67, 67);
+    border-radius: 30px;
+    padding:7px 15px;
+  }
+  
+  .complete:hover{
+    background-color:#8c5454;
+    transition:0.5s;
+  }
