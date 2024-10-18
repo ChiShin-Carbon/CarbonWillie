@@ -102,7 +102,7 @@ const _nav = [
   },
   {
     component: CNavItem,
-    name: '盤查進度管理',
+    name: 'try',
     to: '/theme/try_411402601',
     icon: <CIcon icon={cilGroup} customClassName="nav-icon" />,
   },
