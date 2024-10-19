@@ -120,8 +120,8 @@ export default function Robot() {
 
                         </div>
 
-                        <div className={styles.botMessageContainer}>
-                            <div className={styles.botMessage}>
+                        <div className={styles.MessageContainer}>
+                            <div className={styles.Message}>
                                 {botText}
                             </div>
                         </div>
