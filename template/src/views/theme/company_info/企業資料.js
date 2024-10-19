@@ -223,21 +223,22 @@ const Tabs = () => {
     }
   }
 
+  const handleCheckChange = (e) => {
+    const { id, checked } = e.target
+    if (id === 'edit_GHG_Reg_Guide') setGHGRegGuide(checked)
+    else if (id === 'edit_ISO_CNS_14064_1') setISOCNS(checked)
+    else if (id === 'edit_GHG_Protocol') setGHGProtocol(checked)
+  }
+
   const handlecfvsubmit = async (e) => {
     e.preventDefault()
     try {
       const reasonID =
         document.getElementById('edit_reason').value ||
         document.getElementById('edit_reason').placeholder
-      const GHG_Reg_Guide =
-        document.getElementById('edit_GHG_Reg_Guide').value ||
-        document.getElementById('edit_GHG_Reg_Guide').placeholder
-      const ISO_CNS_14064_1 =
-        document.getElementById('edit_ISO_CNS_14064_1').value ||
-        document.getElementById('edit_ISO_CNS_14064_1').placeholder
-      const GHG_Protocol =
-        document.getElementById('edit_GHG_Protocol').value ||
-        document.getElementById('edit_GHG_Protocol').placeholder
+      const GHG_Reg_Guide = document.getElementById('edit_GHG_Reg_Guide').checked
+      const ISO_CNS_14064_1 = document.getElementById('edit_ISO_CNS_14064_1').checked
+      const GHG_Protocol = document.getElementById('edit_GHG_Protocol').checked
       const verification =
         document.getElementById('edit_verification').value ||
         document.getElementById('edit_verification').placeholder
@@ -897,17 +898,34 @@ const Tabs = () => {
                   <div className="customCardBody">
                     <CForm>
                       <CRow className="mb-3">
-                        <CCol sm={3}>
+                        <CCol sm={4}>
                           <div className="mb-3">
                             <CFormLabel>
                               <strong>登錄原因</strong>
                             </CFormLabel>
-                            <CFormSelect id="edit_reason" value={reasonID}>
+                            <CFormSelect
+                              id="edit_reason"
+                              value={reasonID}
+                              onChange={(e) => setReasonID(e.target.value)}
+                            >
                               <option value="1">自願性登錄</option>
                               <option value="2">環評承諾</option>
                               <option value="3">依法登錄</option>
                               <option value="4">其他</option>
                             </CFormSelect>
+                          </div>
+                        </CCol>
+                        <CCol sm={8}>
+                          <div className="mb-3">
+                            <CFormLabel>
+                              <strong>選用GWP版本</strong>
+                            </CFormLabel>
+                            <CFormInput
+                              type="text"
+                              id="edit_GWP_version"
+                              value={GWP_version}
+                              onChange={(e) => setGWPversion(e.target.value)}
+                            />
                           </div>
                         </CCol>
                       </CRow>
@@ -921,22 +939,22 @@ const Tabs = () => {
                               type="checkbox"
                               id="edit_GHG_Reg_Guide"
                               label="溫室氣體排放量盤查登錄管理辦法 / 溫室氣體盤查登錄作業指引"
-                              value={GHG_Reg_Guide}
-                              onChange={(e) => handleCheckChange(e)}
+                              checked={GHG_Reg_Guide}
+                              onChange={handleCheckChange}
                             />
                             <CFormCheck
                               type="checkbox"
                               id="edit_ISO_CNS_14064_1"
                               label="ISO / CNS 14064-1"
-                              value={ISO_CNS_14064_1}
-                              onChange={(e) => handleCheckChange(e)}
+                              checked={ISO_CNS_14064_1}
+                              onChange={handleCheckChange}
                             />
                             <CFormCheck
                               type="checkbox"
                               id="edit_GHG_Protocol"
                               label="溫室氣體盤查議定書-企業會計與報告標準"
-                              value={GHG_Protocol}
-                              onChange={(e) => handleCheckChange(e)}
+                              checked={GHG_Protocol}
+                              onChange={handleCheckChange}
                             />
                           </div>
                         </CCol>
@@ -947,7 +965,11 @@ const Tabs = () => {
                             <CFormLabel>
                               <strong>是否經第三方查證</strong>
                             </CFormLabel>
-                            <CFormSelect id="edit_verification" value={verification}>
+                            <CFormSelect
+                              id="edit_verification"
+                              value={verification}
+                              onChange={(e) => setVerification(e.target.value)}
+                            >
                               <option value="true">是</option>
                               <option value="false">否</option>
                             </CFormSelect>
@@ -958,7 +980,11 @@ const Tabs = () => {
                             <CFormLabel>
                               <strong>查驗機構名稱</strong>
                             </CFormLabel>
-                            <CFormSelect id="edit_inspection_agency" value={inspection_agencyID}>
+                            <CFormSelect
+                              id="edit_inspection_agency"
+                              value={inspection_agencyID}
+                              onChange={(e) => setInspectionAgencyID(e.target.value)}
+                            >
                               <option value="1">艾法諾國際股份有限公司(AFNOR)</option>
                               <option value="2">
                                 香港商英國標準協會太平洋有限公司台灣分公司(Bsi)

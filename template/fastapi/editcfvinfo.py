@@ -6,17 +6,17 @@ from fastapi.middleware.cors import CORSMiddleware
 
 editcfvinfo = APIRouter()
 
-# class Company(BaseModel):
-#     reason: int
-#     GHG_Reg_Guide: bool
-#     ISO_CNS_14064_1: bool
-#     GHG_Protocol: bool
-#     verification: bool
-#     inspection_agency: str
-#     GWP_version: str
+class Company(BaseModel):
+    reason: int
+    GHG_Reg_Guide: bool
+    ISO_CNS_14064_1: bool
+    GHG_Protocol: bool
+    verification: bool
+    inspection_agency: int
+    GWP_version: str
 
 @editcfvinfo.post("/editcfvinfo")
-def read_company_credentials():
+def read_company_credentials(company: Company):
     conn = connectDB()  # Establish connection using your custom connect function
     if conn:
         cursor = conn.cursor()
@@ -27,7 +27,7 @@ def read_company_credentials():
                 SET reason = ?, GHG_Reg_Guide = ?, ISO_CNS_14064_1 = ?, GHG_Protocol = ?, verification = ?, inspection_agency = ?, GWP_version = ? 
                 WHERE business_id = '00993654'
             """
-            cursor.execute(query)
+            cursor.execute(query, (company.reason, company.GHG_Reg_Guide, company.ISO_CNS_14064_1, company.GHG_Protocol, company.verification, company.inspection_agency, company.GWP_version))
             conn.commit()  # Commit the changes
 
             if cursor.rowcount > 0:
