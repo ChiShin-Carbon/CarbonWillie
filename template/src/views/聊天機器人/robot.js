@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect } from 'react'
 import styles from '../../scss/聊天機器人.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRobot, faLocationArrow } from '@fortawesome/free-solid-svg-icons';
+import OpenAI from "openai";
+
 
 export default function Robot() {
     const [chatOpenTime, setChatOpenTime] = useState(""); // 存儲打開聊天的時間
@@ -10,6 +12,7 @@ export default function Robot() {
     const [inputMessage, setInputMessage] = useState(""); 
     const [messages, setMessages] = useState([]); 
     const chatContentRef = useRef(null); // 聊天内容的引用
+    const [botText, setbotText] = useState(""); 
 
     const formatTime = () => {
         const now = new Date();
@@ -17,6 +20,11 @@ export default function Robot() {
         const minutes = now.getMinutes().toString().padStart(2, '0');
         return `${hours}:${minutes}`;
     }
+
+    const handlemessage = async (e) => {
+
+      };
+      
 
     const chatShow = () => {
         setChatVisible(open => !open);
@@ -30,13 +38,39 @@ export default function Robot() {
         setInputMessage(e.target.value); // 更新輸入框的內容
     }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault(); // 防止表單提交刷新頁面
         if (inputMessage.trim() === "") return; // 如果訊息為空則不處理
         const currentTime = formatTime();
         setMessages(prevMessages => [...prevMessages, inputMessage]); // 將新訊息加入訊息陣列
         setMessageTimes(prevTimes => [...prevTimes, currentTime]); // 新訊息的時間
         setInputMessage(""); // 清空輸入框
+
+
+        e.preventDefault();
+      
+        try {
+          const messageContent = document.getElementById("message").value; // Get the message value
+      
+          // Make sure you're sending the correct data format to your backend
+          const res = await fetch("http://localhost:8000/botapi", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json", // Set the content type
+            },
+            body: JSON.stringify({ message: messageContent }), // Send the message in the request body
+          });
+      
+          if (res.ok) {
+            const data = await res.json();
+            setbotText(data.response); // Set the response text in state
+            console.log("Data submitted successfully:", data.response);
+          } else {
+            console.error("Failed to submit data", res.statusText);
+          }
+        } catch (error) {
+          console.error("Error submitting data", error);
+        }
     }
 
     // 使用 useEffect 在 messages 更新後滾動到最底部
@@ -86,11 +120,19 @@ export default function Robot() {
 
                         </div>
 
+                        <div className={styles.botMessageContainer}>
+                            <div className={styles.botMessage}>
+                                {botText}
+                            </div>
+                        </div>
+
+
                         <div className={styles.chatFooter}>
                             <form>
                                  <input 
                                     type='text' 
                                     placeholder='請輸入訊息' 
+                                    id="message"
                                     value={inputMessage} // 綁定輸入框的值
                                     onChange={handleInputChange} // 監聽輸入框的變化
                                 />
