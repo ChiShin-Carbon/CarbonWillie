@@ -18,6 +18,7 @@ from companyinfo import companyinfo
 from editcompanyinfo import editcompanyinfo
 from editcfvinfo import editcfvinfo
 from ocrapi import ocrapi
+from bot import botapi
 
 
 
@@ -54,3 +55,4 @@ app.include_router(companyinfo)
 app.include_router(editcompanyinfo)
 app.include_router(editcfvinfo)
 app.include_router(ocrapi)
+app.include_router(botapi)
