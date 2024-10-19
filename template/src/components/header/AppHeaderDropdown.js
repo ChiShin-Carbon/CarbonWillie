@@ -19,8 +19,11 @@ import {
   cilSettings,
   cilTask,
   cilUser,
+  cilAccountLogout
 } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
+
+import styles from '/src/scss/雜區.module.css'
 
 import profile from './../../assets/images/avatars/profile.jpg'
 
@@ -32,7 +35,15 @@ const AppHeaderDropdown = () => {
       </CDropdownToggle>
       <CDropdownMenu className="pt-0" placement="bottom-end">
         <CDropdownHeader className="bg-body-secondary fw-semibold mb-2">Account</CDropdownHeader>
-        <CDropdownItem href="#">
+       
+          <div className={styles.profile}>
+            <div>啟新醫事檢驗所</div>
+            <div>資訊部門</div>
+            <div>職位</div>
+            <div>蔡沂庭</div>
+          </div>
+
+        {/* <CDropdownItem href="#">
           <CIcon icon={cilBell} className="me-2" />
           Updates
           <CBadge color="info" className="ms-2">
@@ -59,13 +70,13 @@ const AppHeaderDropdown = () => {
           <CBadge color="warning" className="ms-2">
             42
           </CBadge>
-        </CDropdownItem>
+        </CDropdownItem> */}
         <CDropdownHeader className="bg-body-secondary fw-semibold my-2">Settings</CDropdownHeader>
-        <CDropdownItem href="#">
+        <CDropdownItem href="/#/theme/user_info">
           <CIcon icon={cilUser} className="me-2" />
-          Profile
+          個人檔案
         </CDropdownItem>
-        <CDropdownItem href="#">
+        {/* <CDropdownItem href="#">
           <CIcon icon={cilSettings} className="me-2" />
           Settings
         </CDropdownItem>
@@ -82,11 +93,11 @@ const AppHeaderDropdown = () => {
           <CBadge color="primary" className="ms-2">
             42
           </CBadge>
-        </CDropdownItem>
+        </CDropdownItem> */}
         <CDropdownDivider />
         <CDropdownItem href="#">
-          <CIcon icon={cilLockLocked} className="me-2" />
-          Lock Account
+          <CIcon icon={cilAccountLogout} className="me-2" />
+          登出
         </CDropdownItem>
       </CDropdownMenu>
     </CDropdown>

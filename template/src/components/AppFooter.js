@@ -11,10 +11,10 @@ const AppFooter = () => {
         <span className="ms-1">&copy; 2024 creativeLabs.</span>
       </div>
       <div className="ms-auto">
-        <span className="me-1">Powered by</span>
-        <a href="https://coreui.io/react" target="_blank" rel="noopener noreferrer">
+        <span className="me-1">Designed & Developed by FJCU IM 42nd-project-健達出其碳</span>
+        {/* <a href="https://coreui.io/react" target="_blank" rel="noopener noreferrer">
           CoreUI React Admin &amp; Dashboard Template
-        </a>
+        </a> */}
       </div>
     </CFooter>
   )

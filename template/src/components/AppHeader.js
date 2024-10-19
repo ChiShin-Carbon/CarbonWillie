@@ -23,6 +23,7 @@ import {
   cilMenu,
   cilMoon,
   cilSun,
+  cilHeadphones,
 } from '@coreui/icons'
 
 
@@ -78,6 +79,11 @@ const AppHeader = () => {
           <CNavItem>
             <CNavLink href="#">
               <CIcon icon={cilEnvelopeOpen} size="lg" />
+            </CNavLink>
+          </CNavItem>
+          <CNavItem>
+            <CNavLink href="#">
+              <CIcon icon={cilHeadphones} size="lg" />
             </CNavLink>
           </CNavItem>
         </CHeaderNav>
