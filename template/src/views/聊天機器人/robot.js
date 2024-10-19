@@ -21,9 +21,6 @@ export default function Robot() {
         return `${hours}:${minutes}`;
     }
 
-    const handlemessage = async (e) => {
-
-      };
       
 
     const chatShow = () => {
@@ -98,7 +95,7 @@ export default function Robot() {
                             <div className={styles.messageContainer}>
                                 <div className={styles.head}><FontAwesomeIcon icon={faRobot} /></div>
                                 <div className={styles.message}>
-                                    以下是常見問題，也可以輸入訊息獲得回覆輸入訊息哈裸你好可以輸入訊息哈裸你好可以輸入訊息哈裸你好可以輸入訊息哈
+                                    以下是常見問題，也可以輸入訊息獲得回覆
                                     <div className={styles.faq}>
                                         <button>碳盤查 vs 碳足跡</button>
                                         <button>碳盤查範疇</button>
