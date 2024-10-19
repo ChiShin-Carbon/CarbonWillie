@@ -1,0 +1,140 @@
+.main {
+    width: 100%;
+    height: 100%;
+}
+
+.robotContainer {
+    display: inline-block;
+    /* 讓容器適應內容大小 */
+    filter: drop-shadow(2px 3px 1px rgba(0, 0, 0, 0.2));
+    /* 使用 drop-shadow 來應用陰影，只作用在元素外部 */
+    position: fixed;
+    bottom: 10%;
+    right: 2%
+}
+
+.robot {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: #F4D66D;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    transition: background-color 1s
+}
+
+.robot::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    /* 將三角形移動到圓形的外部 */
+    left: 40%;
+    transform: translate(40%, -60%);
+    width: 40px;
+    height: 20px;
+    background-color: #F4D66D;
+    border-bottom-right-radius: 50px;
+    clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+    /* 做成一個三角形 */
+    transition: background-color 1s
+}
+
+.robot:hover {
+    background-color: #e3b303;
+    cursor: pointer;
+}
+
+.robot:hover::after {
+    background-color: #e3b303;
+    cursor: pointer;
+}
+
+.chatContainer {
+    display: inline-block;
+    filter: drop-shadow(0px 0px 5px rgba(0, 0, 0, 0.2));
+    position: fixed;
+    /* 固定聊天容器 */
+    top: calc(80% - -5%);
+    /* 調整為機器人上方 */
+    right: calc(2% + 60px);
+    /* 調整為機器人左側 */
+    transform: translateY(-100%);
+    /* 向上移動以完全顯示 */
+    /* 在此可以進一步調整以獲得完美對齊 */
+}
+
+.chatBox {
+    width: 400px;
+    height: 500px;
+    background-color: #F4F2EA;
+    border: 1px solid #B4A47C;
+    border-radius: 20px;
+}
+
+.chatHeader {
+    width: 100%;
+    height: 10%;
+    background-color: #E6B60D;
+    border-bottom: 1px solid #ffffff;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    display:flex;
+    align-items: center;
+    padding-left: 20px;
+}
+
+.chatHeader h6{
+    font-size: 22px;
+    font-weight: bolder;
+    color:white;
+    margin:0;
+}
+
+.chatContent {
+    min-height: 80%;
+    overflow: auto;
+}
+
+.chatFooter {
+    width: 100%;
+    height: 10%;
+    background-color: #F4F2EA;
+    border-top: 1px solid #B4A47C;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+
+}
+
+.chatFooter form {
+    width: 100%;
+    height: 100%;
+    padding: 8px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chatFooter input {
+    background-color: #D9D9D9;
+    border-radius: 30px;
+    border: none;
+    width: 90%;
+    height: 100%;
+    padding: 0px 10px
+}
+
+.chatFooter button {
+    width: 10%;
+    border: none;
+    background-color: transparent;
+    font-size: 25px;
+    padding: 0
+}
+
+.chatFooter svg {
+    transform: rotate(45deg);
+}
+
