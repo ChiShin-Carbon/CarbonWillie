@@ -138,20 +138,18 @@ const Tabs = () => {
 
                             {/* 全廠電力 */}
                             <CCard style={{ width: '100%' }}>
+                                <CCardTitle>
+                                    <div style={{ display: 'flex', flexDireaction: 'row'}}>
+                                        <div style={{ fontWeight:'bold', fontSize: '1.4rem',color:'white', backgroundColor:'#9D6B6B', borderTopLeftRadius:'5px', borderBottomRightRadius:'20px', display: 'flex', alignItems: 'center',padding: '10px 30px 10px 30px'}}>
+                                            全廠電力
+                                        </div>
+                                        <CButton style={{ position: 'absolute', right: '30px', width: '40px', backgroundColor: '#9D6B6B', color: 'white', display: 'flex', alignItems: 'center', marginTop:'10px'}}>
+                                            <b><CIcon icon={cilDataTransferDown} className="me-2" /></b>
+                                        </CButton>
+                                    </div>
+                                </CCardTitle>
                                 <CCardBody>
-                                    <CRow>
-                                        <CCardTitle>
-                                            <CRow>
-                                                <div style={{ width: '100%', height: '50px', display: 'grid', alignItems: 'center', }}>
-                                                    <strong style={{ fontSize: '1.4rem', display: 'flex', alignItems: 'center', padding: '5px' }}>全廠電力</strong>
-                                                    <CButton style={{ position: 'absolute', right: '30px', width: '40px', backgroundColor: '#9D6B6B', color: 'white', display: 'flex', alignItems: 'center' }}>
-                                                        <b><CIcon icon={cilDataTransferDown} className="me-2" /></b>
-                                                    </CButton>
-                                                </div>
-                                            </CRow>
-                                        </CCardTitle>
-                                    </CRow>
-                                    <table style={{ width: '700px' }}>
+                                    <table style={{ width: '1000px', fontSize:'1.2rem' }}>
                                         <thead style={{ border: '1px solid white', backgroundColor: '#33CCFF', color: 'white' }}>
                                             <tr>
                                                 <th scope="col" style={cellStyle}></th>
@@ -182,20 +180,18 @@ const Tabs = () => {
                             <br></br>
                             {/* 全廠 七大溫室氣體排放量統計表 */}
                             <CCard style={{ width: '100%' }}>
+                                <CCardTitle>
+                                    <div style={{ display: 'flex', flexDireaction: 'row'}}>
+                                        <div style={{ fontWeight:'bold', fontSize: '1.4rem',color:'white', backgroundColor:'#9D6B6B', borderTopLeftRadius:'5px', borderBottomRightRadius:'20px', display: 'flex', alignItems: 'center',padding: '10px 30px 10px 30px'}}>
+                                            全廠&nbsp;七大溫室氣體排放量統計表
+                                        </div>
+                                        <CButton style={{ position: 'absolute', right: '30px', width: '40px', backgroundColor: '#9D6B6B', color: 'white', display: 'flex', alignItems: 'center', marginTop:'10px'}}>
+                                            <b><CIcon icon={cilDataTransferDown} className="me-2" /></b>
+                                        </CButton>
+                                    </div>
+                                </CCardTitle>
                                 <CCardBody>
-                                    <CRow>
-                                        <CCardTitle>
-                                            <CRow>
-                                                <div style={{ width: '100%', height: '50px', display: 'grid', alignItems: 'center', }}>
-                                                    <strong style={{ fontSize: '1.4rem', display: 'flex', alignItems: 'center', padding: '5px' }}>全廠&nbsp;七大溫室氣體排放量統計表</strong>
-                                                    <CButton style={{ position: 'absolute', right: '30px', width: '40px', backgroundColor: '#9D6B6B', color: 'white', display: 'flex', alignItems: 'center' }}>
-                                                        <b><CIcon icon={cilDataTransferDown} className="me-2" /></b>
-                                                    </CButton>
-                                                </div>
-                                            </CRow>
-                                        </CCardTitle>
-                                    </CRow>
-                                    <table style={{ width: '1100px' }}>
+                                    <table style={{ width: '1100px', fontSize:'1.2rem' }}>
                                         <thead style={{ border: '1px solid white', backgroundColor: '#33CCFF', color: 'white' }}>
                                             <tr>
                                                 <th scope="col" style={cellStyle}></th>
@@ -245,20 +241,18 @@ const Tabs = () => {
                             <br></br>
                             {/* 類別一 七大溫室氣體排放量統計表 */}
                             <CCard style={{ width: '100%' }}>
+                                <CCardTitle>
+                                    <div style={{ display: 'flex', flexDireaction: 'row'}}>
+                                        <div style={{ fontWeight:'bold', fontSize: '1.4rem',color:'white', backgroundColor:'#9D6B6B', borderTopLeftRadius:'5px', borderBottomRightRadius:'20px', display: 'flex', alignItems: 'center',padding: '10px 30px 10px 30px'}}>
+                                            類別一&nbsp;&nbsp;七大溫室氣體排放量統計表
+                                        </div>
+                                        <CButton style={{ position: 'absolute', right: '30px', width: '40px', backgroundColor: '#9D6B6B', color: 'white', display: 'flex', alignItems: 'center', marginTop:'10px'}}>
+                                            <b><CIcon icon={cilDataTransferDown} className="me-2" /></b>
+                                        </CButton>
+                                    </div>
+                                </CCardTitle>
                                 <CCardBody>
-                                    <CRow>
-                                        <CCardTitle>
-                                            <CRow>
-                                                <div style={{ width: '100%', height: '50px', display: 'grid', alignItems: 'center', }}>
-                                                    <strong style={{ fontSize: '1.4rem', display: 'flex', alignItems: 'center', padding: '5px' }}>類別一&nbsp;&nbsp;七大溫室氣體排放量統計表</strong>
-                                                    <CButton style={{ position: 'absolute', right: '30px', width: '40px', backgroundColor: '#9D6B6B', color: 'white', display: 'flex', alignItems: 'center' }}>
-                                                        <b><CIcon icon={cilDataTransferDown} className="me-2" /></b>
-                                                    </CButton>
-                                                </div>
-                                            </CRow>
-                                        </CCardTitle>
-                                    </CRow>
-                                    <table style={{ width: '1100px' }}>
+                                    <table style={{ width: '1100px', fontSize:'1.2rem' }}>
                                         <thead style={{ border: '1px solid white', backgroundColor: '#33CCFF', color: 'white' }}>
                                             <tr>
                                                 <th scope="col" style={cellStyle}></th>
@@ -308,20 +302,18 @@ const Tabs = () => {
                             <br></br>
                             {/* 類別一及類別二排放形式排放量統計表 */}
                             <CCard style={{ width: '100%' }}>
+                                <CCardTitle>
+                                    <div style={{ display: 'flex', flexDireaction: 'row'}}>
+                                        <div style={{ fontWeight:'bold', fontSize: '1.4rem',color:'white', backgroundColor:'#9D6B6B', borderTopLeftRadius:'5px', borderBottomRightRadius:'20px', display: 'flex', alignItems: 'center',padding: '10px 30px 10px 30px'}}>
+                                            類別一及類別二&nbsp;&nbsp;排放形式排放量統計表
+                                        </div>
+                                        <CButton style={{ position: 'absolute', right: '30px', width: '40px', backgroundColor: '#9D6B6B', color: 'white', display: 'flex', alignItems: 'center', marginTop:'10px'}}>
+                                            <b><CIcon icon={cilDataTransferDown} className="me-2" /></b>
+                                        </CButton>
+                                    </div>
+                                </CCardTitle>
                                 <CCardBody>
-                                    <CRow>
-                                        <CCardTitle>
-                                            <CRow>
-                                                <div style={{ width: '100%', height: '50px', display: 'grid', alignItems: 'center', }}>
-                                                    <strong style={{ fontSize: '1.4rem', display: 'flex', alignItems: 'center', padding: '5px' }}>類別一及類別二&nbsp;&nbsp;排放形式排放量統計表</strong>
-                                                    <CButton style={{ position: 'absolute', right: '30px', width: '40px', backgroundColor: '#9D6B6B', color: 'white', display: 'flex', alignItems: 'center' }}>
-                                                        <b><CIcon icon={cilDataTransferDown} className="me-2" /></b>
-                                                    </CButton>
-                                                </div>
-                                            </CRow>
-                                        </CCardTitle>
-                                    </CRow>
-                                    <table style={{ width: '1100px' }}>
+                                    <table style={{ width: '1100px', fontSize:'1.2rem' }}>
                                         <thead style={{ border: '1px solid white', backgroundColor: '#33CCFF', color: 'white' }}>
                                             <tr>
                                                 <th scope="col" style={cellStyle} rowSpan={2}></th>
@@ -379,20 +371,18 @@ const Tabs = () => {
                             <br></br>
                             {/* 全廠溫室氣體數據等級評估結果 */}
                             <CCard style={{ width: '100%' }}>
+                                <CCardTitle>
+                                    <div style={{ display: 'flex', flexDireaction: 'row'}}>
+                                        <div style={{ fontWeight:'bold', fontSize: '1.4rem',color:'white', backgroundColor:'#9D6B6B', borderTopLeftRadius:'5px', borderBottomRightRadius:'20px', display: 'flex', alignItems: 'center',padding: '10px 30px 10px 30px'}}>
+                                            全廠&nbsp;溫室氣體數據等級評估結果
+                                        </div>
+                                        <CButton style={{ position: 'absolute', right: '30px', width: '40px', backgroundColor: '#9D6B6B', color: 'white', display: 'flex', alignItems: 'center', marginTop:'10px'}}>
+                                            <b><CIcon icon={cilDataTransferDown} className="me-2" /></b>
+                                        </CButton>
+                                    </div>
+                                </CCardTitle>
                                 <CCardBody>
-                                    <CRow>
-                                        <CCardTitle>
-                                            <CRow>
-                                                <div style={{ width: '100%', height: '50px', display: 'grid', alignItems: 'center', }}>
-                                                    <strong style={{ fontSize: '1.4rem', display: 'flex', alignItems: 'center', padding: '5px' }}>全廠&nbsp;溫室氣體數據等級評估結果</strong>
-                                                    <CButton style={{ position: 'absolute', right: '30px', width: '40px', backgroundColor: '#9D6B6B', color: 'white', display: 'flex', alignItems: 'center' }}>
-                                                        <b><CIcon icon={cilDataTransferDown} className="me-2" /></b>
-                                                    </CButton>
-                                                </div>
-                                            </CRow>
-                                        </CCardTitle>
-                                    </CRow>
-                                    <table style={{ width: '1100px' }}>
+                                    <table style={{ width: '1100px', fontSize: '1.2rem' }}>
                                         <thead style={{ border: '1px solid white', backgroundColor: '#33CCFF', color: 'white' }}>
                                             <tr style={{ height: '80px' }}>
                                                 <th scope="col" style={cellStyle}>等級</th>
@@ -402,9 +392,9 @@ const Tabs = () => {
                                             </tr>
                                             <tr>
                                                 <th scope="col" style={cellStyle}>評分範圍</th>
-                                                <th scope="col" style={cellStyle}>X{'<'}10分</th>
-                                                <th scope="col" style={cellStyle}>10分{'≦'}X{'<'}19分</th>
-                                                <th scope="col" style={cellStyle}>19{'≦'}X{'≦'}27分</th>
+                                                <th scope="col" style={cellStyle}>X{' < '}10分</th>
+                                                <th scope="col" style={cellStyle}>10{' ≦ '}X{' < '}19分</th>
+                                                <th scope="col" style={cellStyle}>19{' ≦ '}X{' ≦ '}27分</th>
                                             </tr>
                                         </thead>
                                         <tbody style={{ border: '1px solid white', backgroundColor: '#CCEEFF' }}>
@@ -430,20 +420,18 @@ const Tabs = () => {
                             <br></br>
                             {/* 溫室氣體不確定性量化評估結果 */}
                             <CCard style={{ width: '100%' }}>
+                                <CCardTitle>
+                                    <div style={{ display: 'flex', flexDireaction: 'row'}}>
+                                        <div style={{ fontWeight:'bold', fontSize: '1.4rem',color:'white', backgroundColor:'#9D6B6B', borderTopLeftRadius:'5px', borderBottomRightRadius:'20px', display: 'flex', alignItems: 'center',padding: '10px 30px 10px 30px'}}>
+                                            溫室氣體不確定性量化評估結果
+                                        </div>
+                                        <CButton style={{ position: 'absolute', right: '30px', width: '40px', backgroundColor: '#9D6B6B', color: 'white', display: 'flex', alignItems: 'center', marginTop:'10px'}}>
+                                            <b><CIcon icon={cilDataTransferDown} className="me-2" /></b>
+                                        </CButton>
+                                    </div>
+                                </CCardTitle>
                                 <CCardBody>
-                                    <CRow>
-                                        <CCardTitle>
-                                            <CRow>
-                                                <div style={{ width: '100%', height: '50px', display: 'grid', alignItems: 'center', }}>
-                                                    <strong style={{ fontSize: '1.4rem', display: 'flex', alignItems: 'center', padding: '5px' }}>溫室氣體不確定性量化評估結果</strong>
-                                                    <CButton style={{ position: 'absolute', right: '30px', width: '40px', backgroundColor: '#9D6B6B', color: 'white', display: 'flex', alignItems: 'center' }}>
-                                                        <b><CIcon icon={cilDataTransferDown} className="me-2" /></b>
-                                                    </CButton>
-                                                </div>
-                                            </CRow>
-                                        </CCardTitle>
-                                    </CRow>
-                                    <table style={{ width: '1100px' }}>
+                                    <table style={{ width: '1100px', fontSize: '1.2rem' }}>
                                         <thead style={{ border: '1px solid white', backgroundColor: '#33CCFF', color: 'white' }}>
                                             <tr style={{ height: '80px' }}>
                                                 <th scope="col" style={cellStyle}>進行不確定性評估之排放量<br />絕對值加總</th>
@@ -629,8 +617,8 @@ const Tabs = () => {
                                 <CCol xs={6}>
                                     <CCard className="mb-4">
                                         <CCardHeader style={{ backgroundColor: '#9D6B6B', height: '50px', display: 'flex', alignItems: 'center', }}>
-                                            <strong style={{ fontSize: '1.2rem', color: 'white', display: 'flex', alignItems: 'center', padding: '5px' }}>碳排範疇比例 / </strong>
-                                            <strong style={{ fontSize: '1.0rem', color: 'white', padding: '5px' }}>圓餅圖</strong>
+                                            <strong style={{ fontSize: '1.4rem', color: 'white', display: 'flex', alignItems: 'center', padding: '5px' }}>碳排範疇比例 / </strong>
+                                            <strong style={{ fontSize: '1.2rem', color: 'white', padding: '5px' }}>圓餅圖</strong>
                                             <CButton style={{ position: 'absolute', right: '10px', color: 'white', display: 'flex', alignItems: 'center' }}>
                                                 <b><CIcon icon={cilDataTransferDown} style={{ fontSize: '24px' }} /></b>
                                             </CButton>
@@ -684,8 +672,8 @@ const Tabs = () => {
                                 <CCol xs={6}>
                                     <CCard className="mb-4">
                                         <CCardHeader style={{ backgroundColor: '#9D6B6B', height: '50px', display: 'flex', alignItems: 'center', }}>
-                                            <strong style={{ fontSize: '1.2rem', color: 'white', display: 'flex', alignItems: 'center', padding: '5px' }}>碳排總量/ </strong>
-                                            <strong style={{ fontSize: '1.0rem', color: 'white', padding: '5px' }}>半圓環形圖</strong>
+                                            <strong style={{ fontSize: '1.4rem', color: 'white', display: 'flex', alignItems: 'center', padding: '5px' }}>碳排總量/ </strong>
+                                            <strong style={{ fontSize: '1.2rem', color: 'white', padding: '5px' }}>半圓環形圖</strong>
 
                                             <CButton style={{ position: 'absolute', right: '10px', color: 'white', display: 'flex', alignItems: 'center' }}>
                                                 <b><CIcon icon={cilDataTransferDown} style={{ fontSize: '24px' }} /></b>
@@ -776,8 +764,8 @@ const Tabs = () => {
                                 <CCol xs={6}>
                                     <CCard className="mb-4">
                                         <CCardHeader style={{ backgroundColor: '#9D6B6B', height: '50px', display: 'flex', alignItems: 'center', }}>
-                                            <strong style={{ fontSize: '1.2rem', color: 'white', display: 'flex', alignItems: 'center', padding: '5px' }}>碳排總量 / </strong>
-                                            <strong style={{ fontSize: '1.0rem', color: 'white', padding: '5px' }}>柱狀圖</strong>
+                                            <strong style={{ fontSize: '1.4rem', color: 'white', display: 'flex', alignItems: 'center', padding: '5px' }}>碳排總量 / </strong>
+                                            <strong style={{ fontSize: '1.2rem', color: 'white', padding: '5px' }}>柱狀圖</strong>
                                             <CButton style={{ position: 'absolute', right: '10px', color: 'white', display: 'flex', alignItems: 'center' }}>
                                                 <b><CIcon icon={cilDataTransferDown} style={{ fontSize: '24px' }} /></b>
                                             </CButton>
@@ -830,8 +818,8 @@ const Tabs = () => {
                                 <CCol xs={6}>
                                     <CCard className="mb-4">
                                         <CCardHeader style={{ backgroundColor: '#9D6B6B', height: '50px', display: 'flex', alignItems: 'center', }}>
-                                            <strong style={{ fontSize: '1.2rem', color: 'white', display: 'flex', alignItems: 'center', padding: '5px' }}>碳排範疇比例 / </strong>
-                                            <strong style={{ fontSize: '1.0rem', color: 'white', padding: '5px' }}>環形圖</strong>
+                                            <strong style={{ fontSize: '1.4rem', color: 'white', display: 'flex', alignItems: 'center', padding: '5px' }}>碳排範疇比例 / </strong>
+                                            <strong style={{ fontSize: '1.2rem', color: 'white', padding: '5px' }}>環形圖</strong>
                                             <CButton style={{ position: 'absolute', right: '10px', color: 'white', display: 'flex', alignItems: 'center' }}>
                                                 <b><CIcon icon={cilDataTransferDown} style={{ fontSize: '24px' }} /></b>
                                             </CButton>

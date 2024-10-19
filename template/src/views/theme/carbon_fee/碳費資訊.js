@@ -155,7 +155,7 @@ const Tabs = () => {
                             <CCard style={{ width: '100%' }}>
                                 <CCardTitle>
                                     <div style={{ display: 'flex', flexDireaction: 'row'}}>
-                                        <div style={{ fontWeight:'bold', fontSize: '1.6rem',color:'white', backgroundColor:'#9D6B6B', borderTopLeftRadius:'5px', borderBottomRightRadius:'20px', display: 'flex', alignItems: 'center',padding: '10px 40px 10px 40px'}}>
+                                        <div style={{ fontWeight:'bold', fontSize: '1.5rem',color:'white', backgroundColor:'#9D6B6B', borderTopLeftRadius:'5px', borderBottomRightRadius:'20px', display: 'flex', alignItems: 'center',padding: '10px 40px 10px 40px'}}>
                                             總覽
                                         </div>
                                         <CButton style={{ position: 'absolute', right: '30px', width: '40px', backgroundColor: '#9D6B6B', color: 'white', display: 'flex', alignItems: 'center', marginTop:'10px'}}>
@@ -227,7 +227,7 @@ const Tabs = () => {
                             <CCard style={{ width: '100%' }}>
                                 <CCardTitle>
                                     <div style={{ display: 'flex', flexDireaction: 'row'}}>
-                                        <div style={{ fontWeight:'bold', fontSize: '1.6rem',color:'white', backgroundColor:'#9D6B6B', borderTopLeftRadius:'5px', borderBottomRightRadius:'20px', display: 'flex', alignItems: 'center',padding: '10px 30px 10px 30px'}}>
+                                        <div style={{ fontWeight:'bold', fontSize: '1.5rem',color:'white', backgroundColor:'#9D6B6B', borderTopLeftRadius:'5px', borderBottomRightRadius:'20px', display: 'flex', alignItems: 'center',padding: '10px 30px 10px 30px'}}>
                                             技術標竿指定削減率
                                         </div>
                                         <CButton style={{ height: '18px', width: '18px', display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop:'28px' }}>
@@ -292,7 +292,7 @@ const Tabs = () => {
                             <CCard style={{ width: '100%' }}>
                                 <CCardTitle>
                                     <div style={{ display: 'flex', flexDireaction: 'row'}}>
-                                        <div style={{ fontWeight:'bold', fontSize: '1.6rem',color:'white', backgroundColor:'#9D6B6B', borderTopLeftRadius:'5px', borderBottomRightRadius:'20px', display: 'flex', alignItems: 'center',padding: '10px 30px 10px 30px'}}>
+                                        <div style={{ fontWeight:'bold', fontSize: '1.5rem',color:'white', backgroundColor:'#9D6B6B', borderTopLeftRadius:'5px', borderBottomRightRadius:'20px', display: 'flex', alignItems: 'center',padding: '10px 30px 10px 30px'}}>
                                             行業別指定削減率
                                         </div>
                                         <CButton style={{ height: '18px', width: '18px', display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop:'28px' }}>
@@ -358,8 +358,8 @@ const Tabs = () => {
                                <CCol xs={12}>
                                     <CCard className="mb-4">
                                         <CCardHeader style={{ backgroundColor: '#9D6B6B', height: '50px', display: 'flex', alignItems: 'center', }}>
-                                            <strong style={{ fontSize: '1.6rem', color: 'white', display: 'flex', alignItems: 'center', padding: '5px'}}>統計圖表 / </strong>
-                                            <strong style={{ fontSize: '1.4rem', color: 'white', padding: '5px' }}>圓餅圖</strong>
+                                            <strong style={{ fontSize: '1.5rem', color: 'white', display: 'flex', alignItems: 'center', padding: '5px'}}>統計圖表 / </strong>
+                                            <strong style={{ fontSize: '1.3rem', color: 'white', padding: '5px' }}>圓餅圖</strong>
                                             <CButton style={{ position: 'absolute', right: '10px', color: 'white', display: 'flex', alignItems: 'center' }}>
                                                 <b><CIcon icon={cilDataTransferDown} style={{ fontSize: '24px' }} /></b>
                                             </CButton>
@@ -414,7 +414,7 @@ const Tabs = () => {
                             <CCard style={{ width: '100%' }}>
                                 <CCardTitle>
                                     <div style={{ display: 'flex', flexDireaction: 'row'}}>
-                                        <div style={{ fontWeight:'bold', fontSize: '1.6rem',color:'white', backgroundColor:'#9D6B6B', borderTopLeftRadius:'5px', borderBottomRightRadius:'20px', display: 'flex', alignItems: 'center',padding: '10px 30px 10px 30px'}}>
+                                        <div style={{ fontWeight:'bold', fontSize: '1.5rem',color:'white', backgroundColor:'#9D6B6B', borderTopLeftRadius:'5px', borderBottomRightRadius:'20px', display: 'flex', alignItems: 'center',padding: '10px 30px 10px 30px'}}>
                                             分析總覽
                                         </div>
                                         <CButton style={{ height: '18px', width: '18px', display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop:'28px' }}>
@@ -532,15 +532,15 @@ const Tabs = () => {
                             <CCard style={{ width: '100%' }}>
                                 <CCardTitle>
                                     <div style={{ display: 'flex', flexDireaction: 'row'}}>
-                                        <div style={{ fontWeight:'bold', fontSize: '1.4rem',color:'white', backgroundColor:'#00a000', borderTopLeftRadius:'5px', borderBottomRightRadius:'20px', display: 'flex', alignItems: 'center',padding: '10px 40px 10px 40px'}}>碳費新聞</div>
+                                        <div style={{ fontWeight:'bold', fontSize: '1.5rem',color:'white', backgroundColor:'#00a000', borderTopLeftRadius:'5px', borderBottomRightRadius:'20px', display: 'flex', alignItems: 'center',padding: '10px 40px 10px 40px'}}>碳費新聞</div>
                                     </div>
                                 </CCardTitle>
                                 <CCardBody>
                                     <CCardBody style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', }}>
-                                        <CCard style={{width: '1100px'}}>
+                                        <CCard style={{width: '1100px',fontSize: '1.2rem'}}>
                                             <CCardBody>
                                                 <CRow>
-                                                    <div style={{ width: '100%', height: '50px', display: 'flex', justifyContent: 'space-between' }}>
+                                                    <div style={{ width: '100%', height: '50px', display: 'flex', justifyContent: 'space-between', alignItems:'center' }}>
                                                     <div style={{width: '10px', height: '100%', backgroundColor: '#00a000', borderRadius: '4px',}}></div> {/* 左側綠色 bar */}
                                                     {/* 左側：日期與標題 */}
                                                     <div style={{ display: 'flex',flex: 1, marginLeft: '20px', flexDirection: 'column' }}>
@@ -550,8 +550,8 @@ const Tabs = () => {
                                                         <p style={{ fontWeight: 'bold', margin: 0 }}>水環境巡守20年 作伙來瞭「水」環境</p>
                                                     </div>
                                                     {/* 右側：箭頭按鈕 */}
-                                                    <CButton style={{ height: '50px', width: '50px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                                        <CIcon icon={cilArrowCircleRight}   style={{ width: '50px', height: '50px' }} />
+                                                    <CButton style={{ height: '60px', width: '60px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                                        <CIcon icon={cilArrowCircleRight}   style={{ width: '55px', height: '55px' }} />
                                                     </CButton>
                                                     </div>
                                                 </CRow>
@@ -566,28 +566,28 @@ const Tabs = () => {
                             <CCard style={{ width: '100%' }}>
                                 <CCardTitle>
                                     <div style={{ display: 'flex', flexDireaction: 'row'}}>
-                                        <div style={{ fontWeight:'bold', fontSize: '1.4rem',color:'white', backgroundColor:'#d882c0', borderTopLeftRadius:'5px', borderBottomRightRadius:'20px', display: 'flex', alignItems: 'center',padding: '10px 40px 10px 40px'}}>碳費百科</div>
+                                        <div style={{ fontWeight:'bold', fontSize: '1.5rem',color:'white', backgroundColor:'#d882c0', borderTopLeftRadius:'5px', borderBottomRightRadius:'20px', display: 'flex', alignItems: 'center',padding: '10px 40px 10px 40px'}}>碳費百科</div>
                                     </div>
                                 </CCardTitle>
                                 <CCardBody>
                                     <CCardBody style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', }}>
                                     <CRow>
                                         <CCol sm={12}>
-                                        <CCard style={{width: '1100px'}}>
+                                        <CCard style={{width: '1100px',fontSize: '1.2rem'}}>
                                             <CCardBody>
                                                 <CRow>
-                                                    <div style={{ width: '100%', height: '50px', display: 'flex', justifyContent: 'space-between' }}>
+                                                    <div style={{ width: '100%', height: '50px', display: 'flex', justifyContent: 'space-between',alignItems:'center' }}>
                                                     <div style={{width: '10px', height: '100%', backgroundColor: '#d882c0', borderRadius: '4px',}}></div> {/* 左側粉色 bar */}
                                                     {/* 左側：日期與標題 */}
                                                     <div style={{ display: 'flex',flex: 1, marginLeft: '20px', flexDirection: 'column' }}>
                                                         {/* 日期 */}
-                                                        <p style={{ color: '#f5a5c5', fontWeight: 'bold', margin: 0 }}>2022/12/01</p>
+                                                        <p style={{ color: '#d882c0', fontWeight: 'bold', margin: 0 }}>2022/12/01</p>
                                                         {/* 標題 */}
                                                         <p style={{ fontWeight: 'bold', margin: 0 }}>2024各國碳費標準</p>
                                                     </div>
                                                     {/* 右側：箭頭按鈕 */}
-                                                    <CButton style={{ height: '50px', width: '50px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                                        <CIcon icon={cilArrowCircleRight}   style={{ width: '50px', height: '50px' }} />
+                                                    <CButton style={{ height: '60px', width: '60px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                                        <CIcon icon={cilArrowCircleRight}   style={{ width: '55px', height: '55px' }} />
                                                     </CButton>
                                                     </div>
                                                 </CRow>
