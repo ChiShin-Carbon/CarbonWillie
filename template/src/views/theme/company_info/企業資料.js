@@ -129,7 +129,9 @@ const Tabs = () => {
   }
 
   const setIA = () => {
-    if (inspection_agencyID === 1) {
+    if (inspection_agencyID === 0) {
+      setInspectionAgency('無')
+    } else if (inspection_agencyID === 1) {
       setInspectionAgency('艾法諾國際股份有限公司(AFNOR)')
     } else if (inspection_agencyID === 2) {
       setInspectionAgency('香港商英國標準協會太平洋有限公司台灣分公司(Bsi)')
@@ -224,6 +226,14 @@ const Tabs = () => {
     if (id === 'edit_GHG_Reg_Guide') setGHGRegGuide(checked)
     else if (id === 'edit_ISO_CNS_14064_1') setISOCNS(checked)
     else if (id === 'edit_GHG_Protocol') setGHGProtocol(checked)
+  }
+
+  const handleVerificationChange = (e) => {
+    const value = e.target.value
+    setVerification(value)
+    if (!value) {
+      setInspectionAgencyID('0')
+    }
   }
 
   const handlecfvsubmit = async (e) => {
@@ -957,7 +967,7 @@ const Tabs = () => {
                             <CFormSelect
                               id="edit_verification"
                               value={verification}
-                              onChange={(e) => setVerification(e.target.value)}
+                              onChange={handleVerificationChange}
                             >
                               <option value="true">是</option>
                               <option value="false">否</option>
@@ -973,7 +983,9 @@ const Tabs = () => {
                               id="edit_inspection_agency"
                               value={inspection_agencyID}
                               onChange={(e) => setInspectionAgencyID(e.target.value)}
+                              disabled={!verification}
                             >
+                              <option value="0">選擇查驗機構</option>
                               <option value="1">艾法諾國際股份有限公司(AFNOR)</option>
                               <option value="2">
                                 香港商英國標準協會太平洋有限公司台灣分公司(Bsi)
