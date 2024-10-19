@@ -7,7 +7,7 @@ import { faRobot,faLocationArrow } from '@fortawesome/free-solid-svg-icons';
 
 export default function Robot() {
 
-    const [chatVisible, setChatVisible] = useState(true);
+    const [chatVisible, setChatVisible] = useState(false);
     const chatShow = () => {
         setChatVisible(open => !open);
     }
