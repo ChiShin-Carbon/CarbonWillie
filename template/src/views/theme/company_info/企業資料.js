@@ -229,7 +229,7 @@ const Tabs = () => {
   }
 
   const handleVerificationChange = (e) => {
-    const value = e.target.value
+    const value = e.target.value === 'true'
     setVerification(value)
     if (!value) {
       setInspectionAgencyID('0')
