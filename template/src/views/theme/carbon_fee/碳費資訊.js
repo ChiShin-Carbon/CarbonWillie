@@ -238,9 +238,10 @@ const Tabs = () => {
                                         <thead style={{ border: '1px solid white', backgroundColor: '#339933', color: 'white' }}>
                                             <tr>
                                                 <th scope="col" style={cellStyle} colSpan={2}></th>
+                                                <th scope="col" style={cellStyle}>基準年排放當量<br></br>(公噸CO2e/年)</th>
                                                 <th scope="col" style={cellStyle}>排放當量<br></br>(公噸CO2e/年)</th>
                                                 <th scope="col" style={cellStyle}>削減率<br></br>(%)</th>
-                                                <th scope="col" style={cellStyle}>標準削減率<br></br>(%)</th>
+                                                <th scope="col" style={cellStyle}>目標年削減率<br></br>(%)</th>
                                             </tr>
                                         </thead>
                                         <tbody style={{ border: '1px solid white', backgroundColor: '#ccffcc' }}>
@@ -270,10 +271,50 @@ const Tabs = () => {
                                             <td style={cellStyle}>3%</td>
                                         </tr> */}
                                         <tr>
-                                            <td style={{ border: '1px solid white', width:'200px', textAlign: 'center', verticalAlign: 'middle'}} colSpan={2}><b>使用電力間接排放</b></td>
+                                            <td style={{ border: '1px solid white', width:'120px', textAlign: 'center', verticalAlign: 'middle'}} colSpan={2}><b>使用電力間接排放</b></td>
                                             <td style={cellStyle}></td>
                                             <td style={cellStyle}></td>
-                                            <td style={cellStyle}>6%</td>
+                                            <td style={cellStyle}></td>
+                                            <td style={cellStyle}><b>6%</b></td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                    <br />
+                                </CCardBody>
+                            </CCard>
+                            <br></br>
+                            {/* 行業別指定削減率 */}
+                            <CCard style={{ width: '100%' }}>
+                                <CCardBody>
+                                    <CRow>
+                                        <CCardTitle>
+                                            <CRow>
+                                                <div style={{ width: '100%', height: '50px', display: 'grid', alignItems: 'center', }}>
+                                                    <strong style={{ fontSize: '1.4rem', display: 'flex', alignItems: 'center', padding: '5px' }}>行業別指定削減率</strong>
+                                                    <CButton style={{ position: 'absolute', right: '30px', width: '40px', backgroundColor: '#9D6B6B', color: 'white', display: 'flex', alignItems: 'center' }}>
+                                                        <b><CIcon icon={cilDataTransferDown} className="me-2" /></b>
+                                                    </CButton>
+                                                </div>
+                                            </CRow>
+                                        </CCardTitle>
+                                    </CRow>
+                                    <table style={{ width: '900px' }}>
+                                        <thead style={{ border: '1px solid white', backgroundColor: '#339933', color: 'white' }}>
+                                            <tr>
+                                                <th scope="col" style={cellStyle} colSpan={2}></th>
+                                                <th scope="col" style={cellStyle}>基準年排放當量<br></br>(公噸CO2e/年)</th>
+                                                <th scope="col" style={cellStyle}>排放當量<br></br>(公噸CO2e/年)</th>
+                                                <th scope="col" style={cellStyle}>削減率<br></br>(%)</th>
+                                                <th scope="col" style={cellStyle}>目標年削減率<br></br>(%)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody style={{ border: '1px solid white', backgroundColor: '#ccffcc' }}>
+                                        <tr>
+                                            <td style={{ border: '1px solid white', width:'120px', textAlign: 'center', verticalAlign: 'middle'}} colSpan={2}><b>其他行業別</b></td>
+                                            <td style={cellStyle}></td>
+                                            <td style={cellStyle}></td>
+                                            <td style={cellStyle}></td>
+                                            <td style={cellStyle}><b>42%</b></td>
                                         </tr>
                                         </tbody>
                                     </table>
@@ -306,6 +347,63 @@ const Tabs = () => {
                                     </button>
                                 </div>
                             </div>
+                            <CRow>
+                               {/* 圓餅圖 */}
+                               <CCol xs={12}>
+                                    <CCard className="mb-4">
+                                        <CCardHeader style={{ backgroundColor: '#9D6B6B', height: '50px', display: 'flex', alignItems: 'center', }}>
+                                            <strong style={{ fontSize: '1.2rem', color: 'white', display: 'flex', alignItems: 'center', padding: '5px' }}>統計圖表 / </strong>
+                                            <strong style={{ fontSize: '1.0rem', color: 'white', padding: '5px' }}>圓餅圖</strong>
+                                            <CButton style={{ position: 'absolute', right: '10px', color: 'white', display: 'flex', alignItems: 'center' }}>
+                                                <b><CIcon icon={cilDataTransferDown} style={{ fontSize: '24px' }} /></b>
+                                            </CButton>
+                                        </CCardHeader>
+                                        <CCardBody style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', }}>
+                                            <div style={{ width: '350px', height: '350px' }}>
+                                                <CChartPie
+                                                    data={{
+                                                        labels: ['電力使用', '冷媒', '公務車'],
+                                                        datasets: [
+                                                            {
+                                                                data: [60, 30, 10],
+                                                                backgroundColor: ['#d882c0', '#FFB3FF', '#FFB6C1'],
+                                                                hoverBackgroundColor: ['#d882c0', '#FFB3FF', '#FFB6C1'],
+                                                            },
+                                                        ],
+                                                    }}
+                                                    options={{
+                                                        responsive: true,
+                                                        plugins: {
+                                                            legend: {
+                                                                display: true,
+                                                                position: 'right', // 圖例位置
+                                                                labels: {
+                                                                    boxWidth: 25,
+                                                                },
+                                                            },
+                                                            tooltip: {
+                                                                enabled: true, // 顯示提示框
+                                                            },
+
+                                                        },
+                                                        // 開啟數據標籤
+                                                        datalabels: {
+                                                            display: true,
+                                                            color: 'black',  // 設定標籤顏色
+                                                            font: {
+                                                                weight: 'bold',  // 設定字體粗細
+                                                            },
+                                                            formatter: (value) => `${value}%`,  // 顯示百分比或其他格式
+                                                        },
+                                                        responsive: true,
+                                                        maintainAspectRatio: true,
+                                                    }}
+                                                />
+                                            </div>
+                                        </CCardBody>
+                                    </CCard>
+                                </CCol>
+                            </CRow>
                             {/* 碳費分析 */}
                             <CCard style={{ width: '100%' }}>
                                 <CCardBody>
@@ -394,63 +492,6 @@ const Tabs = () => {
                                 </CCardBody>
                             </CCard>
                             <br></br>
-                            <CRow>
-                               {/* 圓餅圖 */}
-                               <CCol xs={12}>
-                                    <CCard className="mb-4">
-                                        <CCardHeader style={{ backgroundColor: '#9D6B6B', height: '50px', display: 'flex', alignItems: 'center', }}>
-                                            <strong style={{ fontSize: '1.2rem', color: 'white', display: 'flex', alignItems: 'center', padding: '5px' }}>統計圖表 / </strong>
-                                            <strong style={{ fontSize: '1.0rem', color: 'white', padding: '5px' }}>圓餅圖</strong>
-                                            <CButton style={{ position: 'absolute', right: '10px', color: 'white', display: 'flex', alignItems: 'center' }}>
-                                                <b><CIcon icon={cilDataTransferDown} style={{ fontSize: '24px' }} /></b>
-                                            </CButton>
-                                        </CCardHeader>
-                                        <CCardBody style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', }}>
-                                            <div style={{ width: '350px', height: '350px' }}>
-                                                <CChartPie
-                                                    data={{
-                                                        labels: ['電力使用', '冷媒', '公務車'],
-                                                        datasets: [
-                                                            {
-                                                                data: [60, 30, 10],
-                                                                backgroundColor: ['#d882c0', '#FFB3FF', '#FFB6C1'],
-                                                                hoverBackgroundColor: ['#d882c0', '#FFB3FF', '#FFB6C1'],
-                                                            },
-                                                        ],
-                                                    }}
-                                                    options={{
-                                                        responsive: true,
-                                                        plugins: {
-                                                            legend: {
-                                                                display: true,
-                                                                position: 'right', // 圖例位置
-                                                                labels: {
-                                                                    boxWidth: 25,
-                                                                },
-                                                            },
-                                                            tooltip: {
-                                                                enabled: true, // 顯示提示框
-                                                            },
-
-                                                        },
-                                                        // 開啟數據標籤
-                                                        datalabels: {
-                                                            display: true,
-                                                            color: 'black',  // 設定標籤顏色
-                                                            font: {
-                                                                weight: 'bold',  // 設定字體粗細
-                                                            },
-                                                            formatter: (value) => `${value}%`,  // 顯示百分比或其他格式
-                                                        },
-                                                        responsive: true,
-                                                        maintainAspectRatio: true,
-                                                    }}
-                                                />
-                                            </div>
-                                        </CCardBody>
-                                    </CCard>
-                                </CCol>
-                            </CRow>
                         </>
                     )}
                     {/* 碳費新聞 */}
