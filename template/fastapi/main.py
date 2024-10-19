@@ -15,6 +15,8 @@ from edituserinfo import edituserinfo
 from editaddress import editaddress
 from editpassword import editpassword
 from companyinfo import companyinfo
+from editcompanyinfo import editcompanyinfo
+from editcfvinfo import editcfvinfo
 from ocrapi import ocrapi
 
 
@@ -49,4 +51,6 @@ app.include_router(edituserinfo)
 app.include_router(editaddress)
 app.include_router(editpassword)
 app.include_router(companyinfo)
+app.include_router(editcompanyinfo)
+app.include_router(editcfvinfo)
 app.include_router(ocrapi)
