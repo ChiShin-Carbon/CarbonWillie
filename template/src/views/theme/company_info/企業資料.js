@@ -85,7 +85,7 @@ const Tabs = () => {
         setGHGRegGuide(data.company.GHG_Reg_Guide)
         setISOCNS(data.company.ISO_CNS_14064_1)
         setGHGProtocol(data.company.GHG_Protocol)
-        setVerification(data.company.verification)
+        setVerification(data.company.verification ? true : false)
         setInspectionAgencyID(data.company.inspection_agency)
         setSignificance(data.company.significance)
         setMateriality(data.company.materiality)
@@ -126,10 +126,6 @@ const Tabs = () => {
       return '無'
     }
     return SpecList.join('、')
-  }
-
-  const setverification = () => {
-    setVerification(verification === false ? '否' : '是')
   }
 
   const setIA = () => {
@@ -239,9 +235,6 @@ const Tabs = () => {
       const GHG_Reg_Guide = document.getElementById('edit_GHG_Reg_Guide').checked
       const ISO_CNS_14064_1 = document.getElementById('edit_ISO_CNS_14064_1').checked
       const GHG_Protocol = document.getElementById('edit_GHG_Protocol').checked
-      const verification =
-        document.getElementById('edit_verification').value ||
-        document.getElementById('edit_verification').placeholder
       const inspection_agencyID =
         document.getElementById('edit_inspection_agency').value ||
         document.getElementById('edit_inspection_agency').placeholder
@@ -294,10 +287,6 @@ const Tabs = () => {
   useEffect(() => {
     setIA()
   }, [inspection_agencyID])
-
-  useEffect(() => {
-    setverification()
-  }, [verification])
 
   return (
     <CRow>
@@ -600,7 +589,7 @@ const Tabs = () => {
                             <CFormInput
                               type="verification"
                               id="verification"
-                              value={verification}
+                              value={verification === true ? '是' : '否'}
                               disabled
                               readOnly
                             />
