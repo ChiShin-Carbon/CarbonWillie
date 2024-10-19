@@ -2,7 +2,7 @@
 import React, { useState } from 'react'; // 確保引入 useState
 import {
     CTable, CTableHead, CTableBody, CFormSelect, CModal, CModalBody, CModalFooter, CModalHeader, CForm, CButton,
-    CFormLabel, CFormInput, CFormTextarea, CRow, CCol,CCollapse,CCard,CCardBody
+    CFormLabel, CFormInput, CFormTextarea, CRow, CCol, CCollapse, CCard, CCardBody
 } from '@coreui/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPenToSquare, faTrashCan } from '@fortawesome/free-solid-svg-icons';
@@ -751,14 +751,12 @@ export const FunctionNine = () => {
 
     return (
         <div>
-            <CTable hover className={styles.activityTable1}>
+            <CTable hover className={styles.activityTableShort}>
                 <CTableHead className={styles.activityTableHead}>
                     <tr>
-                        <th>發票/收據日期</th>
-                        <th>發票號碼/收據編號</th>
-                        <th>設備類型</th>
-                        <th>能源類型</th>
-                        <th>使用量(公克)</th>
+                        <th>交通方式</th>
+                        <th>公里數</th>
+                        <th>油種</th>
                         <th>備註</th>
                         <th>圖片</th>
                         <th>最近編輯</th>
@@ -767,11 +765,9 @@ export const FunctionNine = () => {
                 </CTableHead>
                 <CTableBody className={styles.activityTableBody}>
                     <tr>
-                        <td>2023/01/15</td>
-                        <td>XXXXX</td>
+                        <td>汽車</td>
                         <td>XXX</td>
                         <td>柴油</td>
-                        <td>XXX</td>
                         <td>讚</td>
                         <td><Zoom><img src="https://i.pinimg.com/564x/8b/7d/0c/8b7d0c88227abf5a237870b047677b4b.jpg" alt="image" /></Zoom></td>
                         <td>蔡沂庭<br />2024/10/16 12:09</td>
@@ -797,13 +793,12 @@ export const FunctionTen = () => {
 
     return (
         <div>
-            <CTable hover className={styles.activityTable1}>
+            <CTable hover className={styles.activityTableShort}>
                 <CTableHead className={styles.activityTableHead}>
                     <tr>
-                        <th>發票/收據日期</th>
-                        <th>發票號碼/收據編號</th>
-                        <th>使用原料</th>
-                        <th>使用量(公克)</th>
+                        <th>交通方式</th>
+                        <th>公里數</th>
+                        <th>油種</th>
                         <th>備註</th>
                         <th>圖片</th>
                         <th>最近編輯</th>
@@ -812,12 +807,11 @@ export const FunctionTen = () => {
                 </CTableHead>
                 <CTableBody className={styles.activityTableBody}>
                     <tr>
-                        <td>2023/01/15</td>
-                        <td>XXXXX</td>
-                        <td>天然氣</td>
+                        <td>汽車</td>
                         <td>XXX</td>
+                        <td>柴油</td>
                         <td>讚</td>
-                        <td><Zoom><img src="https://i.pinimg.com/564x/e7/c8/4a/e7c84a29e5b0d84c8230ea5fd487495b.jpg" alt="image" /></Zoom></td>
+                        <td><Zoom><img src="https://i.pinimg.com/control/564x/10/88/c1/1088c11bfe177fc4a37d0c1bde0e20d1.jpg" alt="image" /></Zoom></td>
                         <td>蔡沂庭<br />2024/10/16 12:09</td>
                         <td>
                             <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
@@ -841,16 +835,10 @@ export const FunctionEleven = () => {
 
     return (
         <div>
-            <CTable hover className={styles.activityTableLong}>
+            <CTable hover className={styles.activityTableShort}>
                 <CTableHead className={styles.activityTableHead}>
                     <tr>
-                        <th>發票/收據日期</th>
-                        <th>發票號碼/收據編號</th>
-                        <th>供應商</th>
-                        <th>品名/型號/規格</th>
-                        <th>含碳率C%</th>
-                        <th>公斤/盒</th>
-                        <th>數量(盒)</th>
+                        <th>廢棄物項目</th>
                         <th>備註</th>
                         <th>圖片</th>
                         <th>最近編輯</th>
@@ -859,13 +847,7 @@ export const FunctionEleven = () => {
                 </CTableHead>
                 <CTableBody className={styles.activityTableBody}>
                     <tr>
-                        <td>2023/01/15</td>
                         <td>XXXXX</td>
-                        <td>XXXXX</td>
-                        <td>XXXXX</td>
-                        <td>X</td>
-                        <td>X</td>
-                        <td>X</td>
                         <td>讚</td>
                         <td><Zoom><img src="https://i.pinimg.com/736x/cd/fb/de/cdfbde16d8860668c51c5a5e3b0ce482.jpg" alt="image" /></Zoom></td>
                         <td>蔡沂庭<br />2024/10/16 12:09</td>
@@ -891,13 +873,10 @@ export const FunctionTwelve = () => {
 
     return (
         <div>
-            <CTable hover className={styles.activityTable1}>
+             <CTable hover className={styles.activityTableShort}>
                 <CTableHead className={styles.activityTableHead}>
                     <tr>
-                        <th>發票/收據日期</th>
-                        <th>發票號碼/收據編號</th>
-                        <th>品名</th>
-                        <th>填充量(公克)</th>
+                        <th>廢棄物項目</th>
                         <th>備註</th>
                         <th>圖片</th>
                         <th>最近編輯</th>
@@ -906,12 +885,9 @@ export const FunctionTwelve = () => {
                 </CTableHead>
                 <CTableBody className={styles.activityTableBody}>
                     <tr>
-                        <td>2023/01/15</td>
                         <td>XXXXX</td>
-                        <td>XXXXX</td>
-                        <td>X</td>
                         <td>讚</td>
-                        <td><Zoom><img src="https://i.pinimg.com/564x/5a/7a/d6/5a7ad69d72d35dd45659fbf04bd96217.jpg" alt="image" /></Zoom></td>
+                        <td><Zoom><img src="https://i.pinimg.com/control/564x/58/8a/e1/588ae16399021d819930991914c69717.jpg" alt="image" /></Zoom></td>
                         <td>蔡沂庭<br />2024/10/16 12:09</td>
                         <td>
                             <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
@@ -928,99 +904,4 @@ export const FunctionTwelve = () => {
         </div>
     );
 };
-
-export const FunctionThirteen = () => {
-    const [isEditModalVisible, setEditModalVisible] = useState(false);
-    const currentFunction = 'thirteen'; // 定義 currentFunction
-
-    return (
-        <div>
-            <CTable hover className={styles.activityTableLong}>
-                <CTableHead className={styles.activityTableHead}>
-                    <tr>
-                        <th>發票/收據日期</th>
-                        <th>發票號碼/收據編號</th>
-                        <th>主要燃料</th>
-                        <th>間接蒸氣購買量</th>
-                        <th>蒸氣供應商名稱</th>
-                        <th>蒸氣排放係數</th>
-                        <th>單位</th>
-                        <th>備註</th>
-                        <th>圖片</th>
-                        <th>最近編輯</th>
-                        <th>操作</th>
-                    </tr>
-                </CTableHead>
-                <CTableBody className={styles.activityTableBody}>
-                    <tr>
-                        <td>2023/01/15</td>
-                        <td>XXXXX</td>
-                        <td>XXXXX</td>
-                        <td>XXX</td>
-                        <td>XXXXX</td>
-                        <td>XXX</td>
-                        <td>kg CO2e/kg蒸氣</td>
-                        <td>讚</td>
-                        <td><Zoom><img src="https://i.pinimg.com/564x/f3/d9/27/f3d92764f7e4d8ab25835b39f20e2e0f.jpg" alt="image" /></Zoom></td>
-                        <td>蔡沂庭<br />2024/10/16 12:09</td>
-                        <td>
-                            <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
-                            <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
-                        </td>
-                    </tr>
-                </CTableBody>
-            </CTable>
-            <EditModal
-                isEditModalVisible={isEditModalVisible}
-                setEditModalVisible={setEditModalVisible}
-                currentFunction={currentFunction}
-            />
-        </div>
-    );
-};
-
-export const FunctionForteen = () => {
-    const [isEditModalVisible, setEditModalVisible] = useState(false);
-    const currentFunction = 'forteen'; // 定義 currentFunction
-
-    return (
-        <div>
-            <CTable hover className={styles.activityTable1}>
-                <CTableHead className={styles.activityTableHead}>
-                    <tr>
-                        <th>發票/收據日期</th>
-                        <th>發票號碼/收據編號</th>
-                        <th>原物料名稱</th>
-                        <th>使用量</th>
-                        <th>備註</th>
-                        <th>圖片</th>
-                        <th>最近編輯</th>
-                        <th>操作</th>
-                    </tr>
-                </CTableHead>
-                <CTableBody className={styles.activityTableBody}>
-                    <tr>
-                        <td>2023/01/15</td>
-                        <td>XXXXX</td>
-                        <td>XXXXX</td>
-                        <td>XXX</td>
-                        <td>讚</td>
-                        <td><Zoom><img src="https://i.pinimg.com/564x/37/80/8a/37808aacec53abf11e28412f452ffb20.jpg" alt="image" /></Zoom></td>
-                        <td>蔡沂庭<br />2024/10/16 12:09</td>
-                        <td>
-                            <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
-                            <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
-                        </td>
-                    </tr>
-                </CTableBody>
-            </CTable>
-            <EditModal
-                isEditModalVisible={isEditModalVisible}
-                setEditModalVisible={setEditModalVisible}
-                currentFunction={currentFunction}
-            />
-        </div>
-    );
-};
-
 
