@@ -18,6 +18,7 @@ import {
 } from '@coreui/react'
 import '../../../scss/個人&企業資料.css'
 import { useEffect, useState } from 'react'
+import LocationForm from './locationform'
 
 const Tabs = () => {
   const [businessID, setBusinessID] = useState('')
@@ -153,7 +154,6 @@ const Tabs = () => {
   const handlesubmit = async (e) => {
     e.preventDefault()
     try {
-      const user_id = window.sessionStorage.getItem('user_id')
       const org_name =
         document.getElementById('edit_org_name').value ||
         document.getElementById('edit_org_name').placeholder
@@ -655,7 +655,7 @@ const Tabs = () => {
                           </div>
                         </CCol>
                       </CRow> */}
-                      <CRow className="mb-3">
+                      {/* <CRow className="mb-3">
                         <CCol sm={4}>
                           <div className="mb-3">
                             <CFormLabel>
@@ -695,7 +695,15 @@ const Tabs = () => {
                             />
                           </div>
                         </CCol>
-                      </CRow>
+                      </CRow> */}
+                      <LocationForm
+                        county={county}
+                        town={town}
+                        postal_code={postal_code}
+                        onCountyChange={setCounty}
+                        onTownChange={setTown}
+                        onPostalCodeChange={setPostalCode}
+                      />
                       <CRow className="mb-3">
                         <CCol sm={12}>
                           <div className="mb-3">
