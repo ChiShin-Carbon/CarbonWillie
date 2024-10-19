@@ -18,6 +18,7 @@ import {
 } from '@coreui/react'
 import '../../../scss/個人&企業資料.css'
 import { useEffect, useState } from 'react'
+import LocationForm from './locationform'
 
 const Tabs = () => {
   const [businessID, setBusinessID] = useState('')
@@ -148,6 +149,77 @@ const Tabs = () => {
 
   const setverification = () => {
     setVerification(verification === false ? '否' : '是')
+  }
+
+  const handlesubmit = async (e) => {
+    e.preventDefault()
+    try {
+      const org_name =
+        document.getElementById('edit_org_name').value ||
+        document.getElementById('edit_org_name').placeholder
+      const county =
+        document.getElementById('edit_county').value ||
+        document.getElementById('edit_county').placeholder
+      const town =
+        document.getElementById('edit_town').value ||
+        document.getElementById('edit_town').placeholder
+      const postal_code =
+        document.getElementById('edit_postal_code').value ||
+        document.getElementById('edit_postal_code').placeholder
+      const org_address =
+        document.getElementById('edit_org_address').value ||
+        document.getElementById('edit_org_address').placeholder
+      const charge_person =
+        document.getElementById('edit_charge_person').value ||
+        document.getElementById('edit_charge_person').placeholder
+      const org_email =
+        document.getElementById('edit_org_email').value ||
+        document.getElementById('edit_org_email').placeholder
+      const contact_person =
+        document.getElementById('edit_contact_person').value ||
+        document.getElementById('edit_contact_person').placeholder
+      const telephone =
+        document.getElementById('edit_telephone').value ||
+        document.getElementById('edit_telephone').placeholder
+      const email =
+        document.getElementById('edit_email').value ||
+        document.getElementById('edit_email').placeholder
+      const phone =
+        document.getElementById('edit_phone').value ||
+        document.getElementById('edit_phone').placeholder
+
+      const response = await fetch('http://localhost:8000/editcompanyinfo', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          org_name: org_name,
+          county: county,
+          town: town,
+          postal_code: postal_code,
+          org_address: org_address,
+          charge_person: charge_person,
+          org_email: org_email,
+          contact_person: contact_person,
+          telephone: telephone,
+          email: email,
+          phone: phone,
+        }),
+      })
+
+      const data = await response.json()
+      console.log(data)
+
+      if (response.ok) {
+        alert('修改成功')
+        window.location.reload() // Refresh the page
+      } else {
+        console.log(response.status)
+      }
+    } catch (error) {
+      console.error('Error:', error)
+    }
   }
 
   useEffect(() => {
@@ -556,11 +628,16 @@ const Tabs = () => {
                             <CFormLabel>
                               <strong>機構名稱</strong>
                             </CFormLabel>
-                            <CFormInput type="org_name" id="org_name" />
+                            <CFormInput
+                              type="text"
+                              id="edit_org_name"
+                              value={org_name}
+                              onChange={(e) => setOrgName(e.target.value)}
+                            />
                           </div>
                         </CCol>
                       </CRow>
-                      <CRow className="mb-3">
+                      {/* <CRow className="mb-3">
                         <CCol sm={6}>
                           <div className="mb-3">
                             <CFormLabel>
@@ -577,14 +654,19 @@ const Tabs = () => {
                             <CFormInput type="factory_registrationNo" id="factory_registrationNo" />
                           </div>
                         </CCol>
-                      </CRow>
-                      <CRow className="mb-3">
+                      </CRow> */}
+                      {/* <CRow className="mb-3">
                         <CCol sm={4}>
                           <div className="mb-3">
                             <CFormLabel>
                               <strong>縣市別</strong>
                             </CFormLabel>
-                            <CFormInput type="county" id="county" />
+                            <CFormInput
+                              type="county"
+                              id="edit_county"
+                              value={county}
+                              onChange={(e) => setCounty(e.target.value)}
+                            />
                           </div>
                         </CCol>
                         <CCol sm={4}>
@@ -592,7 +674,12 @@ const Tabs = () => {
                             <CFormLabel>
                               <strong>鄉鎮別</strong>
                             </CFormLabel>
-                            <CFormInput type="township" id="township" />
+                            <CFormInput
+                              type="township"
+                              id="edit_town"
+                              value={town}
+                              onChange={(e) => setTown(e.target.value)}
+                            />
                           </div>
                         </CCol>
                         <CCol sm={4}>
@@ -600,17 +687,35 @@ const Tabs = () => {
                             <CFormLabel>
                               <strong>郵遞區號</strong>
                             </CFormLabel>
-                            <CFormInput type="post_code" id="post_code" />
+                            <CFormInput
+                              type="text"
+                              id="edit_postal_code"
+                              value={postal_code}
+                              onChange={(e) => setPostalCode(e.target.value)}
+                            />
                           </div>
                         </CCol>
-                      </CRow>
+                      </CRow> */}
+                      <LocationForm
+                        county={county}
+                        town={town}
+                        postal_code={postal_code}
+                        onCountyChange={setCounty}
+                        onTownChange={setTown}
+                        onPostalCodeChange={setPostalCode}
+                      />
                       <CRow className="mb-3">
                         <CCol sm={12}>
                           <div className="mb-3">
                             <CFormLabel>
                               <strong>地址</strong>
                             </CFormLabel>
-                            <CFormInput type="org_address" id="org_address" />
+                            <CFormInput
+                              type="text"
+                              id="edit_org_address"
+                              value={org_address}
+                              onChange={(e) => setOrgAddress(e.target.value)}
+                            />
                           </div>
                         </CCol>
                       </CRow>
@@ -620,7 +725,12 @@ const Tabs = () => {
                             <CFormLabel>
                               <strong>負責人姓名</strong>
                             </CFormLabel>
-                            <CFormInput type="responsible_person" id="responsible_person" />
+                            <CFormInput
+                              type="text"
+                              id="edit_charge_person"
+                              value={charge_person}
+                              onChange={(e) => setChargePerson(e.target.value)}
+                            />
                           </div>
                         </CCol>
                         <CCol sm={6}>
@@ -628,7 +738,12 @@ const Tabs = () => {
                             <CFormLabel>
                               <strong>公私場所電子信箱</strong>
                             </CFormLabel>
-                            <CFormInput type="org_email" id="org_email" />
+                            <CFormInput
+                              type="text"
+                              id="edit_org_email"
+                              value={org_email}
+                              onChange={(e) => setOrgEmail(e.target.value)}
+                            />
                           </div>
                         </CCol>
                       </CRow>
@@ -638,7 +753,12 @@ const Tabs = () => {
                             <CFormLabel>
                               <strong>聯絡人姓名</strong>
                             </CFormLabel>
-                            <CFormInput type="contact_person" id="contact_person" />
+                            <CFormInput
+                              type="text"
+                              id="edit_contact_person"
+                              value={contact_person}
+                              onChange={(e) => setContactPerson(e.target.value)}
+                            />
                           </div>
                         </CCol>
                         <CCol sm={6}>
@@ -646,7 +766,12 @@ const Tabs = () => {
                             <CFormLabel>
                               <strong>Email</strong>
                             </CFormLabel>
-                            <CFormInput type="email" id="email" />
+                            <CFormInput
+                              type="email"
+                              id="edit_email"
+                              value={email}
+                              onChange={(e) => setEmail(e.target.value)}
+                            />
                           </div>
                         </CCol>
                       </CRow>
@@ -656,7 +781,12 @@ const Tabs = () => {
                             <CFormLabel>
                               <strong>電話</strong>
                             </CFormLabel>
-                            <CFormInput type="phone" id="phone" />
+                            <CFormInput
+                              type="text"
+                              id="edit_telephone"
+                              value={telephone}
+                              onChange={(e) => setTelephone(e.target.value)}
+                            />
                           </div>
                         </CCol>
                         <CCol sm={6}>
@@ -664,11 +794,16 @@ const Tabs = () => {
                             <CFormLabel>
                               <strong>手機</strong>
                             </CFormLabel>
-                            <CFormInput type="telephone" id="telephone" />
+                            <CFormInput
+                              type="text"
+                              id="edit_phone"
+                              value={phone}
+                              onChange={(e) => setPhone(e.target.value)}
+                            />
                           </div>
                         </CCol>
                       </CRow>
-                      <CRow className="mb-3">
+                      {/* <CRow className="mb-3">
                         <CCol sm={6}>
                           <div className="mb-3">
                             <CFormLabel>
@@ -685,7 +820,12 @@ const Tabs = () => {
                             <CFormInput type="industry_code" id="industry_code" />
                           </div>
                         </CCol>
-                      </CRow>
+                      </CRow> */}
+                      <div className="col-auto text-center">
+                        <CButton type="submit" className="mb-3 customButton" onClick={handlesubmit}>
+                          保存資料
+                        </CButton>
+                      </div>
                     </CForm>
                   </div>
                 </CCardBody>
