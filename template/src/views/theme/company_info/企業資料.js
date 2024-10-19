@@ -15,6 +15,7 @@ import {
   CFormInput,
   CButton,
   CFormSelect,
+  CFormCheck,
 } from '@coreui/react'
 import '../../../scss/個人&企業資料.css'
 import { useEffect, useState } from 'react'
@@ -127,6 +128,10 @@ const Tabs = () => {
     return SpecList.join('、')
   }
 
+  const setverification = () => {
+    setVerification(verification === false ? '否' : '是')
+  }
+
   const setIA = () => {
     if (inspection_agencyID === 1) {
       setInspectionAgency('艾法諾國際股份有限公司(AFNOR)')
@@ -145,10 +150,6 @@ const Tabs = () => {
     } else if (inspection_agencyID === 8) {
       setInspectionAgency('其他')
     }
-  }
-
-  const setverification = () => {
-    setVerification(verification === false ? '否' : '是')
   }
 
   const handlesubmit = async (e) => {
@@ -205,6 +206,61 @@ const Tabs = () => {
           telephone: telephone,
           email: email,
           phone: phone,
+        }),
+      })
+
+      const data = await response.json()
+      console.log(data)
+
+      if (response.ok) {
+        alert('修改成功')
+        window.location.reload() // Refresh the page
+      } else {
+        console.log(response.status)
+      }
+    } catch (error) {
+      console.error('Error:', error)
+    }
+  }
+
+  const handlecfvsubmit = async (e) => {
+    e.preventDefault()
+    try {
+      const reasonID =
+        document.getElementById('edit_reason').value ||
+        document.getElementById('edit_reason').placeholder
+      const GHG_Reg_Guide =
+        document.getElementById('edit_GHG_Reg_Guide').value ||
+        document.getElementById('edit_GHG_Reg_Guide').placeholder
+      const ISO_CNS_14064_1 =
+        document.getElementById('edit_ISO_CNS_14064_1').value ||
+        document.getElementById('edit_ISO_CNS_14064_1').placeholder
+      const GHG_Protocol =
+        document.getElementById('edit_GHG_Protocol').value ||
+        document.getElementById('edit_GHG_Protocol').placeholder
+      const verification =
+        document.getElementById('edit_verification').value ||
+        document.getElementById('edit_verification').placeholder
+      const inspection_agencyID =
+        document.getElementById('edit_inspection_agency').value ||
+        document.getElementById('edit_inspection_agency').placeholder
+      const GWP_version =
+        document.getElementById('edit_GWP_version').value ||
+        document.getElementById('edit_GWP_version').placeholder
+
+      const response = await fetch('http://localhost:8000/editcfvinfo', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          reason: reasonID,
+          GHG_Reg_Guide: GHG_Reg_Guide,
+          ISO_CNS_14064_1: ISO_CNS_14064_1,
+          GHG_Protocol: GHG_Protocol,
+          verification: verification,
+          inspection_agency: inspection_agencyID,
+          GWP_version: GWP_version,
         }),
       })
 
@@ -831,11 +887,12 @@ const Tabs = () => {
                 </CCardBody>
               </CCard>
             </CTabPanel>
+            {/* 修改盤查資訊 */}
             <CTabPanel className="py-3" aria-labelledby="contact-tab-pane" itemKey={3}>
               <CCard className="mb-4 customCard">
                 <CCardBody className="customCard2">
                   <div className="customCardHeader">
-                    <strong className="customtitlebottom">盤查資訊</strong>
+                    <strong className="customtitlebottom">修改盤查資訊</strong>
                   </div>
                   <div className="customCardBody">
                     <CForm>
@@ -845,11 +902,11 @@ const Tabs = () => {
                             <CFormLabel>
                               <strong>登錄原因</strong>
                             </CFormLabel>
-                            <CFormSelect>
-                              <option value="0">自願性登錄</option>
-                              <option value="1">環評承諾</option>
-                              <option value="2">依法登錄</option>
-                              <option value="3">其他</option>
+                            <CFormSelect id="edit_reason" value={reasonID}>
+                              <option value="1">自願性登錄</option>
+                              <option value="2">環評承諾</option>
+                              <option value="3">依法登錄</option>
+                              <option value="4">其他</option>
                             </CFormSelect>
                           </div>
                         </CCol>
@@ -860,13 +917,27 @@ const Tabs = () => {
                             <CFormLabel>
                               <strong>盤查依據規範</strong>
                             </CFormLabel>
-                            <CFormSelect>
-                              <option value="0">
-                                溫室氣體排放量盤查登錄管理辦法/溫室氣體盤查登錄作業指引
-                              </option>
-                              <option value="1">ISO / CNS 14064-1</option>
-                              <option value="2">溫室氣體盤查議定書-企業會計與報告標準</option>
-                            </CFormSelect>
+                            <CFormCheck
+                              type="checkbox"
+                              id="edit_GHG_Reg_Guide"
+                              label="溫室氣體排放量盤查登錄管理辦法 / 溫室氣體盤查登錄作業指引"
+                              value={GHG_Reg_Guide}
+                              onChange={(e) => handleCheckChange(e)}
+                            />
+                            <CFormCheck
+                              type="checkbox"
+                              id="edit_ISO_CNS_14064_1"
+                              label="ISO / CNS 14064-1"
+                              value={ISO_CNS_14064_1}
+                              onChange={(e) => handleCheckChange(e)}
+                            />
+                            <CFormCheck
+                              type="checkbox"
+                              id="edit_GHG_Protocol"
+                              label="溫室氣體盤查議定書-企業會計與報告標準"
+                              value={GHG_Protocol}
+                              onChange={(e) => handleCheckChange(e)}
+                            />
                           </div>
                         </CCol>
                       </CRow>
@@ -876,9 +947,9 @@ const Tabs = () => {
                             <CFormLabel>
                               <strong>是否經第三方查證</strong>
                             </CFormLabel>
-                            <CFormSelect>
-                              <option value="0">是</option>
-                              <option value="1">否</option>
+                            <CFormSelect id="edit_verification" value={verification}>
+                              <option value="true">是</option>
+                              <option value="false">否</option>
                             </CFormSelect>
                           </div>
                         </CCol>
@@ -887,49 +958,32 @@ const Tabs = () => {
                             <CFormLabel>
                               <strong>查驗機構名稱</strong>
                             </CFormLabel>
-                            <CFormSelect>
-                              <option value="0">艾法諾國際股份有限公司(AFNOR)</option>
-                              <option value="1">
+                            <CFormSelect id="edit_inspection_agency" value={inspection_agencyID}>
+                              <option value="1">艾法諾國際股份有限公司(AFNOR)</option>
+                              <option value="2">
                                 香港商英國標準協會太平洋有限公司台灣分公司(Bsi)
                               </option>
-                              <option value="2">台灣衛理國際品保驗證股份有限公司(BV)</option>
-                              <option value="3">立恩威國際驗證股份有限公司(DNV GL)</option>
-                              <option value="4">英商勞氏檢驗股份有限公司台灣分公司(LRQA)</option>
-                              <option value="5">台灣檢驗科技股份有限公司(SGS)</option>
-                              <option value="6">
+                              <option value="3">台灣衛理國際品保驗證股份有限公司(BV)</option>
+                              <option value="4">立恩威國際驗證股份有限公司(DNV GL)</option>
+                              <option value="5">英商勞氏檢驗股份有限公司台灣分公司(LRQA)</option>
+                              <option value="6">台灣檢驗科技股份有限公司(SGS)</option>
+                              <option value="7">
                                 台灣德國萊因技術監護顧問股份有限公司(TÜV-Rh)
                               </option>
-                              <option value="7">其他</option>
+                              <option value="8">其他</option>
                             </CFormSelect>
                           </div>
                         </CCol>
                       </CRow>
-                      <CRow className="mb-3">
-                        <CCol sm={4}>
-                          <div className="mb-3">
-                            <CFormLabel>
-                              <strong>顯著性門檻</strong>
-                            </CFormLabel>
-                            <CFormInput type="significance" id="significance" />
-                          </div>
-                        </CCol>
-                        <CCol sm={4}>
-                          <div className="mb-3">
-                            <CFormLabel>
-                              <strong>實質性門檻</strong>
-                            </CFormLabel>
-                            <CFormInput type="materiality" id="materiality" />
-                          </div>
-                        </CCol>
-                        <CCol sm={4}>
-                          <div className="mb-3">
-                            <CFormLabel>
-                              <strong>排除門檻</strong>
-                            </CFormLabel>
-                            <CFormInput type="exclusion" id="exclusion" />
-                          </div>
-                        </CCol>
-                      </CRow>
+                      <div className="col-auto text-center">
+                        <CButton
+                          type="submit"
+                          className="mb-3 customButton"
+                          onClick={handlecfvsubmit}
+                        >
+                          保存資料
+                        </CButton>
+                      </div>
                     </CForm>
                   </div>
                 </CCardBody>
