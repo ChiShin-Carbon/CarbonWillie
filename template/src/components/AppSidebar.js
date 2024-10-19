@@ -37,7 +37,7 @@ const AppSidebar = () => {
     >
       <CSidebarHeader className="border-bottom" style={{padding:'0',paddingLeft:15}}>
         <CSidebarBrand to="/" >
-        <img src="/src/assets/images/啟新logo.png" alt="logo"height={55}></img>
+        <img src="/src/assets/images/logo.png" alt="logo"height={35}></img>
           {/* <CIcon customClassName="sidebar-brand-full" icon={logo} height={32} /> */}
           <CIcon customClassName="sidebar-brand-narrow" icon={sygnet} height={32} />
         </CSidebarBrand>

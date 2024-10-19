@@ -121,7 +121,7 @@
 .activityTableShort {
     text-align: center;
     table-layout: auto;
-    min-width:1000px;
+    min-width:900px;
 }
 .activityTableHead th {
     background-color: #cecece;

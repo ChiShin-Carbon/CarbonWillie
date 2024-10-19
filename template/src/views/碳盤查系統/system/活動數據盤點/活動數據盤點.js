@@ -13,7 +13,8 @@ import { cilDataTransferDown } from '@coreui/icons'
 import '../../../../scss/碳盤查系統.css'
 import { Link } from 'react-router-dom'
 import {
-    FunctionOne, FunctionTwo, FunctionThree, FunctionFour, FunctionFive, FunctionSix, FunctionSeven, FunctionEight
+    FunctionOne, FunctionTwo, FunctionThree, FunctionFour, FunctionFive, FunctionSix, FunctionSeven,
+     FunctionEight,FunctionNine,FunctionTen,FunctionEleven,FunctionTwelve,
 } from './活動數據盤點function.js';
 
 
@@ -94,6 +95,10 @@ const Tabs = () => {
                                 {currentFunction === 'six' && <FunctionSix />}
                                 {currentFunction === 'seven' && <FunctionSeven />}
                                 {currentFunction === 'eight' && <FunctionEight />}
+                                {currentFunction === 'nine' && <FunctionNine />}
+                                {currentFunction === 'ten' && <FunctionTen />}
+                                {currentFunction === 'eleven' && <FunctionEleven />}
+                                {currentFunction === 'twelve' && <FunctionTwelve />}
                             </div>
                         </>
                     ) : (
@@ -118,6 +123,10 @@ const Tabs = () => {
                         <h6>範疇二</h6>
                         <div className={`${styles.navContent} ${currentFunction === 'eight' ? styles.navContentChoose : ''}`} onClick={() => handleFunctionChange('eight', '電力使用量')}>電力使用量</div>
                         <h6>範疇三</h6>
+                        <div className={`${styles.navContent} ${currentFunction === 'nine' ? styles.navContentChoose : ''}`} onClick={() => handleFunctionChange('nine', '員工通勤')}>員工通勤</div>
+                        <div className={`${styles.navContent} ${currentFunction === 'ten' ? styles.navContentChoose : ''}`} onClick={() => handleFunctionChange('ten', '商務旅行')}>商務旅行</div>
+                        <div className={`${styles.navContent} ${currentFunction === 'eleven' ? styles.navContentChoose : ''}`} onClick={() => handleFunctionChange('eleven', '營運產生廢棄物')}>營運產生廢棄物</div>
+                        <div className={`${styles.navContent} ${currentFunction === 'twelve' ? styles.navContentChoose : ''}`} onClick={() => handleFunctionChange('twelve', '銷售產品的廢棄物')}>銷售產品的廢棄物</div>
                     </div>
                 </CCard>
             </div>

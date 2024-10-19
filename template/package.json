@@ -33,6 +33,8 @@
     "chart.js": "^4.4.3",
     "classnames": "^2.5.1",
     "core-js": "^3.37.1",
+    "dotenv": "^16.4.5",
+    "openai": "^4.68.1",
     "primeicons": "^7.0.0",
     "primereact": "^10.8.3",
     "prop-types": "^15.8.1",

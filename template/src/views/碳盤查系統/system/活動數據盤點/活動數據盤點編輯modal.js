@@ -1,13 +1,14 @@
 // 編輯Modal.js
-import React from 'react';
+import React,{useState} from 'react';
 import {
     CModal, CModalHeader, CModalBody, CModalFooter, CButton, CFormLabel, CFormInput, CFormTextarea, CRow, CCol, CFormSelect, CForm
 } from '@coreui/react';
 import styles from '../../../../scss/活動數據盤點.module.css';
 
 const FunctionForms = ({ currentFunction }) => {
+     const [transportType, setTransportType] = useState("1"); // 默認選擇汽車
     switch (currentFunction) {
-        
+
         case 'one':
             return (
                 <div className={styles.addmodal}>
@@ -634,7 +635,256 @@ const FunctionForms = ({ currentFunction }) => {
                     <div style={{ textAlign: 'center' }}>*為必填欄位</div>
                 </div>
             );
-       
+        case 'nine':
+
+
+            return (
+                <div className={styles.addmodal}>
+                    <CRow className="mb-3">
+                        <CFormLabel htmlFor="type" className={`col-sm-2 col-form-label ${styles.addlabel}`} >交通方式*</CFormLabel>
+                        <CCol>
+                            <CFormSelect aria-label="Default select example" id="type" className={styles.addinput}
+                                onChange={(e) => setTransportType(e.target.value)} >
+                                <option value="1">汽車</option>
+                                <option value="2">機車</option>
+                                <option value="3">公車</option>
+                                <option value="4">捷運</option>
+                                <option value="5">火車</option>
+                                <option value="6">高鐵</option>
+                                <option value="7">客運</option>
+                            </CFormSelect>
+                        </CCol>
+                    </CRow>
+                    <CRow className="mb-3">
+                        <CFormLabel htmlFor="oil" className={`col-sm-2 col-form-label ${styles.addlabel}`} >油種*<span className={styles.Note}>僅汽/機車須填寫</span></CFormLabel>
+                        <CCol>
+                            <CFormSelect aria-label="Default select example" id="type" className={styles.addinput} disabled={!(transportType === "1" || transportType === "2")} >
+                                <option value="1">無</option>
+                                <option value="2">汽油</option>
+                                <option value="3">柴油</option>
+                            </CFormSelect>
+                        </CCol>
+                    </CRow>
+                    <CRow className="mb-3">
+                        <CFormLabel htmlFor="km" className={`col-sm-2 col-form-label ${styles.addlabel}`} >公里數*</CFormLabel>
+                        <CCol>
+                            <CFormInput className={styles.addinput} type="number" id="km" required />
+                        </CCol>
+                    </CRow>
+
+                    <CRow className="mb-3">
+                        <CFormLabel htmlFor="explain" className={`col-sm-2 col-form-label ${styles.addlabel}`} >備註</CFormLabel>
+                        <CCol>
+                            <CFormTextarea className={styles.addinput} type="text" id="explain" rows={3} />
+
+                        </CCol>
+                    </CRow>
+                    <CRow className="mb-3">
+                        <CFormLabel htmlFor="photo" className={`col-sm-2 col-form-label ${styles.addlabel}`}  >圖片*</CFormLabel>
+                        <CCol>
+                            <CFormInput type="file" id="photo" required />
+                        </CCol>
+                    </CRow>
+                    <br />
+                    <div style={{ textAlign: 'center' }}>*為必填欄位</div>
+                </div>
+            );
+
+
+            return (
+                <div className={styles.addmodal}>
+                    <CRow className="mb-3">
+                        <CFormLabel htmlFor="month" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票/收據日期*</CFormLabel>
+                        <CCol><CFormInput className={styles.addinput} type="date" id="date" required />
+                        </CCol>
+                    </CRow>
+                    <CRow className="mb-3">
+                        <CFormLabel htmlFor="num" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票號碼/收據編號*</CFormLabel>
+                        <CCol>
+                            <CFormInput className={styles.addinput} type="text" id="num" required />
+                        </CCol>
+                    </CRow>
+                    <CRow className="mb-3">
+                        <CFormLabel htmlFor="datestart" className={`col-sm-2 col-form-label ${styles.addlabel}`} >用電期間(起)*</CFormLabel>
+                        <CCol>
+                            <CFormInput className={styles.addinput} type="date" id="datestart" required />
+                        </CCol>
+                    </CRow>
+                    <CRow className="mb-3">
+                        <CFormLabel htmlFor="dateend" className={`col-sm-2 col-form-label ${styles.addlabel}`} >用電期間(迄)*</CFormLabel>
+                        <CCol>
+                            <CFormInput className={styles.addinput} type="date" id="dateend" required />
+                        </CCol>
+                    </CRow>
+                    <CRow className="mb-3">
+                        <CFormLabel htmlFor="type" className={`col-sm-2 col-form-label ${styles.addlabel}`} >填寫類型*<span className={styles.Note}> 選擇填寫請以*用電度數*作為優先填寫項目</span></CFormLabel>
+                        <CCol>
+                            <CFormSelect aria-label="Default select example" id="type" className={styles.addinput} >
+                                <option value="1">用電度數</option>
+                                <option value="2">用電金額</option>
+                            </CFormSelect>
+                        </CCol>
+                    </CRow>
+
+                    <CRow className="mb-3">
+                        <CFormLabel htmlFor="quantity" className={`col-sm-2 col-form-label ${styles.addlabel}`} >尖峰度數*</CFormLabel>
+                        <CCol>
+                            <CFormInput className={styles.addinput} type="number" min='0' id="quantity" required />
+                        </CCol>
+                    </CRow>
+                    <CRow className="mb-3">
+                        <CFormLabel htmlFor="quantity2" className={`col-sm-2 col-form-label ${styles.addlabel}`} >半尖峰度數</CFormLabel>
+                        <CCol>
+                            <CFormInput className={styles.addinput} type="number" min='0' id="quantity2" />
+                        </CCol>
+                    </CRow>
+                    <CRow className="mb-3">
+                        <CFormLabel htmlFor="quantity3" className={`col-sm-2 col-form-label ${styles.addlabel}`} >周六尖峰度數</CFormLabel>
+                        <CCol>
+                            <CFormInput className={styles.addinput} type="number" min='0' id="quantity3" required />
+                        </CCol>
+                    </CRow>
+                    <CRow className="mb-3">
+                        <CFormLabel htmlFor="quantity4" className={`col-sm-2 col-form-label ${styles.addlabel}`} >離峰度數</CFormLabel>
+                        <CCol>
+                            <CFormInput className={styles.addinput} type="number" min='0' id="quantity4" required />
+                        </CCol>
+                    </CRow>
+                    <CRow className="mb-3">
+                        <CFormLabel htmlFor="monthusage" className={`col-sm-2 col-form-label ${styles.addlabel}`} >當月總用電量或總金額</CFormLabel>
+                        <CCol>
+                            <CFormInput className={styles.addinput} type="number" min='0' id="monthusage" />
+                        </CCol>
+                    </CRow>
+                    <CRow className="mb-3">
+                        <CFormLabel htmlFor="explain" className={`col-sm-2 col-form-label ${styles.addlabel}`} >備註</CFormLabel>
+                        <CCol>
+                            <CFormTextarea className={styles.addinput} type="text" id="explain" rows={3} />
+
+                        </CCol>
+                    </CRow>
+                    <CRow className="mb-3">
+                        <CFormLabel htmlFor="photo" className={`col-sm-2 col-form-label ${styles.addlabel}`}  >圖片*</CFormLabel>
+                        <CCol>
+                            <CFormInput type="file" id="photo" required />
+                        </CCol>
+                    </CRow>
+                    <br />
+                    <div style={{ textAlign: 'center' }}>*為必填欄位</div>
+                </div>
+            );
+        case 'ten':
+
+
+            return (
+                <div className={styles.addmodal}>
+                    <CRow className="mb-3">
+                        <CFormLabel htmlFor="type" className={`col-sm-2 col-form-label ${styles.addlabel}`} >交通方式*</CFormLabel>
+                        <CCol>
+                            <CFormSelect aria-label="Default select example" id="type" className={styles.addinput}
+                                onChange={(e) => setTransportType(e.target.value)} >
+                                <option value="1">汽車</option>
+                                <option value="2">機車</option>
+                                <option value="3">公車</option>
+                                <option value="4">捷運</option>
+                                <option value="5">火車</option>
+                                <option value="6">高鐵</option>
+                                <option value="7">客運</option>
+                                <option value="8">飛機</option>
+                                <option value="9">輪船</option>
+                            </CFormSelect>
+                        </CCol>
+                    </CRow>
+                    <CRow className="mb-3">
+                        <CFormLabel htmlFor="oil" className={`col-sm-2 col-form-label ${styles.addlabel}`} >油種*<span className={styles.Note}>僅汽/機車須填寫</span></CFormLabel>
+                        <CCol>
+                            <CFormSelect aria-label="Default select example" id="type" className={styles.addinput} disabled={!(transportType === "1" || transportType === "2")} >
+                                <option value="1">無</option>
+                                <option value="2">汽油</option>
+                                <option value="3">柴油</option>
+                            </CFormSelect>
+                        </CCol>
+                    </CRow>
+                    <CRow className="mb-3">
+                        <CFormLabel htmlFor="km" className={`col-sm-2 col-form-label ${styles.addlabel}`} >公里數*</CFormLabel>
+                        <CCol>
+                            <CFormInput className={styles.addinput} type="number" id="km" required />
+                        </CCol>
+                    </CRow>
+
+                    <CRow className="mb-3">
+                        <CFormLabel htmlFor="explain" className={`col-sm-2 col-form-label ${styles.addlabel}`} >備註</CFormLabel>
+                        <CCol>
+                            <CFormTextarea className={styles.addinput} type="text" id="explain" rows={3} />
+
+                        </CCol>
+                    </CRow>
+                    <CRow className="mb-3">
+                        <CFormLabel htmlFor="photo" className={`col-sm-2 col-form-label ${styles.addlabel}`}  >圖片*</CFormLabel>
+                        <CCol>
+                            <CFormInput type="file" id="photo" required />
+                        </CCol>
+                    </CRow>
+                    <br />
+                    <div style={{ textAlign: 'center' }}>*為必填欄位</div>
+                </div>
+            );
+        case 'eleven':
+            return (
+                <div className={styles.addmodal}>
+                    <CRow className="mb-3">
+                        <CFormLabel htmlFor="item" className={`col-sm-2 col-form-label ${styles.addlabel}`} >廢棄物項目*</CFormLabel>
+                        <CCol>
+                            <CFormInput className={styles.addinput} type="text" id="item" required />
+                        </CCol>
+                    </CRow>
+
+                    <CRow className="mb-3">
+                        <CFormLabel htmlFor="explain" className={`col-sm-2 col-form-label ${styles.addlabel}`} >備註</CFormLabel>
+                        <CCol>
+                            <CFormTextarea className={styles.addinput} type="text" id="explain" rows={3} />
+
+                        </CCol>
+                    </CRow>
+                    <CRow className="mb-3">
+                        <CFormLabel htmlFor="photo" className={`col-sm-2 col-form-label ${styles.addlabel}`}  >圖片*</CFormLabel>
+                        <CCol>
+                            <CFormInput type="file" id="photo" required />
+                        </CCol>
+                    </CRow>
+                    <br />
+                    <div style={{ textAlign: 'center' }}>*為必填欄位</div>
+                </div>
+            );
+        case 'twelve':
+            return (
+                <div className={styles.addmodal}>
+                    <CRow className="mb-3">
+                        <CFormLabel htmlFor="item" className={`col-sm-2 col-form-label ${styles.addlabel}`} >廢棄物項目*</CFormLabel>
+                        <CCol>
+                            <CFormInput className={styles.addinput} type="text" id="item" required />
+                        </CCol>
+                    </CRow>
+
+                    <CRow className="mb-3">
+                        <CFormLabel htmlFor="explain" className={`col-sm-2 col-form-label ${styles.addlabel}`} >備註</CFormLabel>
+                        <CCol>
+                            <CFormTextarea className={styles.addinput} type="text" id="explain" rows={3} />
+
+                        </CCol>
+                    </CRow>
+                    <CRow className="mb-3">
+                        <CFormLabel htmlFor="photo" className={`col-sm-2 col-form-label ${styles.addlabel}`}  >圖片*</CFormLabel>
+                        <CCol>
+                            <CFormInput type="file" id="photo" required />
+                        </CCol>
+                    </CRow>
+                    <br />
+                    <div style={{ textAlign: 'center' }}>*為必填欄位</div>
+                </div>
+            );
+
+
         default:
             return <div>未選擇項目</div>;
     }

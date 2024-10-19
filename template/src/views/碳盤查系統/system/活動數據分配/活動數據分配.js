@@ -204,6 +204,7 @@ const Tabs = () => {
                                 <CFormSelect aria-label="Default select example" className={styles.addinput}>
                                     <option value="1">範疇一</option>
                                     <option value="2">範疇二</option>
+                                    <option value="3">範疇三</option>
                                 </CFormSelect>
                             </CCol>
                         </CRow>
@@ -312,32 +313,10 @@ const Tabs = () => {
                 aria-labelledby="StaticBackdropExampleLabel2"
             >
                 <CModalHeader>
-                    <CModalTitle id="StaticBackdropExampleLabel2"><b>編輯排放源與填寫人</b></CModalTitle>
+                    <CModalTitle id="StaticBackdropExampleLabel2"><b>填寫人</b></CModalTitle>
                 </CModalHeader>
                 <CModalBody>
                     <CForm >
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="sitename" className={`col-sm-2 col-form-label ${styles.addlabel}`} >排放類別</CFormLabel>
-                            <CCol>
-                                <CFormSelect aria-label="Default select example" className={styles.addinput}>
-                                    <option value="1">範疇一</option>
-                                    <option value="2">範疇二</option>
-                                </CFormSelect>
-                            </CCol>
-                        </CRow>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="sitename" className={`col-sm-2 col-form-label ${styles.addlabel}`} >排放源</CFormLabel>
-                            <CCol>
-                                <CFormSelect aria-label="Default select example" className={styles.addinput}>
-                                    <option value="1">...</option>
-                                    <option value="2">...</option>
-                                    <option value="3">...</option>
-                                    <option value="4">...</option>
-                                    <option value="5">...</option>
-                                </CFormSelect>
-                            </CCol>
-                        </CRow>
-                        <hr />
                         <CRow className="mb-3">
                             <CFormLabel htmlFor="sitename" className={`col-sm-2 col-form-label ${styles.addlabel}`} >管理部門</CFormLabel>
                             <CCol>
