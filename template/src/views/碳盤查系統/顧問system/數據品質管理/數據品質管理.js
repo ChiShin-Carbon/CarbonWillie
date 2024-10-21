@@ -26,8 +26,8 @@ const Tabs = () => {
         {
             status: "completed", process: "水肥處理程序", equipment: "化糞池", material: "水肥",
             details: {
-                processNum: 'G01', processCode: '370004',
-                equipNum: 'GF01', equipCode: '9795',
+                processNum: 'G01', processCode: '370004', processName: '水肥處理程序',
+                equipNum: 'GF01', equipCode: '9795', equipName: '化糞池',
                 matCode: '36006', matName: '水肥', matClassLevel: '3', matBelType: '未進行儀器校正或未進行紀錄彙整者', matBelLevel: '3',
                 matInfo: '', matUnit: '',
                 sourceClass: '類別1', sourceType: '逸散',
@@ -38,8 +38,8 @@ const Tabs = () => {
         {
             status: "completed", process: "冷媒補充", equipment: "家用冷凍、冷藏裝備", material: "HFC-134a/R-134a，四氟乙烷HFC-134a/R-1",
             details: {
-                processNum: 'G02', processCode: 'G00099',
-                equipNum: 'GF02', equipCode: '4097',
+                processNum: 'G02', processCode: 'G00099', processName: '冷媒補充',
+                equipNum: 'GF02', equipCode: '4097', equipName: '家用冷凍、冷藏裝備',
                 matCode: 'GG1835', matName: 'HFC-134a/R-134a，四氟乙烷HFC-134a/R-1', matClassLevel: '3', matBelType: '未進行儀器校正或未進行紀錄彙整者', matBelLevel: '3',
                 matInfo: '', matUnit: '',
                 sourceClass: '類別1', sourceType: '逸散',
@@ -173,9 +173,10 @@ const Tabs = () => {
                                     <div className={styles.blockHead}>
                                         <h5>製程</h5>
                                     </div>
-                                    <div className={styles.blockBody}>
-                                        <div><span>編號:</span><p>{selectedRowData.processNum}</p></div>
-                                        <div><span>代碼:</span><p>{selectedRowData.processCode}</p></div>
+                                    <div className={styles.blockBody3}>
+                                        <div><span>編號:</span><p>{selectedRowData.processCode}</p></div>
+                                        <div><span>代碼:</span><p>{selectedRowData.processNum}</p></div>
+                                        <div><span>名稱:</span><p>{selectedRowData.processName}</p></div>
 
                                     </div>
                                 </div>
@@ -183,9 +184,10 @@ const Tabs = () => {
                                     <div className={styles.blockHead}>
                                         <h5>設備</h5>
                                     </div>
-                                    <div className={styles.blockBody}>
-                                        <div><span>編號:</span><p>{selectedRowData.equipNum}</p></div>
-                                        <div><span>代碼:</span><p>{selectedRowData.equipCode}</p></div>
+                                    <div className={styles.blockBody3}>
+                                    <div><span>編號:</span><p>{selectedRowData.equipCode}</p></div>
+                                        <div><span>代碼:</span><p>{selectedRowData.equipNum}</p></div>
+                                        <div><span>名稱:</span><p>{selectedRowData.equipName}</p></div>
                                     </div>
                                 </div>
                                 <div className={styles.block}>

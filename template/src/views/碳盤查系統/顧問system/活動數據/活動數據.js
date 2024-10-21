@@ -34,7 +34,7 @@ const Tabs = () => {
                 annual6: '管理部', annual7: '自行評估', annual8: '', annual9: 'Kcal/人小時',
                 annual10: '', annual11: '',
                 remark: '化糞池'
-            }
+            } 
         },
         {
             status: "completed", process: "冷媒補充", equipment: "家用冷凍、冷藏裝備", material: "HFC-134a/R-134a，四氟乙烷HFC-134a/R-1", details: {
@@ -141,7 +141,7 @@ const Tabs = () => {
                                     <div className={styles.blockHead}>
                                         <h5>製程</h5>
                                     </div>
-                                    <div className={styles.blockBody}>
+                                    <div className={styles.blockBody3}>
                                         <div><span>編號:</span><p>{selectedRowData.processCode}</p></div>
                                         <div><span>代碼:</span><p>{selectedRowData.processNum}</p></div>
                                         <div><span>名稱:</span><p>{selectedRowData.processName}</p></div>
@@ -152,7 +152,7 @@ const Tabs = () => {
                                     <div className={styles.blockHead}>
                                         <h5>設備</h5>
                                     </div>
-                                    <div className={styles.blockBody}>
+                                    <div className={styles.blockBody3}>
                                         <div><span>編號:</span><p>{selectedRowData.equipCode}</p></div>
                                         <div><span>代碼:</span><p>{selectedRowData.equipNum}</p></div>
                                         <div><span>名稱:</span><p>{selectedRowData.equipName}</p></div>
@@ -162,7 +162,7 @@ const Tabs = () => {
                                     <div className={styles.blockHead}>
                                         <h5>原燃物料或產品</h5>
                                     </div>
-                                    <div className={styles.blockBody}>
+                                    <div className={styles.blockBody3}>
 
                                         <div><span>代碼:</span><p>{selectedRowData.matCode}</p></div>
                                         <div><span>名稱:</span><p>{selectedRowData.matName}</p></div>

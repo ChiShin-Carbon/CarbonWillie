@@ -108,6 +108,29 @@
     box-sizing: border-box; /* 確保 padding 和 border 不會影響寬度 */
 }
 
+.blockBody3{
+    padding:20px 50px 0 50px;
+    display: flex;
+    align-items: top; /* 垂直居中對齊 */
+    flex-wrap:wrap;
+    column-gap:10px;
+    row-gap: 30px;
+}
+
+.blockBody3 div{
+    flex-basis: 30%;   /* 設定每個元素佔30%寬度 */
+    box-sizing: border-box; /* 確保 padding 和 border 不會影響寬度 */
+}
+
+.blockBody3 p{
+    margin-bottom:0px;
+}
+.blockBody3 span{
+    color:#625F5F;
+    font-weight: bolder;
+    font-size: 18px;
+}
+
 .blockBody1{
     padding:20px 50px 0 50px;
     display: flex;
