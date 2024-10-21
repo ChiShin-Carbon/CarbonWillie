@@ -56,6 +56,51 @@ const Tabs = () => {
     const [activeTab, setActiveTab] = useState('tab1'); // 記錄當前活動的分頁
     const cellStyle = { border: '1px solid white', textAlign: 'center', verticalAlign: 'middle', height: '40px'}; // table_th設定
     const rankingstyle={ border: '1px solid white', textAlign: 'center', verticalAlign: 'middle'};
+
+    //試著加入new
+     async function fetchNews() {
+         try {
+             const response = await fetch('http://127.0.0.1:5000/news');
+            
+             if (!response.ok) {
+                 throw new Error('Network response was not ok ' + response.statusText);
+             }
+    
+             const data = await response.json();
+    
+             const newsContainer = document.getElementById('news-container');
+             data.articles.forEach(article => {
+                const card = document.createElement('div');
+                 card.className = 'news-card';
+    
+                 // Create title element
+                const title = document.createElement('h2');
+                title.textContent = article.title;  // 這裡應該是新聞標題
+                 card.appendChild(title);
+    
+                 // Create publishedAt element
+                 const publishedAt = document.createElement('p');
+                    publishedAt.style.color = 'green';
+                    publishedAt.style.fontWeight = 'bold';
+                    publishedAt.style.margin = '0';
+                    publishedAt.textContent = article.publishedAt;  // 動態的日期值
+                    card.appendChild(publishedAt);
+    
+                 // Create link button (instead of text link)
+                 const button = document.createElement('button');
+                 button.textContent = 'Read more';
+                 button.addEventListener('click', () => {
+                     window.open(article.url, '_blank');  // 開啟新標籤頁
+                 });
+                 card.appendChild(button);
+    
+                 newsContainer.appendChild(card);
+             });
+         } catch (error) {
+             console.error('Fetch error: ', error);
+         }
+     }
+     fetchNews();
     return (
         <CRow>
             <div className={styles.systemTablist}>
@@ -545,7 +590,7 @@ const Tabs = () => {
                                                     {/* 左側：日期與標題 */}
                                                     <div style={{ display: 'flex',flex: 1, marginLeft: '20px', flexDirection: 'column' }}>
                                                         {/* 日期 */}
-                                                        <p style={{ color: 'green', fontWeight: 'bold', margin: 0 }}>2022/12/01</p>
+                                                        <p style={{ color: 'green', fontWeight: 'bold', margin: 0 }}>2022/12/01</p>{/* {article.publishedAt || "2022/12/01"} */}
                                                         {/* 標題 */}
                                                         <p style={{ fontWeight: 'bold', margin: 0 }}>水環境巡守20年 作伙來瞭「水」環境</p>
                                                     </div>
