@@ -140,8 +140,10 @@ const Tabs = () => {
                                     <div className={styles.blockHead}>
                                         <h5>製程</h5>
                                     </div>
-                                    <div className={styles.blockBody}>
-                                        <div><span>編號:</span><p>{selectedRowData.processNum}</p></div>
+                                    <div className={styles.blockBody3}>
+                                        <div><span>編號:</span><p>{selectedRowData.processCode}</p></div>
+                                        <div><span>代碼:</span><p>{selectedRowData.processNum}</p></div>
+                                        <div><span>名稱:</span><p>{selectedRowData.processName}</p></div>
 
                                     </div>
                                 </div>
@@ -149,8 +151,10 @@ const Tabs = () => {
                                     <div className={styles.blockHead}>
                                         <h5>設備</h5>
                                     </div>
-                                    <div className={styles.blockBody}>
-                                        <div><span>編號:</span><p>{selectedRowData.equipNum}</p></div>
+                                    <div className={styles.blockBody3}>
+                                        <div><span>編號:</span><p>{selectedRowData.equipCode}</p></div>
+                                        <div><span>代碼:</span><p>{selectedRowData.equipNum}</p></div>
+                                        <div><span>名稱:</span><p>{selectedRowData.equipName}</p></div>
                                     </div>
                                 </div>
                                 <div className={styles.block}>
