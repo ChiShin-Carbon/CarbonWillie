@@ -190,7 +190,7 @@ const Tabs = () => {
                                     </div> */}
                                 </CCardTitle>
                                 <CCardBody>
-                                    <table style={{ width: '1200px', fontSize: '1.2rem' }}>
+                                    <table style={{ fontSize: '1.2rem' }}>
                                         <thead style={{ border: '1px solid white', backgroundColor: '#339933', color: 'white' }}>
                                             <tr>
                                                 <th scope="col" style={cellStyle} rowSpan={2}></th>
@@ -206,7 +206,7 @@ const Tabs = () => {
                                         </thead>
                                         <tbody style={{ border: '1px solid white', backgroundColor: '#ccffcc' }}>
                                         <tr>
-                                            <td style={{ border: '1px solid white', width:'250px'}}><b>總排放量</b></td>
+                                            <td style={{ border: '1px solid white'}}><b>總排放量</b></td>
                                             <td style={cellStyle}></td>
                                             <td style={cellStyle}></td>
                                             <td style={cellStyle}></td>
@@ -259,7 +259,7 @@ const Tabs = () => {
                                     </div>
                                 </CCardTitle>
                                 <CCardBody>
-                                    <table style={{ width: '1000px', fontSize: '1.2rem' }}>
+                                    <table style={{  fontSize: '1.2rem' }}>
                                         <thead style={{ border: '1px solid white', backgroundColor: '#339933', color: 'white' }}>
                                             <tr>
                                                 <th scope="col" style={cellStyle} colSpan={2}></th>
@@ -324,7 +324,7 @@ const Tabs = () => {
                                     </div>
                                 </CCardTitle>
                                 <CCardBody>
-                                    <table style={{ width: '1000px',fontSize: '1.2rem' }}>
+                                    <table style={{ fontSize: '1.2rem' }}>
                                         <thead style={{ border: '1px solid white', backgroundColor: '#339933', color: 'white' }}>
                                             <tr>
                                                 <th scope="col" style={cellStyle} colSpan={2}></th>
@@ -446,7 +446,7 @@ const Tabs = () => {
                                     </div>
                                 </CCardTitle>
                                 <CCardBody>
-                                    <table style={{ width: '1200px', fontSize:'1.2rem' }}>
+                                    <table style={{ fontSize:'1.2rem' }}>
                                         <thead style={{ border: '1px solid white', backgroundColor: '#339933', color: 'white' }}>
                                             <tr>
                                                 <th scope="col" style={cellStyle} rowSpan={2}></th>
@@ -464,7 +464,7 @@ const Tabs = () => {
                                         </thead>
                                         <tbody style={{ border: '1px solid white', backgroundColor: '#ccffcc' }}>
                                         <tr>
-                                            <td style={{ border: '1px solid white', width:'40px', textAlign: 'center', verticalAlign: 'middle'}}><b>1</b></td>
+                                            <td style={{ border: '1px solid white', textAlign: 'center', verticalAlign: 'middle'}}><b>1</b></td>
                                             <td style={cellStyle}></td>
                                             <td style={cellStyle}></td>
                                             <td style={cellStyle}></td>
@@ -616,7 +616,7 @@ const Tabs = () => {
                                     <CCardBody style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', }}>
                                     <CRow>
                                         <CCol sm={12}>
-                                        <CCard style={{width: '1100px',fontSize: '1.2rem'}}>
+                                        <CCard style={{width: '1100px', fontSize: '1.2rem'}}>
                                             <CCardBody>
                                                 <CRow>
                                                     <div style={{ width: '100%', height: '50px', display: 'flex', justifyContent: 'space-between',alignItems:'center' }}>
