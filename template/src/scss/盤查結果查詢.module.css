@@ -92,7 +92,7 @@
 
 .leftItem strong {
     font-size: 1.5rem;
-    border-bottom: 5px solid #d882c0;
+    border-bottom: 5px solid #78cca9;
     
 }
 
@@ -105,7 +105,7 @@
 }
 
 .rightItem button {
-    background-color:#CA6AAF;
+    background-color:#78cca9;
     color:white;
     font-weight: bold;
     border:none;
@@ -115,6 +115,6 @@
 }
 
 .rightItem button:hover {
-    background-color:#945682;
+    background-color:#6aa089;
     transition:0.5s
 }
