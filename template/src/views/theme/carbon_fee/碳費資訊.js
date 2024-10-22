@@ -566,36 +566,35 @@ const Tabs = () => {
                                 </CCardTitle>
                                 <CCardBody>
                                     <CCardBody style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                        <CCard style={{ width: '1100px', fontSize: '1.2rem' }}>
-                                            <CCardBody>
-                                                {news.length > 0 ? (
-                                                    news.map((article, index) => (
-                                                        <CCard key={index} style={{ marginBottom: '20px' }}> {/* 每篇新聞都在自己的卡片中 */}
-                                                            <CCardBody>
-                                                                <CRow>
-                                                                    <div style={{ width: '100%', height: '50px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                                        <div style={{ width: '10px', height: '100%', backgroundColor: '#00a000', borderRadius: '4px' }}></div> {/* 左側綠色 bar */}
-                                                                        {/* 左側：日期與標題 */}
-                                                                        <div style={{ display: 'flex', flex: 1, marginLeft: '20px', flexDirection: 'column' }}>
-                                                                            {/* 日期 */}
-                                                                            <p style={{ color: 'green', fontWeight: 'bold', margin: 0 }}>{new Date(article.publishedAt).toLocaleDateString()}</p>
-                                                                            {/* 標題 */}
-                                                                            <p style={{ fontWeight: 'bold', margin: 0 }}>{article.title}</p>
-                                                                        </div>
-                                                                        {/* 右側：箭頭按鈕 */}
-                                                                        <CButton style={{ height: '60px', width: '60px', display: 'flex', justifyContent: 'center', alignItems: 'center' }} onClick={() => window.open(article.url, '_blank')}>
-                                                                            <CIcon icon={cilArrowCircleRight} style={{ width: '55px', height: '55px' }} />
-                                                                        </CButton>
-                                                                    </div>
-                                                                </CRow>
-                                                            </CCardBody>
-                                                        </CCard>
-                                                    ))
-                                                ) : (
-                                                    <p>正在載入新聞...</p>
-                                                )}
-                                            </CCardBody>
-                                        </CCard>
+                                    <CCard style={{ width: '1100px', fontSize: '1.2rem' }}>
+                                        <CCardBody>
+                                            {news.length > 0 ? (
+                                                news.map((article, index) => (
+                                                    <div key={index} style={{ marginBottom: '20px', borderBottom: '1px solid lightgray', paddingBottom: '20px' }}> {/* 每篇新聞都用一個 div 區隔開 */}
+                                                        <CRow>
+                                                            <div style={{ width: '100%', height: '50px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                                <div style={{ width: '10px', height: '100%', backgroundColor: '#00a000', borderRadius: '4px' }}></div> {/* 左側綠色 bar */}
+                                                                {/* 左側：日期與標題 */}
+                                                                <div style={{ display: 'flex', flex: 1, marginLeft: '20px', flexDirection: 'column' }}>
+                                                                    {/* 日期 */}
+                                                                    <p style={{ color: 'green', fontWeight: 'bold', margin: 0 }}>{new Date(article.publishedAt).toLocaleDateString()}</p>
+                                                                    {/* 標題 */}
+                                                                    <p style={{ fontWeight: 'bold', margin: 0 }}>{article.title}</p>
+                                                                </div>
+                                                                {/* 右側：箭頭按鈕 */}
+                                                                <CButton style={{ height: '60px', width: '60px', display: 'flex', justifyContent: 'center', alignItems: 'center' }} onClick={() => window.open(article.url, '_blank')}>
+                                                                    <CIcon icon={cilArrowCircleRight} style={{ width: '55px', height: '55px' }} />
+                                                                </CButton>
+                                                            </div>
+                                                        </CRow>
+                                                    </div>
+                                                ))
+                                            ) : (
+                                                <p>正在載入新聞...</p>
+                                            )}
+                                        </CCardBody>
+                                    </CCard>
+
                                     </CCardBody>
                                     <br />
                                 </CCardBody>
