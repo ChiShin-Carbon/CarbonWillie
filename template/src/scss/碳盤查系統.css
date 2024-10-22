@@ -123,7 +123,7 @@ main {
     height: 35px;
     border-radius: 20px;
     border: none;
-    background-color: #CA6AAF;
+    background-color: #78cca9;
     color:#ffffff;
     font-weight:bold;
     box-shadow: 0px 2px 6px rgb(160, 160, 160);
@@ -131,7 +131,7 @@ main {
 }
 
 .systemCardBody .systembutton:hover {
-    background-color: #a7498d;
+    background-color: #6aa089;
    
 }
 
@@ -142,14 +142,14 @@ main {
 }
 
 .modalbutton2{
-    background-color: #CA6AAF;
+    background-color: #78cca9;
     color:#ffffff;
     font-weight:bold;
     width:80px;
     box-shadow: 0px 2px 6px rgb(160, 160, 160);
 }
 .modalbutton2:hover{
-    background-color: #904d7d;
+    background-color: #6aa089;
     color:#ffffff;
     font-weight:bold;
     width:80px;

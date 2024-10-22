@@ -23,7 +23,7 @@ h1{
 
 h2{
    font-weight:bolder;
-   color:#CA6AAF;
+   color:#6aa089;
 }
 
 .aligncenter{
@@ -36,7 +36,7 @@ h2{
 }
 
 .custom-button{
-    background-color:#CA6AAF;
+    background-color:#9cd8bf;
     border-radius: 10px;
     width:200px;
     height:60px;
@@ -47,7 +47,7 @@ h2{
     font-size:25px;
 }
 .custom-button:hover{
-    background-color:#ca8fb9;
+    background-color:#78cca9;
     border-radius: 10px;
     width:200px;
     height:60px;

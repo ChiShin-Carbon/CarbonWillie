@@ -20,7 +20,7 @@
 
   .customtitlebottom{
     font-Size:1.6rem;
-    border-Bottom: 5px solid #CA6AAF;
+    border-Bottom: 5px solid #78cca9;
   }
   
   .customCard{
@@ -43,7 +43,7 @@
   }
 
   .customButton{
-    background-Color:#CA6AAF;
+    background-Color:#78cca9;
     border-radius:10px;
     border:none;
     color:white;
@@ -54,7 +54,7 @@
   }
 
   .customButton:hover{
-    background-color:#ca8fb9;
+    background-color:#6aa089;
     border-radius:10px;
     border:none;
     color:white;

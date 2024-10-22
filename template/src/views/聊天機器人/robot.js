@@ -2,26 +2,21 @@ import React, { useState, useRef, useEffect } from 'react'
 import styles from '../../scss/聊天機器人.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRobot, faLocationArrow } from '@fortawesome/free-solid-svg-icons';
-import OpenAI from "openai";
-
 
 export default function Robot() {
-    const [chatOpenTime, setChatOpenTime] = useState(""); // 存儲打開聊天的時間
-    const [messageTimes, setMessageTimes] = useState([]); // 存儲每條訊息的時間
-    const [chatVisible, setChatVisible] = useState(true);
-    const [inputMessage, setInputMessage] = useState(""); 
-    const [messages, setMessages] = useState([]); 
-    const chatContentRef = useRef(null); // 聊天内容的引用
-    const [botText, setbotText] = useState(""); 
+    const [chatOpenTime, setChatOpenTime] = useState("");
+    const [chatVisible, setChatVisible] = useState(false);
+    const [inputMessage, setInputMessage] = useState("");
+    const [chatHistory, setChatHistory] = useState([]); // 存儲使用者和機器人的訊息對
+
+    const chatContentRef = useRef(null);
 
     const formatTime = () => {
         const now = new Date();
-        const hours = now.getHours().toString().padStart(2, '0'); // 24小時制
+        const hours = now.getHours().toString().padStart(2, '0');
         const minutes = now.getMinutes().toString().padStart(2, '0');
         return `${hours}:${minutes}`;
     }
-
-      
 
     const chatShow = () => {
         setChatVisible(open => !open);
@@ -32,50 +27,54 @@ export default function Robot() {
     }
 
     const handleInputChange = (e) => {
-        setInputMessage(e.target.value); // 更新輸入框的內容
+        setInputMessage(e.target.value);
     }
 
     const handleSubmit = async (e) => {
-        e.preventDefault(); // 防止表單提交刷新頁面
-        if (inputMessage.trim() === "") return; // 如果訊息為空則不處理
+        e.preventDefault();
+        if (inputMessage.trim() === "") return;
         const currentTime = formatTime();
-        setMessages(prevMessages => [...prevMessages, inputMessage]); // 將新訊息加入訊息陣列
-        setMessageTimes(prevTimes => [...prevTimes, currentTime]); // 新訊息的時間
+
+        // 添加使用者的訊息到 chatHistory
+        setChatHistory(prevHistory => [
+            ...prevHistory,
+            { sender: 'user', message: inputMessage, time: currentTime }
+        ]);
+
         setInputMessage(""); // 清空輸入框
 
-
-        e.preventDefault();
-      
         try {
-          const messageContent = document.getElementById("message").value; // Get the message value
-      
-          // Make sure you're sending the correct data format to your backend
-          const res = await fetch("http://localhost:8000/botapi", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json", // Set the content type
-            },
-            body: JSON.stringify({ message: messageContent }), // Send the message in the request body
-          });
-      
-          if (res.ok) {
-            const data = await res.json();
-            setbotText(data.response); // Set the response text in state
-            console.log("Data submitted successfully:", data.response);
-          } else {
-            console.error("Failed to submit data", res.statusText);
-          }
+            const res = await fetch("http://localhost:8000/botapi", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ message: inputMessage }),
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                const botResponseTime = formatTime();
+
+                // 添加機器人的回覆到 chatHistory
+                setChatHistory(prevHistory => [
+                    ...prevHistory,
+                    { sender: 'bot', message: data.response, time: botResponseTime }
+                ]);
+            } else {
+                console.error("Failed to submit data", res.statusText);
+            }
         } catch (error) {
-          console.error("Error submitting data", error);
+            console.error("Error submitting data", error);
         }
     }
 
-    // 使用 useEffect 在 messages 更新後滾動到最底部
+    // 在 chatHistory 更新後滾動到最底部
     useEffect(() => {
         if (chatContentRef.current) {
-            chatContentRef.current.scrollTop = chatContentRef.current.scrollHeight; // 滾動到最底部
+            chatContentRef.current.scrollTop = chatContentRef.current.scrollHeight;
         }
-    }, [messages]); // 當 messages 更新時觸發
+    }, [chatHistory]);
 
     return (
         <div className={styles.main}>
@@ -92,6 +91,7 @@ export default function Robot() {
                                 <div className={styles.message}>碳智郎歡迎您~請問要問什麼呢?</div>
                                 <div className={styles.time}>{chatOpenTime}</div>
                             </div>
+
                             <div className={styles.messageContainer}>
                                 <div className={styles.head}><FontAwesomeIcon icon={faRobot} /></div>
                                 <div className={styles.message}>
@@ -106,32 +106,29 @@ export default function Robot() {
                                 <div className={styles.time}>{chatOpenTime}</div>
                             </div>
 
-                            {messages.map((message, index) => (
-                                <div key={index} className={styles.myMessageContainer}>
-                                    <div className={styles.time}>{messageTimes[index]}</div>
-                                    <div className={styles.myMessage}>
-                                        {message}
+                            {chatHistory.map((chat, index) => (
+                                chat.sender === 'bot' ? (
+                                    <div key={index} className={styles.messageContainer}>
+                                        <div className={styles.head}><FontAwesomeIcon icon={faRobot} /></div>
+                                        <div className={styles.message}>{chat.message}</div>
+                                        <div className={styles.time}>{chat.time}</div>
                                     </div>
-                                </div>
+                                ) : (
+                                    <div key={index} className={styles.myMessageContainer}>
+                                        <div className={styles.time}>{chat.time}</div>
+                                        <div className={styles.myMessage}>{chat.message}</div>
+                                    </div>
+                                )
                             ))}
-
                         </div>
-
-                        <div className={styles.messageContainer}>
-                            <div className={styles.message}>
-                                {botText}
-                            </div>
-                        </div>
-
 
                         <div className={styles.chatFooter}>
                             <form>
-                                 <input 
-                                    type='text' 
-                                    placeholder='請輸入訊息' 
-                                    id="message"
-                                    value={inputMessage} // 綁定輸入框的值
-                                    onChange={handleInputChange} // 監聽輸入框的變化
+                                <input
+                                    type='text'
+                                    placeholder='請輸入訊息'
+                                    value={inputMessage}
+                                    onChange={handleInputChange}
                                 />
                                 <button type='submit' onClick={handleSubmit}>
                                     <FontAwesomeIcon icon={faLocationArrow} />
