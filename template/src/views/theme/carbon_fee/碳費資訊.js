@@ -57,12 +57,13 @@ const Tabs = () => {
     const cellStyle = { border: '1px solid white', textAlign: 'center', verticalAlign: 'middle', height: '40px' };
     const rankingstyle = { border: '1px solid white', textAlign: 'center', verticalAlign: 'middle' };
     const [news, setNews] = useState([]); // 定義狀態變數
+    const [query, setQuery] = useState('台灣碳費'); // 預設搜尋關鍵字
 
     //試著加入new
     useEffect(() => {
         async function fetchNews() {
             try {
-                const response = await fetch('http://127.0.0.1:5000/news');
+                const response = await fetch(`http://127.0.0.1:5000/news?q=${query}`);
                 if (!response.ok) {
                     throw new Error('Network response was not ok ' + response.statusText);
                 }
@@ -74,7 +75,7 @@ const Tabs = () => {
             }
         }
         fetchNews();
-    }, []); // useEffect 依賴空陣列，確保只在組件初次加載時呼叫 API
+    }, [query]); // useEffect 依賴空陣列，確保只在組件初次加載時呼叫 API
     return (
         <CRow>
             <div className={styles.systemTablist}>
@@ -526,7 +527,7 @@ const Tabs = () => {
                             {/* 搜尋&篩選器 */}
                             <div style={{width:'100%'}}>
                             <CInputGroup className="mb-3">
-                                <CFormInput type="text" placeholder="搜尋..." className="search-input" />
+                                <CFormInput type="text" placeholder="搜尋..." className="search-input" onChange={(e) => setQuery(e.target.value)}/>
                                 {/* <CButton type="submit" className="search-button" style={{width: '40px', backgroundColor: 'white', color: 'black', alignItems: 'center' }}>
                                     <b><CIcon icon={cilSearch} className="me-2" /></b>
                                 </CButton> */}
@@ -538,9 +539,9 @@ const Tabs = () => {
                                     篩選
                                 </CDropdownToggle>
                                 <CDropdownMenu>
-                                    <CDropdownItem href="#">台灣</CDropdownItem>
-                                    <CDropdownItem href="#">國際</CDropdownItem>
-                                    <CDropdownItem href="#">Something else here</CDropdownItem>
+                                    <CDropdownItem onClick={() => setQuery('台灣碳費')}>台灣</CDropdownItem>
+                                    <CDropdownItem onClick={() => setQuery('international carbon fees')}>國際</CDropdownItem>
+                                    <CDropdownItem onClick={() => setQuery('carbon')}>Something else here</CDropdownItem>
                                 </CDropdownMenu>
                                 </CDropdown>
                             </CInputGroup>
@@ -567,32 +568,36 @@ const Tabs = () => {
                                 <CCardBody>
                                     <CCardBody style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                                     <CCard style={{ width: '1100px', fontSize: '1.2rem' }}>
-                                        <CCardBody>
-                                            {news.length > 0 ? (
-                                                news.map((article, index) => (
-                                                    <div key={index} style={{ marginBottom: '20px', borderBottom: '1px solid lightgray', paddingBottom: '20px' }}> {/* 每篇新聞都用一個 div 區隔開 */}
-                                                        <CRow>
-                                                            <div style={{ width: '100%', height: '50px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                                <div style={{ width: '10px', height: '100%', backgroundColor: '#00a000', borderRadius: '4px' }}></div> {/* 左側綠色 bar */}
-                                                                {/* 左側：日期與標題 */}
-                                                                <div style={{ display: 'flex', flex: 1, marginLeft: '20px', flexDirection: 'column' }}>
-                                                                    {/* 日期 */}
-                                                                    <p style={{ color: 'green', fontWeight: 'bold', margin: 0 }}>{new Date(article.publishedAt).toLocaleDateString()}</p>
-                                                                    {/* 標題 */}
-                                                                    <p style={{ fontWeight: 'bold', margin: 0 }}>{article.title}</p>
-                                                                </div>
-                                                                {/* 右側：箭頭按鈕 */}
-                                                                <CButton style={{ height: '60px', width: '60px', display: 'flex', justifyContent: 'center', alignItems: 'center' }} onClick={() => window.open(article.url, '_blank')}>
-                                                                    <CIcon icon={cilArrowCircleRight} style={{ width: '55px', height: '55px' }} />
-                                                                </CButton>
-                                                            </div>
-                                                        </CRow>
-                                                    </div>
-                                                ))
-                                            ) : (
-                                                <p>正在載入新聞...</p>
-                                            )}
-                                        </CCardBody>
+                                    <CCardBody>
+    {news.length > 0 ? (
+        news.map((article, index) => (
+            <div key={index} style={{ marginBottom: '20px', borderBottom: '1px solid lightgray', paddingBottom: '20px' }}> 
+                <CRow>
+                    <div style={{ width: '100%', height: '50px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        {/* Left green bar */}
+                        <div style={{ width: '10px', height: '100%', backgroundColor: '#00a000', borderRadius: '4px' }}></div>
+                        
+                        {/* Left section: Date and Title */}
+                        <div style={{ display: 'flex', flex: 1, marginLeft: '20px', flexDirection: 'column' }}>
+                            {/* Date */}
+                            <p style={{ color: 'green', fontWeight: 'bold', margin: 0 }}>{new Date(article.publishedAt).toLocaleDateString()}</p>
+                            {/* Title */}
+                            <p style={{ fontWeight: 'bold', margin: 0 }}>{article.title}</p>
+                        </div>
+
+                        {/* Right section: Arrow button */}
+                        <CButton style={{ height: '60px', width: '60px', display: 'flex', justifyContent: 'center', alignItems: 'center' }} onClick={() => window.open(article.url, '_blank')}>
+                            <CIcon icon={cilArrowCircleRight} style={{ width: '55px', height: '55px' }} />
+                        </CButton>
+                    </div>
+                </CRow>
+            </div>
+        ))
+    ) : (
+        <p>正在載入新聞...</p>
+    )}
+</CCardBody>
+
                                     </CCard>
 
                                     </CCardBody>
