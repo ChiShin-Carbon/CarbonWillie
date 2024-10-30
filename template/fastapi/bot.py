@@ -23,7 +23,7 @@ async def botmessage(request: MessageRequest):
 
     # Create a completion request in a background thread (to handle synchronous OpenAI call)
     try:
-        completion = await run_in_threadpool(openai.ChatCompletion.create, 
+        completion = await run_in_threadpool(openai.chat.completions.create, 
             model="gpt-4",  # Use a valid model
             messages=[
                 {"role": "system", "content": "You are a helpful assistant."},
@@ -35,4 +35,5 @@ async def botmessage(request: MessageRequest):
         return {"response": completion.choices[0].message.content}
 
     except Exception as e:
+        print(f"Error occurred: {str(e)}")  # 打印錯誤訊息
         raise HTTPException(status_code=500, detail=str(e))
