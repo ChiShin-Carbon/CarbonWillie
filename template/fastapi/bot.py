@@ -24,7 +24,7 @@ async def botmessage(request: MessageRequest):
     # Create a completion request in a background thread (to handle synchronous OpenAI call)
     try:
         completion = await run_in_threadpool(openai.chat.completions.create, 
-            model="gpt-4",  # Use a valid model
+            model="gpt-4o-mini",  # Use a valid model
             messages=[
                 {"role": "system", "content": "You are a helpful assistant."},
                 {"role": "user", "content": user_message}  # Use the incoming message from the request
