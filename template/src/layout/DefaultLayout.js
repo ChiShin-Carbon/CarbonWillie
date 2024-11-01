@@ -1,6 +1,8 @@
 import React from 'react'
 import { AppContent, AppSidebar, AppFooter, AppHeader } from '../components/index'
 
+// import Robot from '../views/聊天機器人/robot'
+
 const DefaultLayout = () => {
   return (
     <div>
@@ -9,6 +11,9 @@ const DefaultLayout = () => {
         <AppHeader />
         <div className="body flex-grow-1">
           <AppContent />
+
+          {/* <Robot /> */}
+          
         </div>
         <AppFooter />
       </div>
