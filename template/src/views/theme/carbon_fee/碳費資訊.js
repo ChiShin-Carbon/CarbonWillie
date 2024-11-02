@@ -59,6 +59,7 @@ const Tabs = () => {
     const [news, setNews] = useState([]); // 定義狀態變數
     const [query, setQuery] = useState('台灣碳費'); // 預設搜尋關鍵字
 
+    
     //試著加入new
     useEffect(() => {
         async function fetchNews() {
@@ -567,39 +568,40 @@ const Tabs = () => {
                                 </CCardTitle>
                                 <CCardBody>
                                     <CCardBody style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                    <CCard style={{ width: '1100px', fontSize: '1.2rem' }}>
-                                    <CCardBody>
-    {news.length > 0 ? (
-        news.map((article, index) => (
-            <div key={index} style={{ marginBottom: '20px', borderBottom: '1px solid lightgray', paddingBottom: '20px' }}> 
-                <CRow>
-                    <div style={{ width: '100%', height: '50px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        {/* Left green bar */}
-                        <div style={{ width: '10px', height: '100%', backgroundColor: '#00a000', borderRadius: '4px' }}></div>
-                        
-                        {/* Left section: Date and Title */}
-                        <div style={{ display: 'flex', flex: 1, marginLeft: '20px', flexDirection: 'column' }}>
-                            {/* Date */}
-                            <p style={{ color: 'green', fontWeight: 'bold', margin: 0 }}>{new Date(article.publishedAt).toLocaleDateString()}</p>
-                            {/* Title */}
-                            <p style={{ fontWeight: 'bold', margin: 0 }}>{article.title}</p>
-                        </div>
+                                        <CCard style={{ width: '1100px', fontSize: '1.2rem' }}>
+                                            <CCardBody>
+                                                {news.length > 0 ? (
+                                                    news
+                                                    .sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt)) // 根據日期從新到舊排序
+                                                    .slice(0, 20) // 限制最多顯示 10 篇新聞
+                                                    .map((article, index) => (
+                                                        <div key={index} style={{ marginBottom: '20px', borderBottom: '1px solid lightgray', paddingBottom: '20px' }}> 
+                                                            <CRow>
+                                                                <div style={{ width: '100%', height: '50px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                                    {/* Left green bar */}
+                                                                    <div style={{ width: '10px', height: '100%', backgroundColor: '#00a000', borderRadius: '4px' }}></div>
+                                                                    
+                                                                    {/* Left section: Date and Title */}
+                                                                    <div style={{ display: 'flex', flex: 1, marginLeft: '20px', flexDirection: 'column' }}>
+                                                                        {/* Date */}
+                                                                        <p style={{ color: 'green', fontWeight: 'bold', margin: 0 }}>{new Date(article.publishedAt).toLocaleDateString()}</p>
+                                                                        {/* Title */}
+                                                                        <p style={{ fontWeight: 'bold', margin: 0 }}>{article.title}</p>
+                                                                    </div>
 
-                        {/* Right section: Arrow button */}
-                        <CButton style={{ height: '60px', width: '60px', display: 'flex', justifyContent: 'center', alignItems: 'center' }} onClick={() => window.open(article.url, '_blank')}>
-                            <CIcon icon={cilArrowCircleRight} style={{ width: '55px', height: '55px' }} />
-                        </CButton>
-                    </div>
-                </CRow>
-            </div>
-        ))
-    ) : (
-        <p>正在載入新聞...</p>
-    )}
-</CCardBody>
-
-                                    </CCard>
-
+                                                                    {/* Right section: Arrow button */}
+                                                                    <CButton style={{ height: '60px', width: '60px', display: 'flex', justifyContent: 'center', alignItems: 'center' }} onClick={() => window.open(article.url, '_blank')}>
+                                                                        <CIcon icon={cilArrowCircleRight} style={{ width: '55px', height: '55px' }} />
+                                                                    </CButton>
+                                                                </div>
+                                                            </CRow>
+                                                        </div>
+                                                    ))
+                                                ) : (
+                                                    <p>正在載入新聞...</p>
+                                                )}
+                                            </CCardBody>
+                                        </CCard>
                                     </CCardBody>
                                     <br />
                                 </CCardBody>
