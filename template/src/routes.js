@@ -26,6 +26,9 @@ const 定量盤查  = React.lazy(() => import('./views/碳盤查系統/顧問sys
 const 數據品質管理  = React.lazy(() => import('./views/碳盤查系統/顧問system/數據品質管理/數據品質管理'))
 const 不確定性量化評估  = React.lazy(() => import('./views/碳盤查系統/顧問system/不確定性量化評估/不確定性量化評估'))
 
+//盤查報告書
+const 盤查報告書  = React.lazy(() => import('./views/盤查報告書/盤查報告書'))
+
 // Base
 const Accordion = React.lazy(() => import('./views/base/accordion/Accordion'))
 const Cards = React.lazy(() => import('./views/base/cards/Cards'))
@@ -98,6 +101,9 @@ const routes = [
   { path: '/碳盤查系統/顧問system/定量盤查', name: '定量盤查', element: 定量盤查 },
   { path: '/碳盤查系統/顧問system/不確定性量化評估', name: '不確定性量化評估', element: 不確定性量化評估 },
   { path: '/碳盤查系統/顧問system/數據品質管理', name: '數據品質管理', element: 數據品質管理 },
+    //盤查報告書
+    { path: '/盤查報告書', name: '盤查報告書', element: 盤查報告書},
+
   //
   { path: '/base', name: 'Base', element: Cards, exact: true },
   { path: '/base/accordion', name: 'Accordion', element: Accordion },

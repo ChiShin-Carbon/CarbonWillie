@@ -69,7 +69,7 @@ const _nav = [
   {
     component: CNavItem,
     name: '盤查報告書',
-    to: '/theme/report',
+    to: '/盤查報告書',
     icon: <CIcon icon={cilFile} customClassName="nav-icon" />,
   },
   {
