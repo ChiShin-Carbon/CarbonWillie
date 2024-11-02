@@ -11,6 +11,34 @@ import styles from '../../../../scss/活動數據盤點.module.css'
 const FunctionForms = ({ currentFunction }) => {
     const [recognizedText, setRecognizedText] = useState("");
 
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        
+        const formData = new FormData();
+        formData.append("user_id", 1);
+        formData.append("date", document.getElementById("date").value);
+        formData.append("number", document.getElementById("num").value);
+        formData.append("oil_species", document.getElementById("type").value);
+        formData.append("liters", document.getElementById("quantity").value);
+        formData.append("remark", document.getElementById("explain").value);
+        formData.append("image", document.getElementById("image").files[0]);
+    
+        try {
+            const res = await fetch("http://localhost:8000/insert_vehicle", {
+                method: "POST",
+                body: formData,
+            });
+            const data = await res.json();
+            if (res.ok) {
+                console.log("Form submitted successfully", data);
+            } else {
+                console.error("Failed to submit form data", data.detail);
+            }
+        } catch (error) {
+            console.error("Error submitting form data", error);
+        }
+    };
+
     const handleC1image = async (e) => {
         e.preventDefault();
 
@@ -48,6 +76,8 @@ const FunctionForms = ({ currentFunction }) => {
         case 'one':
             return (
                 <div className={styles.addmodal}>
+
+                <form>
 
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="month" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票/收據日期*</CFormLabel>
@@ -100,8 +130,9 @@ const FunctionForms = ({ currentFunction }) => {
                     <br />
                     <div style={{ textAlign: 'center' }}>*為必填欄位</div>
 
+                <CButton type="submit" onClick={handleSubmit}>新增</CButton>
 
-
+                    </form>
 
                 </div>
             );
