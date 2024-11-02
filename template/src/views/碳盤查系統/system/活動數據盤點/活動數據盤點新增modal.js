@@ -6,101 +6,151 @@ import {
 } from '@coreui/react';
 
 import styles from '../../../../scss/活動數據盤點.module.css'
+import { json } from 'react-router-dom';
 
 
 const FunctionForms = ({ currentFunction }) => {
     const [recognizedText, setRecognizedText] = useState("");
 
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        // Get form elements by their IDs
+        const user_id = 1;
+        const date = document.getElementById("date").value;
+        const num = document.getElementById("num").value;
+        const type = document.getElementById("type").value;
+        const unit = document.getElementById("unit").value;
+        const quantity = document.getElementById("quantity").value;
+        const explain = document.getElementById("explain").value;
+        const imageElement = document.getElementById("image");
+
+        // Check if the image file exists
+        if (!imageElement || !imageElement.files || imageElement.files.length === 0) {
+            console.error("Image file not found");
+            return;
+        }
+
+        // Prepare form data
+        const formData = new FormData();
+        formData.append("user_id", user_id);
+        formData.append("date", date);
+        formData.append("number", num); // Assuming the backend expects `number` as a field
+        formData.append("oil_species", type);
+        formData.append("unit", unit);
+        formData.append("liters", quantity);
+        formData.append("remark", explain);
+        formData.append("image", imageElement.files[0]);
+
+        try {
+            // Send form data to the backend
+            const res = await fetch("http://localhost:8000/insert_vehicle", {
+                method: "POST",
+                body: formData,
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                setRecognizedText(data.recognized_text); // Update recognized text in the component
+                console.log("Form submitted successfully");
+            } else {
+                console.error("Failed to submit form data");
+            }
+        } catch (error) {
+            console.error("Error submitting form data", error);
+        }
+    };
+
+
     const handleC1image = async (e) => {
         e.preventDefault();
-    
+
         const imageElement = document.getElementById("image");
-    
+
         if (!imageElement || !imageElement.files) {
-          console.error("Form elements or image files not found");
-          return;
+            console.error("Form elements or image files not found");
+            return;
         }
-    
+
         const formData = new FormData();
         formData.append("image", imageElement.files[0]);
-    
+
         try {
-          const res = await fetch("http://localhost:8000/ocrapi", {
-            method: "POST",
-            body: formData,
-          });
-    
-          if (res.ok) {
-            const data = await res.json();
-            setRecognizedText(data.recognized_text); // Set the recognized text in state
-            console.log("Data submitted successfully");
-          } else {
-            console.error("Failed to submit data");
-          }
+            const res = await fetch("http://localhost:8000/ocrapi", {
+                method: "POST",
+                body: formData,
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                setRecognizedText(data.recognized_text); // Set the recognized text in state
+                console.log("Data submitted successfully");
+            } else {
+                console.error("Failed to submit data");
+            }
         } catch (error) {
-          console.error("Error submitting data", error);
+            console.error("Error submitting data", error);
         }
-      };
+    };
     switch (currentFunction) {
 
         case 'one':
             return (
                 <div className={styles.addmodal}>
+                        <form onSubmit={handleSubmit}>
+                        <CRow className="mb-3">
+                            <CFormLabel htmlFor="month" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票/收據日期*</CFormLabel>
+                            <CCol><CFormInput className={styles.addinput} type="date" id="date" />
+                            </CCol>
+                        </CRow>
+                        <CRow className="mb-3">
+                            <CFormLabel htmlFor="num" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票號碼/收據編號*</CFormLabel>
+                            <CCol>
+                                <CFormInput className={styles.addinput} type="text" id="num" />
+                            </CCol>
+                        </CRow>
+                        <CRow className="mb-3">
+                            <CFormLabel htmlFor="type" className={`col-sm-2 col-form-label ${styles.addlabel}`} >油種*</CFormLabel>
+                            <CCol>
+                                <CFormSelect aria-label="Default select example" id="type" className={styles.addinput}>
+                                    <option value="1">汽油</option>
+                                    <option value="2">柴油</option>
+                                </CFormSelect>
+                            </CCol>
+                        </CRow>
+                        <CRow className="mb-3">
+                            <CFormLabel htmlFor="unit" className={`col-sm-2 col-form-label ${styles.addlabel}`} >單位*<span className={styles.Note}> 選擇單位請以*公升*做為優先填寫項目</span></CFormLabel>
+                            <CCol>
+                                <CFormSelect aria-label="Default select example" id="unit" className={styles.addinput}>
+                                    <option value="1">公升</option>
+                                    <option value="2">金額</option>
+                                </CFormSelect>
+                            </CCol>
+                        </CRow>
+                        <CRow className="mb-3">
+                            <CFormLabel htmlFor="quantity" className={`col-sm-2 col-form-label ${styles.addlabel}`} >公升數/金額*</CFormLabel>
+                            <CCol>
+                                <CFormInput className={styles.addinput} type="number" min='0' id="quantity" />
+                            </CCol>
+                        </CRow>
+                        <CRow className="mb-3">
+                            <CFormLabel htmlFor="explain" className={`col-sm-2 col-form-label ${styles.addlabel}`} >備註</CFormLabel>
+                            <CCol>
+                                <CFormTextarea className={styles.addinput} type="text" id="explain" rows={3} value={recognizedText} />
 
-                    <CRow className="mb-3">
-                        <CFormLabel htmlFor="month" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票/收據日期*</CFormLabel>
-                        <CCol><CFormInput className={styles.addinput} type="date" id="date" required />
-                        </CCol>
-                    </CRow>
-                    <CRow className="mb-3">
-                        <CFormLabel htmlFor="num" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票號碼/收據編號*</CFormLabel>
-                        <CCol>
-                            <CFormInput className={styles.addinput} type="text" id="num" required />
-                        </CCol>
-                    </CRow>
-                    <CRow className="mb-3">
-                        <CFormLabel htmlFor="type" className={`col-sm-2 col-form-label ${styles.addlabel}`} >油種*</CFormLabel>
-                        <CCol>
-                            <CFormSelect aria-label="Default select example" id="type" className={styles.addinput}>
-                                <option value="1">汽油</option>
-                                <option value="2">柴油</option>
-                            </CFormSelect>
-                        </CCol>
-                    </CRow>
-                    <CRow className="mb-3">
-                        <CFormLabel htmlFor="unit" className={`col-sm-2 col-form-label ${styles.addlabel}`} >單位*<span className={styles.Note}> 選擇單位請以*公升*做為優先填寫項目</span></CFormLabel>
-                        <CCol>
-                            <CFormSelect aria-label="Default select example" id="unit" className={styles.addinput}>
-                                <option value="1">公升</option>
-                                <option value="2">金額</option>
-                            </CFormSelect>
-                        </CCol>
-                    </CRow>
-                    <CRow className="mb-3">
-                        <CFormLabel htmlFor="quantity" className={`col-sm-2 col-form-label ${styles.addlabel}`} >公升數/金額*</CFormLabel>
-                        <CCol>
-                            <CFormInput className={styles.addinput} type="number" min='0' id="quantity" required />
-                        </CCol>
-                    </CRow>
-                    <CRow className="mb-3">
-                        <CFormLabel htmlFor="explain" className={`col-sm-2 col-form-label ${styles.addlabel}`} >備註</CFormLabel>
-                        <CCol>
-                            <CFormTextarea className={styles.addinput} type="text" id="explain" rows={3}  value={recognizedText} />
+                            </CCol>
+                        </CRow>
+                        <CRow className="mb-3">
+                            <CFormLabel htmlFor="photo" className={`col-sm-2 col-form-label ${styles.addlabel}`}  >圖片*</CFormLabel>
+                            <CCol>
+                                <CFormInput type="file" id="image" onChange={handleC1image} />
+                            </CCol>
+                        </CRow>
+                        <br />
+                        <div style={{ textAlign: 'center' }}>*為必填欄位</div>
 
-                        </CCol>
-                    </CRow>
-                    <CRow className="mb-3">
-                        <CFormLabel htmlFor="photo" className={`col-sm-2 col-form-label ${styles.addlabel}`}  >圖片*</CFormLabel>
-                        <CCol>
-                            <CFormInput type="file" id="image" onChange={handleC1image} required />
-                        </CCol>
-                    </CRow>
-                    <br />
-                    <div style={{ textAlign: 'center' }}>*為必填欄位</div>
-
-
-
-
+                        <CButton type="submit" color="primary" onClick={handleSubmit}>新增</CButton>
+                    </form>
                 </div>
             );
 
@@ -669,7 +719,7 @@ const FunctionForms = ({ currentFunction }) => {
                     <div style={{ textAlign: 'center' }}>*為必填欄位</div>
                 </div>
             );
-        
+
             return (
                 <div className={styles.addmodal}>
                     <CRow className="mb-3">

@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from 'react'
 import styles from '../../scss/聊天機器人.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRobot, faLocationArrow } from '@fortawesome/free-solid-svg-icons';
-import OpenAI from "openai";
 
 
 export default function Robot() {
@@ -20,10 +19,6 @@ export default function Robot() {
         const minutes = now.getMinutes().toString().padStart(2, '0');
         return `${hours}:${minutes}`;
     }
-
-    const handlemessage = async (e) => {
-
-      };
       
 
     const chatShow = () => {
