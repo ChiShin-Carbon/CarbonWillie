@@ -317,6 +317,6 @@ export default function Robot() {
                     <FontAwesomeIcon icon={faRobot} />
                 </div>
             </div>
-        </div>
+        </div> 
     )
 }
