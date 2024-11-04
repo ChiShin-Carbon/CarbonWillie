@@ -25,12 +25,109 @@ import 'primeicons/primeicons.css';                        // 图标样式
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPenToSquare, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 
-import { Calendar } from 'primereact/calendar';
-
 
 const Tabs = () => {
     const [isAddModalVisible, setAddModalVisible] = useState(false);
     const [isEditModalVisible, setEditModalVisible] = useState(false);
+
+
+    // 設定用來儲存授權記錄的狀態
+    const [authorizedRecords, setAuthorizedRecords] = useState([]);
+
+
+    const getAuthorizedRecords = async () => {
+        try {
+            const response = await fetch('http://localhost:8000/authorizedTable', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            const data = await response.json();
+            console.log(data);
+
+            if (response.ok) {
+                // 將每個記錄的 departmentID 轉換為部門名稱
+                const recordsWithDepartments = data.map(record => ({
+                    ...record,
+                    department: getDepartmentName(record.department), // 使用函數獲取部門名稱
+                }));
+                setAuthorizedRecords(recordsWithDepartments);
+            } else {
+                console.log(response.status);
+                setErrorMessage(`Error: ${data.detail}`);
+            }
+        } catch (error) {
+            console.error('Error fetching authorized records:', error);
+            setErrorMessage('Error fetching authorized records');
+        }
+    };
+
+
+    // 將部門ID轉換為部門名稱的函數
+    const getDepartmentName = (departmentID) => {
+        switch (departmentID) {
+            case 0:
+                return '管理部門';
+            case 1:
+                return '業務部門';
+            case 2:
+                return '資訊部門';
+            case 3:
+                return '門診部門';
+            case 4:
+                return '健檢部門';
+            case 5:
+                return '檢驗部門';
+            default:
+                return '其他';
+        }
+    };
+    // 分类表名对应的范围
+    const categoryMapping = {
+        '範疇一': ['公務車', '滅火器', '工作時數(員工)', '工作時數(非員工)', '冷媒', '廠內機具', '緊急發電機'],
+        '範疇二': ['電力使用量'],
+        '範疇三': ['員工通勤', '商務旅行', '營運產生廢棄物', '銷售產品的廢棄物'],
+    };
+
+    // 用来追踪每个表名对应的记录
+    const recordMap = {};
+
+    // 遍历授权记录以合并相同 table_name 的记录
+    authorizedRecords.forEach(record => {
+        const { table_name, username, department } = record;
+
+        // 确定记录属于哪个範疇
+        for (const [category, tables] of Object.entries(categoryMapping)) {
+            if (tables.includes(table_name)) {
+                if (!recordMap[table_name]) {
+                    recordMap[table_name] = {
+                        category,
+                        usernames: {
+                            管理部門: '無',
+                            資訊部門: '無',
+                            門診部門: '無',
+                            健檢部門: '無',
+                            檢驗部門: '無',
+                            業務部門: '無'
+                        },
+                    };
+                }
+                // 更新用户名
+                recordMap[table_name].usernames[department] = username || '無';
+                break;
+            }
+        }
+    });
+
+    // 将 recordMap 转换为数组以用于渲染
+    const uniqueRecords = Object.entries(recordMap).map(([table_name, record]) => ({
+        table_name,
+        ...record,
+    }));
+
+
+    getAuthorizedRecords();
 
     return (
         <main>
@@ -75,48 +172,52 @@ const Tabs = () => {
 
                     <div className={styles.activityCardBody2}>
                         <div className={styles.activityAccordionDiv}>
-                            <CAccordion className={styles.activityAccordion}>
-                                <CAccordionItem itemKey={1} className={styles.activityAccordionItem}>
-                                    <CAccordionHeader >公務車(汽油)</CAccordionHeader>
-                                    <CAccordionBody>
-                                        <div className={styles.AccordionBodyItem}>
-                                            <h6>各部門填寫人</h6>
-                                            <hr />
-                                            <div className={styles.departmentList}>
-                                                <div className={styles.departmentItem}>
-                                                    <span>管理部門:</span>
-                                                    <span>XXX</span>
-                                                </div>
-                                                <div className={styles.departmentItem}>
-                                                    <span>資訊部門:</span>
-                                                    <span>XXX</span>
-                                                </div>
-                                                <div className={styles.departmentItem}>
-                                                    <span>門診部門:</span>
-                                                    <span>XXX</span>
-                                                </div>
-                                                <div className={styles.departmentItem}>
-                                                    <span>健檢部門:</span>
-                                                    <span>XXX</span>
-                                                </div>
-                                                <div className={styles.departmentItem}>
-                                                    <span>檢驗部門:</span>
-                                                    <span>XXX</span>
-                                                </div>
-                                                <div className={styles.departmentItem}>
-                                                    <span>業務部門:</span>
-                                                    <span>XXX</span>
-                                                </div>
-                                            </div>
+                            {uniqueRecords
+                                .filter(record => categoryMapping['範疇一'].includes(record.table_name)) // 確保範疇一的項目
+                                .map(record => (
+                                    <CAccordion key={record.table_name} className={styles.activityAccordion}>
+                                        <CAccordionItem itemKey={record.table_name} className={styles.activityAccordionItem}>
+                                            <CAccordionHeader>{record.table_name}</CAccordionHeader>
+                                            <CAccordionBody>
+                                                <div className={styles.AccordionBodyItem}>
+                                                    <h6>各部門填寫人</h6>
+                                                    <hr />
+                                                    <div className={styles.departmentList}>
+                                                        <div className={styles.departmentItem}>
+                                                            <span>管理部門:</span>
+                                                            <span>{record.usernames.管理部門}</span>
+                                                        </div>
+                                                        <div className={styles.departmentItem}>
+                                                            <span>資訊部門:</span>
+                                                            <span>{record.usernames.資訊部門}</span>
+                                                        </div>
+                                                        <div className={styles.departmentItem}>
+                                                            <span>門診部門:</span>
+                                                            <span>{record.usernames.門診部門}</span>
+                                                        </div>
+                                                        <div className={styles.departmentItem}>
+                                                            <span>健檢部門:</span>
+                                                            <span>{record.usernames.健檢部門}</span>
+                                                        </div>
+                                                        <div className={styles.departmentItem}>
+                                                            <span>檢驗部門:</span>
+                                                            <span>{record.usernames.檢驗部門}</span>
+                                                        </div>
+                                                        <div className={styles.departmentItem}>
+                                                            <span>業務部門:</span>
+                                                            <span>{record.usernames.業務部門}</span>
+                                                        </div>
+                                                    </div>
 
-                                            <div style={{ textAlign: 'right' }}>
-                                                <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
-                                                <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} /></div>
-                                        </div>
-                                    </CAccordionBody>
-                                </CAccordionItem>
-                            </CAccordion>
-
+                                                    <div style={{ textAlign: 'right' }}>
+                                                        <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
+                                                        <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
+                                                    </div>
+                                                </div>
+                                            </CAccordionBody>
+                                        </CAccordionItem>
+                                    </CAccordion>
+                                ))}
                         </div>
                     </div>
                 </div>
@@ -128,47 +229,52 @@ const Tabs = () => {
 
                     <div className={styles.activityCardBody2}>
                         <div className={styles.activityAccordionDiv}>
-                            <CAccordion className={styles.activityAccordion}>
-                                <CAccordionItem itemKey={1} className={styles.activityAccordionItem}>
-                                    <CAccordionHeader >間接蒸氣(汽電共生廠有做溫室氣體盤查)</CAccordionHeader>
-                                    <CAccordionBody>
-                                        <div className={styles.AccordionBodyItem}>
-                                            <h6>各部門填寫人</h6>
-                                            <hr />
-                                            <div className={styles.departmentList}>
-                                                <div className={styles.departmentItem}>
-                                                    <span>管理部門:</span>
-                                                    <span>XXX</span>
-                                                </div>
-                                                <div className={styles.departmentItem}>
-                                                    <span>資訊部門:</span>
-                                                    <span>XXX</span>
-                                                </div>
-                                                <div className={styles.departmentItem}>
-                                                    <span>門診部門:</span>
-                                                    <span>XXX</span>
-                                                </div>
-                                                <div className={styles.departmentItem}>
-                                                    <span>健檢部門:</span>
-                                                    <span>XXX</span>
-                                                </div>
-                                                <div className={styles.departmentItem}>
-                                                    <span>檢驗部門:</span>
-                                                    <span>XXX</span>
-                                                </div>
-                                                <div className={styles.departmentItem}>
-                                                    <span>業務部門:</span>
-                                                    <span>XXX</span>
-                                                </div>
-                                            </div>
+                            {uniqueRecords
+                                .filter(record => categoryMapping['範疇二'].includes(record.table_name)) // 根據範疇二的記錄進行過濾
+                                .map(record => (
+                                    <CAccordion key={record.table_name} className={styles.activityAccordion}>
+                                        <CAccordionItem itemKey={record.table_name} className={styles.activityAccordionItem}>
+                                            <CAccordionHeader>{record.table_name}</CAccordionHeader>
+                                            <CAccordionBody>
+                                                <div className={styles.AccordionBodyItem}>
+                                                    <h6>各部門填寫人</h6>
+                                                    <hr />
+                                                    <div className={styles.departmentList}>
+                                                        <div className={styles.departmentItem}>
+                                                            <span>管理部門:</span>
+                                                            <span>{record.usernames.管理部門}</span>
+                                                        </div>
+                                                        <div className={styles.departmentItem}>
+                                                            <span>資訊部門:</span>
+                                                            <span>{record.usernames.資訊部門}</span>
+                                                        </div>
+                                                        <div className={styles.departmentItem}>
+                                                            <span>門診部門:</span>
+                                                            <span>{record.usernames.門診部門}</span>
+                                                        </div>
+                                                        <div className={styles.departmentItem}>
+                                                            <span>健檢部門:</span>
+                                                            <span>{record.usernames.健檢部門}</span>
+                                                        </div>
+                                                        <div className={styles.departmentItem}>
+                                                            <span>檢驗部門:</span>
+                                                            <span>{record.usernames.檢驗部門}</span>
+                                                        </div>
+                                                        <div className={styles.departmentItem}>
+                                                            <span>業務部門:</span>
+                                                            <span>{record.usernames.業務部門}</span>
+                                                        </div>
+                                                    </div>
 
-                                            <div style={{ textAlign: 'right' }}>
-                                                <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
-                                                <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} /></div>
-                                        </div>
-                                    </CAccordionBody>
-                                </CAccordionItem>
-                            </CAccordion>
+                                                    <div style={{ textAlign: 'right' }}>
+                                                        <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
+                                                        <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
+                                                    </div>
+                                                </div>
+                                            </CAccordionBody>
+                                        </CAccordionItem>
+                                    </CAccordion>
+                                ))}
                         </div>
                     </div>
                 </div>
@@ -178,10 +284,56 @@ const Tabs = () => {
                         <strong className={styles.activityCard2HeadTitle}>範疇三</strong>
                     </div>
                     <div className={styles.activityCardBody2}>
+                        <div className={styles.activityAccordionDiv}>
+                            {uniqueRecords
+                                .filter(record => categoryMapping['範疇三'].includes(record.table_name)) // 根據範疇三的記錄過濾
+                                .map(record => (
+                                    <CAccordion key={record.table_name} className={styles.activityAccordion}>
+                                        <CAccordionItem itemKey={record.table_name} className={styles.activityAccordionItem}>
+                                            <CAccordionHeader>{record.table_name}</CAccordionHeader>
+                                            <CAccordionBody>
+                                                <div className={styles.AccordionBodyItem}>
+                                                <h6>各部門填寫人</h6>
+                                                    <hr />
+                                                    <div className={styles.departmentList}>
+                                                        <div className={styles.departmentItem}>
+                                                            <span>管理部門:</span>
+                                                            <span>{record.usernames.管理部門}</span>
+                                                        </div>
+                                                        <div className={styles.departmentItem}>
+                                                            <span>資訊部門:</span>
+                                                            <span>{record.usernames.資訊部門}</span>
+                                                        </div>
+                                                        <div className={styles.departmentItem}>
+                                                            <span>門診部門:</span>
+                                                            <span>{record.usernames.門診部門}</span>
+                                                        </div>
+                                                        <div className={styles.departmentItem}>
+                                                            <span>健檢部門:</span>
+                                                            <span>{record.usernames.健檢部門}</span>
+                                                        </div>
+                                                        <div className={styles.departmentItem}>
+                                                            <span>檢驗部門:</span>
+                                                            <span>{record.usernames.檢驗部門}</span>
+                                                        </div>
+                                                        <div className={styles.departmentItem}>
+                                                            <span>業務部門:</span>
+                                                            <span>{record.usernames.業務部門}</span>
+                                                        </div>
+                                                    </div>
 
+                                                    <div style={{ textAlign: 'right' }}>
+                                                        <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
+                                                        <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
+                                                    </div>
+                                                </div>
+                                            </CAccordionBody>
+                                        </CAccordionItem>
+                                    </CAccordion>
+                                ))}
+                        </div>
                     </div>
                 </div>
-
             </CCard>
 
 

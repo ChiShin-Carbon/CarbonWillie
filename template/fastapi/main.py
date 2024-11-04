@@ -21,6 +21,7 @@ from ocrapi import ocrapi
 from bot import botapi
 from insert_vehicle import insert_vehicle
 
+from authorizedTable import authorizedTable
 
 
 app = FastAPI()
@@ -58,3 +59,4 @@ app.include_router(editcfvinfo)
 app.include_router(ocrapi)
 app.include_router(botapi)
 app.include_router(insert_vehicle)
+app.include_router(authorizedTable)
