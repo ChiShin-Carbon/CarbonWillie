@@ -19,6 +19,10 @@ import 'primeicons/primeicons.css';                        // 图标样式
 
 import { Editor } from '@tinymce/tinymce-react';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faChevronDown,faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons';
+
+
 const Tabs = () => {
 
 
@@ -100,7 +104,8 @@ const Tabs = () => {
                             className={`${styles.CatalogTitle} ${activeSection === 'section3' ? styles.active : ''}`}
                             onClick={() => toggleSection('section3')}
                         >
-                            第三章 排放源鑑別
+                            <span>第三章 排放源鑑別</span>
+                            <FontAwesomeIcon icon={faChevronDown} />
                         </div>
                         {openSections.section3 && (
                             <div className={styles.subBlock}>
@@ -123,7 +128,8 @@ const Tabs = () => {
                             className={`${styles.CatalogTitle} ${activeSection === 'section4' ? styles.active : ''}`}
                             onClick={() => toggleSection('section4')}
                         >
-                            第四章 排放量計算
+                            <span>第四章 排放量計算</span>
+                            <FontAwesomeIcon icon={faChevronDown} />
                         </div>
                         {openSections.section4 && (
                             <div className={styles.subBlock}>
@@ -137,7 +143,8 @@ const Tabs = () => {
                                     className={`${styles.CatalogTitle} ${activeSection === 'section4.3' ? styles.active : ''}`}
                                     onClick={() => toggleSection('section4.3')}
                                 >
-                                    4.3 排放源排放量計算過程
+                                    <span>4.3 排放源排放量計算過程</span>
+                                    <FontAwesomeIcon icon={faChevronDown} />
                                 </div>
                                 {openSections['section4.3'] && (
                                     <div className={styles.subsubBlock}>
@@ -159,7 +166,8 @@ const Tabs = () => {
                             className={`${styles.CatalogTitle} ${activeSection === 'section5' ? styles.active : ''}`}
                             onClick={() => toggleSection('section5')}
                         >
-                            第五章 數據品質管理
+                            <span>第五章 數據品質管理 </span>
+                            <FontAwesomeIcon icon={faChevronDown} />
                         </div>
                         {openSections.section5 && (
                             <div className={styles.subBlock}>
@@ -176,7 +184,8 @@ const Tabs = () => {
                             className={`${styles.CatalogTitle} ${activeSection === 'section6' ? styles.active : ''}`}
                             onClick={() => toggleSection('section6')}
                         >
-                            第六章 其他主管機關規定事項
+                            <span>第六章 其他主管機關規定事項</span>
+                            <FontAwesomeIcon icon={faChevronDown} />
                         </div>
                         {openSections.section6 && (
                             <div className={styles.subBlock}>
@@ -191,34 +200,45 @@ const Tabs = () => {
                     </div>
                 </CCard>
 
-                <CCard className={styles.cardMain}>
-                    <Editor
-                        apiKey={API_KEY}
-                        init={{
-                            plugins: [
-                                // Core editing features
-                                'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
-                                // Your account includes a free trial of TinyMCE premium features
-                                // Try the most popular premium features until Nov 16, 2024:
-                                'checklist', 'mediaembed', 'casechange', 'export', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'editimage', 'advtemplate', 'ai', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss', 'markdown',
-                                // Early access to document converters
-                                'importword', 'exportword', 'exportpdf'
-                            ],
-                            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
-                            tinycomments_mode: 'embedded',
-                            tinycomments_author: 'Author name',
-                            mergetags_list: [
-                                { value: 'First.Name', title: 'First Name' },
-                                { value: 'Email', title: 'Email' },
-                            ],
-                            ai_request: (request, respondWith) => respondWith.string(() => Promise.reject('See docs to implement AI Assistant')),
-                            exportpdf_converter_options: { 'format': 'Letter', 'margin_top': '1in', 'margin_right': '1in', 'margin_bottom': '1in', 'margin_left': '1in' },
-                            exportword_converter_options: { 'document': { 'size': 'Letter' } },
-                            importword_converter_options: { 'formatting': { 'styles': 'inline', 'resets': 'inline', 'defaults': 'inline', } },
-                        }}
-                        initialValue="<h1>123</h1>"
-                    />
 
+                <CCard className={styles.cardMain}>
+                    <div style={{height:'95%'}}>
+                        <Editor
+                            apiKey={API_KEY}
+                            init={{
+                                plugins: [
+                                    // Core editing features
+                                    'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
+                                    // Your account includes a free trial of TinyMCE premium features
+                                    // Try the most popular premium features until Nov 16, 2024:
+                                    'checklist', 'mediaembed', 'casechange', 'export', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'editimage', 'advtemplate', 'ai', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss', 'markdown',
+                                    // Early access to document converters
+                                    'importword', 'exportword', 'exportpdf'
+                                ],
+                                toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+                                tinycomments_mode: 'embedded',
+                                tinycomments_author: 'Author name',
+                                mergetags_list: [
+                                    { value: 'First.Name', title: 'First Name' },
+                                    { value: 'Email', title: 'Email' },
+                                ],
+                                ai_request: (request, respondWith) => respondWith.string(() => Promise.reject('See docs to implement AI Assistant')),
+                                exportpdf_converter_options: { 'format': 'Letter', 'margin_top': '1in', 'margin_right': '1in', 'margin_bottom': '1in', 'margin_left': '1in' },
+                                exportword_converter_options: { 'document': { 'size': 'Letter' } },
+                                importword_converter_options: { 'formatting': { 'styles': 'inline', 'resets': 'inline', 'defaults': 'inline', } },
+                            }}
+                            initialValue="
+                        
+                        <h1>123</h1>
+                        
+                        
+                        "
+                        />
+                    </div>
+                    <div style={{textAlign:'right'}}>
+                         <button><FontAwesomeIcon icon={faArrowRightFromBracket} />&nbsp;匯出報告</button>
+                         </div>
+                   
                 </CCard>
             </div >
 

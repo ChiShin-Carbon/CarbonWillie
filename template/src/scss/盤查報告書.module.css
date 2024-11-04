@@ -57,10 +57,8 @@
     box-shadow: 0px 2px 5px rgb(186, 186, 186);
     border-radius: 15px;
     width: 70%;
-    height: 500px;
     margin-bottom: 30px;
-    max-height: 500px;
-    overflow: auto;
+    
 }
 
 .cardCatalog {
@@ -72,6 +70,8 @@
     margin-bottom: 30px;
     max-height: 500px;
     overflow: auto;
+    position:sticky;
+    top:15%
 }
 
 .titleRight {
@@ -121,7 +121,9 @@
     font-weight: bolder;
     color: rgb(100, 100, 100);
     margin: 5px 0;
-    padding: 5px 7px
+    padding: 5px 7px;
+    display:flex;
+    justify-content: space-between;
 }
 
 .CatalogTitle:hover {
@@ -144,4 +146,19 @@
 .cardCatalog .active {
     background-color: rgb(214, 228, 214);
     border-radius: 10px;
+}
+
+.cardMain button{
+    width: 100px;
+    margin:10px;
+    background-color: #CA6AAF;
+    border:none;
+    border-radius:10px;
+    color:white;
+    font-weight: bolder;
+    height:40px;
+    box-shadow:0px 1px 5px gray;
+}
+.cardMain button:hover{
+    background-color: #974f83;
 }
