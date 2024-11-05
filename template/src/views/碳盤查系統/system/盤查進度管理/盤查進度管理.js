@@ -16,7 +16,8 @@ import {
     CFormCheck,
     CInputGroup,
     CInputGroupText,
-    CTabs, CTabList, CTab
+    CTabs, CTabList, CTab,
+    CButton
 } from '@coreui/react';
 import { Link } from 'react-router-dom'
 import CIcon from '@coreui/icons-react'
@@ -27,8 +28,9 @@ import styles from '../../../../scss/活動數據盤點.module.css'
 import { cilCheckAlt, cilPencil, cilX } from '@coreui/icons';
 
 const Tabs = () => {
-    const [searchValue, setSearchValue] = useState(""); // 用於儲存搜尋的值
-    const [selectedFeedback, setSelectedFeedback] = useState(''); // 新增的state，用來儲存選擇的資料回報狀態
+    const [searchInput, setSearchInput] = useState(''); // 存放輸入框的臨時搜尋值
+    const [searchValue, setSearchValue] = useState(''); // 觸發搜尋的值
+    const [selectedFeedback, setSelectedFeedback] = useState('');
 
     // 表格資料
     const tableData = [
@@ -50,16 +52,35 @@ const Tabs = () => {
         (selectedFeedback === '' || row.feedback === selectedFeedback)  // 新增的篩選條件，資料回報狀態
     );
 
+    // handleSearchInput 處理輸入框變化
+    const handleSearchInput = (e) => {
+        setSearchInput(e.target.value); // 更新輸入框的值
+    };
+
+    // handleSearch 按下按鈕時觸發
+    const handleSearch = () => {
+        setSearchValue(searchInput); // 將輸入框的值更新到 searchValue
+    };
     // handleSearch 函數處理輸入變化
-    const handleSearch = (e) => {
+    /*
+        const handleSearch = (e) => {
         setSearchValue(e.target.value);
         console.log("Search Value:", e.target.value);
+        };
+    */
+
+    // 監聽鍵盤事件以判斷是否按下 Enter 鍵
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault(); // 防止表單默認提交行為
+            handleSearch(); // 呼叫搜尋函數
+        }
     };
 
     // handleFeedbackChange 函數處理下拉選單變化
     const handleFeedbackChange = (e) => {
         setSelectedFeedback(e.target.value);
-        console.log("Selected Feedback:", e.target.value);
+        //console.log("Selected Feedback:", e.target.value);
     };
 
     return (
@@ -85,7 +106,6 @@ const Tabs = () => {
                         </div>
                     </div>
                 </CTabList>
-
             </CTabs>
 
             <div className="system-titlediv">
@@ -106,9 +126,19 @@ const Tabs = () => {
                                 type="search"
                                 placeholder="Search"
                                 aria-label="Search"
-                                onChange={handleSearch} // 綁定搜尋事件
-                                style={{ borderRadius: '0 25px 25px 0' }} // 這裡調整邊角的樣式
+                                //onChange={handleSearch} // 綁定搜尋事件
+                                onChange={handleSearchInput} // 綁定輸入框的臨時搜尋事件
+                                onKeyDown={handleKeyDown} // 監聽 Enter 鍵
                             />
+                            <CButton
+                                type="button"
+                                color="secondary"
+                                variant="outline"
+                                onClick={handleSearch} // 按下按鈕後執行搜尋
+                                style={{ borderRadius: '0 25px 25px 0' }}
+                            >
+                                <i className="pi pi-search" />
+                            </CButton>
                         </CInputGroup>
                     </CCol>
                     <CCol sm={1}></CCol>
@@ -118,7 +148,7 @@ const Tabs = () => {
                             style={{ borderRadius: '25px' }}
                             onChange={handleFeedbackChange}  // 綁定資料回報狀態選擇事件
                         >
-                            <option value="">資料回報狀態</option>  {/* 預設選項 */}
+                            <option value="">資料回報狀態</option>
                             <option value="已審核">已審核</option>
                             <option value="待補件">待補件</option>
                             <option value="尚未審核">尚未審核</option>
@@ -147,7 +177,7 @@ const Tabs = () => {
                                 <CTableBody>
                                     {filteredData.length > 0 ? filteredData.map((row, index) => (
                                         <CTableRow key={index}>
-                                            <CTableDataCell><CFormCheck id={`flexCheckDefault-${index}`} style={{ borderColor: 'black' }} /></CTableDataCell>
+                                            <CTableDataCell><CFormCheck style={{ borderColor: 'black' }} /></CTableDataCell>
                                             <CTableDataCell>{row.item}</CTableDataCell>
                                             <CTableDataCell>{row.fuel}</CTableDataCell>
                                             <CTableDataCell>{row.department}</CTableDataCell>
@@ -161,9 +191,9 @@ const Tabs = () => {
                                             <CTableDataCell colSpan="9" className="text-center">沒有找到符合條件的資料</CTableDataCell>
                                         </CTableRow>
                                     )}
+                                {/** ))} */}
                                 </CTableBody>
                             </CTable>
-
                             <div style={{textAlign:'center'}}><button className={styles.complete}>盤點完成</button></div>
                         </CForm>
                     </CCardBody>
