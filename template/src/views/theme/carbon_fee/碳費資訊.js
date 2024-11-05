@@ -58,7 +58,6 @@ const Tabs = () => {
     const rankingstyle = { border: '1px solid white', textAlign: 'center', verticalAlign: 'middle' };
     const [news, setNews] = useState([]); // 定義狀態變數
     const [query, setQuery] = useState('台灣碳費'); // 預設搜尋關鍵字
-
     
     //試著加入new
     useEffect(() => {
@@ -572,9 +571,22 @@ const Tabs = () => {
                                             <CCardBody>
                                                 {news.length > 0 ? (
                                                     news
+                                                    //.filter(article => article.title.includes('碳'))
+                                                    .filter(article => {
+                                                        // 檢查是否是 Yahoo 網址且包含指定的結尾
+                                                        const isYahooWithValidExtension = !(article.url.includes("yahoo") && !/\.(png|html)$/.test(article.url));
+                                                        
+                                                        // 檢查標題是否包含 '碳'
+                                                        const hasKeywordInTitle = article.title.includes('碳');
+                                                        
+                                                        // 只有在符合兩個條件時才返回 true
+                                                        return isYahooWithValidExtension && hasKeywordInTitle;
+                                                    })
+                                                    
                                                     .sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt)) // 根據日期從新到舊排序
                                                     .slice(0, 20) // 限制最多顯示 10 篇新聞
                                                     .map((article, index) => (
+                                                        
                                                         <div key={index} style={{ marginBottom: '20px', borderBottom: '1px solid lightgray', paddingBottom: '20px' }}> 
                                                             <CRow>
                                                                 <div style={{ width: '100%', height: '50px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
