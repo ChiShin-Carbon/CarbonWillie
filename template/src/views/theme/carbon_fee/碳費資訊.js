@@ -580,16 +580,26 @@ const Tabs = () => {
                                 <CCardBody style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                                     <CCard style={{ width: '1100px', fontSize: '1.2rem' }}>
                                         <CCardBody>
-                                            {loading ? (
-                                                <p>正在載入新聞...</p>
-                                            ) : (
-                                                news
-                                                    .filter((article) => {
-                                                        const isYahooWithValidExtension =
-                                                            !(article.url.includes('yahoo') && !/\.(png|html)$/.test(article.url));
-                                                        const hasKeywordInTitle = article.title.includes(query);
-                                                        return isYahooWithValidExtension && hasKeywordInTitle;
-                                                    })
+                                        {loading ? (
+                                            <center><p>正在載入新聞...</p></center>
+                                        ) : news.filter((article) => {
+                                            const isYahooWithValidExtension =
+                                                !(article.url.includes('yahoo') && !/\.(png|html)$/.test(article.url));
+                                            const hasKeywordInTitle = article.title.includes(query);
+                                            return isYahooWithValidExtension && hasKeywordInTitle;
+                                        }).length === 0 ? ( // 如果篩選後的新聞數量為 0
+                                            <center>
+                                                <p>暫無新聞!</p>
+                                                <p>可搜尋關鍵字!</p>
+                                            </center>
+                                        ) : (
+                                            news
+                                                .filter((article) => {
+                                                    const isYahooWithValidExtension =
+                                                        !(article.url.includes('yahoo') && !/\.(png|html)$/.test(article.url));
+                                                    const hasKeywordInTitle = article.title.includes(query);
+                                                    return isYahooWithValidExtension && hasKeywordInTitle;
+                                                })
                                                     .sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt))
                                                     .slice(0, 20)
                                                     .map((article, index) => (
