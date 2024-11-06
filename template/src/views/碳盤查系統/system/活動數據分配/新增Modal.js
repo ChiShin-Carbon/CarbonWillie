@@ -11,13 +11,14 @@ const AddModal = forwardRef((props, ref) => {
         },
     }));
 
+
     const [isAddModalVisible, setAddModalVisible] = useState(false);
     const [category, setCategory] = useState("1");
     const [emissionSourceOptions, setEmissionSourceOptions] = useState([]);
+    const [users, setUsers] = useState([]); // State to store users data
 
     const handleCategoryChange = (event) => {
         const selectedCategory = event ? event.target.value : category;
-
         setCategory(selectedCategory);
 
         if (selectedCategory === '1') {
@@ -41,37 +42,56 @@ const AddModal = forwardRef((props, ref) => {
             ]);
         }
     };
+
+    const fetchUsers = async () => {
+        try {
+            const response = await fetch('http://localhost:8000/users', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            const data = await response.json();
+            if (data.users) {
+                setUsers(data.users); // Store users data in state
+                // Create a mapping of department -> usernames
+                const departments = data.users.reduce((acc, user) => {
+                    if (!acc[user.department]) {
+                        acc[user.department] = [];
+                    }
+                    acc[user.department].push(user.username);
+                    return acc;
+                }, {});
+                setUserDepartments(departments);
+            }
+        } catch (error) {
+            console.error('Error fetching users:', error);
+        }
+    };
+
     useEffect(() => {
-        // 初始化時調用 handleCategoryChange
-        handleCategoryChange();
+        fetchUsers(); // Fetch users when the component mounts
+        handleCategoryChange(); // Initialize category options
     }, []);
-    
-    // //--------------------------------資料庫----------------------
-    // const [users, setUsers] = useState([]);
-    // // Function to fetch users from the backend
-    // const fetchUsers = async () => {
-    //     try {
-    //         const response = await fetch('http://localhost:8001/s', {
-    //             method: 'GET',
-    //             headers: {
-    //                 'Content-Type': 'application/json',
-    //             },
-    //         });
-    //         const data = await response.json();
-    //         if (data.users) {
-    //             setUsers(data.users);
-    //         }
-    //     } catch (error) {
-    //         console.error('Error fetching users:', error);
-    //     }
-    // };
 
-    // useEffect(() => {
-    //     fetchUsers(); // Fetch users when component mounts
-    //     handleCategoryChange(); // Initialize category options
-    // }, []);
+    const [userDepartments, setUserDepartments] = useState({}); // Store users' department mapping
+    const renderUserOptions = (departmentId) => {
+        // 获取对应部门的用户列表
+        const departmentUsers = userDepartments[departmentId] || [];
+        return (
+            <>
+                <option value="1">無</option>
+                {departmentUsers.length > 0 ? (
+                    departmentUsers.map((username, index) => (
+                        <option key={index} value={username}>
+                            {username}
+                        </option>
+                    ))
+                ) : null}
+            </>
+        );
+    };
 
-    
     return (
         <CModal
             backdrop="static"
@@ -114,71 +134,52 @@ const AddModal = forwardRef((props, ref) => {
                         <CFormLabel htmlFor="sitename" className={`col-sm-2 col-form-label ${styles.addlabel}`} >管理部門</CFormLabel>
                         <CCol>
                             <CFormSelect aria-label="Default select example" className={styles.addinput}>
-                                <option value="1">無</option>
-                                <option value="2">...</option>
-                                <option value="3">...</option>
-                                <option value="4">...</option>
-                                <option value="5">...</option>
+                                {renderUserOptions(1)} {/* 渲染對應的部門選項 */}
                             </CFormSelect>
                         </CCol>
                     </CRow>
+
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="sitename" className={`col-sm-2 col-form-label ${styles.addlabel}`} >資訊部門</CFormLabel>
                         <CCol>
                             <CFormSelect aria-label="Default select example" className={styles.addinput}>
-                                <option value="1">無</option>
-                                <option value="2">...</option>
-                                <option value="3">...</option>
-                                <option value="4">...</option>
-                                <option value="5">...</option>
+                                {renderUserOptions(2)} {/* 渲染對應的部門選項 */}
                             </CFormSelect>
                         </CCol>
                     </CRow>
+
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="sitename" className={`col-sm-2 col-form-label ${styles.addlabel}`} >門診部門</CFormLabel>
                         <CCol>
                             <CFormSelect aria-label="Default select example" className={styles.addinput}>
-                                <option value="1">無</option>
-                                <option value="2">...</option>
-                                <option value="3">...</option>
-                                <option value="4">...</option>
-                                <option value="5">...</option>
+                                {renderUserOptions(3)} {/* 渲染對應的部門選項 */}
                             </CFormSelect>
                         </CCol>
                     </CRow>
+
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="sitename" className={`col-sm-2 col-form-label ${styles.addlabel}`} >健檢部門</CFormLabel>
                         <CCol>
                             <CFormSelect aria-label="Default select example" className={styles.addinput}>
-                                <option value="1">無</option>
-                                <option value="2">...</option>
-                                <option value="3">...</option>
-                                <option value="4">...</option>
-                                <option value="5">...</option>
+                                {renderUserOptions(4)} {/* 渲染對應的部門選項 */}
                             </CFormSelect>
                         </CCol>
                     </CRow>
+
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="sitename" className={`col-sm-2 col-form-label ${styles.addlabel}`} >檢驗部門</CFormLabel>
                         <CCol>
                             <CFormSelect aria-label="Default select example" className={styles.addinput}>
-                                <option value="1">無</option>
-                                <option value="2">...</option>
-                                <option value="3">...</option>
-                                <option value="4">...</option>
-                                <option value="5">...</option>
+                                {renderUserOptions(5)} {/* 渲染對應的部門選項 */}
                             </CFormSelect>
                         </CCol>
                     </CRow>
+
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="sitename" className={`col-sm-2 col-form-label ${styles.addlabel}`} >業務部門</CFormLabel>
                         <CCol>
                             <CFormSelect aria-label="Default select example" className={styles.addinput}>
-                                <option value="1">無</option>
-                                <option value="2">...</option>
-                                <option value="3">...</option>
-                                <option value="4">...</option>
-                                <option value="5">...</option>
+                                {renderUserOptions(6)} {/* 渲染對應的部門選項 */}
                             </CFormSelect>
                         </CCol>
                     </CRow>
