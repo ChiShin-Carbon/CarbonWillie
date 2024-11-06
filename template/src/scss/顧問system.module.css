@@ -163,7 +163,7 @@
     margin:50px 0 20px 0;
 }
 .submit .button{
-    background-Color:#78cca9;
+    background-Color:#ffbb33;
     border-radius:10px;
     border:none;
     color:white;
@@ -174,7 +174,7 @@
 }
 
 .submit .button:hover{
-    background-color:#6aa089;
+    background-color:#e09e1b;
     transition: 0.5s;
 }
 
@@ -183,7 +183,7 @@
     margin:10px 0 10px 0;
 }
 .submitTable .button{
-    background-Color:#78cca9;
+    background-Color:#ffbb33;
     border-radius:10px;
     border:none;
     color:white;
@@ -194,7 +194,7 @@
 }
 
 .submitTable .button:hover{
-    background-color:#6aa089;
+    background-color:#e09e1b;
     transition: 0.5s;
 }
 
