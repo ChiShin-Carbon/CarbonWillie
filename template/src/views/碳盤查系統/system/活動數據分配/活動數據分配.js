@@ -25,11 +25,15 @@ import 'primeicons/primeicons.css';                        // 图标样式
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPenToSquare, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 
+import AddModal from './新增Modal'; // Import the AddModal component
+
 
 const Tabs = () => {
-    const [isAddModalVisible, setAddModalVisible] = useState(false);
+    const addModalRef = useRef();
+    const handleOpenAddModal = () => {
+        addModalRef.current.openModal();
+    };
     const [isEditModalVisible, setEditModalVisible] = useState(false);
-
 
     // 設定用來儲存授權記錄的狀態
     const [authorizedRecords, setAuthorizedRecords] = useState([]);
@@ -44,7 +48,6 @@ const Tabs = () => {
                 },
             });
             const data = await response.json();
-            console.log(data);
 
             if (response.ok) {
                 // 將每個記錄的 departmentID 轉換為部門名稱
@@ -126,7 +129,6 @@ const Tabs = () => {
         ...record,
     }));
 
-
     getAuthorizedRecords();
 
     return (
@@ -167,7 +169,7 @@ const Tabs = () => {
                 <div>
                     <div className={styles.activityCard2Head}>
                         <strong className={styles.activityCard2HeadTitle}>範疇一</strong>
-                        <button className={styles.activityAddButton} onClick={() => setAddModalVisible(true)}>新增</button>
+                        <button className={styles.activityAddButton} onClick={handleOpenAddModal}>新增</button>
                     </div>
 
                     <div className={styles.activityCardBody2}>
@@ -293,7 +295,7 @@ const Tabs = () => {
                                             <CAccordionHeader>{record.table_name}</CAccordionHeader>
                                             <CAccordionBody>
                                                 <div className={styles.AccordionBodyItem}>
-                                                <h6>各部門填寫人</h6>
+                                                    <h6>各部門填寫人</h6>
                                                     <hr />
                                                     <div className={styles.departmentList}>
                                                         <div className={styles.departmentItem}>
@@ -339,122 +341,7 @@ const Tabs = () => {
 
 
 
-            <CModal
-                backdrop="static"
-                visible={isAddModalVisible}
-                onClose={() => setAddModalVisible(false)}
-                aria-labelledby="StaticBackdropExampleLabel"
-            >
-                <CModalHeader>
-                    <CModalTitle id="StaticBackdropExampleLabel"><b>新增排放源與填寫人</b></CModalTitle>
-                </CModalHeader>
-                <CModalBody style={{ padding: '10px 50px' }}>
-                    <CForm >
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="sitename" className={`col-sm-2 col-form-label ${styles.addlabel}`} >排放類別</CFormLabel>
-                            <CCol>
-                                <CFormSelect aria-label="Default select example" className={styles.addinput}>
-                                    <option value="1">範疇一</option>
-                                    <option value="2">範疇二</option>
-                                    <option value="3">範疇三</option>
-                                </CFormSelect>
-                            </CCol>
-                        </CRow>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="sitename" className={`col-sm-2 col-form-label ${styles.addlabel}`} >排放源</CFormLabel>
-                            <CCol>
-                                <CFormSelect aria-label="Default select example" className={styles.addinput}>
-                                    <option value="1">...</option>
-                                    <option value="2">...</option>
-                                    <option value="3">...</option>
-                                    <option value="4">...</option>
-                                    <option value="5">...</option>
-                                </CFormSelect>
-                            </CCol>
-                        </CRow>
-                        <hr />
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="sitename" className={`col-sm-2 col-form-label ${styles.addlabel}`} >管理部門</CFormLabel>
-                            <CCol>
-                                <CFormSelect aria-label="Default select example" className={styles.addinput}>
-                                    <option value="1">無</option>
-                                    <option value="2">...</option>
-                                    <option value="3">...</option>
-                                    <option value="4">...</option>
-                                    <option value="5">...</option>
-                                </CFormSelect>
-                            </CCol>
-                        </CRow>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="sitename" className={`col-sm-2 col-form-label ${styles.addlabel}`} >資訊部門</CFormLabel>
-                            <CCol>
-                                <CFormSelect aria-label="Default select example" className={styles.addinput}>
-                                    <option value="1">無</option>
-                                    <option value="2">...</option>
-                                    <option value="3">...</option>
-                                    <option value="4">...</option>
-                                    <option value="5">...</option>
-                                </CFormSelect>
-                            </CCol>
-                        </CRow>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="sitename" className={`col-sm-2 col-form-label ${styles.addlabel}`} >門診部門</CFormLabel>
-                            <CCol>
-                                <CFormSelect aria-label="Default select example" className={styles.addinput}>
-                                    <option value="1">無</option>
-                                    <option value="2">...</option>
-                                    <option value="3">...</option>
-                                    <option value="4">...</option>
-                                    <option value="5">...</option>
-                                </CFormSelect>
-                            </CCol>
-                        </CRow>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="sitename" className={`col-sm-2 col-form-label ${styles.addlabel}`} >健檢部門</CFormLabel>
-                            <CCol>
-                                <CFormSelect aria-label="Default select example" className={styles.addinput}>
-                                    <option value="1">無</option>
-                                    <option value="2">...</option>
-                                    <option value="3">...</option>
-                                    <option value="4">...</option>
-                                    <option value="5">...</option>
-                                </CFormSelect>
-                            </CCol>
-                        </CRow>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="sitename" className={`col-sm-2 col-form-label ${styles.addlabel}`} >檢驗部門</CFormLabel>
-                            <CCol>
-                                <CFormSelect aria-label="Default select example" className={styles.addinput}>
-                                    <option value="1">無</option>
-                                    <option value="2">...</option>
-                                    <option value="3">...</option>
-                                    <option value="4">...</option>
-                                    <option value="5">...</option>
-                                </CFormSelect>
-                            </CCol>
-                        </CRow>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="sitename" className={`col-sm-2 col-form-label ${styles.addlabel}`} >業務部門</CFormLabel>
-                            <CCol>
-                                <CFormSelect aria-label="Default select example" className={styles.addinput}>
-                                    <option value="1">無</option>
-                                    <option value="2">...</option>
-                                    <option value="3">...</option>
-                                    <option value="4">...</option>
-                                    <option value="5">...</option>
-                                </CFormSelect>
-                            </CCol>
-                        </CRow>
-
-                    </CForm>
-                </CModalBody>
-                <CModalFooter>
-                    <CButton className="modalbutton1" onClick={() => setAddModalVisible(false)}>
-                        取消
-                    </CButton>
-                    <CButton className="modalbutton2">新增</CButton>
-                </CModalFooter>
-            </CModal>
+         
 
 
 
@@ -539,6 +426,7 @@ const Tabs = () => {
                     <CButton className="modalbutton2">確認</CButton>
                 </CModalFooter>
             </CModal>
+            <AddModal ref={addModalRef} />
         </main>
     );
 }
