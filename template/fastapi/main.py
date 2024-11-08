@@ -21,6 +21,7 @@ from ocrapi import ocrapi
 from bot import botapi
 from insert_vehicle import insert_vehicle
 from insert_Extinguisher import insert_Extinguisher
+from insert_employee import insert_employee
 
 from authorizedTable import authorizedTable
 
@@ -62,3 +63,4 @@ app.include_router(botapi)
 app.include_router(insert_vehicle)
 app.include_router(authorizedTable)
 app.include_router(insert_Extinguisher)
+app.include_router(insert_employee)
