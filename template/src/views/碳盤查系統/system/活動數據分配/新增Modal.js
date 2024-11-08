@@ -134,6 +134,15 @@ const AddModal = forwardRef((props, ref) => {
                         <CFormLabel htmlFor="sitename" className={`col-sm-2 col-form-label ${styles.addlabel}`} >管理部門</CFormLabel>
                         <CCol>
                             <CFormSelect aria-label="Default select example" className={styles.addinput}>
+                                {renderUserOptions(0)} {/* 渲染對應的部門選項 */}
+                            </CFormSelect>
+                        </CCol>
+                    </CRow>
+
+                    <CRow className="mb-3">
+                        <CFormLabel htmlFor="sitename" className={`col-sm-2 col-form-label ${styles.addlabel}`} >業務部門</CFormLabel>
+                        <CCol>
+                            <CFormSelect aria-label="Default select example" className={styles.addinput}>
                                 {renderUserOptions(1)} {/* 渲染對應的部門選項 */}
                             </CFormSelect>
                         </CCol>
@@ -175,15 +184,6 @@ const AddModal = forwardRef((props, ref) => {
                         </CCol>
                     </CRow>
 
-                    <CRow className="mb-3">
-                        <CFormLabel htmlFor="sitename" className={`col-sm-2 col-form-label ${styles.addlabel}`} >業務部門</CFormLabel>
-                        <CCol>
-                            <CFormSelect aria-label="Default select example" className={styles.addinput}>
-                                {renderUserOptions(6)} {/* 渲染對應的部門選項 */}
-                            </CFormSelect>
-                        </CCol>
-                    </CRow>
-
                 </CForm>
             </CModalBody>
             <CModalFooter>
@@ -195,5 +195,5 @@ const AddModal = forwardRef((props, ref) => {
         </CModal>
     );
 });
- 
+
 export default AddModal;

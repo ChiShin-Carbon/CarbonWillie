@@ -19,7 +19,6 @@ async def insert_authorized_user(
                 INSERT INTO Authorized_Table (user_id, table_name, is_done, completed_at)
                 VALUES (?, ?, ?, ?)
             """
-            # Set complete_at to None (NULL in database) if not provided
             values = (user_id, table_name, is_done, completed_at)
             cursor.execute(query, values)
             conn.commit()
@@ -31,3 +30,4 @@ async def insert_authorized_user(
             conn.close()
     else:
         raise HTTPException(status_code=500, detail="Database connection error")
+
