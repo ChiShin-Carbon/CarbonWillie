@@ -11,7 +11,7 @@ import styles from '../../../../scss/活動數據盤點.module.css'
 const FunctionForms = ({ currentFunction }) => {
     const [recognizedText, setRecognizedText] = useState("");
 
-    const handleSubmit = async (e) => {
+    const handleC1Submit = async (e) => {
         e.preventDefault();
         
         const formData = new FormData();
@@ -21,7 +21,7 @@ const FunctionForms = ({ currentFunction }) => {
         formData.append("oil_species", document.getElementById("type").value);
         formData.append("liters", document.getElementById("quantity").value);
         formData.append("remark", document.getElementById("explain").value);
-        formData.append("image", document.getElementById("image").files[0]);
+        formData.append("image", document.getElementById("C1image").files[0]);
     
         try {
             const res = await fetch("http://localhost:8000/insert_vehicle", {
@@ -39,36 +39,49 @@ const FunctionForms = ({ currentFunction }) => {
         }
     };
 
-    const handleC1image = async (e) => {
+    const handleC2Submit = async (e) => {
         e.preventDefault();
-
-        const imageElement = document.getElementById("image");
-
-        if (!imageElement || !imageElement.files) {
-            console.error("Form elements or image files not found");
+    
+        // Get form elements by their IDs
+        const name = document.getElementById("name").value;
+        const element = document.getElementById("element").value;
+        const weight = document.getElementById("weight").value;
+        const explain = document.getElementById("explain").value;
+        const image = document.getElementById("C2image");
+    
+        // Check if the image file exists
+        if (!image || !image.files || image.files.length === 0) {
+            console.error("Image file not found");
             return;
         }
-
+    
+        // Prepare form data
         const formData = new FormData();
-        formData.append("image", imageElement.files[0]);
-
+        formData.append("user_id", 1); // Example user_id, you should use the actual user ID
+        formData.append("name", name);
+        formData.append("element", element);
+        formData.append("weight", weight);
+        formData.append("explain", explain);
+        formData.append("image", image.files[0]);
+    
         try {
-            const res = await fetch("http://localhost:8000/ocrapi", {
+            // Send form data to the backend
+            const res = await fetch("http://localhost:8000/insert_Extinguisher", {
                 method: "POST",
                 body: formData,
             });
-
+    
             if (res.ok) {
                 const data = await res.json();
-                setRecognizedText(data.recognized_text); // Set the recognized text in state
-                console.log("Data submitted successfully");
+                console.log("Form submitted successfully:", data);
             } else {
-                console.error("Failed to submit data");
+                console.error("Failed to submit form data");
             }
         } catch (error) {
-            console.error("Error submitting data", error);
+            console.error("Error submitting form data", error);
         }
     };
+    
 
     const [transportType, setTransportType] = useState("1"); // 默認選擇汽車
     switch (currentFunction) {
@@ -124,13 +137,13 @@ const FunctionForms = ({ currentFunction }) => {
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="photo" className={`col-sm-2 col-form-label ${styles.addlabel}`}  >圖片*</CFormLabel>
                         <CCol>
-                            <CFormInput type="file" id="image" onChange={handleC1image} required />
+                            <CFormInput type="file" id="C1image" onChange={handleC1image} required />
                         </CCol>
                     </CRow>
                     <br />
                     <div style={{ textAlign: 'center' }}>*為必填欄位</div>
 
-                <CButton type="submit" onClick={handleSubmit}>新增</CButton>
+                <CButton type="submit" onClick={handleC1Submit}>新增</CButton>
 
                     </form>
 
@@ -241,7 +254,7 @@ const FunctionForms = ({ currentFunction }) => {
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="photo" className={`col-sm-2 col-form-label ${styles.addlabel}`} >圖片*</CFormLabel>
                         <CCol>
-                            <CFormInput type="file" id="photo" required />
+                            <CFormInput type="file" id="C2image" required />
                         </CCol>
                     </CRow>
                     <br />
@@ -568,7 +581,7 @@ const FunctionForms = ({ currentFunction }) => {
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="photo" className={`col-sm-2 col-form-label ${styles.addlabel}`}  >圖片*</CFormLabel>
                         <CCol>
-                            <CFormInput type="file" id="photo" required />
+                            <CFormInput type="file" id="image" required />
                         </CCol>
                     </CRow>
                     <br />
