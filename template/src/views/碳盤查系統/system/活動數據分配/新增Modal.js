@@ -8,6 +8,8 @@ const AddModal = forwardRef((props, ref) => {
     useImperativeHandle(ref, () => ({
         openModal() {
             setAddModalVisible(true);
+            setCategory("1");  // 重置 category 為範疇一
+            setSelectedUsers({});
         },
     }));
 
@@ -16,10 +18,10 @@ const AddModal = forwardRef((props, ref) => {
 
 
     const [isAddModalVisible, setAddModalVisible] = useState(false);
-    const [category, setCategory] = useState("1");
+    const [category, setCategory] = useState();
     const [emissionSourceOptions, setEmissionSourceOptions] = useState([]);
     const [users, setUsers] = useState([]); // State to store users data
-    const [selectedEmissionSource, setSelectedEmissionSource] = useState('1');
+    const [selectedEmissionSource, setSelectedEmissionSource] = useState();
 
     const handleCategoryChange = (event) => {
         const selectedCategory = event ? event.target.value : category;
@@ -46,6 +48,16 @@ const AddModal = forwardRef((props, ref) => {
             ]);
         }
     };
+
+    useEffect(() => {
+        // 每次 emissionSourceOptions 或 uniqueTableNames 變更時更新 selectedEmissionSource
+        const availableOptions = emissionSourceOptions.filter(option => !uniqueTableNames.includes(option.label));
+        if (availableOptions.length > 0) {
+            setSelectedEmissionSource(availableOptions[0].value); // 設定為第一個可用選項
+        } else {
+            setSelectedEmissionSource(""); // 如果沒有可用選項，清空 selectedEmissionSource
+        }
+    }, [emissionSourceOptions, uniqueTableNames]);
 
     const fetchUsers = async () => {
         try {
@@ -81,8 +93,8 @@ const AddModal = forwardRef((props, ref) => {
 
     useEffect(() => {
         fetchUsers(); // Fetch users when the component mounts
-        handleCategoryChange(); // Initialize category options
-    }, []);
+        handleCategoryChange(); // 每次打開時，根據 category 設置排放源選項
+    }, [category]);
 
 
     const [userDepartments, setUserDepartments] = useState({}); // Store users' department mapping
@@ -166,12 +178,19 @@ const AddModal = forwardRef((props, ref) => {
             setAddModalVisible(false);
             props.onSuccess(); // 呼叫父層的刷新函數
             alert('新增成功');
+            
 
         } catch (error) {
             console.error('Error during the submission:', error);
         }
     };
 
+
+    const [isDisabled, setIsDisabled] = useState(false);
+    useEffect(() => {
+        // 判断 `emissionSourceOptions` 是否有可选项
+        setIsDisabled(emissionSourceOptions.filter(option => !uniqueTableNames.includes(option.label)).length === 0);
+    }, [emissionSourceOptions, uniqueTableNames]);
 
 
 
@@ -207,8 +226,9 @@ const AddModal = forwardRef((props, ref) => {
                                 aria-label="Default select example"
                                 className={styles.addinput}
                                 onChange={(e) => setSelectedEmissionSource(e.target.value)}
+                                disabled={isDisabled}  // 如果没有可选项则禁用 select
                             >
-                                {/* 过滤掉已存在的排放源 */}
+                                {/* 如果没有可选项，则显示"無項目可以新增" */}
                                 {emissionSourceOptions.filter(option => !uniqueTableNames.includes(option.label)).length > 0 ? (
                                     emissionSourceOptions
                                         .filter(option => !uniqueTableNames.includes(option.label))  // 过滤掉已存在的 table_name
@@ -218,7 +238,7 @@ const AddModal = forwardRef((props, ref) => {
                                             </option>
                                         ))
                                 ) : (
-                                    <option value="" disabled>已無項目可以新增</option>  // 没有选项时显示默认选项
+                                    <option value="">無項目可以新增</option>  // 禁用选项
                                 )}
                             </CFormSelect>
                         </CCol>
@@ -229,6 +249,7 @@ const AddModal = forwardRef((props, ref) => {
                         <CCol>
                             <CFormSelect aria-label="Default select example" className={styles.addinput}
                                 onChange={(e) => handleUserChange(0, e.target.value)}
+                                disabled={isDisabled}
                             >
                                 {renderUserOptions(0)} {/* 渲染對應的部門選項 */}
                             </CFormSelect>
@@ -240,6 +261,7 @@ const AddModal = forwardRef((props, ref) => {
                         <CCol>
                             <CFormSelect aria-label="Default select example" className={styles.addinput}
                                 onChange={(e) => handleUserChange(1, e.target.value)}
+                                disabled={isDisabled}
                             >
                                 {renderUserOptions(1)} {/* 渲染對應的部門選項 */}
                             </CFormSelect>
@@ -251,6 +273,7 @@ const AddModal = forwardRef((props, ref) => {
                         <CCol>
                             <CFormSelect aria-label="Default select example" className={styles.addinput}
                                 onChange={(e) => handleUserChange(2, e.target.value)}
+                                disabled={isDisabled}
                             >
                                 {renderUserOptions(2)} {/* 渲染對應的部門選項 */}
                             </CFormSelect>
@@ -262,6 +285,7 @@ const AddModal = forwardRef((props, ref) => {
                         <CCol>
                             <CFormSelect aria-label="Default select example" className={styles.addinput}
                                 onChange={(e) => handleUserChange(3, e.target.value)}
+                                disabled={isDisabled}
                             >
                                 {renderUserOptions(3)} {/* 渲染對應的部門選項 */}
                             </CFormSelect>
@@ -273,6 +297,7 @@ const AddModal = forwardRef((props, ref) => {
                         <CCol>
                             <CFormSelect aria-label="Default select example" className={styles.addinput}
                                 onChange={(e) => handleUserChange(4, e.target.value)}
+                                disabled={isDisabled}
                             >
                                 {renderUserOptions(4)} {/* 渲染對應的部門選項 */}
                             </CFormSelect>
@@ -284,6 +309,7 @@ const AddModal = forwardRef((props, ref) => {
                         <CCol>
                             <CFormSelect aria-label="Default select example" className={styles.addinput}
                                 onChange={(e) => handleUserChange(5, e.target.value)}
+                                disabled={isDisabled}
                             >
                                 {renderUserOptions(5)} {/* 渲染對應的部門選項 */}
                             </CFormSelect>
@@ -296,7 +322,7 @@ const AddModal = forwardRef((props, ref) => {
                 <CButton className="modalbutton1" onClick={() => setAddModalVisible(false)}>
                     取消
                 </CButton>
-                <CButton className="modalbutton2" onClick={handleSubmit}>新增</CButton>
+                <CButton className="modalbutton2" onClick={handleSubmit} disabled={isDisabled}>新增</CButton>
             </CModalFooter>
         </CModal>
     );

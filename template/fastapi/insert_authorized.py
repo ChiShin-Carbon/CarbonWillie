@@ -37,3 +37,24 @@ async def insert_authorized_user(
             conn.close()
     else:
         raise HTTPException(status_code=500, detail="Database connection error")
+
+
+
+
+@insert_authorized.delete("/delete_authorized/{table_name}")
+async def delete_authorized_table_name(table_name: str):
+    conn = connectDB()
+    if conn:
+        cursor = conn.cursor()
+        try:
+            query = "DELETE FROM Authorized_Table WHERE table_name = ?"
+            cursor.execute(query, (table_name,))
+            conn.commit()
+            return {"status": "success", "message": f"Records with table_name '{table_name}' deleted successfully"}
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Database delete error: {e}")
+        finally:
+            cursor.close()
+            conn.close()
+    else:
+        raise HTTPException(status_code=500, detail="Database connection error")

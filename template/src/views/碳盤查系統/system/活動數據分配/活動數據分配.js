@@ -1,4 +1,4 @@
-import React, { useRef,useEffect } from 'react'
+import React, { useRef, useEffect } from 'react'
 import { useState } from 'react';
 
 
@@ -147,6 +147,31 @@ const Tabs = () => {
 
 
 
+
+
+    ///////////////////////////////刪除////////////////////////////////////////////////
+    const deleteRecordByTableName = async (table_name) => {
+        try {
+            const response = await fetch(`http://localhost:8000/delete_authorized/${table_name}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            const result = await response.json();
+            if (response.ok) {
+                console.log(result.message);
+                // Refresh records after deletion
+                alert("刪除成功!")
+                refreshAuthorizedRecords();
+            } else {
+                console.error("Failed to delete record:", result.detail);
+            }
+        } catch (error) {
+            console.error("Error deleting record:", error);
+        }
+    };
     return (
         <main>
             <CTabs activeItemKey={1}>
@@ -229,7 +254,11 @@ const Tabs = () => {
 
                                                     <div style={{ textAlign: 'right' }}>
                                                         <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
-                                                        <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
+                                                        <FontAwesomeIcon
+                                                            icon={faTrashCan}
+                                                            className={styles.iconTrash}
+                                                            onClick={() => deleteRecordByTableName(record.table_name)}
+                                                        />
                                                     </div>
                                                 </div>
                                             </CAccordionBody>
@@ -286,7 +315,11 @@ const Tabs = () => {
 
                                                     <div style={{ textAlign: 'right' }}>
                                                         <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
-                                                        <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
+                                                        <FontAwesomeIcon
+                                                            icon={faTrashCan}
+                                                            className={styles.iconTrash}
+                                                            onClick={() => deleteRecordByTableName(record.table_name)}
+                                                        />
                                                     </div>
                                                 </div>
                                             </CAccordionBody>
@@ -342,7 +375,11 @@ const Tabs = () => {
 
                                                     <div style={{ textAlign: 'right' }}>
                                                         <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
-                                                        <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
+                                                        <FontAwesomeIcon
+                                                            icon={faTrashCan}
+                                                            className={styles.iconTrash}
+                                                            onClick={() => deleteRecordByTableName(record.table_name)}
+                                                        />
                                                     </div>
                                                 </div>
                                             </CAccordionBody>
