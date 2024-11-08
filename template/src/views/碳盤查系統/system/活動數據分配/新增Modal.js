@@ -11,6 +11,9 @@ const AddModal = forwardRef((props, ref) => {
         },
     }));
 
+    const { uniqueTableNames } = props;  // 从props中获取 uniqueTableName
+
+
 
     const [isAddModalVisible, setAddModalVisible] = useState(false);
     const [category, setCategory] = useState("1");
@@ -81,6 +84,7 @@ const AddModal = forwardRef((props, ref) => {
         handleCategoryChange(); // Initialize category options
     }, []);
 
+
     const [userDepartments, setUserDepartments] = useState({}); // Store users' department mapping
     const renderUserOptions = (departmentId) => {
         // 获取对应部门的用户列表
@@ -114,54 +118,59 @@ const AddModal = forwardRef((props, ref) => {
             });
         }
     };
-   const handleSubmit = async () => {
-    const selectedOption = emissionSourceOptions.find(option => option.value === selectedEmissionSource);
+    const handleSubmit = async () => {
+        //測試可不可以輸出
+        const selectedOption = emissionSourceOptions.find(option => option.value === selectedEmissionSource);
+        if (selectedOption) {
+            console.log(selectedOption.label);  // 打印選擇的排放源 label
+        } else {
+            console.log("未選擇排放源");
+        }
+        console.log('Selected Users:', selectedUsers);
 
-    if (selectedOption) {
-        console.log(selectedOption.label);  // 打印選擇的排放源 label
-    } else {
-        console.log("未選擇排放源");
-    }
-    console.log('Selected Users:', selectedUsers);
-
-    // 準備要提交的用戶資料
-    const userData = Object.keys(selectedUsers).map(departmentId => {
-        return {
-            user_id: selectedUsers[departmentId],  // 用戶ID
-            table_name: selectedOption.label,      // 排放源名稱
-            is_done: 0,                             // 設定預設值
-            completed_at: null                      // 可選填
-        };
-    });
-
-    // 使用 FormData 來發送資料
-    const formData = new FormData();
-    userData.forEach(user => {
-        formData.append('user_id', user.user_id);
-        formData.append('table_name', user.table_name);
-        formData.append('is_done', user.is_done);
-        formData.append('completed_at', user.completed_at);
-    });
-
-    // 發送 POST 請求到後端插入資料
-    try {
-        const response = await fetch('http://localhost:8000/insert_authorized', {
-            method: 'POST',
-            body: formData,  // 使用 FormData 代替 JSON
+        // 準備要提交的用戶資料
+        const userData = Object.keys(selectedUsers).map(departmentId => {
+            return {
+                user_id: selectedUsers[departmentId],  // 用戶ID
+                table_name: selectedOption.label,      // 排放源名稱
+                is_done: 0,                             // 設定預設值
+                completed_at: null                      // 可選填
+            };
         });
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            console.error('Error Response:', errorData);
-            throw new Error(errorData.message || 'Unknown error');
-        }
+        // 使用 FormData 來發送資料
+        const formData = new FormData();
+        userData.forEach((user, index) => {
+            formData.append(`user_ids`, user.user_id);
+            formData.append(`table_names`, user.table_name);
+            formData.append(`is_done_list`, user.is_done);
+        });
 
-        const result = await response.json();
-        console.log('Server Response:', result);
-    } catch (error) {
-        console.error('Error during the submission:', error);
-    }
-};
+        // 發送 POST 請求到後端插入資料
+        try {
+            const response = await fetch('http://localhost:8000/insert_authorized', {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error('Error Response:', errorData);
+                throw new Error(errorData.message || 'Unknown error');
+            }
+
+            const result = await response.json();
+            console.log('Server Response:', result);
+
+            // 成功後關閉 modal 並顯示成功訊息
+            setAddModalVisible(false);
+            props.onSuccess(); // 呼叫父層的刷新函數
+            alert('新增成功');
+
+        } catch (error) {
+            console.error('Error during the submission:', error);
+        }
+    };
 
 
 
@@ -179,7 +188,7 @@ const AddModal = forwardRef((props, ref) => {
             <CModalBody style={{ padding: '10px 50px' }}>
                 <CForm >
                     <CRow className="mb-3">
-                        <CFormLabel htmlFor="sitename" className={`col-sm-2 col-form-label ${styles.addlabel}`} >排放類別</CFormLabel>
+                        <CFormLabel htmlFor="sitename" className={`col-sm-2 col-form-label ${styles.addlabel}`}>排放類別</CFormLabel>
                         <CCol>
                             <CFormSelect aria-label="Default select example" className={styles.addinput} onChange={handleCategoryChange}>
                                 <option value="1">範疇一</option>
@@ -194,13 +203,23 @@ const AddModal = forwardRef((props, ref) => {
                             排放源
                         </CFormLabel>
                         <CCol>
-                            <CFormSelect aria-label="Default select example" className={styles.addinput}
-                                onChange={(e) => setSelectedEmissionSource(e.target.value)}>
-                                {emissionSourceOptions.map((option) => (
-                                    <option key={option.value} value={option.value}>
-                                        {option.label}
-                                    </option>
-                                ))}
+                            <CFormSelect
+                                aria-label="Default select example"
+                                className={styles.addinput}
+                                onChange={(e) => setSelectedEmissionSource(e.target.value)}
+                            >
+                                {/* 过滤掉已存在的排放源 */}
+                                {emissionSourceOptions.filter(option => !uniqueTableNames.includes(option.label)).length > 0 ? (
+                                    emissionSourceOptions
+                                        .filter(option => !uniqueTableNames.includes(option.label))  // 过滤掉已存在的 table_name
+                                        .map(option => (
+                                            <option key={option.value} value={option.value}>
+                                                {option.label}
+                                            </option>
+                                        ))
+                                ) : (
+                                    <option value="" disabled>已無項目可以新增</option>  // 没有选项时显示默认选项
+                                )}
                             </CFormSelect>
                         </CCol>
                     </CRow>

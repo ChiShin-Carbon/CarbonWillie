@@ -37,6 +37,7 @@ const Tabs = () => {
 
     // 設定用來儲存授權記錄的狀態
     const [authorizedRecords, setAuthorizedRecords] = useState([]);
+    const [uniqueTableNames, setUniqueTableNames] = useState([]); // 用來儲存去重后的table_name
     const getAuthorizedRecords = async () => {
         try {
             const response = await fetch('http://localhost:8000/authorizedTable', {
@@ -48,6 +49,12 @@ const Tabs = () => {
             const data = await response.json();
 
             if (response.ok) {
+                // 获取所有的 table_name 并去重
+                const tableNames = data.map(record => record.table_name);
+                const uniqueTableNames = [...new Set(tableNames)];  // 去重
+                setUniqueTableNames(uniqueTableNames); // 存储去重后的table_name
+                console.log(uniqueTableNames)
+
                 // 將每個記錄的 departmentID 轉換為部門名稱
                 const recordsWithDepartments = data.map(record => ({
                     ...record,
@@ -128,6 +135,16 @@ const Tabs = () => {
         table_name,
         ...record,
     }));
+
+    // 定義一個回調函數來刷新授權記錄
+    const refreshAuthorizedRecords = () => {
+        getAuthorizedRecords();
+    };
+
+    useEffect(() => {
+        getAuthorizedRecords();
+    }, []);
+
 
 
     return (
@@ -425,7 +442,7 @@ const Tabs = () => {
                     <CButton className="modalbutton2">確認</CButton>
                 </CModalFooter>
             </CModal>
-            <AddModal ref={addModalRef} />
+            <AddModal ref={addModalRef} onSuccess={refreshAuthorizedRecords} uniqueTableNames={uniqueTableNames} />
         </main>
     );
 }

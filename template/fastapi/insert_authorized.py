@@ -1,3 +1,4 @@
+from typing import List
 from fastapi import APIRouter, HTTPException, Form
 from connect.connect import connectDB
 from datetime import datetime
@@ -6,10 +7,10 @@ insert_authorized = APIRouter()
 
 @insert_authorized.post("/insert_authorized")
 async def insert_authorized_user(
-    user_id: int = Form(...),
-    table_name: str = Form(...),
-    is_done: int = Form(0),  # Default value for is_done is 0
-    completed_at: datetime = None  # Default value for complete_at is None (which will be stored as NULL in the database)
+    user_ids: List[int] = Form(...),
+    table_names: List[str] = Form(...),
+    is_done_list: List[int] = Form(0),  # 預設值為 0
+    completed_at_list: List[datetime] = None  # 預設值為 None
 ):
     conn = connectDB()
     if conn:
@@ -19,10 +20,16 @@ async def insert_authorized_user(
                 INSERT INTO Authorized_Table (user_id, table_name, is_done, completed_at)
                 VALUES (?, ?, ?, ?)
             """
-            values = (user_id, table_name, is_done, completed_at)
-            cursor.execute(query, values)
+            for i in range(len(user_ids)):
+                values = (
+                    user_ids[i],
+                    table_names[i],
+                    is_done_list[i] if is_done_list else 0,
+                    completed_at_list[i] if completed_at_list else None
+                )
+                cursor.execute(query, values)
             conn.commit()
-            return {"status": "success", "message": "Record inserted successfully"}
+            return {"status": "success", "message": "Records inserted successfully"}
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Database insert error: {e}")
         finally:
@@ -30,4 +37,3 @@ async def insert_authorized_user(
             conn.close()
     else:
         raise HTTPException(status_code=500, detail="Database connection error")
-
