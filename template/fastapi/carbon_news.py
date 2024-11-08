@@ -10,7 +10,7 @@ my_news_api = NewsApiClient(api_key=API_KEY)
 
 @app.route('/news', methods=['GET'])
 def get_news():
-    query = request.args.get('q', '台灣碳費')  # 從請求中取得查詢字串，預設為 '台灣碳費'
+    query = request.args.get('q', '碳費')  # 從請求中取得查詢字串，預設為 '台灣碳費'
 
     # 查詢 "碳費" 相關的新聞，不使用日期範圍
     articles = my_news_api.get_everything(

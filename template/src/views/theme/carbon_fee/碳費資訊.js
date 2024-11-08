@@ -11,11 +11,6 @@ import {
     CTableHeaderCell,
     CTableDataCell,
     CTableRow,
-    CDropdown,
-    CDropdownDivider,
-    CDropdownItem,
-    CDropdownMenu,
-    CDropdownToggle,
     CInputGroup,
     CInputGroupText,
     CListGroup,
@@ -52,30 +47,52 @@ import styles from '../../../scss/盤查結果查詢.module.css';
 
 
 const Tabs = () => {
-    const random = () => Math.round(Math.random() * 100)
     const [activeTab, setActiveTab] = useState('tab1'); // 記錄當前活動的分頁
     const cellStyle = { border: '1px solid white', textAlign: 'center', verticalAlign: 'middle', height: '40px' };
     const rankingstyle = { border: '1px solid white', textAlign: 'center', verticalAlign: 'middle' };
+    //新聞const
     const [news, setNews] = useState([]); // 定義狀態變數
-    const [query, setQuery] = useState('台灣碳費'); // 預設搜尋關鍵字
-    
-    //試著加入new
+    const [query, setQuery] = useState('碳費'); // 預設搜尋關鍵字
+    const [searchInput, setSearchInput] = useState(''); // 儲存搜尋框的暫存值
+    const [loading, setLoading] = useState(false); // 加載狀態
+    //搜尋
+    const handleSearchInput = (e) => {
+        setSearchInput(e.target.value); // 更新輸入框的值
+    };
+    const handleSearch = () => {
+        setQuery(searchInput); // 將暫存的搜尋框值設定到 query
+    };
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault(); // 防止表單默認提交行為
+            handleSearch(); // 呼叫搜尋函數
+        }
+    };
+
+    //news
     useEffect(() => {
-        async function fetchNews() {
+        const fetchNews = async () => {
+            setLoading(true);
             try {
                 const response = await fetch(`http://127.0.0.1:5000/news?q=${query}`);
                 if (!response.ok) {
                     throw new Error('Network response was not ok ' + response.statusText);
                 }
-
                 const data = await response.json();
-                setNews(data.articles); // 將 API 回傳的新聞資料儲存在狀態中
+                setNews(data.articles); // 更新新聞資料
             } catch (error) {
                 console.error('Fetch error: ', error);
+            } finally {
+                setLoading(false);
             }
+        };
+
+        // 只有當 query 變動時才重新觸發 API 請求
+        if (query) {
+            fetchNews();
         }
-        fetchNews();
-    }, [query]); // useEffect 依賴空陣列，確保只在組件初次加載時呼叫 API
+    }, [query]); // 當 query 改變時才觸發
+    
     return (
         <CRow>
             <div className={styles.systemTablist}>
@@ -525,28 +542,20 @@ const Tabs = () => {
                     {activeTab === 'tab3' && (
                         <>
                             {/* 搜尋&篩選器 */}
-                            <div style={{width:'100%'}}>
-                            <CInputGroup className="mb-3">
-                                <CFormInput type="text" placeholder="搜尋..." className="search-input" onChange={(e) => setQuery(e.target.value)}/>
-                                {/* <CButton type="submit" className="search-button" style={{width: '40px', backgroundColor: 'white', color: 'black', alignItems: 'center' }}>
-                                    <b><CIcon icon={cilSearch} className="me-2" /></b>
-                                </CButton> */}
-                                <CInputGroupText style={{backgroundColor:'white' }}>
-                                    <i className="pi pi-search" />
-                                </CInputGroupText>
-                                <CDropdown  style={{backgroundColor:'white' }}>
-                                <CDropdownToggle color="secondary" variant="outline">
-                                    篩選
-                                </CDropdownToggle>
-                                <CDropdownMenu>
-                                    <CDropdownItem onClick={() => setQuery('台灣碳費')}>台灣</CDropdownItem>
-                                    <CDropdownItem onClick={() => setQuery('international carbon fees')}>國際</CDropdownItem>
-                                    <CDropdownItem onClick={() => setQuery('carbon')}>Something else here</CDropdownItem>
-                                </CDropdownMenu>
-                                </CDropdown>
-                            </CInputGroup>
-                            <CInputGroup className="mb-3">
-                            </CInputGroup>
+                            <div style={{ width: '70%' }}>
+                                <CInputGroup className="mb-3">
+                                    <CFormInput
+                                        type="search"
+                                        placeholder="搜尋..."
+                                        className="search-input"
+                                        value={searchInput} // 綁定輸入框的暫存值
+                                        onChange={handleSearchInput} // 更新輸入框的值
+                                        onKeyDown={handleKeyDown} // 監聽 Enter 鍵
+                                    />
+                                    <CButton type="button" color="secondary" variant="outline" onClick={handleSearch}>
+                                        <i className="pi pi-search" />
+                                    </CButton>
+                                </CInputGroup>
                             </div>
                             {/* 碳費新聞 */}
                             <CCard style={{ width: '100%' }}>
@@ -562,59 +571,90 @@ const Tabs = () => {
                                             display: 'flex',
                                             alignItems: 'center',
                                             padding: '10px 40px'
-                                        }}>碳費新聞</div>
+                                        }}>
+                                            {/* 根據搜尋內容動態顯示標題 */}
+                                            {query || '搜尋結果'}新聞</div>
                                     </div>
                                 </CCardTitle>
                                 <CCardBody>
-                                    <CCardBody style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                        <CCard style={{ width: '1100px', fontSize: '1.2rem' }}>
-                                            <CCardBody>
-                                                {news.length > 0 ? (
-                                                    news
-                                                    //.filter(article => article.title.includes('碳'))
-                                                    .filter(article => {
-                                                        // 檢查是否是 Yahoo 網址且包含指定的結尾
-                                                        const isYahooWithValidExtension = !(article.url.includes("yahoo") && !/\.(png|html)$/.test(article.url));
-                                                        
-                                                        // 檢查標題是否包含 '碳'
-                                                        const hasKeywordInTitle = article.title.includes('碳');
-                                                        
-                                                        // 只有在符合兩個條件時才返回 true
-                                                        return isYahooWithValidExtension && hasKeywordInTitle;
-                                                    })
-                                                    
-                                                    .sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt)) // 根據日期從新到舊排序
-                                                    .slice(0, 20) // 限制最多顯示 10 篇新聞
+                                <CCardBody style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                    <CCard style={{ width: '1100px', fontSize: '1.2rem' }}>
+                                        <CCardBody>
+                                        {loading ? (
+                                            <center><p>正在載入新聞...</p></center>
+                                        ) : news.filter((article) => {
+                                            const isYahooWithValidExtension =
+                                                !(article.url.includes('yahoo') && !/\.(png|html)$/.test(article.url));
+                                            const hasKeywordInTitle = article.title.includes(query);
+                                            return isYahooWithValidExtension && hasKeywordInTitle;
+                                        }).length === 0 ? ( // 如果篩選後的新聞數量為 0
+                                            <center>
+                                                <p>暫無新聞!</p>
+                                                <p>可搜尋關鍵字!</p>
+                                            </center>
+                                        ) : (
+                                            news
+                                                .filter((article) => {
+                                                    const isYahooWithValidExtension =
+                                                        !(article.url.includes('yahoo') && !/\.(png|html)$/.test(article.url));
+                                                    const hasKeywordInTitle = article.title.includes(query);
+                                                    return isYahooWithValidExtension && hasKeywordInTitle;
+                                                })
+                                                    .sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt))
+                                                    .slice(0, 20)
                                                     .map((article, index) => (
-                                                        
-                                                        <div key={index} style={{ marginBottom: '20px', borderBottom: '1px solid lightgray', paddingBottom: '20px' }}> 
+                                                        <div
+                                                            key={index}
+                                                            style={{
+                                                                marginBottom: '20px',
+                                                                borderBottom: '1px solid lightgray',
+                                                                paddingBottom: '20px',
+                                                            }}
+                                                        >
                                                             <CRow>
-                                                                <div style={{ width: '100%', height: '50px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                                    {/* Left green bar */}
-                                                                    <div style={{ width: '10px', height: '100%', backgroundColor: '#00a000', borderRadius: '4px' }}></div>
-                                                                    
-                                                                    {/* Left section: Date and Title */}
+                                                                <div
+                                                                    style={{
+                                                                        width: '100%',
+                                                                        height: '50px',
+                                                                        display: 'flex',
+                                                                        justifyContent: 'space-between',
+                                                                        alignItems: 'center',
+                                                                    }}
+                                                                >
+                                                                    <div
+                                                                        style={{
+                                                                            width: '10px',
+                                                                            height: '100%',
+                                                                            backgroundColor: '#00a000',
+                                                                            borderRadius: '4px',
+                                                                        }}
+                                                                    ></div>
                                                                     <div style={{ display: 'flex', flex: 1, marginLeft: '20px', flexDirection: 'column' }}>
-                                                                        {/* Date */}
-                                                                        <p style={{ color: 'green', fontWeight: 'bold', margin: 0 }}>{new Date(article.publishedAt).toLocaleDateString()}</p>
-                                                                        {/* Title */}
+                                                                        <p style={{ color: 'green', fontWeight: 'bold', margin: 0 }}>
+                                                                            {new Date(article.publishedAt).toLocaleDateString()}
+                                                                        </p>
                                                                         <p style={{ fontWeight: 'bold', margin: 0 }}>{article.title}</p>
                                                                     </div>
-
-                                                                    {/* Right section: Arrow button */}
-                                                                    <CButton style={{ height: '60px', width: '60px', display: 'flex', justifyContent: 'center', alignItems: 'center' }} onClick={() => window.open(article.url, '_blank')}>
+                                                                    <CButton
+                                                                        style={{
+                                                                            height: '60px',
+                                                                            width: '60px',
+                                                                            display: 'flex',
+                                                                            justifyContent: 'center',
+                                                                            alignItems: 'center',
+                                                                        }}
+                                                                        onClick={() => window.open(article.url, '_blank')}
+                                                                    >
                                                                         <CIcon icon={cilArrowCircleRight} style={{ width: '55px', height: '55px' }} />
                                                                     </CButton>
                                                                 </div>
                                                             </CRow>
                                                         </div>
                                                     ))
-                                                ) : (
-                                                    <p>正在載入新聞...</p>
-                                                )}
-                                            </CCardBody>
-                                        </CCard>
-                                    </CCardBody>
+                                            )}
+                                        </CCardBody>
+                                    </CCard>
+                                </CCardBody>
                                     <br />
                                 </CCardBody>
                             </CCard>
