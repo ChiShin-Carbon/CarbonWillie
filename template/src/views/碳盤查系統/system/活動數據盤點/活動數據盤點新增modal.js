@@ -31,6 +31,7 @@ const FunctionForms = ({ currentFunction }) => {
             const data = await res.json();
             if (res.ok) {
                 console.log("Form submitted successfully", data);
+                setAddModalVisible(false);
             } else {
                 console.error("Failed to submit form data", data.detail);
             }
@@ -79,6 +80,37 @@ const FunctionForms = ({ currentFunction }) => {
             }
         } catch (error) {
             console.error("Error submitting form data", error);
+        }
+    };
+
+    const handleC1image = async (e) => {
+        e.preventDefault();
+
+        const imageElement = document.getElementById("C1image");
+
+        if (!imageElement || !imageElement.files) {
+            console.error("Form elements or image files not found");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("image", imageElement.files[0]);
+
+        try {
+            const res = await fetch("http://localhost:8000/ocrapi", {
+                method: "POST",
+                body: formData,
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                setRecognizedText(data.recognized_text); // Set the recognized text in state
+                console.log("Data submitted successfully");
+            } else {
+                console.error("Failed to submit data");
+            }
+        } catch (error) {
+            console.error("Error submitting data", error);
         }
     };
     
@@ -259,6 +291,8 @@ const FunctionForms = ({ currentFunction }) => {
                     </CRow>
                     <br />
                     <div style={{ textAlign: 'center' }}>*為必填欄位</div>
+
+                    <CButton type="submit" onClick={handleC2Submit}>新增</CButton>
 
                 </div>
             );
