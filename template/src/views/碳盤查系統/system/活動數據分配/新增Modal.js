@@ -16,6 +16,7 @@ const AddModal = forwardRef((props, ref) => {
     const [category, setCategory] = useState("1");
     const [emissionSourceOptions, setEmissionSourceOptions] = useState([]);
     const [users, setUsers] = useState([]); // State to store users data
+    const [selectedEmissionSource, setSelectedEmissionSource] = useState('1');
 
     const handleCategoryChange = (event) => {
         const selectedCategory = event ? event.target.value : category;
@@ -53,7 +54,13 @@ const AddModal = forwardRef((props, ref) => {
             });
             const data = await response.json();
             if (data.users) {
-                setUsers(data.users); // Store users data in state
+                // Store users' usernames and user_ids in state
+                const usersData = data.users.map(user => ({
+                    username: user.username,
+                    user_id: user.user_id,
+                }));
+                setUsers(usersData); // Store extracted username and user_id
+
                 // Create a mapping of department -> usernames
                 const departments = data.users.reduce((acc, user) => {
                     if (!acc[user.department]) {
@@ -92,6 +99,73 @@ const AddModal = forwardRef((props, ref) => {
         );
     };
 
+
+    const [selectedUsers, setSelectedUsers] = useState({}); // 存儲各部門選中的用戶ID
+    const handleUserChange = (departmentId, selectedUsername) => {
+        const selectedUser = users.find(user => user.username === selectedUsername);
+        // 这里直接更新selectedUsers数组，而不是合并旧的数组
+        if (selectedUser) {
+            setSelectedUsers(prevState => {
+                // 将部门ID与对应的用户ID加入到选中的用户列表中
+                return {
+                    ...prevState,
+                    [departmentId]: selectedUser.user_id,
+                };
+            });
+        }
+    };
+   const handleSubmit = async () => {
+    const selectedOption = emissionSourceOptions.find(option => option.value === selectedEmissionSource);
+
+    if (selectedOption) {
+        console.log(selectedOption.label);  // 打印選擇的排放源 label
+    } else {
+        console.log("未選擇排放源");
+    }
+    console.log('Selected Users:', selectedUsers);
+
+    // 準備要提交的用戶資料
+    const userData = Object.keys(selectedUsers).map(departmentId => {
+        return {
+            user_id: selectedUsers[departmentId],  // 用戶ID
+            table_name: selectedOption.label,      // 排放源名稱
+            is_done: 0,                             // 設定預設值
+            completed_at: null                      // 可選填
+        };
+    });
+
+    // 使用 FormData 來發送資料
+    const formData = new FormData();
+    userData.forEach(user => {
+        formData.append('user_id', user.user_id);
+        formData.append('table_name', user.table_name);
+        formData.append('is_done', user.is_done);
+        formData.append('completed_at', user.completed_at);
+    });
+
+    // 發送 POST 請求到後端插入資料
+    try {
+        const response = await fetch('http://localhost:8000/insert_authorized', {
+            method: 'POST',
+            body: formData,  // 使用 FormData 代替 JSON
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error('Error Response:', errorData);
+            throw new Error(errorData.message || 'Unknown error');
+        }
+
+        const result = await response.json();
+        console.log('Server Response:', result);
+    } catch (error) {
+        console.error('Error during the submission:', error);
+    }
+};
+
+
+
+
     return (
         <CModal
             backdrop="static"
@@ -120,7 +194,8 @@ const AddModal = forwardRef((props, ref) => {
                             排放源
                         </CFormLabel>
                         <CCol>
-                            <CFormSelect aria-label="Default select example" className={styles.addinput}>
+                            <CFormSelect aria-label="Default select example" className={styles.addinput}
+                                onChange={(e) => setSelectedEmissionSource(e.target.value)}>
                                 {emissionSourceOptions.map((option) => (
                                     <option key={option.value} value={option.value}>
                                         {option.label}
@@ -133,7 +208,9 @@ const AddModal = forwardRef((props, ref) => {
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="sitename" className={`col-sm-2 col-form-label ${styles.addlabel}`} >管理部門</CFormLabel>
                         <CCol>
-                            <CFormSelect aria-label="Default select example" className={styles.addinput}>
+                            <CFormSelect aria-label="Default select example" className={styles.addinput}
+                                onChange={(e) => handleUserChange(0, e.target.value)}
+                            >
                                 {renderUserOptions(0)} {/* 渲染對應的部門選項 */}
                             </CFormSelect>
                         </CCol>
@@ -142,7 +219,9 @@ const AddModal = forwardRef((props, ref) => {
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="sitename" className={`col-sm-2 col-form-label ${styles.addlabel}`} >業務部門</CFormLabel>
                         <CCol>
-                            <CFormSelect aria-label="Default select example" className={styles.addinput}>
+                            <CFormSelect aria-label="Default select example" className={styles.addinput}
+                                onChange={(e) => handleUserChange(1, e.target.value)}
+                            >
                                 {renderUserOptions(1)} {/* 渲染對應的部門選項 */}
                             </CFormSelect>
                         </CCol>
@@ -151,7 +230,9 @@ const AddModal = forwardRef((props, ref) => {
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="sitename" className={`col-sm-2 col-form-label ${styles.addlabel}`} >資訊部門</CFormLabel>
                         <CCol>
-                            <CFormSelect aria-label="Default select example" className={styles.addinput}>
+                            <CFormSelect aria-label="Default select example" className={styles.addinput}
+                                onChange={(e) => handleUserChange(2, e.target.value)}
+                            >
                                 {renderUserOptions(2)} {/* 渲染對應的部門選項 */}
                             </CFormSelect>
                         </CCol>
@@ -160,7 +241,9 @@ const AddModal = forwardRef((props, ref) => {
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="sitename" className={`col-sm-2 col-form-label ${styles.addlabel}`} >門診部門</CFormLabel>
                         <CCol>
-                            <CFormSelect aria-label="Default select example" className={styles.addinput}>
+                            <CFormSelect aria-label="Default select example" className={styles.addinput}
+                                onChange={(e) => handleUserChange(3, e.target.value)}
+                            >
                                 {renderUserOptions(3)} {/* 渲染對應的部門選項 */}
                             </CFormSelect>
                         </CCol>
@@ -169,7 +252,9 @@ const AddModal = forwardRef((props, ref) => {
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="sitename" className={`col-sm-2 col-form-label ${styles.addlabel}`} >健檢部門</CFormLabel>
                         <CCol>
-                            <CFormSelect aria-label="Default select example" className={styles.addinput}>
+                            <CFormSelect aria-label="Default select example" className={styles.addinput}
+                                onChange={(e) => handleUserChange(4, e.target.value)}
+                            >
                                 {renderUserOptions(4)} {/* 渲染對應的部門選項 */}
                             </CFormSelect>
                         </CCol>
@@ -178,7 +263,9 @@ const AddModal = forwardRef((props, ref) => {
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="sitename" className={`col-sm-2 col-form-label ${styles.addlabel}`} >檢驗部門</CFormLabel>
                         <CCol>
-                            <CFormSelect aria-label="Default select example" className={styles.addinput}>
+                            <CFormSelect aria-label="Default select example" className={styles.addinput}
+                                onChange={(e) => handleUserChange(5, e.target.value)}
+                            >
                                 {renderUserOptions(5)} {/* 渲染對應的部門選項 */}
                             </CFormSelect>
                         </CCol>
@@ -190,7 +277,7 @@ const AddModal = forwardRef((props, ref) => {
                 <CButton className="modalbutton1" onClick={() => setAddModalVisible(false)}>
                     取消
                 </CButton>
-                <CButton className="modalbutton2">新增</CButton>
+                <CButton className="modalbutton2" onClick={handleSubmit}>新增</CButton>
             </CModalFooter>
         </CModal>
     );
