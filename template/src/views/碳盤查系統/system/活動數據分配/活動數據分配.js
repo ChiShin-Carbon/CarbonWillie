@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React, { useRef,useEffect } from 'react'
 import { useState } from 'react';
 
 
@@ -37,8 +37,6 @@ const Tabs = () => {
 
     // 設定用來儲存授權記錄的狀態
     const [authorizedRecords, setAuthorizedRecords] = useState([]);
-
-
     const getAuthorizedRecords = async () => {
         try {
             const response = await fetch('http://localhost:8000/authorizedTable', {
@@ -65,7 +63,9 @@ const Tabs = () => {
             setErrorMessage('Error fetching authorized records');
         }
     };
-
+    useEffect(() => {
+        getAuthorizedRecords();
+    }, []);
 
     // 將部門ID轉換為部門名稱的函數
     const getDepartmentName = (departmentID) => {
@@ -129,7 +129,6 @@ const Tabs = () => {
         ...record,
     }));
 
-    getAuthorizedRecords();
 
     return (
         <main>
@@ -341,7 +340,7 @@ const Tabs = () => {
 
 
 
-         
+
 
 
 

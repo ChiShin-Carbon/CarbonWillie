@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException, status
 from connect.connect import connectDB
 from pydantic import BaseModel
 from datetime import datetime
+from typing import Optional
 
 # 建立 APIRouter 實例
 authorizedTable = APIRouter()
@@ -12,10 +13,10 @@ class AuthorizedRecord(BaseModel):
     user_id: int
     table_name: str
     is_done: bool
-    completed_at: str  
+    completed_at: Optional[datetime]  # Allows datetime or None for NULL
     username: str
     department: int
-
+    
 @authorizedTable.get("/authorizedTable", response_model=list[AuthorizedRecord])
 def get_authorized_records():
     # 使用自定義連接函數建立資料庫連接

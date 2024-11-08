@@ -22,6 +22,7 @@ from bot import botapi
 from insert_vehicle import insert_vehicle
 
 from authorizedTable import authorizedTable
+from insert_authorized import insert_authorized
 
 
 app = FastAPI()
@@ -60,3 +61,4 @@ app.include_router(ocrapi)
 app.include_router(botapi)
 app.include_router(insert_vehicle)
 app.include_router(authorizedTable)
+app.include_router(insert_authorized)

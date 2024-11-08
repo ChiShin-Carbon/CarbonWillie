@@ -195,5 +195,5 @@ const AddModal = forwardRef((props, ref) => {
         </CModal>
     );
 });
-
+ 
 export default AddModal;
