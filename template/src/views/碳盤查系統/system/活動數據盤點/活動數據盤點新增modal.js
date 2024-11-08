@@ -165,6 +165,41 @@ const FunctionForms = ({ currentFunction }) => {
         }
     };
     
+    const handleC4Submit = async (e) => {
+        e.preventDefault();
+
+        const month = document.getElementById("C4month").value;
+        const people = document.getElementById("C4people").value;
+        const workhour = document.getElementById("C4workhour").value;
+        const workday = document.getElementById("C4workday").value;
+        const explain = document.getElementById("C4explain").value;
+        const image = document.getElementById("C4image").files[0];
+
+        const formData = new FormData();
+        formData.append("user_id", 1);
+        formData.append("month", month);
+        formData.append("nonemployee_number", people);
+        formData.append("total_hours", workhour);
+        formData.append("total_days", workday);
+        formData.append("explain", explain);
+        formData.append("image", image);
+
+        try {
+            const res = await fetch("http://localhost:8000/insert_Nonemployee", {
+                method: "POST",
+                body: formData,
+            });
+            
+            if (res.ok) {
+                const data = await res.json();
+                console.log("Form submitted successfully:", data);
+            } else {
+                console.error("Failed to submit form data");
+            }
+        } catch (error) {
+            console.error("Error submitting form data", error);
+        }
+    };
     
 
     const [transportType, setTransportType] = useState("1"); // 默認選擇汽車
@@ -458,7 +493,7 @@ const FunctionForms = ({ currentFunction }) => {
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="month" className={`col-sm-2 col-form-label ${styles.addlabel}`} >月份*</CFormLabel>
                         <CCol>
-                            <CFormSelect aria-label="Default select example" id="month" className={styles.addinput} >
+                            <CFormSelect aria-label="Default select example" id="C4month" className={styles.addinput} >
                                 <option value="1">1月</option>
                                 <option value="2">2月</option>
                                 <option value="3">3月</option>
@@ -477,40 +512,40 @@ const FunctionForms = ({ currentFunction }) => {
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="people" className={`col-sm-2 col-form-label ${styles.addlabel}`} >人數*<span className={styles.Note}>如保全、清潔等委外人員</span></CFormLabel>
                         <CCol>
-                            <CFormInput className={styles.addinput} type="number" min='0' id="people" required />
+                            <CFormInput className={styles.addinput} type="number" min='0' id="C4people" required />
                         </CCol>
                     </CRow>
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="workhour" className={`col-sm-2 col-form-label ${styles.addlabel}`} >總工作時數*</CFormLabel>
                         <CCol>
-                            <CFormInput className={styles.addinput} type="number" min='0' id="workhour" required />
+                            <CFormInput className={styles.addinput} type="number" min='0' id="C4workhour" required />
                         </CCol>
                     </CRow>
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="workday" className={`col-sm-2 col-form-label ${styles.addlabel}`} >總工作人天*</CFormLabel>
                         <CCol>
-                            <CFormInput className={styles.addinput} type="number" min='0' id="workday" required />
+                            <CFormInput className={styles.addinput} type="number" min='0' id="C4workday" required />
                         </CCol>
                     </CRow>
 
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="explain" className={`col-sm-2 col-form-label ${styles.addlabel}`} >備註</CFormLabel>
                         <CCol>
-                            <CFormTextarea className={styles.addinput} type="text" id="explain" rows={3} />
+                            <CFormTextarea className={styles.addinput} type="text" id="C4explain" rows={3} />
 
                         </CCol>
                     </CRow>
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="photo" className={`col-sm-2 col-form-label ${styles.addlabel}`}  >圖片*</CFormLabel>
                         <CCol>
-                            <CFormInput type="file" id="photo" required />
+                            <CFormInput type="file" id="C4image" required />
                         </CCol>
                     </CRow>
                     <br />
                     <div style={{ textAlign: 'center' }}>*為必填欄位</div>
 
 
-
+                    <CButton type="submit" onClick={handleC4Submit}>新增</CButton>
 
                 </div>
             );

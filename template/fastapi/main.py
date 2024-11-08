@@ -22,6 +22,7 @@ from bot import botapi
 from insert_vehicle import insert_vehicle
 from insert_Extinguisher import insert_Extinguisher
 from insert_employee import insert_employee
+from insert_Nonemployee import insert_Nonemployee
 
 from authorizedTable import authorizedTable
 
@@ -64,3 +65,4 @@ app.include_router(insert_vehicle)
 app.include_router(authorizedTable)
 app.include_router(insert_Extinguisher)
 app.include_router(insert_employee)
+app.include_router(insert_Nonemployee)
