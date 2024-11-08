@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React, { useRef, useEffect } from 'react'
 import { useState } from 'react';
 
 
@@ -25,16 +25,19 @@ import 'primeicons/primeicons.css';                        // 图标样式
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPenToSquare, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 
+import AddModal from './新增Modal'; // Import the AddModal component
+
 
 const Tabs = () => {
-    const [isAddModalVisible, setAddModalVisible] = useState(false);
+    const addModalRef = useRef();
+    const handleOpenAddModal = () => {
+        addModalRef.current.openModal();
+    };
     const [isEditModalVisible, setEditModalVisible] = useState(false);
-
 
     // 設定用來儲存授權記錄的狀態
     const [authorizedRecords, setAuthorizedRecords] = useState([]);
-
-
+    const [uniqueTableNames, setUniqueTableNames] = useState([]); // 用來儲存去重后的table_name
     const getAuthorizedRecords = async () => {
         try {
             const response = await fetch('http://localhost:8000/authorizedTable', {
@@ -44,9 +47,14 @@ const Tabs = () => {
                 },
             });
             const data = await response.json();
-            console.log(data);
 
             if (response.ok) {
+                // 获取所有的 table_name 并去重
+                const tableNames = data.map(record => record.table_name);
+                const uniqueTableNames = [...new Set(tableNames)];  // 去重
+                setUniqueTableNames(uniqueTableNames); // 存储去重后的table_name
+                console.log(uniqueTableNames)
+
                 // 將每個記錄的 departmentID 轉換為部門名稱
                 const recordsWithDepartments = data.map(record => ({
                     ...record,
@@ -62,7 +70,9 @@ const Tabs = () => {
             setErrorMessage('Error fetching authorized records');
         }
     };
-
+    useEffect(() => {
+        getAuthorizedRecords();
+    }, []);
 
     // 將部門ID轉換為部門名稱的函數
     const getDepartmentName = (departmentID) => {
@@ -126,9 +136,42 @@ const Tabs = () => {
         ...record,
     }));
 
+    // 定義一個回調函數來刷新授權記錄
+    const refreshAuthorizedRecords = () => {
+        getAuthorizedRecords();
+    };
 
-    getAuthorizedRecords();
+    useEffect(() => {
+        getAuthorizedRecords();
+    }, []);
 
+
+
+
+
+    ///////////////////////////////刪除////////////////////////////////////////////////
+    const deleteRecordByTableName = async (table_name) => {
+        try {
+            const response = await fetch(`http://localhost:8000/delete_authorized/${table_name}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            const result = await response.json();
+            if (response.ok) {
+                console.log(result.message);
+                // Refresh records after deletion
+                alert("刪除成功!")
+                refreshAuthorizedRecords();
+            } else {
+                console.error("Failed to delete record:", result.detail);
+            }
+        } catch (error) {
+            console.error("Error deleting record:", error);
+        }
+    };
     return (
         <main>
             <CTabs activeItemKey={1}>
@@ -167,7 +210,7 @@ const Tabs = () => {
                 <div>
                     <div className={styles.activityCard2Head}>
                         <strong className={styles.activityCard2HeadTitle}>範疇一</strong>
-                        <button className={styles.activityAddButton} onClick={() => setAddModalVisible(true)}>新增</button>
+                        <button className={styles.activityAddButton} onClick={handleOpenAddModal}>新增</button>
                     </div>
 
                     <div className={styles.activityCardBody2}>
@@ -211,7 +254,11 @@ const Tabs = () => {
 
                                                     <div style={{ textAlign: 'right' }}>
                                                         <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
-                                                        <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
+                                                        <FontAwesomeIcon
+                                                            icon={faTrashCan}
+                                                            className={styles.iconTrash}
+                                                            onClick={() => deleteRecordByTableName(record.table_name)}
+                                                        />
                                                     </div>
                                                 </div>
                                             </CAccordionBody>
@@ -268,7 +315,11 @@ const Tabs = () => {
 
                                                     <div style={{ textAlign: 'right' }}>
                                                         <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
-                                                        <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
+                                                        <FontAwesomeIcon
+                                                            icon={faTrashCan}
+                                                            className={styles.iconTrash}
+                                                            onClick={() => deleteRecordByTableName(record.table_name)}
+                                                        />
                                                     </div>
                                                 </div>
                                             </CAccordionBody>
@@ -293,7 +344,7 @@ const Tabs = () => {
                                             <CAccordionHeader>{record.table_name}</CAccordionHeader>
                                             <CAccordionBody>
                                                 <div className={styles.AccordionBodyItem}>
-                                                <h6>各部門填寫人</h6>
+                                                    <h6>各部門填寫人</h6>
                                                     <hr />
                                                     <div className={styles.departmentList}>
                                                         <div className={styles.departmentItem}>
@@ -324,7 +375,11 @@ const Tabs = () => {
 
                                                     <div style={{ textAlign: 'right' }}>
                                                         <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
-                                                        <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
+                                                        <FontAwesomeIcon
+                                                            icon={faTrashCan}
+                                                            className={styles.iconTrash}
+                                                            onClick={() => deleteRecordByTableName(record.table_name)}
+                                                        />
                                                     </div>
                                                 </div>
                                             </CAccordionBody>
@@ -339,122 +394,7 @@ const Tabs = () => {
 
 
 
-            <CModal
-                backdrop="static"
-                visible={isAddModalVisible}
-                onClose={() => setAddModalVisible(false)}
-                aria-labelledby="StaticBackdropExampleLabel"
-            >
-                <CModalHeader>
-                    <CModalTitle id="StaticBackdropExampleLabel"><b>新增排放源與填寫人</b></CModalTitle>
-                </CModalHeader>
-                <CModalBody style={{ padding: '10px 50px' }}>
-                    <CForm >
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="sitename" className={`col-sm-2 col-form-label ${styles.addlabel}`} >排放類別</CFormLabel>
-                            <CCol>
-                                <CFormSelect aria-label="Default select example" className={styles.addinput}>
-                                    <option value="1">範疇一</option>
-                                    <option value="2">範疇二</option>
-                                    <option value="3">範疇三</option>
-                                </CFormSelect>
-                            </CCol>
-                        </CRow>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="sitename" className={`col-sm-2 col-form-label ${styles.addlabel}`} >排放源</CFormLabel>
-                            <CCol>
-                                <CFormSelect aria-label="Default select example" className={styles.addinput}>
-                                    <option value="1">...</option>
-                                    <option value="2">...</option>
-                                    <option value="3">...</option>
-                                    <option value="4">...</option>
-                                    <option value="5">...</option>
-                                </CFormSelect>
-                            </CCol>
-                        </CRow>
-                        <hr />
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="sitename" className={`col-sm-2 col-form-label ${styles.addlabel}`} >管理部門</CFormLabel>
-                            <CCol>
-                                <CFormSelect aria-label="Default select example" className={styles.addinput}>
-                                    <option value="1">無</option>
-                                    <option value="2">...</option>
-                                    <option value="3">...</option>
-                                    <option value="4">...</option>
-                                    <option value="5">...</option>
-                                </CFormSelect>
-                            </CCol>
-                        </CRow>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="sitename" className={`col-sm-2 col-form-label ${styles.addlabel}`} >資訊部門</CFormLabel>
-                            <CCol>
-                                <CFormSelect aria-label="Default select example" className={styles.addinput}>
-                                    <option value="1">無</option>
-                                    <option value="2">...</option>
-                                    <option value="3">...</option>
-                                    <option value="4">...</option>
-                                    <option value="5">...</option>
-                                </CFormSelect>
-                            </CCol>
-                        </CRow>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="sitename" className={`col-sm-2 col-form-label ${styles.addlabel}`} >門診部門</CFormLabel>
-                            <CCol>
-                                <CFormSelect aria-label="Default select example" className={styles.addinput}>
-                                    <option value="1">無</option>
-                                    <option value="2">...</option>
-                                    <option value="3">...</option>
-                                    <option value="4">...</option>
-                                    <option value="5">...</option>
-                                </CFormSelect>
-                            </CCol>
-                        </CRow>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="sitename" className={`col-sm-2 col-form-label ${styles.addlabel}`} >健檢部門</CFormLabel>
-                            <CCol>
-                                <CFormSelect aria-label="Default select example" className={styles.addinput}>
-                                    <option value="1">無</option>
-                                    <option value="2">...</option>
-                                    <option value="3">...</option>
-                                    <option value="4">...</option>
-                                    <option value="5">...</option>
-                                </CFormSelect>
-                            </CCol>
-                        </CRow>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="sitename" className={`col-sm-2 col-form-label ${styles.addlabel}`} >檢驗部門</CFormLabel>
-                            <CCol>
-                                <CFormSelect aria-label="Default select example" className={styles.addinput}>
-                                    <option value="1">無</option>
-                                    <option value="2">...</option>
-                                    <option value="3">...</option>
-                                    <option value="4">...</option>
-                                    <option value="5">...</option>
-                                </CFormSelect>
-                            </CCol>
-                        </CRow>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="sitename" className={`col-sm-2 col-form-label ${styles.addlabel}`} >業務部門</CFormLabel>
-                            <CCol>
-                                <CFormSelect aria-label="Default select example" className={styles.addinput}>
-                                    <option value="1">無</option>
-                                    <option value="2">...</option>
-                                    <option value="3">...</option>
-                                    <option value="4">...</option>
-                                    <option value="5">...</option>
-                                </CFormSelect>
-                            </CCol>
-                        </CRow>
 
-                    </CForm>
-                </CModalBody>
-                <CModalFooter>
-                    <CButton className="modalbutton1" onClick={() => setAddModalVisible(false)}>
-                        取消
-                    </CButton>
-                    <CButton className="modalbutton2">新增</CButton>
-                </CModalFooter>
-            </CModal>
 
 
 
@@ -539,6 +479,7 @@ const Tabs = () => {
                     <CButton className="modalbutton2">確認</CButton>
                 </CModalFooter>
             </CModal>
+            <AddModal ref={addModalRef} onSuccess={refreshAuthorizedRecords} uniqueTableNames={uniqueTableNames} />
         </main>
     );
 }
