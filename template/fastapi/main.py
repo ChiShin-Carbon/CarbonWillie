@@ -25,6 +25,7 @@ from insert_employee import insert_employee
 
 from authorizedTable import authorizedTable
 from insert_authorized import insert_authorized
+from insert_machine import insert_machine
 
 
 app = FastAPI()
@@ -68,4 +69,5 @@ app.include_router(insert_Extinguisher)
 app.include_router(insert_employee)
 
 app.include_router(insert_authorized)
+app.include_router(insert_machine)
 
