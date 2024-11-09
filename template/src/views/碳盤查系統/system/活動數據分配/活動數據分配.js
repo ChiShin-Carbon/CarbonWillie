@@ -242,6 +242,10 @@ const Tabs = () => {
                                                             <span>{record.usernames.管理部門}</span>
                                                         </div>
                                                         <div className={styles.departmentItem}>
+                                                            <span>業務部門:</span>
+                                                            <span>{record.usernames.業務部門}</span>
+                                                        </div>
+                                                        <div className={styles.departmentItem}>
                                                             <span>資訊部門:</span>
                                                             <span>{record.usernames.資訊部門}</span>
                                                         </div>
@@ -256,10 +260,6 @@ const Tabs = () => {
                                                         <div className={styles.departmentItem}>
                                                             <span>檢驗部門:</span>
                                                             <span>{record.usernames.檢驗部門}</span>
-                                                        </div>
-                                                        <div className={styles.departmentItem}>
-                                                            <span>業務部門:</span>
-                                                            <span>{record.usernames.業務部門}</span>
                                                         </div>
                                                     </div>
 
@@ -304,6 +304,10 @@ const Tabs = () => {
                                                             <span>{record.usernames.管理部門}</span>
                                                         </div>
                                                         <div className={styles.departmentItem}>
+                                                            <span>業務部門:</span>
+                                                            <span>{record.usernames.業務部門}</span>
+                                                        </div>
+                                                        <div className={styles.departmentItem}>
                                                             <span>資訊部門:</span>
                                                             <span>{record.usernames.資訊部門}</span>
                                                         </div>
@@ -318,10 +322,6 @@ const Tabs = () => {
                                                         <div className={styles.departmentItem}>
                                                             <span>檢驗部門:</span>
                                                             <span>{record.usernames.檢驗部門}</span>
-                                                        </div>
-                                                        <div className={styles.departmentItem}>
-                                                            <span>業務部門:</span>
-                                                            <span>{record.usernames.業務部門}</span>
                                                         </div>
                                                     </div>
 
@@ -365,6 +365,10 @@ const Tabs = () => {
                                                             <span>{record.usernames.管理部門}</span>
                                                         </div>
                                                         <div className={styles.departmentItem}>
+                                                            <span>業務部門:</span>
+                                                            <span>{record.usernames.業務部門}</span>
+                                                        </div>
+                                                        <div className={styles.departmentItem}>
                                                             <span>資訊部門:</span>
                                                             <span>{record.usernames.資訊部門}</span>
                                                         </div>
@@ -379,10 +383,6 @@ const Tabs = () => {
                                                         <div className={styles.departmentItem}>
                                                             <span>檢驗部門:</span>
                                                             <span>{record.usernames.檢驗部門}</span>
-                                                        </div>
-                                                        <div className={styles.departmentItem}>
-                                                            <span>業務部門:</span>
-                                                            <span>{record.usernames.業務部門}</span>
                                                         </div>
                                                     </div>
 

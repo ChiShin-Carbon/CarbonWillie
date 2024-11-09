@@ -81,26 +81,38 @@ const EditModal = forwardRef((props, ref) => {
     ////////////////////////////////////////////////////////////////////////////////////////////
    
     const handleSubmit = () => {
+        const promises = [];  // 用來保存所有操作的 Promise
+    
         Object.keys(modalUserNames).forEach(department => {
             const oldUsername = modalUserNamesOld[department];  // 當前選擇的用戶名
             const newUsername = modalUserNames[department];  // 當前選擇的用戶名
-            console.log(oldUsername, newUsername, modalTableName)
-
+    
             // 檢查是否有變動
             if (oldUsername === '無' && newUsername !== '無') {
                 // 從無選擇改成選擇用戶，則插入新的填寫人
-                insertAuthorizedUser(modalTableName, newUsername);  // 使用 modalTableName 作為 tableName
+                promises.push(insertAuthorizedUser(modalTableName, newUsername));  // 返回 Promise 並推入 promises 陣列
             } else if (oldUsername !== newUsername && newUsername !== '無') {
                 // 用戶名發生變動，則更新填寫人
-                updateAuthorizedUser(modalTableName, oldUsername, newUsername);  // 使用 modalTableName 作為 tableName
+                promises.push(updateAuthorizedUser(modalTableName, oldUsername, newUsername));  // 返回 Promise 並推入 promises 陣列
             } else if (oldUsername !== '無' && newUsername === '無') {
                 // 用戶名從 A 變成無，則刪除該用戶的紀錄
-                deleteAuthorizedUser(modalTableName, oldUsername);  // 使用 modalTableName 作為 tableName
+                promises.push(deleteAuthorizedUser(modalTableName, oldUsername));  // 返回 Promise 並推入 promises 陣列
             }
         });
-
-        // 關閉 Modal
-        setEditModalVisible(false);
+    
+        // 等待所有請求完成
+        Promise.all(promises)
+            .then(() => {
+                // 當所有請求都成功時，關閉 Modal 並顯示一次修改成功訊息
+                setEditModalVisible(false);
+                alert('修改成功');
+                props.onSuccess(); // 呼叫父層的刷新函數
+            })
+            .catch(error => {
+                // 如果有任何請求失敗，顯示錯誤訊息
+                console.error('Error during batch update:', error);
+                setSuccessMessage('更新失敗，請稍後再試');
+            });
     };
 
     const insertAuthorizedUser = async (tableName, newUsername) => {
@@ -129,9 +141,6 @@ const EditModal = forwardRef((props, ref) => {
                 }
                 const result = await response.json();
                 console.log('Server Response:', result);
-    
-                props.onSuccess(); // 呼叫父層的刷新函數
-                alert('修改成功');
             } catch (error) {
                 console.error('Error during the update:', error);
                 setSuccessMessage('更新失敗，請稍後再試');
@@ -164,9 +173,6 @@ const EditModal = forwardRef((props, ref) => {
                 }
                 const result = await response.json();
                 console.log('Server Response:', result);
-    
-                props.onSuccess(); // 呼叫父層的刷新函數
-                alert('修改成功');
             } catch (error) {
                 console.error('Error during the update:', error);
                 setSuccessMessage('更新失敗，請稍後再試');
@@ -193,9 +199,6 @@ const EditModal = forwardRef((props, ref) => {
     
                 const result = await response.json();
                 console.log('Server Response:', result);
-    
-                props.onSuccess(); // 刷新父層資料
-                alert('修改成功');
             } catch (error) {
                 console.error('Error during the deletion:', error);
                 setSuccessMessage('修改失敗，請稍後再試');
