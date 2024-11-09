@@ -51,6 +51,7 @@
     font-size:1rem;
     width:8em;
     height:3em;
+    transition:0.5s;
   }
 
   .customButton:hover{

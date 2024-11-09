@@ -215,7 +215,7 @@ const Tabs = () => {
                     <h4 className="system-title">活動數據分配</h4>
                     <hr className="system-hr"></hr>
                 </div>
-                <button className="system-save">儲存</button>
+                {/* <button className="system-save">儲存</button> */}
             </div>
             <CCard className={`mb-4 ${styles.activityCard2}`}>
                 <div>
