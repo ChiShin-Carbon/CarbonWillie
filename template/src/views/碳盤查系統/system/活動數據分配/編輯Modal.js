@@ -60,7 +60,7 @@ const EditModal = forwardRef((props, ref) => {
         const departmentUsers = userDepartments[departmentId] || [];
         return (
             <>
-                <option value="1">無</option>
+                <option value="無">無</option>
                 {departmentUsers.map((username, index) => (
                     <option key={index} value={username}>
                         {username}
@@ -84,7 +84,7 @@ const EditModal = forwardRef((props, ref) => {
         Object.keys(modalUserNames).forEach(department => {
             const oldUsername = modalUserNamesOld[department];  // 當前選擇的用戶名
             const newUsername = modalUserNames[department];  // 當前選擇的用戶名
-            // console.log(oldUsername, newUsername, modalTableName)
+            console.log(oldUsername, newUsername, modalTableName)
 
             // 檢查是否有變動
             if (oldUsername === '無' && newUsername !== '無') {
@@ -103,26 +103,42 @@ const EditModal = forwardRef((props, ref) => {
         setEditModalVisible(false);
     };
 
-    const insertAuthorizedUser = async (tableName, username) => {
-        const userId = users.find(user => user.username === username)?.user_id;
+    const insertAuthorizedUser = async (tableName, newUsername) => {
+        const userId = users.find(user => user.username === newUsername)?.user_id;
         if (userId) {
             const isDone = 0; // 可以根據需求修改
             const completedAt = null; // 可以根據需求修改
-
-            await fetch('http://localhost:8000/insert_authorized', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    user_ids: [userId],
-                    table_names: [tableName],  // 使用傳入的 tableName
-                    is_done_list: [isDone],
-                    completed_at_list: [completedAt],
-                }),
-            });
+    
+            try {
+                const response = await fetch(`http://localhost:8000/editInsert_authorized/${tableName}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        user_id: userId,
+                        is_done: isDone,
+                        completed_at: completedAt,
+                    }),
+                });
+    
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error('Error Response:', errorData);
+                    throw new Error(errorData.detail || 'Unknown error');
+                }
+                const result = await response.json();
+                console.log('Server Response:', result);
+    
+                props.onSuccess(); // 呼叫父層的刷新函數
+                alert('修改成功');
+            } catch (error) {
+                console.error('Error during the update:', error);
+                setSuccessMessage('更新失敗，請稍後再試');
+            }
         }
     };
+    
 
     const updateAuthorizedUser = async (tableName, oldUsername, newUsername) => {
         const oldUserId = users.find(user => user.username === oldUsername)?.user_id;
@@ -161,17 +177,32 @@ const EditModal = forwardRef((props, ref) => {
     const deleteAuthorizedUser = async (tableName, oldUsername) => {
         const oldUserId = users.find(user => user.username === oldUsername)?.user_id;
         if (oldUserId) {
-            await fetch(`http://localhost:8000/delete_authorized/${tableName}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    user_id: oldUserId,
-                }),
-            });
+            try {
+                const response = await fetch(`http://localhost:8000/editDelete_authorized/${tableName}?user_id=${oldUserId}`, {  // 使用 query parameter
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+    
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error('Error Response:', errorData);
+                    throw new Error(errorData.detail || 'Unknown error');
+                }
+    
+                const result = await response.json();
+                console.log('Server Response:', result);
+    
+                props.onSuccess(); // 刷新父層資料
+                alert('修改成功');
+            } catch (error) {
+                console.error('Error during the deletion:', error);
+                setSuccessMessage('修改失敗，請稍後再試');
+            }
         }
     };
+    
 
 
     return (
