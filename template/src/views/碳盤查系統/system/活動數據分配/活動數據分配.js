@@ -163,7 +163,6 @@ const Tabs = () => {
             if (response.ok) {
                 console.log(result.message);
                 // Refresh records after deletion
-                alert("刪除成功!")
                 refreshAuthorizedRecords();
             } else {
                 console.error("Failed to delete record:", result.detail);
@@ -172,6 +171,21 @@ const Tabs = () => {
             console.error("Error deleting record:", error);
         }
     };
+
+    const [isDeleteModalVisible, setDeleteModalVisible] = useState(false);
+    const [selectedTableName, setSelectedTableName] = useState(null);
+
+    const openDeleteModal = (tableName) => {
+        setSelectedTableName(tableName);
+        setDeleteModalVisible(true);
+    };
+    
+    // 刪除紀錄的函數
+    const deleteAndClose = (tableName) => {
+        deleteRecordByTableName(tableName)
+        setDeleteModalVisible(false); // 關閉 Modal
+    };
+
     return (
         <main>
             <CTabs activeItemKey={1}>
@@ -257,7 +271,7 @@ const Tabs = () => {
                                                         <FontAwesomeIcon
                                                             icon={faTrashCan}
                                                             className={styles.iconTrash}
-                                                            onClick={() => deleteRecordByTableName(record.table_name)}
+                                                            onClick={() => openDeleteModal(record.table_name)}
                                                         />
                                                     </div>
                                                 </div>
@@ -318,7 +332,7 @@ const Tabs = () => {
                                                         <FontAwesomeIcon
                                                             icon={faTrashCan}
                                                             className={styles.iconTrash}
-                                                            onClick={() => deleteRecordByTableName(record.table_name)}
+                                                            onClick={() => openDeleteModal(record.table_name)}
                                                         />
                                                     </div>
                                                 </div>
@@ -375,11 +389,8 @@ const Tabs = () => {
 
                                                     <div style={{ textAlign: 'right' }}>
                                                         <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
-                                                        <FontAwesomeIcon
-                                                            icon={faTrashCan}
-                                                            className={styles.iconTrash}
-                                                            onClick={() => deleteRecordByTableName(record.table_name)}
-                                                        />
+                                                        <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} 
+                                                        onClick={() => openDeleteModal(record.table_name)} />
                                                     </div>
                                                 </div>
                                             </CAccordionBody>
@@ -392,7 +403,25 @@ const Tabs = () => {
             </CCard>
 
 
-
+            <CModal
+                backdrop="static"
+                visible={isDeleteModalVisible}
+                onClose={() => setDeleteModalVisible(false)}
+                aria-labelledby="StaticBackdropExampleLabel3"
+            >
+                <CModalHeader>
+                    <CModalTitle id="StaticBackdropExampleLabel3"><b>提醒</b></CModalTitle>
+                </CModalHeader>
+                <CModalBody>
+                    確定要刪除該項目嗎?
+                </CModalBody>
+                <CModalFooter>
+                    <CButton className="modalbutton1" onClick={() => setDeleteModalVisible(false)}>
+                        取消
+                    </CButton>
+                    <CButton className="modalbutton2"  onClick={() => deleteAndClose(selectedTableName)}>確認</CButton>
+                </CModalFooter>
+            </CModal>
 
 
 
@@ -476,7 +505,7 @@ const Tabs = () => {
                     <CButton className="modalbutton1" onClick={() => setEditModalVisible(false)}>
                         取消
                     </CButton>
-                    <CButton className="modalbutton2">確認</CButton>
+                    <CButton className="modalbutton2" >確認</CButton>
                 </CModalFooter>
             </CModal>
             <AddModal ref={addModalRef} onSuccess={refreshAuthorizedRecords} uniqueTableNames={uniqueTableNames} />
