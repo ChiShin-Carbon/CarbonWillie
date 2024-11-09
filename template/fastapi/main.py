@@ -25,6 +25,7 @@ from insert_employee import insert_employee
 
 from authorizedTable.authorizedTable import authorizedTable
 from authorizedTable.insert_authorized import insert_authorized
+from authorizedTable.edit_authorized import edit_authorized
 
 
 app = FastAPI()
@@ -67,3 +68,4 @@ app.include_router(insert_employee)
 
 app.include_router(authorizedTable)
 app.include_router(insert_authorized)
+app.include_router(edit_authorized)

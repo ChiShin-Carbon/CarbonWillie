@@ -54,7 +54,7 @@ const EditModal = forwardRef((props, ref) => {
         fetchUsers();
     }, []);
 
-  //////////////////抓Users的資料END//////////////////////////////////
+    //////////////////抓Users的資料END//////////////////////////////////
 
     const renderUserOptions = (departmentId) => {
         const departmentUsers = userDepartments[departmentId] || [];
@@ -78,12 +78,37 @@ const EditModal = forwardRef((props, ref) => {
         }));
     };
 
+    ////////////////////////////////////////////////////////////////////////////////////////////
+   
+    const handleSubmit = () => {
+        Object.keys(modalUserNames).forEach(department => {
+            const oldUsername = modalUserNamesOld[department];  // 當前選擇的用戶名
+            const newUsername = modalUserNames[department];  // 當前選擇的用戶名
+            // console.log(oldUsername, newUsername, modalTableName)
+
+            // 檢查是否有變動
+            if (oldUsername === '無' && newUsername !== '無') {
+                // 從無選擇改成選擇用戶，則插入新的填寫人
+                insertAuthorizedUser(modalTableName, newUsername);  // 使用 modalTableName 作為 tableName
+            } else if (oldUsername !== newUsername && newUsername !== '無') {
+                // 用戶名發生變動，則更新填寫人
+                updateAuthorizedUser(modalTableName, oldUsername, newUsername);  // 使用 modalTableName 作為 tableName
+            } else if (oldUsername !== '無' && newUsername === '無') {
+                // 用戶名從 A 變成無，則刪除該用戶的紀錄
+                deleteAuthorizedUser(modalTableName, oldUsername);  // 使用 modalTableName 作為 tableName
+            }
+        });
+
+        // 關閉 Modal
+        setEditModalVisible(false);
+    };
+
     const insertAuthorizedUser = async (tableName, username) => {
         const userId = users.find(user => user.username === username)?.user_id;
         if (userId) {
             const isDone = 0; // 可以根據需求修改
             const completedAt = null; // 可以根據需求修改
-    
+
             await fetch('http://localhost:8000/insert_authorized', {
                 method: 'POST',
                 headers: {
@@ -98,51 +123,56 @@ const EditModal = forwardRef((props, ref) => {
             });
         }
     };
-    
+
     const updateAuthorizedUser = async (tableName, oldUsername, newUsername) => {
         const oldUserId = users.find(user => user.username === oldUsername)?.user_id;
         const newUserId = users.find(user => user.username === newUsername)?.user_id;
-    
+  
+
         if (oldUserId && newUserId) {
-            await fetch(`http://localhost:8000/update_authorized/${tableName}`, {  // 使用傳入的 tableName
-                method: 'PUT',
+            try {
+                const response = await fetch(`http://localhost:8000/editUpdate_authorized/${tableName}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        old_user_id: oldUserId,
+                        new_user_id: newUserId,
+                    }),
+                });
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error('Error Response:', errorData);
+                    throw new Error(errorData.detail || 'Unknown error');
+                }
+                const result = await response.json();
+                console.log('Server Response:', result);
+    
+                props.onSuccess(); // 呼叫父層的刷新函數
+                alert('修改成功');
+            } catch (error) {
+                console.error('Error during the update:', error);
+                setSuccessMessage('更新失敗，請稍後再試');
+            }
+        }
+    };
+
+    const deleteAuthorizedUser = async (tableName, oldUsername) => {
+        const oldUserId = users.find(user => user.username === oldUsername)?.user_id;
+        if (oldUserId) {
+            await fetch(`http://localhost:8000/delete_authorized/${tableName}`, {
+                method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    old_user_id: oldUserId,
-                    new_user_id: newUserId,
+                    user_id: oldUserId,
                 }),
             });
         }
     };
 
-    const handleSubmit = () => {
-        Object.keys(modalUserNames).forEach(department => {
-            const oldUsername = modalUserNamesOld[department];  // 當前選擇的用戶名
-            const newUsername = modalUserNames[department];  // 當前選擇的用戶名
-    
-            // 這裡確保 newUsername 是來自最新的選擇，而不是已經被更新過的值
-            // 因為 setModalUserNames 是異步更新，應該比較當前的舊值和新值
-    
-            console.log(`Department: ${department}`);
-            console.log(`Old Username: ${oldUsername}`);
-            console.log(`New Username: ${newUsername}`);
-    
-    
-            // 檢查是否有變動
-            if (oldUsername === '無' && newUsername !== '無') {
-                // 從無選擇改成選擇用戶，則插入新的填寫人
-                insertAuthorizedUser(modalTableName, newUsername);  // 使用 modalTableName 作為 tableName
-            } else if (oldUsername !== newUsername) {
-                // 用戶名發生變動，則更新填寫人
-                updateAuthorizedUser(modalTableName, oldUsername, newUsername);  // 使用 modalTableName 作為 tableName
-            }
-        });
-    
-        // 關閉 Modal
-        setEditModalVisible(false);
-    };
 
     return (
         <CModal
@@ -159,11 +189,11 @@ const EditModal = forwardRef((props, ref) => {
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="sitename" className={`col-sm-2 col-form-label ${styles.addlabel}`} >管理部門</CFormLabel>
                         <CCol>
-                        <CFormSelect
+                            <CFormSelect
                                 aria-label="Default select example"
                                 className={styles.addinput}
                                 value={modalUserNames['管理部門']} // 預設選項值，如果沒有則為空
-                            onChange={(e) => handleUserChange('管理部門', e.target.value)} // 更新選項
+                                onChange={(e) => handleUserChange('管理部門', e.target.value)} // 更新選項
                             >
                                 {renderUserOptions(0)}
                             </CFormSelect>
@@ -173,7 +203,7 @@ const EditModal = forwardRef((props, ref) => {
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="sitename" className={`col-sm-2 col-form-label ${styles.addlabel}`} >業務部門</CFormLabel>
                         <CCol>
-                        <CFormSelect
+                            <CFormSelect
                                 aria-label="Default select example"
                                 className={styles.addinput}
                                 value={modalUserNames['業務部門']}
@@ -187,7 +217,7 @@ const EditModal = forwardRef((props, ref) => {
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="sitename" className={`col-sm-2 col-form-label ${styles.addlabel}`} >資訊部門</CFormLabel>
                         <CCol>
-                        <CFormSelect
+                            <CFormSelect
                                 aria-label="Default select example"
                                 className={styles.addinput}
                                 value={modalUserNames['資訊部門']}
@@ -201,7 +231,7 @@ const EditModal = forwardRef((props, ref) => {
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="sitename" className={`col-sm-2 col-form-label ${styles.addlabel}`} >門診部門</CFormLabel>
                         <CCol>
-                        <CFormSelect
+                            <CFormSelect
                                 aria-label="Default select example"
                                 className={styles.addinput}
                                 value={modalUserNames['門診部門']}
@@ -215,7 +245,7 @@ const EditModal = forwardRef((props, ref) => {
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="sitename" className={`col-sm-2 col-form-label ${styles.addlabel}`} >健檢部門</CFormLabel>
                         <CCol>
-                        <CFormSelect
+                            <CFormSelect
                                 aria-label="Default select example"
                                 className={styles.addinput}
                                 value={modalUserNames['健檢部門']}
@@ -229,7 +259,7 @@ const EditModal = forwardRef((props, ref) => {
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="sitename" className={`col-sm-2 col-form-label ${styles.addlabel}`} >檢驗部門</CFormLabel>
                         <CCol>
-                        <CFormSelect
+                            <CFormSelect
                                 aria-label="Default select example"
                                 className={styles.addinput}
                                 value={modalUserNames['檢驗部門']}
