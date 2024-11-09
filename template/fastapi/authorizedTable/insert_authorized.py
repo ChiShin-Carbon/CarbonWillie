@@ -58,3 +58,31 @@ async def delete_authorized_table_name(table_name: str):
             conn.close()
     else:
         raise HTTPException(status_code=500, detail="Database connection error")
+
+
+
+@insert_authorized.put("/update_authorized/{table_name}")
+async def update_authorized_user(
+    table_name: str,
+    old_user_id: int,
+    new_user_id: int
+):
+    conn = connectDB()
+    if conn:
+        cursor = conn.cursor()
+        try:
+            query = """
+                UPDATE Authorized_Table
+                SET user_id = ?
+                WHERE table_name = ? AND user_id = ?
+            """
+            cursor.execute(query, (new_user_id, table_name, old_user_id))
+            conn.commit()
+            return {"status": "success", "message": f"User updated successfully in table '{table_name}'"}
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Database update error: {e}")
+        finally:
+            cursor.close()
+            conn.close()
+    else:
+        raise HTTPException(status_code=500, detail="Database connection error")
