@@ -23,9 +23,9 @@ from insert_vehicle import insert_vehicle
 from insert_Extinguisher import insert_Extinguisher
 from insert_employee import insert_employee
 
-from authorizedTable import authorizedTable
-from insert_authorized import insert_authorized
 from insert_machine import insert_machine
+from authorizedTable.authorizedTable import authorizedTable
+from authorizedTable.insert_authorized import insert_authorized
 
 
 app = FastAPI()
@@ -63,11 +63,7 @@ app.include_router(editcfvinfo)
 app.include_router(ocrapi)
 app.include_router(botapi)
 app.include_router(insert_vehicle)
-app.include_router(authorizedTable)
-
 app.include_router(insert_Extinguisher)
 app.include_router(insert_employee)
-
+app.include_router(authorizedTable)
 app.include_router(insert_authorized)
-app.include_router(insert_machine)
-
