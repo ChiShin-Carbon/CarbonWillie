@@ -756,7 +756,7 @@ const FunctionForms = ({ currentFunction }) => {
                     <br />
                     <div style={{ textAlign: 'center' }}>*為必填欄位</div>
 
-
+                    <CButton type="submit" onClick={handleC5Submit}>新增</CButton>
 
                 </div>
             );
