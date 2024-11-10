@@ -3,37 +3,35 @@ import { useState } from 'react';
 
 
 import {
-    CRow, CCol, CCard, CCardBody, CCardHeader, CFormSelect, CTab, CTabContent, CTabList, CTabPanel, CTabs, CForm, CFormLabel, CFormInput, CFormTextarea, CFormCheck,
-    CCardSubtitle, CCardText, CCardTitle, CButton,
-    CTable, CTableBody, CTableCaption, CTableDataCell, CTableHead, CTableHeaderCell, CTableRow, CCollapse,
+    CRow, CCol, CCard, CTab,  CTabList, CTabs, CButton,
     CAccordion, CAccordionItem, CAccordionHeader, CAccordionBody, CModal, CModalHeader, CModalBody, CModalFooter, CModalTitle,
 
 } from '@coreui/react'
-import CIcon from '@coreui/icons-react'
-import { cilDataTransferDown } from '@coreui/icons'
 
 import '../../../../scss/碳盤查系統.css'
 import styles from '../../../../scss/活動數據盤點.module.css'
 import { Link } from 'react-router-dom'
 
-
 import 'primereact/resources/themes/saga-blue/theme.css';  // 主题样式
 import 'primereact/resources/primereact.min.css';          // 核心 CSS
 import 'primeicons/primeicons.css';                        // 图标样式
-
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPenToSquare, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 
 import AddModal from './新增Modal'; // Import the AddModal component
-
+import EditModal from './編輯Modal';
 
 const Tabs = () => {
     const addModalRef = useRef();
     const handleOpenAddModal = () => {
         addModalRef.current.openModal();
     };
-    const [isEditModalVisible, setEditModalVisible] = useState(false);
+    const editModalRef = useRef();
+    const handleOpenEditModal = (tableName, usernames) => {
+        editModalRef.current.openModal(tableName, usernames);
+    };
+
 
     // 設定用來儲存授權記錄的狀態
     const [authorizedRecords, setAuthorizedRecords] = useState([]);
@@ -53,7 +51,6 @@ const Tabs = () => {
                 const tableNames = data.map(record => record.table_name);
                 const uniqueTableNames = [...new Set(tableNames)];  // 去重
                 setUniqueTableNames(uniqueTableNames); // 存储去重后的table_name
-                console.log(uniqueTableNames)
 
                 // 將每個記錄的 departmentID 轉換為部門名稱
                 const recordsWithDepartments = data.map(record => ({
@@ -115,11 +112,11 @@ const Tabs = () => {
                         category,
                         usernames: {
                             管理部門: '無',
+                            業務部門: '無',
                             資訊部門: '無',
                             門診部門: '無',
                             健檢部門: '無',
-                            檢驗部門: '無',
-                            業務部門: '無'
+                            檢驗部門: '無'
                         },
                     };
                 }
@@ -163,7 +160,6 @@ const Tabs = () => {
             if (response.ok) {
                 console.log(result.message);
                 // Refresh records after deletion
-                alert("刪除成功!")
                 refreshAuthorizedRecords();
             } else {
                 console.error("Failed to delete record:", result.detail);
@@ -172,6 +168,21 @@ const Tabs = () => {
             console.error("Error deleting record:", error);
         }
     };
+
+    const [isDeleteModalVisible, setDeleteModalVisible] = useState(false);
+    const [selectedTableName, setSelectedTableName] = useState(null);
+
+    const openDeleteModal = (tableName) => {
+        setSelectedTableName(tableName);
+        setDeleteModalVisible(true);
+    };
+    
+    // 刪除紀錄的函數
+    const deleteAndClose = (tableName) => {
+        deleteRecordByTableName(tableName)
+        setDeleteModalVisible(false); // 關閉 Modal
+    };
+
     return (
         <main>
             <CTabs activeItemKey={1}>
@@ -204,7 +215,7 @@ const Tabs = () => {
                     <h4 className="system-title">活動數據分配</h4>
                     <hr className="system-hr"></hr>
                 </div>
-                <button className="system-save">儲存</button>
+                {/* <button className="system-save">儲存</button> */}
             </div>
             <CCard className={`mb-4 ${styles.activityCard2}`}>
                 <div>
@@ -231,6 +242,10 @@ const Tabs = () => {
                                                             <span>{record.usernames.管理部門}</span>
                                                         </div>
                                                         <div className={styles.departmentItem}>
+                                                            <span>業務部門:</span>
+                                                            <span>{record.usernames.業務部門}</span>
+                                                        </div>
+                                                        <div className={styles.departmentItem}>
                                                             <span>資訊部門:</span>
                                                             <span>{record.usernames.資訊部門}</span>
                                                         </div>
@@ -246,18 +261,15 @@ const Tabs = () => {
                                                             <span>檢驗部門:</span>
                                                             <span>{record.usernames.檢驗部門}</span>
                                                         </div>
-                                                        <div className={styles.departmentItem}>
-                                                            <span>業務部門:</span>
-                                                            <span>{record.usernames.業務部門}</span>
-                                                        </div>
                                                     </div>
 
                                                     <div style={{ textAlign: 'right' }}>
-                                                        <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
+                                                        <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen}
+                                                         onClick={() => handleOpenEditModal(record.table_name, record.usernames)} />
                                                         <FontAwesomeIcon
                                                             icon={faTrashCan}
                                                             className={styles.iconTrash}
-                                                            onClick={() => deleteRecordByTableName(record.table_name)}
+                                                            onClick={() => openDeleteModal(record.table_name)}
                                                         />
                                                     </div>
                                                 </div>
@@ -292,6 +304,10 @@ const Tabs = () => {
                                                             <span>{record.usernames.管理部門}</span>
                                                         </div>
                                                         <div className={styles.departmentItem}>
+                                                            <span>業務部門:</span>
+                                                            <span>{record.usernames.業務部門}</span>
+                                                        </div>
+                                                        <div className={styles.departmentItem}>
                                                             <span>資訊部門:</span>
                                                             <span>{record.usernames.資訊部門}</span>
                                                         </div>
@@ -307,18 +323,15 @@ const Tabs = () => {
                                                             <span>檢驗部門:</span>
                                                             <span>{record.usernames.檢驗部門}</span>
                                                         </div>
-                                                        <div className={styles.departmentItem}>
-                                                            <span>業務部門:</span>
-                                                            <span>{record.usernames.業務部門}</span>
-                                                        </div>
                                                     </div>
 
                                                     <div style={{ textAlign: 'right' }}>
-                                                        <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
+                                                        <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen}
+                                                        onClick={() => handleOpenEditModal(record.table_name, record.usernames)} />
                                                         <FontAwesomeIcon
                                                             icon={faTrashCan}
                                                             className={styles.iconTrash}
-                                                            onClick={() => deleteRecordByTableName(record.table_name)}
+                                                            onClick={() => openDeleteModal(record.table_name)}
                                                         />
                                                     </div>
                                                 </div>
@@ -352,6 +365,10 @@ const Tabs = () => {
                                                             <span>{record.usernames.管理部門}</span>
                                                         </div>
                                                         <div className={styles.departmentItem}>
+                                                            <span>業務部門:</span>
+                                                            <span>{record.usernames.業務部門}</span>
+                                                        </div>
+                                                        <div className={styles.departmentItem}>
                                                             <span>資訊部門:</span>
                                                             <span>{record.usernames.資訊部門}</span>
                                                         </div>
@@ -367,19 +384,13 @@ const Tabs = () => {
                                                             <span>檢驗部門:</span>
                                                             <span>{record.usernames.檢驗部門}</span>
                                                         </div>
-                                                        <div className={styles.departmentItem}>
-                                                            <span>業務部門:</span>
-                                                            <span>{record.usernames.業務部門}</span>
-                                                        </div>
                                                     </div>
 
                                                     <div style={{ textAlign: 'right' }}>
-                                                        <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
-                                                        <FontAwesomeIcon
-                                                            icon={faTrashCan}
-                                                            className={styles.iconTrash}
-                                                            onClick={() => deleteRecordByTableName(record.table_name)}
-                                                        />
+                                                        <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen}
+                                                         onClick={() => handleOpenEditModal(record.table_name, record.usernames)} />
+                                                        <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} 
+                                                        onClick={() => openDeleteModal(record.table_name)} />
                                                     </div>
                                                 </div>
                                             </CAccordionBody>
@@ -392,94 +403,33 @@ const Tabs = () => {
             </CCard>
 
 
-
-
-
-
-
-
             <CModal
                 backdrop="static"
-                visible={isEditModalVisible}
-                onClose={() => setEditModalVisible(false)}
-                aria-labelledby="StaticBackdropExampleLabel2"
+                visible={isDeleteModalVisible}
+                onClose={() => setDeleteModalVisible(false)}
+                aria-labelledby="StaticBackdropExampleLabel3"
             >
                 <CModalHeader>
-                    <CModalTitle id="StaticBackdropExampleLabel2"><b>填寫人</b></CModalTitle>
+                    <CModalTitle id="StaticBackdropExampleLabel3"><b>提醒</b></CModalTitle>
                 </CModalHeader>
                 <CModalBody>
-                    <CForm >
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="sitename" className={`col-sm-2 col-form-label ${styles.addlabel}`} >管理部門</CFormLabel>
-                            <CCol>
-                                <CFormSelect aria-label="Default select example" className={styles.addinput}>
-                                    <option value="1">無</option>
-                                    <option value="2">...</option>
-                                    <option value="3">...</option>
-                                    <option value="4">...</option>
-                                    <option value="5">...</option>
-                                </CFormSelect>
-                            </CCol>
-                        </CRow>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="sitename" className={`col-sm-2 col-form-label ${styles.addlabel}`} >資訊部門</CFormLabel>
-                            <CCol>
-                                <CFormSelect aria-label="Default select example" className={styles.addinput}>
-                                    <option value="1">無</option>
-                                    <option value="2">...</option>
-                                    <option value="3">...</option>
-                                    <option value="4">...</option>
-                                    <option value="5">...</option>
-                                </CFormSelect>
-                            </CCol>
-                        </CRow>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="sitename" className={`col-sm-2 col-form-label ${styles.addlabel}`} >門診部門</CFormLabel>
-                            <CCol>
-                                <CFormSelect aria-label="Default select example" className={styles.addinput}>
-                                    <option value="1">無</option>
-                                    <option value="2">...</option>
-                                    <option value="3">...</option>
-                                    <option value="4">...</option>
-                                    <option value="5">...</option>
-                                </CFormSelect>
-                            </CCol>
-                        </CRow>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="sitename" className={`col-sm-2 col-form-label ${styles.addlabel}`} >健檢部門</CFormLabel>
-                            <CCol>
-                                <CFormSelect aria-label="Default select example" className={styles.addinput}>
-                                    <option value="1">無</option>
-                                    <option value="2">...</option>
-                                    <option value="3">...</option>
-                                    <option value="4">...</option>
-                                    <option value="5">...</option>
-                                </CFormSelect>
-                            </CCol>
-                        </CRow>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="sitename" className={`col-sm-2 col-form-label ${styles.addlabel}`} >檢驗部門</CFormLabel>
-                            <CCol>
-                                <CFormSelect aria-label="Default select example" className={styles.addinput}>
-                                    <option value="1">無</option>
-                                    <option value="2">...</option>
-                                    <option value="3">...</option>
-                                    <option value="4">...</option>
-                                    <option value="5">...</option>
-                                </CFormSelect>
-                            </CCol>
-                        </CRow>
-
-                    </CForm>
+                    確定要刪除該項目嗎?
                 </CModalBody>
                 <CModalFooter>
-                    <CButton className="modalbutton1" onClick={() => setEditModalVisible(false)}>
+                    <CButton className="modalbutton1" onClick={() => setDeleteModalVisible(false)}>
                         取消
                     </CButton>
-                    <CButton className="modalbutton2">確認</CButton>
+                    <CButton className="modalbutton2"  onClick={() => deleteAndClose(selectedTableName)}>確認</CButton>
                 </CModalFooter>
             </CModal>
+
+
+
+
+
+           
             <AddModal ref={addModalRef} onSuccess={refreshAuthorizedRecords} uniqueTableNames={uniqueTableNames} />
+            <EditModal ref={editModalRef} onSuccess={refreshAuthorizedRecords}/>
         </main>
     );
 }

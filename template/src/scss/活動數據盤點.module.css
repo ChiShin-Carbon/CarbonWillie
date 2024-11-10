@@ -150,6 +150,7 @@
     font-size: 18px;
     box-shadow: 0 1px 5px rgb(144, 144, 144);
     margin-bottom:2px;
+    transition:0.5s;
 }
 
 .activityAddButton:hover {
@@ -426,7 +427,7 @@
     border-radius: 50px;
     font-size: 16px;
     box-shadow: 0 1px 5px rgb(144, 144, 144);
-    
+    transition:0.5s;
     margin-bottom:10px
 }
 
@@ -453,9 +454,10 @@
     box-shadow: 0 2px 5px rgb(67, 67, 67);
     border-radius: 30px;
     padding:7px 15px;
+    transition:0.5s;
   }
   
   .complete:hover{
     background-color:#8c5454;
-    transition:0.5s;
+  
   }

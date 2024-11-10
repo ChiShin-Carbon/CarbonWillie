@@ -61,9 +61,10 @@
   box-shadow: 0 2px 5px rgb(67, 67, 67);
   border-radius: 30px;
   padding:7px 15px;
+  transition:0.5s;
 }
 .buttonRight button:hover{
   background-color:#8c5454;
-  transition:0.5s;
+
 }
 

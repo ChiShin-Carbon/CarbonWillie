@@ -52,7 +52,7 @@ const Tabs = () => {
                     <h4 className="system-title">基準年設定</h4>
                     <hr className="system-hr"></hr>
                 </div>
-                <button className="system-save">儲存</button>
+                {/* <button className="system-save">儲存</button> */}
             </div>
             <CCard className="mb-4 systemCard1" style={{ height: '100px' }}>
                 <div className="systemCardBody" >
@@ -81,7 +81,7 @@ const Tabs = () => {
                     <h4 className="system-title">邊界設定</h4>
                     <hr className="system-hr"></hr>
                 </div>
-                <button className="system-save">儲存</button>
+                {/* <button className="system-save">儲存</button> */}
             </div>
             <CCard className="mb-4 systemCard">
                 <div className="systemCardBody">
