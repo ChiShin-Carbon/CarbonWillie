@@ -380,6 +380,32 @@ const FunctionForms = ({ currentFunction }) => {
         }
     };
 
+    const handleC12Submit = async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData();
+        formData.append("user_id", 1);
+        formData.append("waste_item", document.getElementById("C12item").value);
+        formData.append("remark", document.getElementById("C12explain").value);
+        formData.append("image", document.getElementById("C12image").files[0]);
+
+        try {
+            const res = await fetch("http://localhost:8000/insert_Selling_waste", {
+                method: "POST",
+                body: formData,
+            });
+            const data = await res.json();
+            if (res.ok) {
+                console.log("Form submitted successfully", data);
+                setAddModalVisible(false);
+            } else {
+                console.error("Failed to submit form data", data.detail);
+            }
+        } catch (error) {
+            console.error("Error submitting form data", error);
+        }
+    };
+
     const [transportType, setTransportType] = useState("1"); // 默認選擇汽車
     switch (currentFunction) {
 
@@ -1276,25 +1302,27 @@ const FunctionForms = ({ currentFunction }) => {
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="item" className={`col-sm-2 col-form-label ${styles.addlabel}`} >廢棄物項目*</CFormLabel>
                         <CCol>
-                            <CFormInput className={styles.addinput} type="text" id="item" required />
+                            <CFormInput className={styles.addinput} type="text" id="C12item" required />
                         </CCol>
                     </CRow>
 
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="explain" className={`col-sm-2 col-form-label ${styles.addlabel}`} >備註</CFormLabel>
                         <CCol>
-                            <CFormTextarea className={styles.addinput} type="text" id="explain" rows={3} />
+                            <CFormTextarea className={styles.addinput} type="text" id="C12explain" rows={3} />
 
                         </CCol>
                     </CRow>
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="photo" className={`col-sm-2 col-form-label ${styles.addlabel}`}  >圖片*</CFormLabel>
                         <CCol>
-                            <CFormInput type="file" id="photo" required />
+                            <CFormInput type="file" id="C12image" required />
                         </CCol>
                     </CRow>
                     <br />
                     <div style={{ textAlign: 'center' }}>*為必填欄位</div>
+
+                    <CButton type="submit" onClick={handleC12Submit}>新增</CButton>
                 </div>
             );
 
