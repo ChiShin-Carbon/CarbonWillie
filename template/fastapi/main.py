@@ -31,6 +31,7 @@ from insert_electricity import insert_electricity
 from insert_ref import insert_ref
 from insert_commute import insert_commute
 from insert_BusinessTrip import insert_BusinessTrip
+from insert_waste import insert_waste
 
 
 app = FastAPI()
@@ -80,3 +81,4 @@ app.include_router(insert_electricity)
 app.include_router(insert_ref)
 app.include_router(insert_commute)
 app.include_router(insert_BusinessTrip)
+app.include_router(insert_waste)
