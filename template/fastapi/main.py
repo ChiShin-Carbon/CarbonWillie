@@ -28,6 +28,7 @@ from insert_authorized import insert_authorized
 from insert_machine import insert_machine
 from insert_emergency import insert_emergency
 from insert_electricity import insert_electricity
+from insert_ref import insert_ref
 
 
 app = FastAPI()
@@ -74,3 +75,4 @@ app.include_router(insert_authorized)
 app.include_router(insert_machine)
 app.include_router(insert_emergency)
 app.include_router(insert_electricity)
+app.include_router(insert_ref)

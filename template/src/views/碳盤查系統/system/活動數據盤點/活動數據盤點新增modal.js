@@ -270,7 +270,7 @@ const FunctionForms = ({ currentFunction }) => {
         formData.append("start", document.getElementById("C8datestart").value);
         formData.append("end", document.getElementById("C8dateend").value);
         formData.append("usage", document.getElementById("C8type").value);
-        formData.append("amount", document.getElementById("C8quantity").value);
+        formData.append("amount", document.getElementById("C8monthusage").value);
         formData.append("remark", document.getElementById("C8explain").value);
         
         // Check if image file is provided
@@ -916,11 +916,11 @@ const FunctionForms = ({ currentFunction }) => {
                             <CFormInput type="file" id="C8image" required />
                         </CCol>
                     </CRow>
+                    <br />
+                    <div style={{ textAlign: 'center' }}>*為必填欄位</div>
 
                     <CButton type="submit" onClick={handleC8Submit}>新增</CButton>
 
-                    <br />
-                    <div style={{ textAlign: 'center' }}>*為必填欄位</div>
                 </div>
             );
 
