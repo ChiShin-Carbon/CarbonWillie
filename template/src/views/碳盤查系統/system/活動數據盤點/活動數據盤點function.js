@@ -40,8 +40,8 @@ export const FunctionOne = () => {
                         <td>柴油</td>
                         <td>公升</td>
                         <td>XXXXXX</td>
-                        <td>讚</td>
-                        <td><Zoom><img src="https://i.pinimg.com/564x/2a/4c/cb/2a4ccb65cc3cc47bbccca96dd230bd22.jpg" alt="image" /></Zoom></td>
+                        <td>XXX</td>
+                        <td><Zoom><img src="https://invoice.tw/news/wp-content/uploads/2018/03/WechatIMG79.jpeg" alt="image" /></Zoom></td>
                         <td>蔡沂庭<br />2024/10/16 12:09</td>
                         <td>
                             <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />

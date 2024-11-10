@@ -75,7 +75,7 @@ const Tabs = () => {
                     <h4 className="system-title">活動數據盤點</h4>
                     <hr className="system-hr"></hr>
                 </div>
-                <button className="system-save">儲存</button>
+                <button className="system-save">完成填寫</button>
             </div>
 
             <div className={styles.activityData}>
