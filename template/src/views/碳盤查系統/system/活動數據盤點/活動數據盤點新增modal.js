@@ -325,6 +325,33 @@ const FunctionForms = ({ currentFunction }) => {
         }
     };
     
+    const handleC10Submit = async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData();
+        formData.append("user_id", 1);
+        formData.append("transportation", document.getElementById("C10type").value);
+        formData.append("oil_species", document.getElementById("C10oil_type").value);
+        formData.append("kilometers", document.getElementById("C10km").value);
+        formData.append("remark", document.getElementById("C10explain").value);
+        formData.append("image", document.getElementById("C10image").files[0]);
+
+        try {
+            const res = await fetch("http://localhost:8000/insert_BusinessTrip", {
+                method: "POST",
+                body: formData,
+            });
+            const data = await res.json();
+            if (res.ok) {
+                console.log("Form submitted successfully", data);
+                setAddModalVisible(false);
+            } else {
+                console.error("Failed to submit form data", data.detail);
+            }
+        } catch (error) {
+            console.error("Error submitting form data", error);
+        }
+    };
     
     
 
@@ -1139,7 +1166,7 @@ const FunctionForms = ({ currentFunction }) => {
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="type" className={`col-sm-2 col-form-label ${styles.addlabel}`} >交通方式*</CFormLabel>
                         <CCol>
-                            <CFormSelect aria-label="Default select example" id="type" className={styles.addinput}
+                            <CFormSelect aria-label="Default select example" id="C10type" className={styles.addinput}
                                 onChange={(e) => setTransportType(e.target.value)} >
                                 <option value="1">汽車</option>
                                 <option value="2">機車</option>
@@ -1156,7 +1183,7 @@ const FunctionForms = ({ currentFunction }) => {
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="oil" className={`col-sm-2 col-form-label ${styles.addlabel}`} >油種*<span className={styles.Note}>僅汽/機車須填寫</span></CFormLabel>
                         <CCol>
-                            <CFormSelect aria-label="Default select example" id="type" className={styles.addinput} disabled={!(transportType === "1" || transportType === "2")} >
+                            <CFormSelect aria-label="Default select example" id="C10oil_type" className={styles.addinput} disabled={!(transportType === "1" || transportType === "2")} >
                                 <option value="1">無</option>
                                 <option value="2">汽油</option>
                                 <option value="3">柴油</option>
@@ -1166,25 +1193,27 @@ const FunctionForms = ({ currentFunction }) => {
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="km" className={`col-sm-2 col-form-label ${styles.addlabel}`} >公里數*</CFormLabel>
                         <CCol>
-                            <CFormInput className={styles.addinput} type="number" id="km" required />
+                            <CFormInput className={styles.addinput} type="number" id="C10km" required />
                         </CCol>
                     </CRow>
 
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="explain" className={`col-sm-2 col-form-label ${styles.addlabel}`} >備註</CFormLabel>
                         <CCol>
-                            <CFormTextarea className={styles.addinput} type="text" id="explain" rows={3} />
+                            <CFormTextarea className={styles.addinput} type="text" id="C10explain" rows={3} />
 
                         </CCol>
                     </CRow>
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="photo" className={`col-sm-2 col-form-label ${styles.addlabel}`}  >圖片*</CFormLabel>
                         <CCol>
-                            <CFormInput type="file" id="photo" required />
+                            <CFormInput type="file" id="C10image" required />
                         </CCol>
                     </CRow>
                     <br />
                     <div style={{ textAlign: 'center' }}>*為必填欄位</div>
+
+                    <CButton type="submit" onClick={handleC10Submit}>新增</CButton>
                 </div>
             );
         case 'eleven':
