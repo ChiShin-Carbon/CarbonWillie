@@ -26,6 +26,12 @@ from insert_employee import insert_employee
 from insert_machine import insert_machine
 
 from insert_emergency import insert_emergency
+from insert_electricity import insert_electricity
+from insert_ref import insert_ref
+from insert_commute import insert_commute
+from insert_BusinessTrip import insert_BusinessTrip
+from insert_waste import insert_waste
+from insert_Selling_waste import insert_Selling_waste
 from authorizedTable.authorizedTable import authorizedTable
 from authorizedTable.insert_authorized import insert_authorized
 from authorizedTable.edit_authorized import edit_authorized
@@ -75,5 +81,10 @@ app.include_router(edit_authorized)
 
 app.include_router(insert_machine)
 app.include_router(insert_emergency)
-
+app.include_router(insert_electricity)
+app.include_router(insert_ref)
+app.include_router(insert_commute)
+app.include_router(insert_BusinessTrip)
+app.include_router(insert_waste)
+app.include_router(insert_Selling_waste)
 

@@ -260,10 +260,151 @@ const FunctionForms = ({ currentFunction }) => {
         }
     };
 
+    const handleC8Submit = async (e) => {
+        e.preventDefault();
 
+        const formData = new FormData();
+        formData.append("user_id", 1);
+        formData.append("date", document.getElementById("C8date").value);
+        formData.append("number", document.getElementById("C8num").value);
+        formData.append("start", document.getElementById("C8datestart").value);
+        formData.append("end", document.getElementById("C8dateend").value);
+        formData.append("usage", document.getElementById("C8type").value);
+        formData.append("amount", document.getElementById("C8monthusage").value);
+        formData.append("remark", document.getElementById("C8explain").value);
+        
+        // Check if image file is provided
+        const imageFile = document.getElementById("C8image").files[0];
+        if (imageFile) {
+            formData.append("image", imageFile);
+        }
+
+        try {
+            const res = await fetch("http://localhost:8000/insert_electricity", {
+                method: "POST",
+                body: formData,
+            });
+            const data = await res.json();
+
+            if (res.ok) {
+                console.log("Form submitted successfully", data);
+                setAddModalVisible(false); // Close modal on success
+            } else {
+                console.error("Failed to submit form data", data.detail);
+            }
+        } catch (error) {
+            console.error("Error submitting form data", error);
+        }
+    };
+
+    const handleC9Submit = async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData();
+        formData.append("user_id", 1);
+        formData.append("transportation", document.getElementById("C9type").value);
+        formData.append("oil_species", document.getElementById("C9oil_type").value);
+        formData.append("kilometers", document.getElementById("C9km").value);
+        formData.append("remark", document.getElementById("C9explain").value);
+        formData.append("image", document.getElementById("C9image").files[0]);
+
+        try {
+            const res = await fetch("http://localhost:8000/insert_commute", {
+                method: "POST",
+                body: formData,
+            });
+            const data = await res.json();
+            if (res.ok) {
+                console.log("Form submitted successfully", data);
+                setAddModalVisible(false);
+            } else {
+                console.error("Failed to submit form data", data.detail);
+            }
+        } catch (error) {
+            console.error("Error submitting form data", error);
+        }
+    };
     
+    const handleC10Submit = async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData();
+        formData.append("user_id", 1);
+        formData.append("transportation", document.getElementById("C10type").value);
+        formData.append("oil_species", document.getElementById("C10oil_type").value);
+        formData.append("kilometers", document.getElementById("C10km").value);
+        formData.append("remark", document.getElementById("C10explain").value);
+        formData.append("image", document.getElementById("C10image").files[0]);
+
+        try {
+            const res = await fetch("http://localhost:8000/insert_BusinessTrip", {
+                method: "POST",
+                body: formData,
+            });
+            const data = await res.json();
+            if (res.ok) {
+                console.log("Form submitted successfully", data);
+                setAddModalVisible(false);
+            } else {
+                console.error("Failed to submit form data", data.detail);
+            }
+        } catch (error) {
+            console.error("Error submitting form data", error);
+        }
+    };
     
-    
+
+    const handleC11Submit = async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData();
+        formData.append("user_id", 1);
+        formData.append("waste_item", document.getElementById("C11item").value);
+        formData.append("remark", document.getElementById("C11explain").value);
+        formData.append("image", document.getElementById("C11image").files[0]);
+
+        try {
+            const res = await fetch("http://localhost:8000/insert_waste", {
+                method: "POST",
+                body: formData,
+            });
+            const data = await res.json();
+            if (res.ok) {
+                console.log("Form submitted successfully", data);
+                setAddModalVisible(false);
+            } else {
+                console.error("Failed to submit form data", data.detail);
+            }
+        } catch (error) {
+            console.error("Error submitting form data", error);
+        }
+    };
+
+    const handleC12Submit = async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData();
+        formData.append("user_id", 1);
+        formData.append("waste_item", document.getElementById("C12item").value);
+        formData.append("remark", document.getElementById("C12explain").value);
+        formData.append("image", document.getElementById("C12image").files[0]);
+
+        try {
+            const res = await fetch("http://localhost:8000/insert_Selling_waste", {
+                method: "POST",
+                body: formData,
+            });
+            const data = await res.json();
+            if (res.ok) {
+                console.log("Form submitted successfully", data);
+                setAddModalVisible(false);
+            } else {
+                console.error("Failed to submit form data", data.detail);
+            }
+        } catch (error) {
+            console.error("Error submitting form data", error);
+        }
+    };
 
     const [transportType, setTransportType] = useState("1"); // 默認選擇汽車
     switch (currentFunction) {
@@ -719,7 +860,7 @@ const FunctionForms = ({ currentFunction }) => {
                     <br />
                     <div style={{ textAlign: 'center' }}>*為必填欄位</div>
 
-
+                    <CButton type="submit" onClick={handleC5Submit}>新增</CButton>
 
                 </div>
             );
@@ -828,82 +969,62 @@ const FunctionForms = ({ currentFunction }) => {
                 <div className={styles.addmodal}>
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="month" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票/收據日期*</CFormLabel>
-                        <CCol><CFormInput className={styles.addinput} type="date" id="date" required />
+                        <CCol><CFormInput className={styles.addinput} type="date" id="C8date" required />
                         </CCol>
                     </CRow>
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="num" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票號碼/收據編號*</CFormLabel>
                         <CCol>
-                            <CFormInput className={styles.addinput} type="text" id="num" required />
+                            <CFormInput className={styles.addinput} type="text" id="C8num" required />
                         </CCol>
                     </CRow>
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="datestart" className={`col-sm-2 col-form-label ${styles.addlabel}`} >用電期間(起)*</CFormLabel>
                         <CCol>
-                            <CFormInput className={styles.addinput} type="date" id="datestart" required />
+                            <CFormInput className={styles.addinput} type="date" id="C8datestart" required />
                         </CCol>
                     </CRow>
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="dateend" className={`col-sm-2 col-form-label ${styles.addlabel}`} >用電期間(迄)*</CFormLabel>
                         <CCol>
-                            <CFormInput className={styles.addinput} type="date" id="dateend" required />
+                            <CFormInput className={styles.addinput} type="date" id="C8dateend" required />
                         </CCol>
                     </CRow>
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="type" className={`col-sm-2 col-form-label ${styles.addlabel}`} >填寫類型*<span className={styles.Note}> 選擇填寫請以*用電度數*作為優先填寫項目</span></CFormLabel>
                         <CCol>
-                            <CFormSelect aria-label="Default select example" id="type" className={styles.addinput} >
+                            <CFormSelect aria-label="Default select example" id="C8type" className={styles.addinput} >
                                 <option value="1">用電度數</option>
                                 <option value="2">用電金額</option>
                             </CFormSelect>
                         </CCol>
                     </CRow>
 
-                    <CRow className="mb-3">
-                        <CFormLabel htmlFor="quantity" className={`col-sm-2 col-form-label ${styles.addlabel}`} >尖峰度數*</CFormLabel>
-                        <CCol>
-                            <CFormInput className={styles.addinput} type="number" min='0' id="quantity" required />
-                        </CCol>
-                    </CRow>
-                    <CRow className="mb-3">
-                        <CFormLabel htmlFor="quantity2" className={`col-sm-2 col-form-label ${styles.addlabel}`} >半尖峰度數</CFormLabel>
-                        <CCol>
-                            <CFormInput className={styles.addinput} type="number" min='0' id="quantity2" />
-                        </CCol>
-                    </CRow>
-                    <CRow className="mb-3">
-                        <CFormLabel htmlFor="quantity3" className={`col-sm-2 col-form-label ${styles.addlabel}`} >周六尖峰度數</CFormLabel>
-                        <CCol>
-                            <CFormInput className={styles.addinput} type="number" min='0' id="quantity3" required />
-                        </CCol>
-                    </CRow>
-                    <CRow className="mb-3">
-                        <CFormLabel htmlFor="quantity4" className={`col-sm-2 col-form-label ${styles.addlabel}`} >離峰度數</CFormLabel>
-                        <CCol>
-                            <CFormInput className={styles.addinput} type="number" min='0' id="quantity4" required />
-                        </CCol>
-                    </CRow>
+                    
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="monthusage" className={`col-sm-2 col-form-label ${styles.addlabel}`} >當月總用電量或總金額</CFormLabel>
                         <CCol>
-                            <CFormInput className={styles.addinput} type="number" min='0' id="monthusage" />
+                            <CFormInput className={styles.addinput} type="number" min='0' id="C8monthusage" />
                         </CCol>
                     </CRow>
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="explain" className={`col-sm-2 col-form-label ${styles.addlabel}`} >備註</CFormLabel>
                         <CCol>
-                            <CFormTextarea className={styles.addinput} type="text" id="explain" rows={3} />
+                            <CFormTextarea className={styles.addinput} type="text" id="C8explain" rows={3} />
 
                         </CCol>
                     </CRow>
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="photo" className={`col-sm-2 col-form-label ${styles.addlabel}`}  >圖片*</CFormLabel>
                         <CCol>
-                            <CFormInput type="file" id="photo" required />
+                            <CFormInput type="file" id="C8image" required />
                         </CCol>
                     </CRow>
                     <br />
                     <div style={{ textAlign: 'center' }}>*為必填欄位</div>
+
+                    <CButton type="submit" onClick={handleC8Submit}>新增</CButton>
+
                 </div>
             );
 
@@ -956,7 +1077,7 @@ const FunctionForms = ({ currentFunction }) => {
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="type" className={`col-sm-2 col-form-label ${styles.addlabel}`} >交通方式*</CFormLabel>
                         <CCol>
-                            <CFormSelect aria-label="Default select example" id="type" className={styles.addinput}
+                            <CFormSelect aria-label="Default select example" id="C9type" className={styles.addinput}
                                 onChange={(e) => setTransportType(e.target.value)} >
                                 <option value="1">汽車</option>
                                 <option value="2">機車</option>
@@ -971,7 +1092,7 @@ const FunctionForms = ({ currentFunction }) => {
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="oil" className={`col-sm-2 col-form-label ${styles.addlabel}`} >油種*<span className={styles.Note}>僅汽/機車須填寫</span></CFormLabel>
                         <CCol>
-                            <CFormSelect aria-label="Default select example" id="type" className={styles.addinput} disabled={!(transportType === "1" || transportType === "2")} >
+                            <CFormSelect aria-label="Default select example" id="C9oil_type" className={styles.addinput} disabled={!(transportType === "1" || transportType === "2")} >
                                 <option value="1">無</option>
                                 <option value="2">汽油</option>
                                 <option value="3">柴油</option>
@@ -981,25 +1102,27 @@ const FunctionForms = ({ currentFunction }) => {
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="km" className={`col-sm-2 col-form-label ${styles.addlabel}`} >公里數*</CFormLabel>
                         <CCol>
-                            <CFormInput className={styles.addinput} type="number" id="km" required />
+                            <CFormInput className={styles.addinput} type="C9number" id="C9km" required />
                         </CCol>
                     </CRow>
 
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="explain" className={`col-sm-2 col-form-label ${styles.addlabel}`} >備註</CFormLabel>
                         <CCol>
-                            <CFormTextarea className={styles.addinput} type="text" id="explain" rows={3} />
+                            <CFormTextarea className={styles.addinput} type="text" id="C9explain" rows={3} />
 
                         </CCol>
                     </CRow>
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="photo" className={`col-sm-2 col-form-label ${styles.addlabel}`}  >圖片*</CFormLabel>
                         <CCol>
-                            <CFormInput type="file" id="photo" required />
+                            <CFormInput type="file" id="C9image" required />
                         </CCol>
                     </CRow>
                     <br />
                     <div style={{ textAlign: 'center' }}>*為必填欄位</div>
+
+                    <CButton type="submit" onClick={handleC9Submit}>新增</CButton>
                 </div>
             );
 
@@ -1094,7 +1217,7 @@ const FunctionForms = ({ currentFunction }) => {
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="type" className={`col-sm-2 col-form-label ${styles.addlabel}`} >交通方式*</CFormLabel>
                         <CCol>
-                            <CFormSelect aria-label="Default select example" id="type" className={styles.addinput}
+                            <CFormSelect aria-label="Default select example" id="C10type" className={styles.addinput}
                                 onChange={(e) => setTransportType(e.target.value)} >
                                 <option value="1">汽車</option>
                                 <option value="2">機車</option>
@@ -1111,7 +1234,7 @@ const FunctionForms = ({ currentFunction }) => {
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="oil" className={`col-sm-2 col-form-label ${styles.addlabel}`} >油種*<span className={styles.Note}>僅汽/機車須填寫</span></CFormLabel>
                         <CCol>
-                            <CFormSelect aria-label="Default select example" id="type" className={styles.addinput} disabled={!(transportType === "1" || transportType === "2")} >
+                            <CFormSelect aria-label="Default select example" id="C10oil_type" className={styles.addinput} disabled={!(transportType === "1" || transportType === "2")} >
                                 <option value="1">無</option>
                                 <option value="2">汽油</option>
                                 <option value="3">柴油</option>
@@ -1121,25 +1244,27 @@ const FunctionForms = ({ currentFunction }) => {
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="km" className={`col-sm-2 col-form-label ${styles.addlabel}`} >公里數*</CFormLabel>
                         <CCol>
-                            <CFormInput className={styles.addinput} type="number" id="km" required />
+                            <CFormInput className={styles.addinput} type="number" id="C10km" required />
                         </CCol>
                     </CRow>
 
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="explain" className={`col-sm-2 col-form-label ${styles.addlabel}`} >備註</CFormLabel>
                         <CCol>
-                            <CFormTextarea className={styles.addinput} type="text" id="explain" rows={3} />
+                            <CFormTextarea className={styles.addinput} type="text" id="C10explain" rows={3} />
 
                         </CCol>
                     </CRow>
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="photo" className={`col-sm-2 col-form-label ${styles.addlabel}`}  >圖片*</CFormLabel>
                         <CCol>
-                            <CFormInput type="file" id="photo" required />
+                            <CFormInput type="file" id="C10image" required />
                         </CCol>
                     </CRow>
                     <br />
                     <div style={{ textAlign: 'center' }}>*為必填欄位</div>
+
+                    <CButton type="submit" onClick={handleC10Submit}>新增</CButton>
                 </div>
             );
         case 'eleven':
@@ -1148,26 +1273,28 @@ const FunctionForms = ({ currentFunction }) => {
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="item" className={`col-sm-2 col-form-label ${styles.addlabel}`} >廢棄物項目*</CFormLabel>
                         <CCol>
-                            <CFormInput className={styles.addinput} type="text" id="item" required />
+                            <CFormInput className={styles.addinput} type="text" id="C11item" required />
                         </CCol>
                     </CRow>
 
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="explain" className={`col-sm-2 col-form-label ${styles.addlabel}`} >備註</CFormLabel>
                         <CCol>
-                            <CFormTextarea className={styles.addinput} type="text" id="explain" rows={3} />
+                            <CFormTextarea className={styles.addinput} type="text" id="C11explain" rows={3} />
 
                         </CCol>
                     </CRow>
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="photo" className={`col-sm-2 col-form-label ${styles.addlabel}`}  >圖片*</CFormLabel>
                         <CCol>
-                            <CFormInput type="file" id="photo" required />
+                            <CFormInput type="file" id="C11image" required />
                         </CCol>
                     </CRow>
                     <br />
                     <div style={{ textAlign: 'center' }}>*為必填欄位</div>
+                    <CButton type="submit" onClick={handleC11Submit}>新增</CButton>
                 </div>
+                
             );
         case 'twelve':
             return (
@@ -1175,25 +1302,27 @@ const FunctionForms = ({ currentFunction }) => {
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="item" className={`col-sm-2 col-form-label ${styles.addlabel}`} >廢棄物項目*</CFormLabel>
                         <CCol>
-                            <CFormInput className={styles.addinput} type="text" id="item" required />
+                            <CFormInput className={styles.addinput} type="text" id="C12item" required />
                         </CCol>
                     </CRow>
 
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="explain" className={`col-sm-2 col-form-label ${styles.addlabel}`} >備註</CFormLabel>
                         <CCol>
-                            <CFormTextarea className={styles.addinput} type="text" id="explain" rows={3} />
+                            <CFormTextarea className={styles.addinput} type="text" id="C12explain" rows={3} />
 
                         </CCol>
                     </CRow>
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="photo" className={`col-sm-2 col-form-label ${styles.addlabel}`}  >圖片*</CFormLabel>
                         <CCol>
-                            <CFormInput type="file" id="photo" required />
+                            <CFormInput type="file" id="C12image" required />
                         </CCol>
                     </CRow>
                     <br />
                     <div style={{ textAlign: 'center' }}>*為必填欄位</div>
+
+                    <CButton type="submit" onClick={handleC12Submit}>新增</CButton>
                 </div>
             );
 
