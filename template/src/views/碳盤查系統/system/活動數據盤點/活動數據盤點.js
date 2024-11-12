@@ -13,18 +13,21 @@ import { cilDataTransferDown } from '@coreui/icons'
 import '../../../../scss/碳盤查系統.css'
 import { Link } from 'react-router-dom'
 
-import {Vehicle} from './公務車/公務車.js';
-import {FireExtinguisher} from './滅火器/滅火器.js';
-import {Employee} from './工作時數(員工)/工作時數(員工).js';
-import {NonEmployee} from './工作時數(非員工)/工作時數(非員工).js';
-import {Refrigerant} from './冷媒/冷媒.js';
-import {Machinery} from './廠內機具/廠內機具.js';
-import {EmergencyGenerator} from './緊急發電機/緊急發電機.js';
-import {ElectricityUsage} from './電力使用量/電力使用量.js';
-import {Commuting} from './員工通勤/員工通勤.js';
-import {BusinessTrip} from './商務旅行/商務旅行.js';
-import {OperationalWaste} from './營運產生廢棄物/營運產生廢棄物.js';
-import {SellingWaste} from './銷售產品的廢棄物/銷售產品的廢棄物.js';
+import { Vehicle } from './公務車/公務車.js';
+import { FireExtinguisher } from './滅火器/滅火器.js';
+import { Employee } from './工作時數(員工)/工作時數(員工).js';
+import { NonEmployee } from './工作時數(非員工)/工作時數(非員工).js';
+import { Refrigerant } from './冷媒/冷媒.js';
+import { Machinery } from './廠內機具/廠內機具.js';
+import { EmergencyGenerator } from './緊急發電機/緊急發電機.js';
+import { ElectricityUsage } from './電力使用量/電力使用量.js';
+import { Commuting } from './員工通勤/員工通勤.js';
+import { BusinessTrip } from './商務旅行/商務旅行.js';
+import { OperationalWaste } from './營運產生廢棄物/營運產生廢棄物.js';
+import { SellingWaste } from './銷售產品的廢棄物/銷售產品的廢棄物.js';
+
+import { VehicleAdd } from './公務車/新增Modal.js';
+import { FireExtinguisherAdd } from './滅火器/新增Modal.js';
 
 import 'primereact/resources/themes/saga-blue/theme.css';  // 主题样式
 import 'primereact/resources/primereact.min.css';          // 核心 CSS
@@ -32,7 +35,7 @@ import 'primeicons/primeicons.css';                        // 图标样式
 
 import styles from '../../../../scss/活動數據盤點.module.css'
 
-import ActivityModal from './活動數據盤點新增modal.js';
+// import ActivityModal from './活動數據盤點新增modal.js';
 
 
 const Tabs = () => {
@@ -48,6 +51,23 @@ const Tabs = () => {
 
 
     const [isAddModalVisible, setAddModalVisible] = useState(false);
+
+
+    const renderModalComponent = () => {
+        switch (currentFunction) {
+            case 'Vehicle':
+                return <VehicleAdd isAddModalVisible={isAddModalVisible} setAddModalVisible={setAddModalVisible} />;
+            case 'FireExtinguisher':
+                return <FireExtinguisherAdd isAddModalVisible={isAddModalVisible} setAddModalVisible={setAddModalVisible} />;
+            case 'Employee':
+                return <EmployeeAdd isAddModalVisible={isAddModalVisible} setAddModalVisible={setAddModalVisible} />;
+            case 'NonEmployee':
+                return <NonEmployeeAdd isAddModalVisible={isAddModalVisible} setAddModalVisible={setAddModalVisible} />;
+            // ... (其他模態框元件的 case)
+            default:
+                return null;
+        }
+    };
 
 
 
@@ -139,13 +159,7 @@ const Tabs = () => {
             </div>
 
 
-
-
-            <ActivityModal
-                isAddModalVisible={isAddModalVisible}
-                setAddModalVisible={setAddModalVisible}
-                currentFunction={currentFunction}
-            />
+            {renderModalComponent()}
 
         </main>
     );
