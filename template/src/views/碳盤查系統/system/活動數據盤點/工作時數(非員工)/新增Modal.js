@@ -1,16 +1,29 @@
 import React, { useState } from 'react';
 import {
-    CModal, CModalHeader, CModalBody, CModalFooter, CButton, CFormLabel, CFormInput, CFormTextarea, CRow, CCol, CFormSelect, CForm
+    CModal, CModalHeader, CModalBody, CModalFooter, CModalTitle, CButton, CFormLabel, CFormInput, CFormTextarea, CRow, CCol, CCard, CFormSelect, CTab, CTabList, CTabs,
+    CTable, CTableBody, CTableHead, CFormCheck, CCollapse
+    , CForm, CCardBody,
 } from '@coreui/react';
-import styles from '../../../../../scss/活動數據盤點.module.css';
 
-const EditModal = ({ isEditModalVisible, setEditModalVisible }) => {
-    const handleClose = () => setEditModalVisible(false);
+import styles from '../../../../../scss/活動數據盤點.module.css'
+
+
+export const NonEmployeeAdd = ({ isAddModalVisible, setAddModalVisible }) => {
+    const handleClose = () => setAddModalVisible(false);
+
+    const [recognizedText, setRecognizedText] = useState("");
+
+   
 
     return (
-        <CModal visible={isEditModalVisible} onClose={handleClose} className={styles.modal}>
+        <CModal
+            backdrop="static"
+            visible={isAddModalVisible}
+            onClose={() => setAddModalVisible(false)}
+            aria-labelledby="ActivityModalLabel"
+        >
             <CModalHeader>
-                <h5><b>編輯數據-工作時數(非員工)</b></h5>
+                <CModalTitle id="ActivityModalLabel"><b>新增數據</b></CModalTitle>
             </CModalHeader>
             <CForm>
                 <CModalBody>
@@ -18,7 +31,7 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible }) => {
 
                         <CRow className="mb-3">
                             <CFormLabel htmlFor="month" className={`col-sm-2 col-form-label ${styles.addlabel}`} >月份*</CFormLabel>
-                            <CCol><CFormInput className={styles.addinput} type="month" id="date" required /> </CCol>
+                            <CCol><CFormInput className={styles.addinput} type="month" id="date" required /></CCol>
                         </CRow>
                         <CRow className="mb-3">
                             <CFormLabel htmlFor="people" className={`col-sm-2 col-form-label ${styles.addlabel}`} >人數*<span className={styles.Note}>如保全、清潔等委外人員</span></CFormLabel>
@@ -55,19 +68,18 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible }) => {
                         <br />
                         <div style={{ textAlign: 'center' }}>*為必填欄位</div>
 
-
-
-
                     </div>
                 </CModalBody>
                 <CModalFooter>
-                    <CButton className="modalbutton1" onClick={handleClose}>取消</CButton>
-                    <CButton className="modalbutton2" type="submit">儲存</CButton>
+                    <CButton className="modalbutton1" onClick={handleClose}>
+                        取消
+                    </CButton>
+                    <CButton type="submit" className="modalbutton2" >新增</CButton>
+
                 </CModalFooter>
             </CForm>
         </CModal>
     );
 };
 
-
-export default EditModal;
+export default NonEmployeeAdd;

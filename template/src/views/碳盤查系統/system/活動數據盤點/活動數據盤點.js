@@ -28,6 +28,17 @@ import { SellingWaste } from './銷售產品的廢棄物/銷售產品的廢棄�
 
 import { VehicleAdd } from './公務車/新增Modal.js';
 import { FireExtinguisherAdd } from './滅火器/新增Modal.js';
+import { EmployeeAdd } from './工作時數(員工)/新增Modal.js';
+import { NonEmployeeAdd } from './工作時數(非員工)/新增Modal.js';
+import { RefrigerantAdd } from './冷媒/新增Modal.js';
+import { MachineryAdd } from './廠內機具/新增Modal.js';
+import { EmergencyGeneratorAdd } from './緊急發電機/新增Modal.js';
+import { ElectricityUsageAdd } from './電力使用量/新增Modal.js';
+import { CommutingAdd } from './員工通勤/新增Modal.js';
+import { BusinessTripAdd } from './商務旅行/新增Modal.js';
+import { OperationalWasteAdd } from './營運產生廢棄物/新增Modal.js';
+import { SellingWasteAdd } from './銷售產品的廢棄物/新增Modal.js';
+
 
 import 'primereact/resources/themes/saga-blue/theme.css';  // 主题样式
 import 'primereact/resources/primereact.min.css';          // 核心 CSS
@@ -52,7 +63,6 @@ const Tabs = () => {
 
     const [isAddModalVisible, setAddModalVisible] = useState(false);
 
-
     const renderModalComponent = () => {
         switch (currentFunction) {
             case 'Vehicle':
@@ -63,13 +73,28 @@ const Tabs = () => {
                 return <EmployeeAdd isAddModalVisible={isAddModalVisible} setAddModalVisible={setAddModalVisible} />;
             case 'NonEmployee':
                 return <NonEmployeeAdd isAddModalVisible={isAddModalVisible} setAddModalVisible={setAddModalVisible} />;
-            // ... (其他模態框元件的 case)
+            case 'Refrigerant':
+                return <RefrigerantAdd isAddModalVisible={isAddModalVisible} setAddModalVisible={setAddModalVisible} />;
+            case 'Machinery':
+                return <MachineryAdd isAddModalVisible={isAddModalVisible} setAddModalVisible={setAddModalVisible} />;
+            case 'EmergencyGenerator':
+                return <EmergencyGeneratorAdd isAddModalVisible={isAddModalVisible} setAddModalVisible={setAddModalVisible} />;
+            case 'ElectricityUsage':
+                return <ElectricityUsageAdd isAddModalVisible={isAddModalVisible} setAddModalVisible={setAddModalVisible} />;
+            case 'Commuting':
+                return <CommutingAdd isAddModalVisible={isAddModalVisible} setAddModalVisible={setAddModalVisible} />;
+            case 'BusinessTrip':
+                return <BusinessTripAdd isAddModalVisible={isAddModalVisible} setAddModalVisible={setAddModalVisible} />;
+            case 'OperationalWaste':
+                return <OperationalWasteAdd isAddModalVisible={isAddModalVisible} setAddModalVisible={setAddModalVisible} />;
+            case 'SellingWaste':
+                return <SellingWasteAdd isAddModalVisible={isAddModalVisible} setAddModalVisible={setAddModalVisible} />;
+
+
             default:
                 return null;
         }
     };
-
-
 
     return (
         <main>
