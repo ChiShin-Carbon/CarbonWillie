@@ -10,6 +10,7 @@ import styles from '../../../../../scss/活動數據盤點.module.css'
 
 export const RefrigerantAdd = ({ isAddModalVisible, setAddModalVisible }) => {
     const handleClose = () => setAddModalVisible(false);
+    const [visible, setVisible] = useState(false)
 
     const [recognizedText, setRecognizedText] = useState("");
 

@@ -10,6 +10,7 @@ import styles from '../../../../../scss/活動數據盤點.module.css'
 
 export const CommutingAdd = ({ isAddModalVisible, setAddModalVisible }) => {
     const handleClose = () => setAddModalVisible(false);
+    const [transportType, setTransportType] = useState("1"); // 默認選擇汽車
 
     const [recognizedText, setRecognizedText] = useState("");
 
