@@ -31,7 +31,7 @@ export const RefrigerantAdd = ({ isAddModalVisible, setAddModalVisible }) => {
         formData.append("image", document.getElementById("C5image").files[0]);
 
         try {
-            const res = await fetch("http://localhost:8000/insert_refrigerant", {
+            const res = await fetch("http://localhost:8000/insert_ref", {
                 method: "POST",
                 body: formData,
             });

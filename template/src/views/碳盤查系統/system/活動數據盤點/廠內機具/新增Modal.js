@@ -20,14 +20,14 @@ export const MachineryAdd = ({ isAddModalVisible, setAddModalVisible }) => {
         formData.append("user_id", 1);
         formData.append("date", document.getElementById("C6date").value);
         formData.append("number", document.getElementById("C6num").value);
-        formData.append("device_location", document.getElementById("C6site").value);
-        formData.append("device_type", document.getElementById("C6type").value);
+        formData.append("location", document.getElementById("C6site").value);
+        formData.append("type", document.getElementById("C6type").value);
         formData.append("filling", document.getElementById("C6quantity").value);
         formData.append("remark", document.getElementById("C6explain").value);
         formData.append("image", document.getElementById("C6image").files[0]);
 
         try {
-            const res = await fetch("http://localhost:8000/insert_refrigerant", {
+            const res = await fetch("http://localhost:8000/insert_machine", {
                 method: "POST",
                 body: formData,
             });
@@ -78,7 +78,7 @@ export const MachineryAdd = ({ isAddModalVisible, setAddModalVisible }) => {
                         <CRow className="mb-3">
                             <CFormLabel htmlFor="type2" className={`col-sm-2 col-form-label ${styles.addlabel}`} >能源類型*</CFormLabel>
                             <CCol>
-                                <CFormSelect aria-label="Default select example" id="C6type2" className={styles.addinput} >
+                                <CFormSelect aria-label="Default select example" id="C6type" className={styles.addinput} >
                                     <option value="1">柴油</option>
                                     <option value="2">汽油</option>
                                     <option value="3">其他</option>

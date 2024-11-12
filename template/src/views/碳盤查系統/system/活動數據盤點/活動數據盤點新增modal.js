@@ -213,7 +213,7 @@ const FunctionForms = ({ currentFunction }) => {
         formData.append("image", document.getElementById("C6image").files[0]);
 
         try {
-            const res = await fetch("http://localhost:8000/insert_refrigerant", {
+            const res = await fetch("http://localhost:8000/insert_machine", {
                 method: "POST",
                 body: formData,
             });
