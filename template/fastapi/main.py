@@ -20,6 +20,7 @@ from editcfvinfo import editcfvinfo
 from ocrapi import ocrapi
 from bot import botapi
 from baseline import baseline
+from boundary import boundary
 from insert_vehicle import insert_vehicle
 from insert_Extinguisher import insert_Extinguisher
 from insert_employee import insert_employee
@@ -74,6 +75,7 @@ app.include_router(editcfvinfo)
 app.include_router(ocrapi)
 app.include_router(botapi)
 app.include_router(baseline)
+app.include_router(boundary)
 app.include_router(insert_vehicle)
 app.include_router(insert_Extinguisher)
 app.include_router(insert_employee)

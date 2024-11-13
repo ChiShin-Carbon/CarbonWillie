@@ -7,13 +7,13 @@ from fastapi.middleware.cors import CORSMiddleware
 
 baseline = APIRouter()
 
-class BaselineCreate(BaseModel):
+class Baseline(BaseModel):
     user_id: int
     cfv_start_date: datetime
     cfv_end_date: datetime
 
 @baseline.post("/baseline")
-def create_baseline(baseline_data: BaselineCreate):
+def create_baseline(baseline: Baseline):
     conn = connectDB()
     if conn:
         cursor = conn.cursor()
@@ -22,7 +22,7 @@ def create_baseline(baseline_data: BaselineCreate):
                 INSERT INTO Baseline (user_id, cfv_start_date, cfv_end_date, edit_time)
                 VALUES (?, ?, ?, GETDATE())
             """
-            cursor.execute(query, (baseline_data.user_id, baseline_data.cfv_start_date, baseline_data.cfv_end_date))
+            cursor.execute(query, (baseline.user_id, baseline.cfv_start_date, baseline.cfv_end_date))
             conn.commit()
             conn.close()
             return {"message": "Baseline created successfully"}

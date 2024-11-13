@@ -41,10 +41,9 @@ const Tabs = () => {
   // 定義 useState 來控制 Modal 的顯示
   const [isAddModalVisible, setAddModalVisible] = useState(false)
   const [isEditModalVisible, setEditModalVisible] = useState(false)
-  const [cfvStartDate, setCfvStartDate] = useState('')
-  const [cfvEndDate, setCfvEndDate] = useState('')
-  const [positionID, setPositionID] = useState('')
 
+  // position-編輯權限
+  const [positionID, setPositionID] = useState('')
   const getuserinfo = async () => {
     try {
       const response = await fetch('http://localhost:8000/userinfo', {
@@ -68,8 +67,15 @@ const Tabs = () => {
       console.error('Error:', error)
     }
   }
+  useEffect(() => {
+    getuserinfo()
+  }, [])
 
-  const fetchBaselineData = async () => {
+  // Baseline
+  const [cfvStartDate, setCfvStartDate] = useState('')
+  const [cfvEndDate, setCfvEndDate] = useState('')
+
+  const getBaseline = async () => {
     try {
       const response = await fetch('http://localhost:8000/baseline')
       if (response.ok) {
@@ -77,10 +83,10 @@ const Tabs = () => {
         setCfvStartDate(data.baseline.cfv_start_date)
         setCfvEndDate(data.baseline.cfv_end_date)
       } else {
-        console.log('Failed to fetch baseline data:', response.status)
+        console.log(response.status)
       }
     } catch (error) {
-      console.error('Failed to fetch baseline data:', error)
+      console.error('Error:', error)
     }
   }
   const handleCreateBaseline = async () => {
@@ -99,7 +105,7 @@ const Tabs = () => {
         })
         if (response.ok) {
           alert('基準年設定成功')
-          fetchBaselineData()
+          getBaseline()
           setAddModalVisible(false)
         }
       } catch (error) {
@@ -111,11 +117,99 @@ const Tabs = () => {
   }
 
   useEffect(() => {
-    getuserinfo()
+    getBaseline()
   }, [])
 
+  // Boundary
+  const [field_name, setFieldName] = useState('')
+  const [field_address, setFieldAddress] = useState('')
+  const [is_inclusion, setIsInclusion] = useState(false)
+  const [remark, setRemark] = useState('')
+
+  const getBoundary = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/boundary')
+      if (response.ok) {
+        const data = await response.json()
+        setFieldName(data.boundary.field_name)
+        setFieldAddress(data.boundary.field_address)
+        setIsInclusion(data.boundary.is_inclusion ? true : false)
+        setRemark(data.boundary.remark)
+      } else {
+        console.log(response.status)
+      }
+    } catch (error) {
+      console.error('Error:', error)
+    }
+  }
+  // const handleCreateBoundary = async () => {
+  //   try {
+  //     const response = await fetch('http://localhost:8000/boundary', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify({
+  //         user_id: window.sessionStorage.getItem('user_id'),
+  //         field_name: field_name,
+  //         field_address: field_address,
+  //         is_inclusion: is_inclusion,
+  //         remark: remark,
+  //       }),
+  //     })
+  //     if (response.ok) {
+  //       alert('邊界設定成功')
+  //       getBoundary()
+  //       setAddModalVisible(false)
+  //     }
+  //   } catch (error) {
+  //     console.error('Error creating boundary:', error)
+  //   }
+  // }
+
+  // const handleEditBoundary = async (boundary_id) => {
+  //   try {
+  //     const response = await fetch(`http://localhost:8000/boundary/${boundary_id}`, {
+  //       method: 'PUT',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify({
+  //         user_id: window.sessionStorage.getItem('user_id'),
+  //         field_name,
+  //         field_address,
+  //         is_inclusion,
+  //         remark,
+  //       }),
+  //     })
+  //     if (response.ok) {
+  //       alert('邊界修改成功')
+  //       getBoundary()
+  //       setEditModalVisible(false)
+  //     }
+  //   } catch (error) {
+  //     console.error('Error updating boundary:', error)
+  //   }
+  // }
+
+  // const handleDeleteBoundary = async (boundary_id) => {
+  //   if (window.confirm('確定刪除此邊界設定嗎？')) {
+  //     try {
+  //       const response = await fetch(`http://localhost:8000/boundary/${boundary_id}`, {
+  //         method: 'DELETE',
+  //       })
+  //       if (response.ok) {
+  //         alert('邊界刪除成功')
+  //         getBoundary()
+  //       }
+  //     } catch (error) {
+  //       console.error('Error deleting boundary:', error)
+  //     }
+  //   }
+  // }
+
   useEffect(() => {
-    fetchBaselineData()
+    getBoundary()
   }, [])
 
   return (
@@ -238,22 +332,31 @@ const Tabs = () => {
               </tr>
             </CTableHead>
             <CTableBody>
-              <tr>
-                <td>XXX大樓5F</td>
-                <td>10491台北市中山區建國北路三段42號4樓</td>
-                <td>讚</td>
-                <td>
-                  <FontAwesomeIcon icon={faCircleCheck} className={styles.iconCorrect} />
-                </td>
-                <td>
-                  <FontAwesomeIcon
-                    icon={faPenToSquare}
-                    className={styles.iconPen}
-                    onClick={() => setEditModalVisible(true)}
-                  />
-                  <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
-                </td>
-              </tr>
+              {/* {boundaries.map((boundary) => (
+                <tr key={boundary.boundary_id}>
+                  <td>{boundary.field_name}</td>
+                  <td>{boundary.field_address}</td>
+                  <td>{boundary.remark}</td>
+                  <td>
+                    <FontAwesomeIcon
+                      icon={is_inclusion ? faCircleCheck : faCircleXmark}
+                      className={is_inclusion ? styles.iconCorrect : styles.iconWrong}
+                    />
+                  </td>
+                  <td>
+                    <FontAwesomeIcon
+                      icon={faPenToSquare}
+                      className={styles.iconPen}
+                      onClick={() => handleEditBoundary(boundary.boundary_id)}
+                    />
+                    <FontAwesomeIcon
+                      icon={faTrashCan}
+                      className={styles.iconTrash}
+                      onClick={() => handleDeleteBoundary(boundary.boundary_id)}
+                    />
+                  </td>
+                </tr>
+              ))} */}
               <tr>
                 <td>XXX大樓5F</td>
                 <td>10491台北市中山區建國北路三段42號4樓</td>
@@ -274,7 +377,6 @@ const Tabs = () => {
           </CTable>
         </div>
       </CCard>
-
       <CModal
         backdrop="static"
         visible={isAddModalVisible}
@@ -315,7 +417,9 @@ const Tabs = () => {
           <CButton className="modalbutton1" onClick={() => setAddModalVisible(false)}>
             取消
           </CButton>
-          <CButton className="modalbutton2">新增</CButton>
+          <CButton className="modalbutton2" onClick={() => handleCreateBoundary()}>
+            新增
+          </CButton>
         </CModalFooter>
       </CModal>
 
@@ -335,28 +439,54 @@ const Tabs = () => {
             <CFormLabel htmlFor="sitename" className="col-sm-2 col-form-label systemlabel">
               場域名稱
             </CFormLabel>
-            <CFormInput className="systeminput" type="text" id="sitename" />
+            <CFormInput
+              className="systeminput"
+              type="text"
+              id="sitename"
+              value={field_name}
+              onChange={(e) => setFieldName(e.target.value)}
+            />
 
             <CFormLabel htmlFor="site" className="col-sm-2 col-form-label systemlabel">
               場域地址
             </CFormLabel>
-            <CFormInput className="systeminput" type="text" id="site" />
+            <CFormInput
+              className="systeminput"
+              type="text"
+              id="site"
+              value={field_address}
+              onChange={(e) => setFieldAddress(e.target.value)}
+            />
 
             <CFormLabel htmlFor="siteexplain" className="col-sm-2 col-form-label systemlabel">
               備註
             </CFormLabel>
-            <CFormTextarea className="systeminput" type="text" id="siteexplain" rows={3} />
+            <CFormTextarea
+              className="systeminput"
+              type="text"
+              id="siteexplain"
+              rows={3}
+              value={remark}
+              onChange={(e) => setRemark(e.target.value)}
+            />
 
             <br />
 
-            <CFormCheck id="sitetrue" label="列入盤查" />
+            <CFormCheck
+              id="sitetrue"
+              label="列入盤查"
+              value={is_inclusion}
+              onChange={(e) => setIsInclusion(e.target.value)}
+            />
           </CForm>
         </CModalBody>
         <CModalFooter>
           <CButton className="modalbutton1" onClick={() => setEditModalVisible(false)}>
             取消
           </CButton>
-          <CButton className="modalbutton2">確認</CButton>
+          <CButton className="modalbutton2" onClick={() => handleEditBoundary()}>
+            確認
+          </CButton>
         </CModalFooter>
       </CModal>
     </main>
