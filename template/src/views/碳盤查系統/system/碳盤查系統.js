@@ -72,6 +72,7 @@ const Tabs = () => {
   }, [])
 
   // Baseline
+  const [baseline_id, setBaseline] = useState('')
   const [cfvStartDate, setCfvStartDate] = useState('')
   const [cfvEndDate, setCfvEndDate] = useState('')
 
@@ -80,6 +81,7 @@ const Tabs = () => {
       const response = await fetch('http://localhost:8000/baseline')
       if (response.ok) {
         const data = await response.json()
+        setBaseline(data.baseline.baseline_id)
         setCfvStartDate(data.baseline.cfv_start_date)
         setCfvEndDate(data.baseline.cfv_end_date)
       } else {
@@ -121,20 +123,27 @@ const Tabs = () => {
   }, [])
 
   // Boundary
-  const [field_name, setFieldName] = useState('')
-  const [field_address, setFieldAddress] = useState('')
-  const [is_inclusion, setIsInclusion] = useState(false)
-  const [remark, setRemark] = useState('')
+  // const [field_name, setFieldName] = useState('')
+  // const [field_address, setFieldAddress] = useState('')
+  // const [is_inclusion, setIsInclusion] = useState(false)
+  // const [remark, setRemark] = useState('')
+  // const [boundary, setBoundary] = useState(false)
+  const [boundaries, setBoundaries] = useState([])
 
   const getBoundary = async () => {
     try {
       const response = await fetch('http://localhost:8000/boundary')
       if (response.ok) {
         const data = await response.json()
-        setFieldName(data.boundary.field_name)
-        setFieldAddress(data.boundary.field_address)
-        setIsInclusion(data.boundary.is_inclusion ? true : false)
-        setRemark(data.boundary.remark)
+        setBoundaries(data.boundaries)
+        // setFieldName(data.boundary.field_name)
+        // setFieldAddress(data.boundary.field_address)
+        // setIsInclusion(data.boundary.is_inclusion ? true : false)
+        // setRemark(data.boundary.remark)
+        // setBoundary(true)
+      } else if (response.status === 404) {
+        // setBoundary(false)
+        setBoundaries([])
       } else {
         console.log(response.status)
       }
@@ -142,30 +151,36 @@ const Tabs = () => {
       console.error('Error:', error)
     }
   }
-  // const handleCreateBoundary = async () => {
-  //   try {
-  //     const response = await fetch('http://localhost:8000/boundary', {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: JSON.stringify({
-  //         user_id: window.sessionStorage.getItem('user_id'),
-  //         field_name: field_name,
-  //         field_address: field_address,
-  //         is_inclusion: is_inclusion,
-  //         remark: remark,
-  //       }),
-  //     })
-  //     if (response.ok) {
-  //       alert('邊界設定成功')
-  //       getBoundary()
-  //       setAddModalVisible(false)
-  //     }
-  //   } catch (error) {
-  //     console.error('Error creating boundary:', error)
-  //   }
-  // }
+
+  const [new_field_name, setNewFieldName] = useState('')
+  const [new_field_address, setNewFieldAddress] = useState('')
+  const [new_is_inclusion, setNewIsInclusion] = useState(false)
+  const [new_remark, setNewRemark] = useState('')
+  const handleCreateBoundary = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/boundary', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          baseline_id: baseline_id,
+          user_id: window.sessionStorage.getItem('user_id'),
+          field_name: new_field_name,
+          field_address: new_field_address,
+          is_inclusion: new_is_inclusion,
+          remark: new_remark,
+        }),
+      })
+      if (response.ok) {
+        alert('邊界設定成功')
+        getBaseline()
+        setAddModalVisible(false)
+      }
+    } catch (error) {
+      console.error('Error creating boundary:', error)
+    }
+  }
 
   // const handleEditBoundary = async (boundary_id) => {
   //   try {
@@ -332,32 +347,40 @@ const Tabs = () => {
               </tr>
             </CTableHead>
             <CTableBody>
-              {/* {boundaries.map((boundary) => (
-                <tr key={boundary.boundary_id}>
-                  <td>{boundary.field_name}</td>
-                  <td>{boundary.field_address}</td>
-                  <td>{boundary.remark}</td>
-                  <td>
-                    <FontAwesomeIcon
-                      icon={is_inclusion ? faCircleCheck : faCircleXmark}
-                      className={is_inclusion ? styles.iconCorrect : styles.iconWrong}
-                    />
-                  </td>
-                  <td>
-                    <FontAwesomeIcon
-                      icon={faPenToSquare}
-                      className={styles.iconPen}
-                      onClick={() => handleEditBoundary(boundary.boundary_id)}
-                    />
-                    <FontAwesomeIcon
-                      icon={faTrashCan}
-                      className={styles.iconTrash}
-                      onClick={() => handleDeleteBoundary(boundary.boundary_id)}
-                    />
+              {boundaries.length > 0 ? (
+                boundaries.map((boundary) => (
+                  <tr key={boundary.boundary_id}>
+                    <td>{boundary.field_name}</td>
+                    <td>{boundary.field_address}</td>
+                    <td>{boundary.remark}</td>
+                    <td>
+                      <FontAwesomeIcon
+                        icon={boundary.is_inclusion ? faCircleCheck : faCircleXmark}
+                        className={boundary.is_inclusion ? styles.iconCorrect : styles.iconWrong}
+                      />
+                    </td>
+                    <td>
+                      <FontAwesomeIcon
+                        icon={faPenToSquare}
+                        className={styles.iconPen}
+                        onClick={() => handleEditBoundary(boundary.boundary_id)}
+                      />
+                      <FontAwesomeIcon
+                        icon={faTrashCan}
+                        className={styles.iconTrash}
+                        onClick={() => handleDeleteBoundary(boundary.boundary_id)}
+                      />
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="5" style={{ textAlign: 'center', color: 'gray' }}>
+                    請新增邊界設定
                   </td>
                 </tr>
-              ))} */}
-              <tr>
+              )}
+              {/* <tr>
                 <td>XXX大樓5F</td>
                 <td>10491台北市中山區建國北路三段42號4樓</td>
                 <td>讚</td>
@@ -372,7 +395,7 @@ const Tabs = () => {
                   />
                   <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
                 </td>
-              </tr>
+              </tr> */}
             </CTableBody>
           </CTable>
         </div>
@@ -393,12 +416,22 @@ const Tabs = () => {
             <CFormLabel htmlFor="sitename" className={`col-sm-2 col-form-label ${styles.addlabel}`}>
               場域名稱
             </CFormLabel>
-            <CFormInput className={styles.addinput} type="text" id="sitename" />
+            <CFormInput
+              className={styles.addinput}
+              type="text"
+              id="sitename"
+              onChange={(e) => setNewFieldName(e.target.value)}
+            />
 
             <CFormLabel htmlFor="site" className={`col-sm-2 col-form-label ${styles.addlabel}`}>
               場域地址
             </CFormLabel>
-            <CFormInput className={styles.addinput} type="text" id="site" />
+            <CFormInput
+              className={styles.addinput}
+              type="text"
+              id="site"
+              onChange={(e) => setNewFieldAddress(e.target.value)}
+            />
 
             <CFormLabel
               htmlFor="siteexplain"
@@ -406,24 +439,34 @@ const Tabs = () => {
             >
               備註
             </CFormLabel>
-            <CFormTextarea className={styles.addinput} type="text" id="siteexplain" rows={3} />
+            <CFormTextarea
+              className={styles.addinput}
+              type="text"
+              id="siteexplain"
+              rows={3}
+              onChange={(e) => setNewRemark(e.target.value)}
+            />
 
             <br />
 
-            <CFormCheck id="sitetrue" label="列入盤查" />
+            <CFormCheck
+              id="sitetrue"
+              label="列入盤查"
+              onChange={(e) => setNewIsInclusion(e.target.checked)}
+            />
           </CForm>
         </CModalBody>
         <CModalFooter>
           <CButton className="modalbutton1" onClick={() => setAddModalVisible(false)}>
             取消
           </CButton>
-          <CButton className="modalbutton2" onClick={() => handleCreateBoundary()}>
+          <CButton className="modalbutton2" onClick={handleCreateBoundary}>
             新增
           </CButton>
         </CModalFooter>
       </CModal>
 
-      <CModal
+      {/* <CModal
         backdrop="static"
         visible={isEditModalVisible}
         onClose={() => setEditModalVisible(false)}
@@ -443,7 +486,7 @@ const Tabs = () => {
               className="systeminput"
               type="text"
               id="sitename"
-              value={field_name}
+              value={boundary.field_name}
               onChange={(e) => setFieldName(e.target.value)}
             />
 
@@ -454,7 +497,7 @@ const Tabs = () => {
               className="systeminput"
               type="text"
               id="site"
-              value={field_address}
+              value={boundary.field_address}
               onChange={(e) => setFieldAddress(e.target.value)}
             />
 
@@ -466,7 +509,7 @@ const Tabs = () => {
               type="text"
               id="siteexplain"
               rows={3}
-              value={remark}
+              value={boundary.remark}
               onChange={(e) => setRemark(e.target.value)}
             />
 
@@ -475,7 +518,7 @@ const Tabs = () => {
             <CFormCheck
               id="sitetrue"
               label="列入盤查"
-              value={is_inclusion}
+              value={boundary.is_inclusion}
               onChange={(e) => setIsInclusion(e.target.value)}
             />
           </CForm>
@@ -488,7 +531,7 @@ const Tabs = () => {
             確認
           </CButton>
         </CModalFooter>
-      </CModal>
+      </CModal> */}
     </main>
   )
 }

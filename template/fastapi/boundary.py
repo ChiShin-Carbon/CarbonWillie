@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 boundary = APIRouter()
 
 class Boundary(BaseModel):
+    baseline_id: int
     user_id: int
     field_name: str
     field_address: str
@@ -20,10 +21,10 @@ def create_boundary(boundary: Boundary):
         cursor = conn.cursor()
         try:
             query = """
-                INSERT INTO Boundary (user_id, field_name, field_address, is_inclusion, remark)
-                VALUES (?, ?, ?, ?, ?)
+                INSERT INTO Boundary (baseline_id, user_id, field_name, field_address, is_inclusion, remark)
+                VALUES (?, ?, ?, ?, ?, ?)
             """
-            cursor.execute(query, (boundary.user_id, boundary.field_name, boundary.field_address, boundary.is_inclusion, boundary.remark))
+            cursor.execute(query, (boundary.baseline_id, boundary.user_id, boundary.field_name, boundary.field_address, boundary.is_inclusion, boundary.remark))
             conn.commit()
             conn.close()
             return {"message": "Boundary created successfully"}
@@ -81,25 +82,26 @@ def read_boundary():
         cursor = conn.cursor()
         try:
             query = """
-                SELECT baseline_id, field_name, field_address, is_inclusion, remark
+                SELECT field_name, field_address, is_inclusion, remark
                 FROM Boundary 
                 WHERE baseline_id = (
                 SELECT TOP 1 baseline_id 
                 FROM Baseline ORDER BY edit_time DESC
               )"""
             cursor.execute(query)
-            boundary_record = cursor.fetchone()
+            boundary_records = cursor.fetchall()
             conn.close()
 
-            if boundary_record:
-                result = {
-                    "field_name": boundary_record[0],
-                    "field_address": boundary_record[1],
-                    "is_inclusion": boundary_record[2],
-                    "remark": boundary_record[3],
-                    "method": boundary_record[4]
-                }
-                return {"boundary": result}  
+            if boundary_records:
+                result = []
+                for boundary_record in boundary_records:
+                    result.append({
+                        "field_name": boundary_record[0],
+                        "field_address": boundary_record[1],
+                        "is_inclusion": boundary_record[2],
+                        "remark": boundary_record[3]
+                    })
+                return {"boundaries": result}  
             else:
                 # Raise a 404 error if user not found
                 raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Boundary not found")

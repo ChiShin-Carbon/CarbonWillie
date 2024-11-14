@@ -39,16 +39,17 @@ def read_baseline():
     if conn:
         cursor = conn.cursor()
         try:
-            query = "SELECT TOP 1 cfv_start_date, cfv_end_date, edit_time FROM Baseline ORDER BY edit_time DESC"
+            query = "SELECT TOP 1 baseline_id, cfv_start_date, cfv_end_date, edit_time FROM Baseline ORDER BY edit_time DESC"
             cursor.execute(query)
             baseline_record = cursor.fetchone()
             conn.close()
 
             if baseline_record:
                 result = {
-                    "cfv_start_date": baseline_record[0],
-                    "cfv_end_date": baseline_record[1],
-                    "edit_time": baseline_record[2]
+                    "baseline_id": baseline_record[0],
+                    "cfv_start_date": baseline_record[1],
+                    "cfv_end_date": baseline_record[2],
+                    "edit_time": baseline_record[3]
                 }
                 return {"baseline": result}  
             else:
