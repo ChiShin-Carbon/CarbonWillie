@@ -95,7 +95,7 @@ const Tabs = () => {
 
             <div className="system-titlediv">
                 <div>
-                    <h4 className="system-title">定量盤查</h4>
+                    <h4 className="system-title">不確定性量化評估</h4>
                     <hr className="system-hr"></hr>
                 </div>
                 {/* <button className="system-save">儲存</button> */}
