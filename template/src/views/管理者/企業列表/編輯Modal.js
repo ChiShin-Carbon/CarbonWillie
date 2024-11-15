@@ -3,9 +3,29 @@ import {
     CModal, CModalHeader, CModalBody, CModalFooter, CButton, CFormLabel, CFormInput, CFormTextarea, CRow, CCol, CFormSelect, CForm
 } from '@coreui/react';
 import styles from '../../../scss/管理者.module.css';
+import cities from './citiesData';
 
-const EditModal = ({ isEditModalVisible, setEditModalVisible}) => {
+const EditModal = ({ isEditModalVisible, setEditModalVisible }) => {
     const handleClose = () => setEditModalVisible(false);
+    
+    const [county, setCounty] = useState(''); // 縣市
+    const [town, setTown] = useState(''); // 鄉鎮
+    const [postal_code, setPostalCode] = useState(''); // 郵遞區號
+
+    const handleCountyChange = (e) => {
+        const selectedCounty = e.target.value;
+        setCounty(selectedCounty); // 更新縣市
+        setTown(''); // 清空鄉鎮
+        setPostalCode(''); // 清空郵遞區號
+    };
+
+    const handleTownChange = (e) => {
+        const selectedTown = e.target.value;
+        setTown(selectedTown); // 更新鄉鎮
+        if (county && cities[county][selectedTown]) {
+            setPostalCode(cities[county][selectedTown]); // 更新郵遞區號
+        }
+    };
 
     return (
         <CModal visible={isEditModalVisible} onClose={handleClose} className={styles.modal}>
@@ -33,6 +53,40 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible}) => {
                                 <CFormInput className={styles.addinput} type="text" id="actory_number" required />
                             </CCol>
                         </CRow>
+                        <CRow className="mb-3">
+                            <CFormLabel htmlFor="county" className={`col-sm-2 col-form-label ${styles.addlabel}`} >縣市別</CFormLabel>
+                            <CCol>
+                                <CFormSelect className={styles.addinput} type="text" id="county" value={county} onChange={handleCountyChange} required>
+                                    <option value="">選擇縣市別</option>
+                                    {Object.keys(cities).map((city) => (
+                                        <option key={city} value={city}>
+                                            {city}
+                                        </option>
+                                    ))}
+                                </CFormSelect>
+                            </CCol>
+                        </CRow>
+                        <CRow className="mb-3">
+                            <CFormLabel htmlFor="town" className={`col-sm-2 col-form-label ${styles.addlabel}`} >鄉鎮別</CFormLabel>
+                            <CCol>
+                                <CFormSelect className={styles.addinput} type="text" id="town" value={town} onChange={handleTownChange}>
+                                    <option value="">選擇鄉鎮別</option>
+                                    {county &&
+                                        Object.keys(cities[county]).map((township) => (
+                                            <option key={township} value={township}>
+                                                {township}
+                                            </option>
+                                        ))}
+                                </CFormSelect>
+                            </CCol>
+                        </CRow>
+                        <CRow className="mb-3">
+                            <CFormLabel htmlFor="postal_code" className={`col-sm-2 col-form-label ${styles.addlabel}`} >郵遞區號</CFormLabel>
+                            <CCol>
+                                <CFormInput className={styles.addinput} type="text" id="postal_code" value={postal_code} readOnly />
+                            </CCol>
+                        </CRow>
+
                         <CRow className="mb-3">
                             <CFormLabel htmlFor="org_address" className={`col-sm-2 col-form-label ${styles.addlabel}`} >地址</CFormLabel>
                             <CCol>

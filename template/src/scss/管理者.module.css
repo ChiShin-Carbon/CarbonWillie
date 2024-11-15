@@ -19,8 +19,18 @@
     box-shadow: 0 1px 7px rgb(209, 208, 208);
 }
 
+.card {
+    border: none;
+    box-shadow: 0px 2px 5px rgb(186, 186, 186);
+    border-radius: 15px;
+    width: 100%;
+    height: 500px;
+    margin-bottom: 30px;
+    max-height: 500px;
+    overflow: auto;
+    padding: 20px
+}
 
-/* /////////////////////////////////////////////////////////////////////// */
 .cardRow {
     display: flex;
     flex-direction: row;
@@ -119,7 +129,7 @@
 }
 
 .searchAndUpdate .searchAndUpdateLeft {
-    width: 50%
+    width: 40%
 }
 
 .searchAndUpdate input {
@@ -156,7 +166,11 @@
     box-shadow: 0 -4px 5px -2px rgba(0, 0, 0, 0.1);
 }
 
-.userList button {
+.userList div {
+    padding: 5px 0;
+}
+
+.userList a {
     background-Color: #8ec49d;
     border-radius: 10px;
     border: none;
@@ -164,10 +178,11 @@
     font-weight: bold;
     font-size: 20px;
     transition: 0.5s;
-    padding: 8px 15px
+    padding: 8px 15px;
+    text-decoration: none;
 }
 
-.userList button:hover {
+.userList a:hover {
     background-color: #72a07f;
 }
 
@@ -232,6 +247,7 @@
 .addmodal {
     margin: 0 30px
 }
+
 .addinput {
     border-radius: 15px;
     background-color: #ffffff;
@@ -240,4 +256,19 @@
 
 .addinput:focus {
     background-color: #ffffff;
+}
+
+.userTable {
+    text-align: center;
+}
+
+.userTableHead th {
+    background-color: #8ec49d;
+    color: white;
+}
+
+.userTableBody tr {
+    border-bottom: 1px solid rgb(167, 167, 167);
+    font-weight: 800;
+    vertical-align: middle;
 }

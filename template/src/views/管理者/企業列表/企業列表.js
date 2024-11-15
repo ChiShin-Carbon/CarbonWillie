@@ -61,7 +61,7 @@ const Tabs = () => {
         <main>
             <div className="system-titlediv">
                 <div>
-                    <h4 className="system-title">系統現有公司列表</h4>
+                    <h4 className="system-title">系統現有企業列表</h4>
                     <hr className="system-hr"></hr>
                 </div>
                 {/* <button className="system-save">儲存</button> */}
@@ -75,7 +75,7 @@ const Tabs = () => {
                 </CInputGroup>
 
                 <button className={styles.searchAndUpdateButton} onClick={() => setAddModalVisible(true)}>
-                    新增公司資料
+                    新增企業資料
                 </button>
             </div>
 
@@ -84,7 +84,7 @@ const Tabs = () => {
                     <CTable hover className={styles.table}>
                         <CTableHead className={styles.tableHead}>
                             <tr>
-                                <th>公司名稱</th>
+                                <th>企業名稱</th>
                             </tr>
                         </CTableHead>
                         <CTableBody className={styles.tableBody}>
@@ -106,7 +106,7 @@ const Tabs = () => {
                         <>
                             <div className={styles.cardHeader}>
                                 <div className={styles.cardTitle}>
-                                    <h5>公司詳細資料</h5>
+                                    <h5>企業詳細資料</h5>
 
                                 </div>
                                 <div className={styles.cardOperation}>
@@ -118,7 +118,7 @@ const Tabs = () => {
                             <div className={styles.cardBody}>
                                 <div className={styles.block}>
                                     <div className={styles.blockBody1}>
-                                        <div><span>公司場所名稱:</span><p>{selectedRowData.org_name}</p></div>
+                                        <div><span>公私場所名稱:</span><p>{selectedRowData.org_name}</p></div>
                                     </div>
                                 </div>
                                 <div className={styles.block}>
@@ -128,15 +128,15 @@ const Tabs = () => {
                                     </div>
                                 </div>
                                 <div className={styles.block}>
-                                    <div className={styles.blockBody2}>
-                                        <div><span>鄉鎮地區別:</span><p>{selectedRowData.town}</p></div>
+                                    <div className={styles.blockBody3}>
                                         <div><span>縣市別:</span><p>{selectedRowData.county}</p></div>
+                                        <div><span>鄉鎮地區別:</span><p>{selectedRowData.town}</p></div>
+                                        <div><span>郵遞區號:</span><p>{selectedRowData.postal_code}</p></div>
                                     </div>
                                 </div>
                                 <div className={styles.block}>
-                                    <div className={styles.blockBody2}>
+                                    <div className={styles.blockBody1}>
                                         <div><span>地址:</span><p>{selectedRowData.org_address}</p></div>
-                                        <div><span>郵遞區號:</span><p>{selectedRowData.postal_code}</p></div>
                                     </div>
                                 </div>
                                 <div className={styles.block}>
@@ -166,7 +166,9 @@ const Tabs = () => {
 
 
                             </div>
-                            <div className={styles.userList}><button><FontAwesomeIcon icon={faUsers} /> 所有員工列表</button></div>
+                            <div className={styles.userList}>
+                                <div><Link to="../管理者/使用者列表"><FontAwesomeIcon icon={faUsers} /> 所有員工列表</Link></div>
+                            </div>
                         </>
 
                     ) : (
@@ -180,7 +182,7 @@ const Tabs = () => {
                 isEditModalVisible={isEditModalVisible}
                 setEditModalVisible={setEditModalVisible}
             />
-            
+
             <AddModal
                 isAddModalVisible={isAddModalVisible}
                 setAddModalVisible={setAddModalVisible}
