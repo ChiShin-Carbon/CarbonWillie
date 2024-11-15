@@ -20,7 +20,8 @@ import {
   cilSpeedometer,
   cilStar,
   cilUser,
-  cilCash
+  cilCash,
+  cilStorage,
 } from '@coreui/icons'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 
@@ -107,6 +108,17 @@ const _nav = [
     name: '企業資料',
     to: '/theme/company_info',
     icon: <CIcon icon={cilBuilding} customClassName="nav-icon" />,
+  },
+    
+  {
+    component: CNavTitle,
+    name: '管理者頁面',
+  },
+  {
+    component: CNavItem,
+    name: '企業列表',
+    to: '/管理者/企業列表',
+    icon: <CIcon icon={cilStorage} customClassName="nav-icon" />,
   },
   {
     component: CNavTitle,
