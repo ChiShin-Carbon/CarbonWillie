@@ -1,0 +1,274 @@
+.iconPen {
+    font-size: 20px;
+    background-color: rgb(76, 174, 249);
+    color: white;
+    padding: 8px;
+    border-radius: 10px;
+    margin-right: 10px;
+    cursor: pointer;
+    box-shadow: 0 1px 7px rgb(209, 208, 208);
+}
+
+.iconTrash {
+    font-size: 20px;
+    background-color: rgb(255, 0, 0);
+    color: white;
+    padding: 8px;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 1px 7px rgb(209, 208, 208);
+}
+
+.card {
+    border: none;
+    box-shadow: 0px 2px 5px rgb(186, 186, 186);
+    border-radius: 15px;
+    width: 100%;
+    height: 500px;
+    margin-bottom: 30px;
+    max-height: 500px;
+    overflow: auto;
+    padding: 20px
+}
+
+.cardRow {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+}
+
+.cardLeft {
+    border: none;
+    box-shadow: 0px 2px 5px rgb(186, 186, 186);
+    border-radius: 15px;
+    width: 40%;
+    height: 500px;
+    margin-bottom: 30px;
+    max-height: 500px;
+    overflow: auto;
+    padding: 20px
+}
+
+.cardRight {
+    border: none;
+    box-shadow: 0px 2px 5px rgb(186, 186, 186);
+    border-radius: 15px;
+    width: 60%;
+    height: 500px;
+    margin-bottom: 30px;
+    max-height: 600px;
+    overflow: auto;
+}
+
+.cardBody {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    padding: 20px 50px 0px 50px
+}
+
+.cardHeader {
+    display: flex;
+    /* 將子元素排成一行 */
+    align-items: center;
+    /* 垂直居中對齊 */
+    justify-content: space-between;
+    /* 左右兩邊元素拉開 */
+    gap: 10px;
+    /* 如果需要，設定子元素間距 */
+}
+
+
+.cardTitle {
+    border-bottom: 2px solid rgb(206, 206, 206);
+    width: 70%;
+    margin-bottom: 5px;
+}
+
+.cardTitle h5 {
+    margin-bottom: 0px;
+    display: inline-block;
+    font-weight: bolder;
+    border-bottom: 5px solid #8ec49d;
+    padding: 0 20px;
+    margin: 20px 0 0 10px;
+    font-size: 23px;
+}
+
+.cardOperation {
+    margin: 20px 30px 0 0px;
+}
+
+.table {
+    text-align: center;
+}
+
+.tableHead th {
+    background-color: #8ec49d;
+    color: #ffffff;
+
+    font-size: 18px;
+}
+
+.tableBody tr {
+    border-bottom: 1px solid rgb(167, 167, 167);
+    font-weight: 800;
+    vertical-align: middle;
+
+}
+
+.tableBody td {
+    cursor: pointer;
+}
+
+.searchAndUpdate {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px
+}
+
+.searchAndUpdate .searchAndUpdateLeft {
+    width: 40%
+}
+
+.searchAndUpdate input {
+    border-radius: 25px 0 0 25px;
+    background-color: white;
+}
+
+.searchAndUpdate button {
+    border-radius: 0 25px 25px 0;
+    border: 1px solid rgb(185, 185, 185);
+}
+
+.searchAndUpdate .searchAndUpdateButton {
+    background-Color: #ffbb33;
+    border-radius: 30px;
+    border: none;
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+    padding: 8px 15px;
+    transition: 0.5s;
+    box-shadow: 0 1px 5px rgb(144, 144, 144);
+}
+
+.searchAndUpdate .searchAndUpdateButton:hover {
+    background-color: #e09e1b;
+}
+
+.userList {
+    text-align: center;
+    margin: 10px 0 0 0;
+    padding: 5px 15px 5px 0;
+    text-align: right;
+    box-shadow: 0 -4px 5px -2px rgba(0, 0, 0, 0.1);
+}
+
+.userList div {
+    padding: 5px 0;
+}
+
+.userList a {
+    background-Color: #8ec49d;
+    border-radius: 10px;
+    border: none;
+    color: white;
+    font-weight: bold;
+    font-size: 20px;
+    transition: 0.5s;
+    padding: 8px 15px;
+    text-decoration: none;
+}
+
+.userList a:hover {
+    background-color: #72a07f;
+}
+
+
+.block {
+    margin-bottom: 30px;
+}
+
+.block p {
+    color: #808080;
+}
+
+.block span {
+    color: #494949;
+    font-weight: bolder;
+    font-size: 20px;
+}
+
+.blockBody1 {
+    display: flex;
+    flex-direction: column;
+}
+
+.blockBody2 {
+    display: flex;
+    align-items: top;
+    /* 垂直居中對齊 */
+    flex-wrap: wrap;
+    column-gap: 10px;
+    row-gap: 30px;
+}
+
+.blockBody2 div {
+    flex-basis: 49%;
+    /* 設定每個元素佔30%寬度 */
+    box-sizing: border-box;
+    /* 確保 padding 和 border 不會影響寬度 */
+}
+
+.blockBody3 {
+    display: flex;
+    align-items: top;
+    flex-wrap: wrap;
+    column-gap: 10px;
+    row-gap: 30px;
+}
+
+.blockBody3 div {
+    flex-basis: 32%;
+    /* 設定每個元素佔30%寬度 */
+    box-sizing: border-box;
+    /* 確保 padding 和 border 不會影響寬度 */
+}
+
+
+.addlabel {
+    color: #625F5F;
+    font-weight: bold;
+    width: 190px
+}
+
+.addmodal {
+    margin: 0 30px
+}
+
+.addinput {
+    border-radius: 15px;
+    background-color: #ffffff;
+
+}
+
+.addinput:focus {
+    background-color: #ffffff;
+}
+
+.userTable {
+    text-align: center;
+}
+
+.userTableHead th {
+    background-color: #8ec49d;
+    color: white;
+}
+
+.userTableBody tr {
+    border-bottom: 1px solid rgb(167, 167, 167);
+    font-weight: 800;
+    vertical-align: middle;
+}
