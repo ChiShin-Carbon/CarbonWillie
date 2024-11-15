@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import {
-    CRow, CCol, CCard, CCardBody, CCardHeader, CFormSelect, CNav, CNavItem, CNavLink, CForm, CFormLabel, CFormInput,
+    CRow, CCol, CCard, CCardBody, CCardHeader,
+    CFormSelect, CNav, CNavItem, CNavLink, CForm, CFormLabel, CFormInput,
     CCardSubtitle,
     CCardText,
     CCardTitle, CButton,
@@ -51,47 +52,92 @@ const Tabs = () => {
     const cellStyle = { border: '1px solid white', textAlign: 'center', verticalAlign: 'middle', height: '40px' };
     const rankingstyle = { border: '1px solid white', textAlign: 'center', verticalAlign: 'middle' };
     //新聞const
-    const [news, setNews] = useState([]); // 定義狀態變數
-    const [query, setQuery] = useState('碳費'); // 預設搜尋關鍵字
-    const [searchInput, setSearchInput] = useState(''); // 儲存搜尋框的暫存值
-    const [loading, setLoading] = useState(false); // 加載狀態
+        const [news, setNews] = useState([]); // 定義狀態變數
+        const [query, setQuery] = useState('碳費'); // 預設搜尋關鍵字
+        const [searchInput, setSearchInput] = useState(''); // 儲存搜尋框的暫存值
+        const [loading, setLoading] = useState(false); // 加載狀態
+        const [summary, setSummary] = useState("");//摘要總結
     //搜尋
-    const handleSearchInput = (e) => {
-        setSearchInput(e.target.value); // 更新輸入框的值
-    };
-    const handleSearch = () => {
-        setQuery(searchInput); // 將暫存的搜尋框值設定到 query
-    };
-    const handleKeyDown = (e) => {
-        if (e.key === 'Enter') {
-            e.preventDefault(); // 防止表單默認提交行為
-            handleSearch(); // 呼叫搜尋函數
-        }
-    };
-
-    //news
-    useEffect(() => {
-        const fetchNews = async () => {
-            setLoading(true);
-            try {
-                const response = await fetch(`http://127.0.0.1:5000/news?q=${query}`);
-                if (!response.ok) {
-                    throw new Error('Network response was not ok ' + response.statusText);
-                }
-                const data = await response.json();
-                setNews(data.articles); // 更新新聞資料
-            } catch (error) {
-                console.error('Fetch error: ', error);
-            } finally {
-                setLoading(false);
+        const handleSearchInput = (e) => {
+            setSearchInput(e.target.value); // 更新輸入框的值
+        };
+        const handleSearch = () => {
+            setQuery(searchInput); // 將暫存的搜尋框值設定到 query
+        };
+        const handleKeyDown = (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault(); // 防止表單默認提交行為
+                handleSearch(); // 呼叫搜尋函數
             }
         };
-
-        // 只有當 query 變動時才重新觸發 API 請求
+    // 假設 ChatGPT API 實現
+        
+    //news
+    useEffect(() => {
+        const fetchNewsAndGenerateSummary = async () => {
+          setLoading(true);
+          try {
+            // Fetch news from API
+            const response = await fetch(`http://127.0.0.1:5000/news?q=${query}`);
+            if (!response.ok) {
+              throw new Error("Network response was not ok " + response.statusText);
+            }
+            const data = await response.json();
+            setNews(data.articles);
+    
+            // Filter titles for summary generation
+            const filteredTitles = data.articles
+              .filter((article) => {
+                const isYahooWithValidExtension =
+                  !(article.url.includes("yahoo") && !/\.(png|html)$/.test(article.url));
+                const hasKeywordInTitle = article.title.includes(query);
+                return isYahooWithValidExtension && hasKeywordInTitle;
+              })
+              .map((article) => article.title);
+    
+            // Generate summary if titles are available
+            if (filteredTitles.length > 0) {
+              const summaryResult = await generateSummary(filteredTitles);
+              setSummary(summaryResult);
+            } else {
+              setSummary("目前沒有可用的新聞標題供摘要。");
+            }
+          } catch (error) {
+            console.error("Fetch error: ", error);
+          } finally {
+            setLoading(false);
+          }
+        };
+    
+        // Trigger only if query exists
         if (query) {
-            fetchNews();
+          fetchNewsAndGenerateSummary();
         }
-    }, [query]); // 當 query 改變時才觸發
+      }, [query]);
+      //新聞總結
+      const generateSummary = async (titles) => {
+        try {
+            const response = await fetch("http://127.0.0.1:8000/botapi", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    message: `請根據以下標題生成摘要：${titles.join(", ")}`,
+                }),
+            });
+    
+            if (!response.ok) {
+                throw new Error("Failed to generate summary from API: " + response.statusText);
+            }
+    
+            const data = await response.json();
+            return data.response; // 返回從 OpenAI API 獲得的摘要
+        } catch (error) {
+            console.error("Error generating summary: ", error);
+            return "摘要生成失敗，請稍後再試。";
+        }
+    };
     
     return (
         <CRow>
@@ -603,14 +649,26 @@ const Tabs = () => {
                                                     .sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt))
                                                     .slice(0, 20)
                                                     .map((article, index) => (
-                                                        <div
-                                                            key={index}
+                                                        <li 
+                                                            key={index} 
                                                             style={{
-                                                                marginBottom: '20px',
+                                                                marginBottom: '10px',
+                                                                listStyleType: 'none',
                                                                 borderBottom: '1px solid lightgray',
-                                                                paddingBottom: '20px',
+                                                                paddingBottom: '10px',
                                                             }}
-                                                        >
+                                                            >
+                                                            <a 
+                                                                href={article.url} 
+                                                                target="_blank" 
+                                                                rel="noopener noreferrer" 
+                                                                style={{
+                                                                textDecoration: 'none',
+                                                                color: '#00a000',
+                                                                fontWeight: 'bold',
+                                                                fontSize: '1rem',
+                                                                }}
+                                                            ></a>
                                                             <CRow>
                                                                 <div
                                                                     style={{
@@ -649,13 +707,46 @@ const Tabs = () => {
                                                                     </CButton>
                                                                 </div>
                                                             </CRow>
-                                                        </div>
+                                                        </li>
                                                     ))
                                             )}
                                         </CCardBody>
                                     </CCard>
                                 </CCardBody>
                                     <br />
+                                </CCardBody>
+                            </CCard>
+                            <br></br>
+                            {/**新聞摘要看看 */}
+                            <CCard style={{ width: '100%' }}>
+                                <CCardTitle>
+                                    <div style={{ display: 'flex', flexDireaction: 'row'}}>
+                                        <div style={{ fontWeight:'bold', fontSize: '1.5rem',color:'white', backgroundColor:'#d882c0', borderTopLeftRadius:'5px', borderBottomRightRadius:'20px', display: 'flex', alignItems: 'center',padding: '10px 40px 10px 40px'}}>{query || '搜尋結果'}摘要</div>
+                                    </div>
+                                </CCardTitle>
+                                <CCardBody>
+                                    <CCardBody style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', }}>
+                                    <CRow>
+                                        <CCol sm={12}>
+                                        <CCard style={{width: '1100px', fontSize: '1.2rem'}}>
+                                            <CCardBody>
+                                                <CRow>
+                                                <div style={{width: '10px', height: '100%', backgroundColor: '#d882c0', borderRadius: '4px',}}></div>
+                                                {/* 左側：日期與標題 */}
+                                                <div style={{ display: 'flex',flex: 1, marginLeft: '20px', flexDirection: 'column' }}>
+                                                {loading ? (
+                                                        <center><p>正在載入摘要...</p></center>
+                                                    ) :(
+                                                        <p style={{ fontWeight: 'bold', margin: 0 }}>{summary}</p>
+                                                    )
+                                                }
+                                                </div>
+                                                </CRow>
+                                            </CCardBody>
+                                        </CCard>
+                                        </CCol>
+                                    </CRow>
+                                    </CCardBody>
                                 </CCardBody>
                             </CCard>
                             <br></br>
