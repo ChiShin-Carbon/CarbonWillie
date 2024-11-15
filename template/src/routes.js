@@ -21,13 +21,16 @@ const 盤查進度管理 = React.lazy(() => import('./views/碳盤查系統/syst
 //碳盤查系統顧問
 const 排放源鑑別 = React.lazy(() => import('./views/碳盤查系統/顧問system/排放源鑑別/排放源鑑別'))
 const 活動數據 = React.lazy(() => import('./views/碳盤查系統/顧問system/活動數據/活動數據'))
-const 全廠電力蒸汽供需情況  = React.lazy(() => import('./views/碳盤查系統/顧問system/全廠電力蒸汽供需情況/全廠電力蒸汽供需情況'))
-const 定量盤查  = React.lazy(() => import('./views/碳盤查系統/顧問system/定量盤查/定量盤查'))
-const 數據品質管理  = React.lazy(() => import('./views/碳盤查系統/顧問system/數據品質管理/數據品質管理'))
-const 不確定性量化評估  = React.lazy(() => import('./views/碳盤查系統/顧問system/不確定性量化評估/不確定性量化評估'))
+const 全廠電力蒸汽供需情況 = React.lazy(() => import('./views/碳盤查系統/顧問system/全廠電力蒸汽供需情況/全廠電力蒸汽供需情況'))
+const 定量盤查 = React.lazy(() => import('./views/碳盤查系統/顧問system/定量盤查/定量盤查'))
+const 數據品質管理 = React.lazy(() => import('./views/碳盤查系統/顧問system/數據品質管理/數據品質管理'))
+const 不確定性量化評估 = React.lazy(() => import('./views/碳盤查系統/顧問system/不確定性量化評估/不確定性量化評估'))
 
 //盤查報告書
-const 盤查報告書  = React.lazy(() => import('./views/盤查報告書/盤查報告書'))
+const 盤查報告書 = React.lazy(() => import('./views/盤查報告書/盤查報告書'))
+
+//管理者
+const 企業列表 = React.lazy(() => import('./views/管理者/企業列表/企業列表'))
 
 // Base
 const Accordion = React.lazy(() => import('./views/base/accordion/Accordion'))
@@ -101,8 +104,10 @@ const routes = [
   { path: '/碳盤查系統/顧問system/定量盤查', name: '定量盤查', element: 定量盤查 },
   { path: '/碳盤查系統/顧問system/不確定性量化評估', name: '不確定性量化評估', element: 不確定性量化評估 },
   { path: '/碳盤查系統/顧問system/數據品質管理', name: '數據品質管理', element: 數據品質管理 },
-    //盤查報告書
-    { path: '/盤查報告書', name: '盤查報告書', element: 盤查報告書},
+  //盤查報告書
+  { path: '/盤查報告書', name: '盤查報告書', element: 盤查報告書 },
+  //管理者
+  { path: '/管理者/企業列表', name: '企業列表', element: 企業列表 },
 
   //
   { path: '/base', name: 'Base', element: Cards, exact: true },
