@@ -9,7 +9,8 @@ import styles from '../../../../scss/活動數據盤點.module.css'
 
 
 const FunctionForms = ({ currentFunction }) => {
-    const [recognizedText, setRecognizedText] = useState("");
+    const [C1date, setC1date] = useState("");
+    const [C1num, setC1num] = useState("");
 
     const handleC1Submit = async (e) => {
         e.preventDefault();
@@ -104,7 +105,9 @@ const FunctionForms = ({ currentFunction }) => {
 
             if (res.ok) {
                 const data = await res.json();
-                setRecognizedText(data.recognized_text); // Set the recognized text in state
+                setC1date(data.response_content[0]);
+                setC1num(data.response_content[1]);
+                
                 console.log("Data submitted successfully");
             } else {
                 console.error("Failed to submit data");
@@ -417,13 +420,13 @@ const FunctionForms = ({ currentFunction }) => {
 
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="month" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票/收據日期*</CFormLabel>
-                        <CCol><CFormInput className={styles.addinput} type="date" id="date" required />
+                        <CCol><CFormInput className={styles.addinput} type="month" id="date" value={C1date} required />
                         </CCol>
                     </CRow>
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="num" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票號碼/收據編號*</CFormLabel>
                         <CCol>
-                            <CFormInput className={styles.addinput} type="text" id="num" required />
+                            <CFormInput className={styles.addinput} type="text" id="num" value={C1num} required />
                         </CCol>
                     </CRow>
                     <CRow className="mb-3">
@@ -453,7 +456,7 @@ const FunctionForms = ({ currentFunction }) => {
                     <CRow className="mb-3">
                         <CFormLabel htmlFor="explain" className={`col-sm-2 col-form-label ${styles.addlabel}`} >備註</CFormLabel>
                         <CCol>
-                            <CFormTextarea className={styles.addinput} type="text" id="explain" rows={3} value={recognizedText} />
+                            <CFormTextarea className={styles.addinput} type="text" id="explain" rows={3} />
 
                         </CCol>
                     </CRow>
