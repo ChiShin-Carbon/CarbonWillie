@@ -14,7 +14,7 @@ import { Link } from 'react-router-dom'
 
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUsers, faPenToSquare, faTrashCan } from '@fortawesome/free-solid-svg-icons';
+import { faPenToSquare, faTrashCan, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 
 import EditModal from './編輯Modal.js';
 import AddModal from './新增Modal.js';
@@ -26,59 +26,64 @@ const Tabs = () => {
         <main>
             <div className="system-titlediv">
                 <div>
-                    <h4 className="system-title">系統現有使用者列表</h4>
+                    <h4 className="system-title">企業使用者資料列表</h4>
                     <hr className="system-hr"></hr>
                 </div>
-                {/* <button className="system-save">儲存</button> */}
+                <div className={styles.backButton}><Link to="../管理者/企業列表"><FontAwesomeIcon icon={faArrowLeft} /> 返回企業列表</Link></div>
             </div>
 
 
-            <CCard className={styles.card}>
-
-                <div className={styles.searchAndUpdate}>
-                    <CInputGroup className={styles.searchAndUpdateLeft}>
-                        <CFormInput type="search" placeholder="Search" aria-label="Search" />
-                        <CButton type="button" color="secondary" variant="outline">
-                            <i className="pi pi-search" />
-                        </CButton>
-                    </CInputGroup>
-
-                    <button className={styles.searchAndUpdateButton} onClick={() => setAddModalVisible(true)}>
-                        新增使用者資料
-                    </button>
+            <CCard className={styles.userCard}>
+                <div className={styles.userCardHead}>
+                    AAA股份有限公司
                 </div>
+                <div className={styles.userCardBody}>
+                    <div className={styles.searchAndUpdate}>
+                        <CInputGroup className={styles.searchAndUpdateLeft}>
+                            <CFormInput type="search" placeholder="Search" aria-label="Search" />
+                            <CButton type="button" color="secondary" variant="outline">
+                                <i className="pi pi-search" />
+                            </CButton>
+                        </CInputGroup>
 
-                <CTable hover className={styles.userTable}>
-                    <CTableHead className={styles.userTableHead}>
-                        <tr>
-                            <th>帳號</th>
-                            <th>姓名</th>
-                            <th>統編</th>
-                            <th>電子郵件</th>
-                            <th>辦公室電話</th>
-                            <th>手機</th>
-                            <th>所屬部門</th>
-                            <th>職位</th>
-                            <th>操作</th>
-                        </tr>
-                    </CTableHead>
-                    <CTableBody className={styles.userTableBody}>
-                        <tr>
-                            <td>XXXXXXXX</td>
-                            <td>XXX</td>
-                            <td>XXXXXXXX</td>
-                            <td>XXXXX@gmail.com</td>
-                            <td>12131564</td>
-                            <td>090810523</td>
-                            <th>檢驗部門</th>
-                            <th>XX</th>
-                            <td>
-                                <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen}  onClick={() => setEditModalVisible(true)} />
-                                <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
-                            </td>
-                        </tr>
-                    </CTableBody>
-                </CTable>
+                        <button className={styles.searchAndUpdateButton} onClick={() => setAddModalVisible(true)}>
+                            新增使用者資料
+                        </button>
+                    </div>
+
+                    <CTable hover className={styles.userTable}>
+                        <CTableHead className={styles.userTableHead}>
+                            <tr>
+                                <th>帳號</th>
+                                <th>姓名</th>
+                                <th>統編</th>
+                                <th>電子郵件</th>
+                                <th>辦公室電話</th>
+                                <th>手機</th>
+                                <th>所屬部門</th>
+                                <th>職位</th>
+                                <th>操作</th>
+                            </tr>
+                        </CTableHead>
+                        <CTableBody className={styles.userTableBody}>
+                            <tr>
+                                <td>XXXXXXXX</td>
+                                <td>XXX</td>
+                                <td>XXXXXXXX</td>
+                                <td>XXXXX@gmail.com</td>
+                                <td>12131564</td>
+                                <td>090810523</td>
+                                <th>檢驗部門</th>
+                                <th>XX</th>
+                                <td>
+                                    <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
+                                    <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
+                                </td>
+                            </tr>
+                        </CTableBody>
+                    </CTable>
+
+                </div>
 
             </CCard>
 

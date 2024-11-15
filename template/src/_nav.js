@@ -116,7 +116,7 @@ const _nav = [
   },
   {
     component: CNavItem,
-    name: '企業列表',
+    name: '企業與使用者列表',
     to: '/管理者/企業列表',
     icon: <CIcon icon={cilStorage} customClassName="nav-icon" />,
   },
