@@ -167,7 +167,7 @@ const Tabs = () => {
 
                             </div>
                             <div className={styles.userList}>
-                                <div><Link to="../管理者/使用者列表"><FontAwesomeIcon icon={faUsers} /> 所有員工列表</Link></div>
+                                <div><Link to="../管理者/使用者列表"><FontAwesomeIcon icon={faUsers} /> 該企業使用者資料列表</Link></div>
                             </div>
                         </>
 
