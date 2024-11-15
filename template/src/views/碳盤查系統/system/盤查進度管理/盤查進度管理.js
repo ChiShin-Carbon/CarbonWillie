@@ -166,7 +166,7 @@ const Tabs = () => {
                                     <CTableRow>
                                         <CTableHeaderCell scope="col">勾選</CTableHeaderCell>
                                         <CTableHeaderCell scope="col">項目</CTableHeaderCell>
-                                        <CTableHeaderCell scope="col">排放遷</CTableHeaderCell>
+                                        <CTableHeaderCell scope="col">排放源</CTableHeaderCell>
                                         <CTableHeaderCell scope="col">填寫單位</CTableHeaderCell>
                                         <CTableHeaderCell scope="col">負責人</CTableHeaderCell>
                                         <CTableHeaderCell scope="col">資料蒐集完成日</CTableHeaderCell>
