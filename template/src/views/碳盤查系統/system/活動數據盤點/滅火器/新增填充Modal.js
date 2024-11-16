@@ -3,12 +3,23 @@ import {
     CModal, CModalHeader, CModalBody, CModalFooter, CButton, CFormLabel, CFormInput, CFormTextarea, CRow, CCol, CFormSelect, CForm
 } from '@coreui/react';
 import styles from '../../../../../scss/活動數據盤點.module.css';
+import Zoom from 'react-medium-image-zoom'
+import 'react-medium-image-zoom/dist/styles.css'
+
 
 const AddFillModal = ({ isAddFillModalVisible, setAddFillModalVisible }) => {
     const addFillClose = () => setAddFillModalVisible(false);
 
+    const [previewImage, setPreviewImage] = useState(null); // 用來存儲圖片的 
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const previewUrl = URL.createObjectURL(file); // 創建圖片預覽 URL
+            setPreviewImage(previewUrl); // 保存 URL 到狀態
+        }
+    };
     return (
-        <CModal visible={isAddFillModalVisible} onClose={addFillClose} className={styles.modal}>
+        <CModal backdrop="static" visible={isAddFillModalVisible} onClose={addFillClose} className={styles.modal}>
         <CModalHeader>
             <h5><b>新增填充紀錄</b></h5>
         </CModalHeader>
@@ -40,11 +51,18 @@ const AddFillModal = ({ isAddFillModalVisible, setAddFillModalVisible }) => {
                         </CCol>
                     </CRow>
                     <CRow className="mb-3">
-                        <CFormLabel htmlFor="photo" className={`col-sm-2 col-form-label ${styles.addlabel}`} >圖片*</CFormLabel>
-                        <CCol>
-                            <CFormInput type="file" id="photo" required />
-                        </CCol>
-                    </CRow>
+                            <CFormLabel htmlFor="photo" className={`col-sm-2 col-form-label ${styles.addlabel}`}  >圖片*</CFormLabel>
+                            <CCol>
+                                <CFormInput type="file" id="photo" onChange={(e) =>  handleImageChange(e)} required />
+                            </CCol>
+                        </CRow>
+                        {previewImage && ( // 如果有圖片 URL，則顯示預覽
+                            <CRow className="mb-3">
+                                <CCol className="text-center">
+                                    <Zoom><img src={previewImage} alt="Uploaded Preview" /></Zoom>
+                                </CCol>
+                            </CRow>
+                        )}
                     <br />
                     <div style={{ textAlign: 'center' }}>*為必填欄位</div>
 

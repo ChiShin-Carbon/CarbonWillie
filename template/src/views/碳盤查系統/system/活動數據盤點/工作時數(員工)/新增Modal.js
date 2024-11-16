@@ -7,6 +7,8 @@ import {
 
 import styles from '../../../../../scss/活動數據盤點.module.css'
 
+import Zoom from 'react-medium-image-zoom'
+import 'react-medium-image-zoom/dist/styles.css'
 
 export const EmployeeAdd = ({ isAddModalVisible, setAddModalVisible }) => {
     const handleClose = () => setAddModalVisible(false);
@@ -63,6 +65,16 @@ export const EmployeeAdd = ({ isAddModalVisible, setAddModalVisible }) => {
             console.error("Error submitting employee data:", error);
         }
     };
+
+    const [previewImage, setPreviewImage] = useState(null); // 用來存儲圖片的 
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const previewUrl = URL.createObjectURL(file); // 創建圖片預覽 URL
+            setPreviewImage(previewUrl); // 保存 URL 到狀態
+        }
+    };
+
 
     return (
         <CModal
@@ -146,9 +158,16 @@ export const EmployeeAdd = ({ isAddModalVisible, setAddModalVisible }) => {
                             <CRow className="mb-3">
                                 <CFormLabel htmlFor="photo" className={`col-sm-2 col-form-label ${styles.addlabel}`}  >圖片*</CFormLabel>
                                 <CCol>
-                                    <CFormInput type="file" id="C3image" required />
+                                    <CFormInput type="file" id="C3image" onChange={(e) => handleImageChange(e)} required />
                                 </CCol>
                             </CRow>
+                            {previewImage && ( // 如果有圖片 URL，則顯示預覽
+                                <CRow className="mb-3">
+                                    <CCol className="text-center">
+                                        <Zoom><img src={previewImage} alt="Uploaded Preview" /></Zoom>
+                                    </CCol>
+                                </CRow>
+                            )}
                             <br />
                             <div style={{ textAlign: 'center' }}>*為必填欄位</div>
 
