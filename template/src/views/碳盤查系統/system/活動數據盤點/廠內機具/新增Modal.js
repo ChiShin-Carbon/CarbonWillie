@@ -10,7 +10,8 @@ import styles from '../../../../../scss/活動數據盤點.module.css'
 
 export const MachineryAdd = ({ isAddModalVisible, setAddModalVisible }) => {
     const handleClose = () => setAddModalVisible(false);
-
+    const [date, setC1date] = useState("");
+    const [num, setC1num] = useState("");
     const [recognizedText, setRecognizedText] = useState("");
 
     const handleC6Submit = async (e) => {
@@ -44,6 +45,40 @@ export const MachineryAdd = ({ isAddModalVisible, setAddModalVisible }) => {
         }
     };
 
+
+    const handleC5image = async (e) => {
+        e.preventDefault();
+
+        const imageElement = document.getElementById("C6image");
+
+        if (!imageElement || !imageElement.files) {
+            console.error("Form elements or image files not found");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("image", imageElement.files[0]);
+
+        try {
+            const res = await fetch("http://localhost:8000/ocrapi", {
+                method: "POST",
+                body: formData,
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                setC1date(data.response_content[0]);
+                setC1num(data.response_content[1]);
+                console.log("Data submitted successfully");
+            } else {
+                console.error("Failed to submit data");
+            }
+        } catch (error) {
+            console.error("Error submitting data", error);
+        }
+    };
+    
+
     return (
         <CModal
             backdrop="static"
@@ -59,13 +94,13 @@ export const MachineryAdd = ({ isAddModalVisible, setAddModalVisible }) => {
                     <div className={styles.addmodal}>
                         <CRow className="mb-3">
                             <CFormLabel htmlFor="month" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票/收據日期*</CFormLabel>
-                            <CCol><CFormInput className={styles.addinput} type="date" id="C6date" required />
+                            <CCol><CFormInput className={styles.addinput} type="date" id="C6date" value={date} required />
                             </CCol>
                         </CRow>
                         <CRow className="mb-3">
                             <CFormLabel htmlFor="num" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票號碼/收據編號*</CFormLabel>
                             <CCol>
-                                <CFormInput className={styles.addinput} type="text" id="C6num" required />
+                                <CFormInput className={styles.addinput} type="text" id="C6num" value={num} required />
                             </CCol>
                         </CRow>
                         <CRow className="mb-3">
@@ -101,7 +136,7 @@ export const MachineryAdd = ({ isAddModalVisible, setAddModalVisible }) => {
                         <CRow className="mb-3">
                             <CFormLabel htmlFor="photo" className={`col-sm-2 col-form-label ${styles.addlabel}`}  >圖片*</CFormLabel>
                             <CCol>
-                                <CFormInput type="file" id="C6image" required />
+                                <CFormInput type="file" id="C6image" onChange={handleC5image} required />
                             </CCol>
                         </CRow>
                         <br />
