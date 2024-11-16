@@ -185,6 +185,7 @@ const Tabs = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          boundary_id: BoundaryId,
           user_id: window.sessionStorage.getItem('user_id'),
           field_name: new_field_name,
           field_address: new_field_address,
@@ -436,7 +437,7 @@ const Tabs = () => {
           </CForm>
         </CModalBody>
         <CModalFooter>
-          <CButton className="modalbutton1" onClick={() => handleEditButtonClick(boundary)}>
+          <CButton className="modalbutton1" onClick={() => setAddModalVisible(false)}>
             取消
           </CButton>
           <CButton className="modalbutton2" onClick={handleCreateBoundary}>
