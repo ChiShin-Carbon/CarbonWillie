@@ -326,9 +326,11 @@ const Tabs = () => {
             </CCol>
 
             <CCol style={{ textAlign: 'right' }}>
-              <button className="systembutton" onClick={() => setAddModalVisible(true)}>
-                新增地點
-              </button>
+              {positionID === 1 && (
+                <button className="systembutton" onClick={() => setAddModalVisible(true)}>
+                  新增地點
+                </button>
+              )}
             </CCol>
           </CRow>
 
@@ -338,8 +340,8 @@ const Tabs = () => {
                 <th style={{ width: '20%' }}>場域名稱</th>
                 <th style={{ width: '35%' }}>場域地址</th>
                 <th style={{ width: '25%' }}>備註</th>
-                <th style={{ width: '10%' }}>列入盤查</th>
-                <th style={{ width: '20%' }}>操作</th>
+                <th style={{ width: positionID === 1 ? '10%' : '30%' }}>列入盤查</th>
+                {positionID === 1 && <th style={{ width: '20%' }}>操作</th>}
               </tr>
             </CTableHead>
             <CTableBody>
@@ -355,18 +357,20 @@ const Tabs = () => {
                         className={boundary.is_inclusion ? styles.iconCorrect : styles.iconWrong}
                       />
                     </td>
-                    <td>
-                      <FontAwesomeIcon
-                        icon={faPenToSquare}
-                        className={styles.iconPen}
-                        onClick={() => handleEditClick(boundary)}
-                      />
-                      <FontAwesomeIcon
-                        icon={faTrashCan}
-                        className={styles.iconTrash}
-                        onClick={() => handleDeleteBoundary(boundary.boundary_id)}
-                      />
-                    </td>
+                    {positionID === 1 && (
+                      <td>
+                        <FontAwesomeIcon
+                          icon={faPenToSquare}
+                          className={styles.iconPen}
+                          onClick={() => handleEditClick(boundary)}
+                        />
+                        <FontAwesomeIcon
+                          icon={faTrashCan}
+                          className={styles.iconTrash}
+                          onClick={() => handleDeleteBoundary(boundary.boundary_id)}
+                        />
+                      </td>
+                    )}
                   </tr>
                 ))
               ) : (
