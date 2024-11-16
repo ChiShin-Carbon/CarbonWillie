@@ -192,7 +192,7 @@ const Tabs = () => {
         }),
       })
       if (response.ok) {
-        alert('邊界設定成功')
+        alert('邊界設定修改成功')
         getBoundary()
         setEditModalVisible(false)
       }
@@ -218,6 +218,12 @@ const Tabs = () => {
 
   useEffect(() => {
     getBoundary()
+  }, [])
+  useEffect(() => {
+    setNewFieldName('')
+    setNewFieldAddress('')
+    setNewIsInclusion(false)
+    setNewRemark('')
   }, [])
 
   return (
@@ -490,6 +496,7 @@ const Tabs = () => {
               type="text"
               id="siteexplain"
               rows={3}
+              value={new_remark}
               onChange={(e) => setNewRemark(e.target.value)}
             />
 
