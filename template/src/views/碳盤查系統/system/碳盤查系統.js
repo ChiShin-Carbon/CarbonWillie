@@ -173,8 +173,8 @@ const Tabs = () => {
     setBoundaryId(boundary.boundary_id)
     setNewFieldName(boundary.field_name)
     setNewFieldAddress(boundary.field_address)
-    setNewIsInclusion(boundary.is_inclusion)
     setNewRemark(boundary.remark)
+    setNewIsInclusion(boundary.is_inclusion)
     setEditModalVisible(true)
   }
   const handleEditBoundary = async (BoundaryId) => {
@@ -185,7 +185,6 @@ const Tabs = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          boundary_id: BoundaryId,
           user_id: window.sessionStorage.getItem('user_id'),
           field_name: new_field_name,
           field_address: new_field_address,
@@ -194,7 +193,6 @@ const Tabs = () => {
         }),
       })
       if (response.ok) {
-        alert('邊界修改成功')
         getBoundary()
         setEditModalVisible(false)
       }
@@ -493,7 +491,6 @@ const Tabs = () => {
               type="text"
               id="siteexplain"
               rows={3}
-              value={new_remark}
               onChange={(e) => setNewRemark(e.target.value)}
             />
 
