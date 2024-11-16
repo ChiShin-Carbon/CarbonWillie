@@ -38,10 +38,6 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 
 const Tabs = () => {
-  // 定義 useState 來控制 Modal 的顯示
-  const [isAddModalVisible, setAddModalVisible] = useState(false)
-  const [isEditModalVisible, setEditModalVisible] = useState(false)
-
   // position-編輯權限
   const [positionID, setPositionID] = useState('')
   const getuserinfo = async () => {
@@ -122,28 +118,18 @@ const Tabs = () => {
     getBaseline()
   }, [])
 
-  // Boundary
-  // const [field_name, setFieldName] = useState('')
-  // const [field_address, setFieldAddress] = useState('')
-  // const [is_inclusion, setIsInclusion] = useState(false)
-  // const [remark, setRemark] = useState('')
-  // const [boundary, setBoundary] = useState(false)
-  const [boundaries, setBoundaries] = useState([])
+  // 定義 useState 來控制 Modal 的顯示
+  const [isAddModalVisible, setAddModalVisible] = useState(false)
+  const [isEditModalVisible, setEditModalVisible] = useState(false)
 
+  // Boundary
+  const [boundaries, setBoundaries] = useState([])
   const getBoundary = async () => {
     try {
       const response = await fetch('http://localhost:8000/boundary')
       if (response.ok) {
         const data = await response.json()
         setBoundaries(data.boundaries)
-        // setFieldName(data.boundary.field_name)
-        // setFieldAddress(data.boundary.field_address)
-        // setIsInclusion(data.boundary.is_inclusion ? true : false)
-        // setRemark(data.boundary.remark)
-        // setBoundary(true)
-      } else if (response.status === 404) {
-        // setBoundary(false)
-        setBoundaries([])
       } else {
         console.log(response.status)
       }
@@ -174,7 +160,7 @@ const Tabs = () => {
       })
       if (response.ok) {
         alert('邊界設定成功')
-        getBaseline()
+        getBoundary()
         setAddModalVisible(false)
       }
     } catch (error) {
@@ -182,46 +168,55 @@ const Tabs = () => {
     }
   }
 
-  // const handleEditBoundary = async (boundary_id) => {
-  //   try {
-  //     const response = await fetch(`http://localhost:8000/boundary/${boundary_id}`, {
-  //       method: 'PUT',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: JSON.stringify({
-  //         user_id: window.sessionStorage.getItem('user_id'),
-  //         field_name,
-  //         field_address,
-  //         is_inclusion,
-  //         remark,
-  //       }),
-  //     })
-  //     if (response.ok) {
-  //       alert('邊界修改成功')
-  //       getBoundary()
-  //       setEditModalVisible(false)
-  //     }
-  //   } catch (error) {
-  //     console.error('Error updating boundary:', error)
-  //   }
-  // }
+  const [BoundaryId, setBoundaryId] = useState(null)
+  const handleEditClick = (boundary) => {
+    setBoundaryId(boundary.boundary_id)
+    setNewFieldName(boundary.field_name)
+    setNewFieldAddress(boundary.field_address)
+    setNewIsInclusion(boundary.is_inclusion)
+    setNewRemark(boundary.remark)
+    setEditModalVisible(true)
+  }
+  const handleEditBoundary = async (BoundaryId) => {
+    try {
+      const response = await fetch(`http://localhost:8000/boundary/${BoundaryId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user_id: window.sessionStorage.getItem('user_id'),
+          field_name: new_field_name,
+          field_address: new_field_address,
+          is_inclusion: new_is_inclusion,
+          remark: new_remark,
+        }),
+      })
+      if (response.ok) {
+        alert('邊界修改成功')
+        getBoundary()
+        setEditModalVisible(false)
+      }
+    } catch (error) {
+      console.error('Error updating boundary:', error)
+    }
+  }
 
-  // const handleDeleteBoundary = async (boundary_id) => {
-  //   if (window.confirm('確定刪除此邊界設定嗎？')) {
-  //     try {
-  //       const response = await fetch(`http://localhost:8000/boundary/${boundary_id}`, {
-  //         method: 'DELETE',
-  //       })
-  //       if (response.ok) {
-  //         alert('邊界刪除成功')
-  //         getBoundary()
-  //       }
-  //     } catch (error) {
-  //       console.error('Error deleting boundary:', error)
-  //     }
-  //   }
-  // }
+  const handleDeleteBoundary = async (boundary_id) => {
+    if (window.confirm('確定刪除此邊界設定嗎？')) {
+      try {
+        const response = await fetch(`http://localhost:8000/boundary/${boundary_id}`, {
+          method: 'DELETE',
+        })
+        if (response.ok) {
+          alert('邊界刪除成功')
+          getBoundary()
+        }
+      } catch (error) {
+        console.error('Error deleting boundary:', error)
+      }
+    }
+  }
 
   useEffect(() => {
     getBoundary()
@@ -363,7 +358,7 @@ const Tabs = () => {
                       <FontAwesomeIcon
                         icon={faPenToSquare}
                         className={styles.iconPen}
-                        onClick={() => handleEditBoundary(boundary.boundary_id)}
+                        onClick={() => handleEditClick(boundary)}
                       />
                       <FontAwesomeIcon
                         icon={faTrashCan}
@@ -380,22 +375,6 @@ const Tabs = () => {
                   </td>
                 </tr>
               )}
-              {/* <tr>
-                <td>XXX大樓5F</td>
-                <td>10491台北市中山區建國北路三段42號4樓</td>
-                <td>讚</td>
-                <td>
-                  <FontAwesomeIcon icon={faCircleXmark} className={styles.iconWrong} />
-                </td>
-                <td>
-                  <FontAwesomeIcon
-                    icon={faPenToSquare}
-                    className={styles.iconPen}
-                    onClick={() => setEditModalVisible(true)}
-                  />
-                  <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
-                </td>
-              </tr> */}
             </CTableBody>
           </CTable>
         </div>
@@ -457,7 +436,7 @@ const Tabs = () => {
           </CForm>
         </CModalBody>
         <CModalFooter>
-          <CButton className="modalbutton1" onClick={() => setAddModalVisible(false)}>
+          <CButton className="modalbutton1" onClick={() => handleEditButtonClick(boundary)}>
             取消
           </CButton>
           <CButton className="modalbutton2" onClick={handleCreateBoundary}>
@@ -466,7 +445,7 @@ const Tabs = () => {
         </CModalFooter>
       </CModal>
 
-      {/* <CModal
+      <CModal
         backdrop="static"
         visible={isEditModalVisible}
         onClose={() => setEditModalVisible(false)}
@@ -486,8 +465,8 @@ const Tabs = () => {
               className="systeminput"
               type="text"
               id="sitename"
-              value={boundary.field_name}
-              onChange={(e) => setFieldName(e.target.value)}
+              value={new_field_name}
+              onChange={(e) => setNewFieldName(e.target.value)}
             />
 
             <CFormLabel htmlFor="site" className="col-sm-2 col-form-label systemlabel">
@@ -497,8 +476,8 @@ const Tabs = () => {
               className="systeminput"
               type="text"
               id="site"
-              value={boundary.field_address}
-              onChange={(e) => setFieldAddress(e.target.value)}
+              value={new_field_address}
+              onChange={(e) => setNewFieldAddress(e.target.value)}
             />
 
             <CFormLabel htmlFor="siteexplain" className="col-sm-2 col-form-label systemlabel">
@@ -509,8 +488,8 @@ const Tabs = () => {
               type="text"
               id="siteexplain"
               rows={3}
-              value={boundary.remark}
-              onChange={(e) => setRemark(e.target.value)}
+              value={new_remark}
+              onChange={(e) => setNewRemark(e.target.value)}
             />
 
             <br />
@@ -518,8 +497,8 @@ const Tabs = () => {
             <CFormCheck
               id="sitetrue"
               label="列入盤查"
-              value={boundary.is_inclusion}
-              onChange={(e) => setIsInclusion(e.target.value)}
+              checked={new_is_inclusion}
+              onChange={(e) => setNewIsInclusion(e.target.checked)}
             />
           </CForm>
         </CModalBody>
@@ -527,11 +506,11 @@ const Tabs = () => {
           <CButton className="modalbutton1" onClick={() => setEditModalVisible(false)}>
             取消
           </CButton>
-          <CButton className="modalbutton2" onClick={() => handleEditBoundary()}>
+          <CButton className="modalbutton2" onClick={() => handleEditBoundary(BoundaryId)}>
             確認
           </CButton>
         </CModalFooter>
-      </CModal> */}
+      </CModal>
     </main>
   )
 }

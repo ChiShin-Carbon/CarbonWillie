@@ -82,7 +82,7 @@ def read_boundary():
         cursor = conn.cursor()
         try:
             query = """
-                SELECT field_name, field_address, is_inclusion, remark
+                SELECT boundary_id, field_name, field_address, is_inclusion, remark
                 FROM Boundary 
                 WHERE baseline_id = (
                 SELECT TOP 1 baseline_id 
@@ -96,12 +96,45 @@ def read_boundary():
                 result = []
                 for boundary_record in boundary_records:
                     result.append({
-                        "field_name": boundary_record[0],
-                        "field_address": boundary_record[1],
-                        "is_inclusion": boundary_record[2],
-                        "remark": boundary_record[3]
+                        "boundary_id": boundary_record[0],
+                        "field_name": boundary_record[1],
+                        "field_address": boundary_record[2],
+                        "is_inclusion": boundary_record[3],
+                        "remark": boundary_record[4]
                     })
                 return {"boundaries": result}  
+            else:
+                # Raise a 404 error if user not found
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Boundary not found")
+        
+        except Exception as e:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error reading boundary credentials: {e}")
+    else:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Could not connect to the database.")
+
+@boundary.get("/boundary/{boundary_id}")
+def read_boundary(boundary_id: int):
+    conn = connectDB()
+    if conn:
+        cursor = conn.cursor()
+        try:
+            query = """
+                SELECT field_name, field_address, is_inclusion, remark
+                FROM Boundary 
+                WHERE boundary_id = ?
+            """
+            cursor.execute(query, (boundary_id,))
+            boundary_record = cursor.fetchone()
+            conn.close()
+
+            if boundary_record:
+                result = {
+                    "field_name": boundary_record[0],
+                    "field_address": boundary_record[1],
+                    "is_inclusion": boundary_record[2],
+                    "remark": boundary_record[3]
+                }
+                return {"boundary": result}  
             else:
                 # Raise a 404 error if user not found
                 raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Boundary not found")
