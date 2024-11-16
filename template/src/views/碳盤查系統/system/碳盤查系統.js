@@ -192,7 +192,6 @@ const Tabs = () => {
         }),
       })
       if (response.ok) {
-        alert('邊界設定修改成功')
         getBoundary()
         setEditModalVisible(false)
       }
