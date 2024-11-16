@@ -159,7 +159,6 @@ const Tabs = () => {
         }),
       })
       if (response.ok) {
-        alert('邊界設定成功')
         getBoundary()
         setAddModalVisible(false)
       }
@@ -193,6 +192,7 @@ const Tabs = () => {
         }),
       })
       if (response.ok) {
+        alert('邊界設定成功')
         getBoundary()
         setEditModalVisible(false)
       }
@@ -208,7 +208,6 @@ const Tabs = () => {
           method: 'DELETE',
         })
         if (response.ok) {
-          alert('邊界刪除成功')
           getBoundary()
         }
       } catch (error) {
