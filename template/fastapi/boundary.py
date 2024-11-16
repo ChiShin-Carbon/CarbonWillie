@@ -13,9 +13,8 @@ class Boundary(BaseModel):
     field_address: str
     is_inclusion: bool
     remark: str
-class BoundaryUpdate(Boundary):
-    boundary_id: int
 
+# 邊界設定-新增地點
 @boundary.post("/boundary")
 def create_boundary(boundary: Boundary):
     conn = connectDB()
@@ -37,8 +36,9 @@ def create_boundary(boundary: Boundary):
     else:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Could not connect to the database.")
 
+# 邊界設定-編輯地點
 @boundary.put("/boundary/{boundary_id}")
-def update_boundary(boundary_id: int, boundary: BoundaryUpdate):
+def update_boundary(boundary_id: int, boundary: Boundary):
     conn = connectDB()
     if conn:
         cursor = conn.cursor()
@@ -59,6 +59,7 @@ def update_boundary(boundary_id: int, boundary: BoundaryUpdate):
     else:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Could not connect to the database.")
 
+# 邊界設定-刪除地點
 @boundary.delete("/boundary/{boundary_id}")
 def delete_boundary(boundary_id: int):
     conn = connectDB()
