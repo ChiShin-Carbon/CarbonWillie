@@ -7,16 +7,18 @@ from fastapi.middleware.cors import CORSMiddleware
 boundary = APIRouter()
 
 class Boundary(BaseModel):
-    baseline_id: int
     user_id: int
     field_name: str
     field_address: str
     is_inclusion: bool
     remark: str
+class BoundaryCreate(Boundary):
+    baseline_id: int
+
 
 # 邊界設定-新增地點
 @boundary.post("/boundary")
-def create_boundary(boundary: Boundary):
+def create_boundary(boundary: BoundaryCreate):
     conn = connectDB()
     if conn:
         cursor = conn.cursor()
