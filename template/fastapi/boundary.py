@@ -7,13 +7,14 @@ from fastapi.middleware.cors import CORSMiddleware
 boundary = APIRouter()
 
 class Boundary(BaseModel):
-    boundary_id: int
     baseline_id: int
     user_id: int
     field_name: str
     field_address: str
     is_inclusion: bool
     remark: str
+class BoundaryUpdate(Boundary):
+    boundary_id: int
 
 @boundary.post("/boundary")
 def create_boundary(boundary: Boundary):
@@ -37,7 +38,7 @@ def create_boundary(boundary: Boundary):
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Could not connect to the database.")
 
 @boundary.put("/boundary/{boundary_id}")
-def update_boundary(boundary_id: int, boundary: Boundary):
+def update_boundary(boundary_id: int, boundary: BoundaryUpdate):
     conn = connectDB()
     if conn:
         cursor = conn.cursor()
