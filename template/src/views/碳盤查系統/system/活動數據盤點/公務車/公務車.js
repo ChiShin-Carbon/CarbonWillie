@@ -1,20 +1,44 @@
-// functions.js
-import React, { useState } from 'react'; // 確保引入 useState
+import React, { useState, useEffect } from 'react';
 import {
-    CTable, CTableHead, CTableBody, CFormSelect, CModal, CModalBody, CModalFooter, CModalHeader, CForm, CButton,
+    CTable, CTableHead, CTableBody, CModal, CModalBody, CModalFooter, CModalHeader, CForm, CButton,
     CFormLabel, CFormInput, CFormTextarea, CRow, CCol, CCollapse, CCard, CCardBody
 } from '@coreui/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPenToSquare, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 import styles from '../../../../../scss/活動數據盤點.module.css';
 import EditModal from './編輯Modal.js';
-
-
-import Zoom from 'react-medium-image-zoom'
-import 'react-medium-image-zoom/dist/styles.css'
+import Zoom from 'react-medium-image-zoom';
+import 'react-medium-image-zoom/dist/styles.css';
 
 export const Vehicle = () => {
     const [isEditModalVisible, setEditModalVisible] = useState(false);
+    const [vehicles, setVehicles] = useState([]);  // State to hold fetched vehicle data
+
+    // Function to fetch vehicle data
+    const getVehicleData = async () => {
+        try {
+            const response = await fetch('http://localhost:8000/vehicle', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            const data = await response.json();
+
+            if (response.ok) {
+                setVehicles(data.vehicles);  // Set vehicle data to state
+            } else {
+                console.error(`Error ${response.status}: ${data.detail}`);
+            }
+        } catch (error) {
+            console.error('Error fetching vehicle data:', error);
+        }
+    };
+
+    // Fetch vehicle data on component mount
+    useEffect(() => {
+        getVehicleData();
+    }, []);
 
     return (
         <div>
@@ -33,20 +57,26 @@ export const Vehicle = () => {
                     </tr>
                 </CTableHead>
                 <CTableBody className={styles.activityTableBody}>
-                    <tr>
-                        <td>2023/01/15</td>
-                        <td>XXXXX</td>
-                        <td>柴油</td>
-                        <td>公升</td>
-                        <td>XXXXXX</td>
-                        <td>XXX</td>
-                        <td><Zoom><img src="https://invoice.tw/news/wp-content/uploads/2018/03/WechatIMG79.jpeg" alt="image" /></Zoom></td>
-                        <td>蔡沂庭<br />2024/10/16 12:09</td>
-                        <td>
-                            <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
-                            <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
-                        </td>
-                    </tr>
+                    {vehicles.map((vehicle) => (
+                        <tr key={vehicle.vehicle_id}>
+                            <td>{vehicle.Doc_date}</td>
+                            <td>{vehicle.Doc_number}</td>
+                            <td>{vehicle.oil_species ? '柴油' : '汽油'}</td>
+                            <td>公升</td>
+                            <td>{vehicle.liters}</td>
+                            <td>{vehicle.remark}</td>
+                            <td>
+                                <Zoom>
+                                    <img src={vehicle.img_path} alt="receipt" style={{ width: '100px' }} />
+                                </Zoom>
+                            </td>
+                            <td>{vehicle.edit_time}</td>
+                            <td>
+                                <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
+                                <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
+                            </td>
+                        </tr>
+                    ))}
                 </CTableBody>
             </CTable>
             <EditModal
@@ -55,4 +85,4 @@ export const Vehicle = () => {
             />
         </div>
     );
-}; 
+};

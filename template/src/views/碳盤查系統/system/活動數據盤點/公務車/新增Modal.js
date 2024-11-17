@@ -95,13 +95,13 @@ export const VehicleAdd = ({ isAddModalVisible, setAddModalVisible}) => {
 
                             <CRow className="mb-3">
                                 <CFormLabel htmlFor="month" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票/收據日期*</CFormLabel>
-                                <CCol><CFormInput className={styles.addinput} type="date" id="date" value={C1date} required />
+                                <CCol><CFormInput className={styles.addinput} type="date" id="date" required />
                                 </CCol>
                             </CRow>
                             <CRow className="mb-3">
                                 <CFormLabel htmlFor="num" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票號碼/收據編號*</CFormLabel>
                                 <CCol>
-                                    <CFormInput className={styles.addinput} type="text" id="num" value={C1num} required />
+                                    <CFormInput className={styles.addinput} type="text" id="num" required />
                                 </CCol>
                             </CRow>
                             <CRow className="mb-3">
@@ -131,7 +131,7 @@ export const VehicleAdd = ({ isAddModalVisible, setAddModalVisible}) => {
                             <CRow className="mb-3">
                                 <CFormLabel htmlFor="explain" className={`col-sm-2 col-form-label ${styles.addlabel}`} >備註</CFormLabel>
                                 <CCol>
-                                    <CFormTextarea className={styles.addinput} type="text" id="explain" rows={3} value={recognizedText} />
+                                    <CFormTextarea className={styles.addinput} type="text" id="explain" rows={3} />
 
                                 </CCol>
                             </CRow>
