@@ -37,7 +37,6 @@ const AppHeaderDropdown = () => {
   const [positionID, setPositionID] = useState('')
   const [position, setPosition] = useState('')
   const [role, setRole] = useState(false)
-  const [isLoggedIn, setIsLoggedIn] = useState(!!window.sessionStorage.getItem('user_id'))
 
   const getcompanyinfo = async () => {
     try {
@@ -124,9 +123,6 @@ const AppHeaderDropdown = () => {
 
   useEffect(() => {
     getcompanyinfo()
-  }, [])
-
-  useEffect(() => {
     getuserinfo()
   }, [])
 
@@ -138,38 +134,27 @@ const AppHeaderDropdown = () => {
     setposition()
   }, [positionID])
 
-  useEffect(() => {
-    if (isLoggedIn) {
-      getuserinfo()
-    }
-  }, [isLoggedIn])
-
   return (
     <CDropdown variant="nav-item">
       <CDropdownToggle placement="bottom-end" className="py-0 pe-0" caret={false}>
         <CAvatar src={profile} size="md" />
       </CDropdownToggle>
       <CDropdownMenu className="pt-0" placement="bottom-end">
-        {isLoggedIn ? (
-          <>
-            <CDropdownHeader className="bg-body-secondary fw-semibold mb-2">
-              Account
-            </CDropdownHeader>
+        <CDropdownHeader className="bg-body-secondary fw-semibold mb-2">Account</CDropdownHeader>
+        <div className={styles.profile}>
+          {role ? (
+            <>
+              <div>{org_name}</div>
+              <div>{department}</div>
+              <div>{position}</div>
+            </>
+          ) : (
+            <div>顧問</div>
+          )}
+          <div>{name}</div>
+        </div>
 
-            <div className={styles.profile}>
-              {role ? (
-                <>
-                  <div>{org_name}</div>
-                  <div>{department}</div>
-                  <div>{position}</div>
-                </>
-              ) : (
-                <div>顧問</div>
-              )}
-              <div>{name}</div>
-            </div>
-
-            {/* <CDropdownItem href="#">
+        {/* <CDropdownItem href="#">
           <CIcon icon={cilBell} className="me-2" />
           Updates
           <CBadge color="info" className="ms-2">
@@ -198,15 +183,13 @@ const AppHeaderDropdown = () => {
           </CBadge>
         </CDropdownItem> */}
 
-            <CDropdownHeader className="bg-body-secondary fw-semibold my-2">
-              Settings
-            </CDropdownHeader>
+        <CDropdownHeader className="bg-body-secondary fw-semibold my-2">Settings</CDropdownHeader>
 
-            <CDropdownItem href="/#/theme/user_info">
-              <CIcon icon={cilUser} className="me-2" />
-              個人檔案
-            </CDropdownItem>
-            {/* <CDropdownItem href="#">
+        <CDropdownItem href="/#/theme/user_info">
+          <CIcon icon={cilUser} className="me-2" />
+          個人檔案
+        </CDropdownItem>
+        {/* <CDropdownItem href="#">
           <CIcon icon={cilSettings} className="me-2" />
           Settings
         </CDropdownItem>
@@ -224,21 +207,11 @@ const AppHeaderDropdown = () => {
             42
           </CBadge>
         </CDropdownItem> */}
-            <CDropdownDivider />
-            <CDropdownItem href="#">
-              <CIcon icon={cilAccountLogout} className="me-2" />
-              登出
-            </CDropdownItem>
-          </>
-        ) : (
-          <>
-            <CDropdownDivider />
-            <CDropdownItem href="/#/login">
-              <CIcon icon={cilAccountLogout} className="me-2" />
-              登入
-            </CDropdownItem>
-          </>
-        )}
+        <CDropdownDivider />
+        <CDropdownItem href="#">
+          <CIcon icon={cilAccountLogout} className="me-2" />
+          登出
+        </CDropdownItem>
       </CDropdownMenu>
     </CDropdown>
   )
