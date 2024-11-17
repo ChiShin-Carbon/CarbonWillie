@@ -22,6 +22,8 @@ from bot import botapi
 from insert.insert_vehicle import insert_vehicle
 from insert.insert_Extinguisher import insert_Extinguisher
 from insert.insert_employee import insert_employee
+from baseline import baseline
+from boundary import boundary
 
 from insert.insert_machine import insert_machine
 
@@ -73,6 +75,8 @@ app.include_router(editcompanyinfo)
 app.include_router(editcfvinfo)
 app.include_router(ocrapi)
 app.include_router(botapi)
+app.include_router(baseline)
+app.include_router(boundary)
 app.include_router(insert_vehicle)
 app.include_router(insert_Extinguisher)
 app.include_router(insert_employee)
