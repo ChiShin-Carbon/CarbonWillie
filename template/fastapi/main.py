@@ -11,30 +11,31 @@ from fastapi.middleware.cors import CORSMiddleware
 from route import router
 from login import login
 from userinfo import userinfo
-from edituserinfo import edituserinfo
-from editaddress import editaddress
-from editpassword import editpassword
+from edit.edituserinfo import edituserinfo
+from edit.editaddress import editaddress
+from edit.editpassword import editpassword
 from companyinfo import companyinfo
-from editcompanyinfo import editcompanyinfo
-from editcfvinfo import editcfvinfo
+from edit.editcompanyinfo import editcompanyinfo
+from edit.editcfvinfo import editcfvinfo
 from ocrapi import ocrapi
 from bot import botapi
-from insert_vehicle import insert_vehicle
-from insert_Extinguisher import insert_Extinguisher
-from insert_employee import insert_employee
+from insert.insert_vehicle import insert_vehicle
+from insert.insert_Extinguisher import insert_Extinguisher
+from insert.insert_employee import insert_employee
 
-from insert_machine import insert_machine
+from insert.insert_machine import insert_machine
 
-from insert_emergency import insert_emergency
-from insert_electricity import insert_electricity
-from insert_ref import insert_ref
-from insert_commute import insert_commute
-from insert_BusinessTrip import insert_BusinessTrip
-from insert_waste import insert_waste
-from insert_Selling_waste import insert_Selling_waste
+from insert.insert_emergency import insert_emergency
+from insert.insert_electricity import insert_electricity
+from insert.insert_ref import insert_ref
+from insert.insert_commute import insert_commute
+from insert.insert_BusinessTrip import insert_BusinessTrip
+from insert.insert_waste import insert_waste
+from insert.insert_Selling_waste import insert_Selling_waste
 from authorizedTable.authorizedTable import authorizedTable
 from authorizedTable.insert_authorized import insert_authorized
 from authorizedTable.edit_authorized import edit_authorized
+from vehicle import vehicle
 
 
 
@@ -87,4 +88,4 @@ app.include_router(insert_commute)
 app.include_router(insert_BusinessTrip)
 app.include_router(insert_waste)
 app.include_router(insert_Selling_waste)
-
+app.include_router(vehicle)
