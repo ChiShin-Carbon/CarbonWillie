@@ -31,7 +31,7 @@ const Tabs = () => {
         {
             org_name: "XXXXX股份有限公司",
             details: {
-                org_name: "XXXXX股份有限公司", registration_number: "XXX", factory_number: "XXX",
+                org_name: "XXXXX股份有限公司", business_id: "123", registration_number: "XXX", factory_number: "XXX",
                 county: "XXX", town: "XXX", postal_code: "XXX",
                 org_address: "XXdddddddddddddX", charge_person: "XXX", org_email: "XXX",
                 contact_person: "XXX", email: "XXXdfdsf@gmail.com", telephone: "295115315",
@@ -41,7 +41,7 @@ const Tabs = () => {
         {
             org_name: "ABCV股份有限公司",
             details: {
-                org_name: "ABCV股份有限公司", registration_number: "asd", factory_number: "qwe",
+                org_name: "ABCV股份有限公司", business_id: "123", registration_number: "asd", factory_number: "qwe",
                 county: "Xddd", town: "zxcxX", postal_code: "dfdf",
                 org_address: "XXaaaaaaadsa ao7o7oo7o7X", charge_person: "BBB", org_email: "XXX",
                 contact_person: "153X", email: "5656@gmail.com", telephone: "59012312132",
@@ -122,9 +122,10 @@ const Tabs = () => {
                                     </div>
                                 </div>
                                 <div className={styles.block}>
-                                    <div className={styles.blockBody2}>
+                                    <div className={styles.blockBody3}>
+                                        <div><span>統一編號:</span><p>{selectedRowData.business_id}</p></div>
                                         <div><span>管制編號:</span><p>{selectedRowData.registration_number}</p></div>
-                                        <div><span>核准字號:</span><p>{selectedRowData.factory_number}</p></div>
+                                        <div><span>工廠登記證編號:</span><p>{selectedRowData.factory_number}</p></div>
                                     </div>
                                 </div>
                                 <div className={styles.block}>
@@ -148,13 +149,13 @@ const Tabs = () => {
                                 <div className={styles.block}>
                                     <div className={styles.blockBody2}>
                                         <div><span>聯絡人姓名:</span><p>{selectedRowData.contact_person}</p></div>
-                                        <div><span>電子信箱:</span><p>{selectedRowData.email}</p></div>
+                                        <div><span>聯絡人電子信箱:</span><p>{selectedRowData.email}</p></div>
                                     </div>
                                 </div>
                                 <div className={styles.block}>
                                     <div className={styles.blockBody2}>
-                                        <div><span>電話:</span><p>{selectedRowData.telephone}</p></div>
-                                        <div><span>手機:</span><p>{selectedRowData.phone}</p></div>
+                                        <div><span>聯絡人電話:</span><p>{selectedRowData.telephone}</p></div>
+                                        <div><span>聯絡人手機:</span><p>{selectedRowData.phone}</p></div>
                                     </div>
                                 </div>
                                 <div className={styles.block}>
@@ -163,6 +164,7 @@ const Tabs = () => {
                                         <div><span>行業代碼:</span><p>{selectedRowData.industry_code}</p></div>
                                     </div>
                                 </div>
+                                <hr />
 
 
                             </div>

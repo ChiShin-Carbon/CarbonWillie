@@ -32,6 +32,7 @@ const 盤查報告書 = React.lazy(() => import('./views/盤查報告書/盤查�
 //管理者
 const 企業列表 = React.lazy(() => import('./views/管理者/企業列表/企業列表'))
 const 使用者列表 = React.lazy(() => import('./views/管理者/使用者列表/使用者列表'))
+const 顧問列表 = React.lazy(() => import('./views/管理者/顧問列表/顧問列表'))
 
 // Base
 const Accordion = React.lazy(() => import('./views/base/accordion/Accordion'))
@@ -110,6 +111,7 @@ const routes = [
   //管理者
   { path: '/管理者/企業列表', name: '企業列表', element: 企業列表 },
   { path: '/管理者/使用者列表', name: '使用者列表', element: 使用者列表 },
+  { path: '/管理者/顧問列表', name: '顧問列表', element: 顧問列表 },
 
   //
   { path: '/base', name: 'Base', element: Cards, exact: true },
