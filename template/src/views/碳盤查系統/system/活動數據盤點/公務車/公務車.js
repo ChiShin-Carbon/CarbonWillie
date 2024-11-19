@@ -67,7 +67,7 @@ export const Vehicle = () => {
                             <td>{vehicle.remark}</td>
                             <td>
                                 <Zoom>
-                                    <img src={vehicle.img_path} alt="receipt" style={{ width: '100px' }} />
+                                   <img src={`fastapi/${vehicle.img_path}`} alt="receipt" style={{ width: '100px' }} />
                                 </Zoom>
                             </td>
                             <td>{vehicle.edit_time}</td>
