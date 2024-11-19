@@ -28,6 +28,7 @@ const Tabs = () => {
   const [department, setDepartment] = useState('')
   const [positionID, setPositionID] = useState('')
   const [position, setPosition] = useState('')
+  const [role, setRole] = useState(false)
   const [accmessage, setaccMessage] = useState('')
   const [newpassword, setNewPassword] = useState('')
   const [pwmessage, setpwMessage] = useState('')
@@ -60,6 +61,7 @@ const Tabs = () => {
         setPhone(data.user.phone)
         setDepartmentID(data.user.department)
         setPositionID(data.user.position)
+        setRole(data.user.role)
       } else {
         console.log(response.status)
       }
@@ -113,8 +115,8 @@ const Tabs = () => {
         document.getElementById('editemail').value ||
         document.getElementById('editemail').placeholder
       const telephone =
-        document.getElementById('edittelephone').value ||
-        document.getElementById('edittelephone').placeholder
+        document.getElementById('edittelephone')?.value ||
+        document.getElementById('edittelephone')?.placeholder
       const phone =
         document.getElementById('editphone').value ||
         document.getElementById('editphone').placeholder
@@ -130,6 +132,7 @@ const Tabs = () => {
           email: email,
           telephone: telephone,
           phone: phone,
+          role: role,
         }),
       })
 
@@ -368,23 +371,7 @@ const Tabs = () => {
                           </div>
                         </CCol>
                       </CRow>
-
                       <CRow className="mb-3">
-                        <CCol sm={5}>
-                          <div className="mb-3">
-                            <CFormLabel htmlFor="email">
-                              <strong>統編</strong>
-                            </CFormLabel>
-                            <CFormInput
-                              type="phone"
-                              id="phone"
-                              value={businessID}
-                              disabled
-                              readOnly
-                            />
-                          </div>
-                        </CCol>
-                        <CCol sm={2}></CCol>
                         <CCol sm={5}>
                           <div className="mb-3">
                             <CFormLabel htmlFor="account">
@@ -393,59 +380,82 @@ const Tabs = () => {
                             <CFormInput type="email" id="email" value={email} disabled readOnly />
                           </div>
                         </CCol>
-                      </CRow>
-
-                      <CRow className="mb-3">
-                        <CCol sm={5}>
-                          <div className="mb-3">
-                            <CFormLabel htmlFor="account">
-                              <strong>辦公室電話</strong>
-                            </CFormLabel>
-                            <CFormInput
-                              type="email"
-                              id="telephone"
-                              value={telephone}
-                              disabled
-                              readOnly
-                            />
-                          </div>
-                        </CCol>
                         <CCol sm={2}></CCol>
                         <CCol sm={5}>
                           <div className="mb-3">
                             <CFormLabel htmlFor="email">
                               <strong>手機</strong>
                             </CFormLabel>
-                            <CFormInput type="phone" id="name" value={phone} disabled readOnly />
+                            <CFormInput type="phone" id="phone" value={phone} disabled readOnly />
                           </div>
                         </CCol>
                       </CRow>
-
-                      <CRow className="mb-3">
-                        <CCol sm={5}>
-                          <div className="mb-3">
-                            <CFormLabel htmlFor="account">
-                              <strong>所屬部門</strong>
-                            </CFormLabel>
-                            <CFormInput
-                              type="email"
-                              id="email"
-                              value={department}
-                              disabled
-                              readOnly
-                            />
-                          </div>
-                        </CCol>
-                        <CCol sm={2}></CCol>
-                        <CCol sm={5}>
-                          <div className="mb-3">
-                            <CFormLabel htmlFor="email">
-                              <strong>職位</strong>
-                            </CFormLabel>
-                            <CFormInput type="phone" id="name" value={position} disabled readOnly />
-                          </div>
-                        </CCol>
-                      </CRow>
+                      {role && (
+                        <>
+                          <CRow className="mb-3">
+                            <CCol sm={5}>
+                              <div className="mb-3">
+                                <CFormLabel htmlFor="email">
+                                  <strong>公司統編</strong>
+                                </CFormLabel>
+                                <CFormInput
+                                  type="text"
+                                  id="businessID"
+                                  value={businessID}
+                                  disabled
+                                  readOnly
+                                />
+                              </div>
+                            </CCol>
+                            <CCol sm={2}></CCol>
+                            <CCol sm={5}>
+                              <div className="mb-3">
+                                <CFormLabel htmlFor="account">
+                                  <strong>辦公室電話</strong>
+                                </CFormLabel>
+                                <CFormInput
+                                  type="text"
+                                  id="telephone"
+                                  value={telephone}
+                                  disabled
+                                  readOnly
+                                />
+                              </div>
+                            </CCol>
+                          </CRow>
+                          <CRow className="mb-3">
+                            <CCol sm={5}>
+                              <div className="mb-3">
+                                <CFormLabel htmlFor="account">
+                                  <strong>所屬部門</strong>
+                                </CFormLabel>
+                                <CFormInput
+                                  type="text"
+                                  id="department"
+                                  value={department}
+                                  disabled
+                                  readOnly
+                                />
+                              </div>
+                            </CCol>
+                            <CCol sm={2}></CCol>
+                            <CCol sm={5}>
+                              <div className="mb-3">
+                                <CFormLabel htmlFor="email">
+                                  <strong>職位</strong>
+                                </CFormLabel>
+                                <CFormInput
+                                  type="text"
+                                  id="position"
+                                  value={position}
+                                  disabled
+                                  readOnly
+                                />
+                              </div>
+                            </CCol>
+                          </CRow>
+                        </>
+                      )}
                     </CForm>
                   </div>
                 </CCardBody>
@@ -458,52 +468,100 @@ const Tabs = () => {
                     <strong className="customtitlebottom">修改個人資料</strong>
                   </div>
                   <div className="customCardBody">
-                    <CForm>
-                      <CRow className="mb-3">
-                        <CCol sm={5}>
-                          <div className="mb-3">
-                            <CFormLabel htmlFor="username">
-                              <strong>姓名</strong>
-                            </CFormLabel>
-                            <CFormInput type="text" id="editusername" placeholder={name} />
-                          </div>
-                        </CCol>
-                        <CCol sm={2}></CCol>
-                        <CCol sm={5}>
-                          <div className="mb-3">
-                            <CFormLabel htmlFor="email">
-                              <strong>電子郵件</strong>
-                            </CFormLabel>
-                            <CFormInput type="email" id="editemail" placeholder={email} />
-                          </div>
-                        </CCol>
-                      </CRow>
+                    {role && (
+                      <CForm>
+                        <CRow className="mb-3">
+                          <CCol sm={5}>
+                            <div className="mb-3">
+                              <CFormLabel htmlFor="username">
+                                <strong>姓名</strong>
+                              </CFormLabel>
+                              <CFormInput type="text" id="editusername" placeholder={name} />
+                            </div>
+                          </CCol>
+                          <CCol sm={2}></CCol>
+                          <CCol sm={5}>
+                            <div className="mb-3">
+                              <CFormLabel htmlFor="email">
+                                <strong>電子郵件</strong>
+                              </CFormLabel>
+                              <CFormInput type="email" id="editemail" placeholder={email} />
+                            </div>
+                          </CCol>
+                        </CRow>
+                        <CRow className="mb-3">
+                          <CCol sm={5}>
+                            <div className="mb-3">
+                              <CFormLabel htmlFor="telephone">
+                                <strong>辦公室電話</strong>
+                              </CFormLabel>
+                              <CFormInput type="text" id="edittelephone" placeholder={telephone} />
+                            </div>
+                          </CCol>
+                          <CCol sm={2}></CCol>
+                          <CCol sm={5}>
+                            <div className="mb-3">
+                              <CFormLabel htmlFor="phone">
+                                <strong>手機</strong>
+                              </CFormLabel>
+                              <CFormInput type="text" id="editphone" placeholder={phone} />
+                            </div>
+                          </CCol>
+                        </CRow>
 
-                      <CRow className="mb-3">
-                        <CCol sm={5}>
-                          <div className="mb-3">
-                            <CFormLabel htmlFor="telephone">
-                              <strong>辦公室電話</strong>
-                            </CFormLabel>
-                            <CFormInput type="text" id="edittelephone" placeholder={telephone} />
-                          </div>
-                        </CCol>
-                        <CCol sm={2}></CCol>
-                        <CCol sm={5}>
-                          <div className="mb-3">
-                            <CFormLabel htmlFor="phone">
-                              <strong>手機</strong>
-                            </CFormLabel>
-                            <CFormInput type="phone" id="editphone" placeholder={phone} />
-                          </div>
-                        </CCol>
-                      </CRow>
-                      <div className="col-auto text-center">
-                        <CButton type="submit" className="mb-3 customButton" onClick={handlesubmit}>
-                          保存資料
-                        </CButton>
-                      </div>
-                    </CForm>
+                        <div className="col-auto text-center">
+                          <CButton
+                            type="submit"
+                            className="mb-3 customButton"
+                            onClick={handlesubmit}
+                          >
+                            保存資料
+                          </CButton>
+                        </div>
+                      </CForm>
+                    )}
+                    {!role && (
+                      <CForm>
+                        <CRow className="mb-3">
+                          <CCol sm={5}>
+                            <div className="mb-3">
+                              <CFormLabel htmlFor="username">
+                                <strong>姓名</strong>
+                              </CFormLabel>
+                              <CFormInput type="text" id="editusername" placeholder={name} />
+                            </div>
+                          </CCol>
+                          <CCol sm={2}></CCol>
+                          <CCol sm={5}>
+                            <div className="mb-3">
+                              <CFormLabel htmlFor="phone">
+                                <strong>手機</strong>
+                              </CFormLabel>
+                              <CFormInput type="text" id="editphone" placeholder={phone} />
+                            </div>
+                          </CCol>
+                        </CRow>
+                        <CRow className="mb-3">
+                          <CCol sm={12}>
+                            <div className="mb-3">
+                              <CFormLabel htmlFor="email">
+                                <strong>電子郵件</strong>
+                              </CFormLabel>
+                              <CFormInput type="email" id="editemail" placeholder={email} />
+                            </div>
+                          </CCol>
+                        </CRow>
+                        <div className="col-auto text-center">
+                          <CButton
+                            type="submit"
+                            className="mb-3 customButton"
+                            onClick={handlesubmit}
+                          >
+                            保存資料
+                          </CButton>
+                        </div>
+                      </CForm>
+                    )}
                   </div>
                 </CCardBody>
               </CCard>

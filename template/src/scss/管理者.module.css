@@ -232,7 +232,7 @@
 .addlabel {
     color: #625F5F;
     font-weight: bold;
-    width: 190px
+    width: 160px
 }
 
 .addmodal {
@@ -264,7 +264,7 @@
     vertical-align: middle;
 }
 
-.backButton a{
+.backButton a {
     background-Color: #8ec49d;
     border-radius: 10px;
     border: none;
@@ -280,15 +280,17 @@
 .backButton a:hover {
     background-color: #72a07f;
 }
-.userCardHead{
+
+.userCardHead {
     box-shadow: 0 4px 5px -2px rgba(0, 0, 0, 0.1);
     height: 50px;
-    display:flex;
+    display: flex;
     justify-content: center;
     align-items: center;
     font-size: 25px;
     font-weight: bold;
 }
+
 .userCard {
     border: none;
     box-shadow: 0px 2px 5px rgb(186, 186, 186);
@@ -299,6 +301,21 @@
     max-height: 500px;
     overflow: auto;
 }
-.userCardBody{
-    padding:20px;
+
+.userCardBody {
+    padding: 20px;
+}
+
+.modalLarge {
+    display: flex;
+    flex-direction: row;
+    column-gap: 50px;
+}
+
+.modalLeft {
+    width: 50%;
+}
+
+.modalRight {
+    width: 50%;
 }

@@ -22,6 +22,7 @@ import {
   cilUser,
   cilCash,
   cilStorage,
+  cilHandshake
 } from '@coreui/icons'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 
@@ -119,6 +120,12 @@ const _nav = [
     name: '企業與使用者列表',
     to: '/管理者/企業列表',
     icon: <CIcon icon={cilStorage} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: '顧問列表',
+    to: '/管理者/顧問列表',
+    icon: <CIcon icon={cilHandshake} customClassName="nav-icon" />,
   },
   {
     component: CNavTitle,
