@@ -6,18 +6,8 @@ import styles from '../../../scss/管理者.module.css';
 import Select from 'react-select';
 
 const options = [
-    { value: 0, label: 'Angular' },
-    { value: 1, label: 'Bootstrap' },
-    { value: 2, label: 'React.js' },
-    { value: 3, label: 'Vue.js' },
-    {
-        label: 'Backend',
-        options: [
-            { value: 4, label: 'Django' },
-            { value: 5, label: 'Laravel' },
-            { value: 6, label: 'Node.js' },
-        ],
-    },
+    { value: 0, label: 'AAA股份有限公司' },
+    { value: 1, label: 'BBB股份有限公司' },
 ];
 
 const AddModal = ({ isAddModalVisible, setAddModalVisible }) => {
@@ -71,11 +61,11 @@ const AddModal = ({ isAddModalVisible, setAddModalVisible }) => {
                         <CRow className="mb-3">
                             <CFormLabel htmlFor="" className={`col-sm-2 col-form-label ${styles.addlabel}`} >負責企業</CFormLabel>
                             <Select
+                                className={styles.addinput}
                                 options={options}
                                 isMulti
                                 value={selectedOptions}
                                 onChange={handleChange}
-                                placeholder="Please select your framework"
                                 closeMenuOnSelect={false}
                             />
                         </CRow>
