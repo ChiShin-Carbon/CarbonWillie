@@ -3,9 +3,31 @@ import {
     CModal, CModalHeader, CModalBody, CModalFooter, CButton, CFormLabel, CFormInput, CFormTextarea, CRow, CCol, CFormSelect, CForm
 } from '@coreui/react';
 import styles from '../../../scss/管理者.module.css';
+import Select from 'react-select';
+
+const options = [
+    { value: 0, label: 'Angular' },
+    { value: 1, label: 'Bootstrap' },
+    { value: 2, label: 'React.js' },
+    { value: 3, label: 'Vue.js' },
+    {
+        label: 'Backend',
+        options: [
+            { value: 4, label: 'Django' },
+            { value: 5, label: 'Laravel' },
+            { value: 6, label: 'Node.js' },
+        ],
+    },
+];
 
 const AddModal = ({ isAddModalVisible, setAddModalVisible }) => {
     const handleClose = () => setAddModalVisible(false);
+
+    const [selectedOptions, setSelectedOptions] = useState([]);
+
+    const handleChange = (selected) => {
+        setSelectedOptions(selected);
+    };
 
     return (
         <CModal visible={isAddModalVisible} onClose={handleClose} className={styles.modal}>
@@ -46,7 +68,17 @@ const AddModal = ({ isAddModalVisible, setAddModalVisible }) => {
                             </CCol>
                         </CRow>
                         <hr />
-                        負責企業
+                        <CRow className="mb-3">
+                            <CFormLabel htmlFor="" className={`col-sm-2 col-form-label ${styles.addlabel}`} >負責企業</CFormLabel>
+                            <Select
+                                options={options}
+                                isMulti
+                                value={selectedOptions}
+                                onChange={handleChange}
+                                placeholder="Please select your framework"
+                                closeMenuOnSelect={false}
+                            />
+                        </CRow>
                     </div>
                 </CModalBody>
                 <CModalFooter>
