@@ -51,7 +51,7 @@ def read_refrigerant():
                         "refrigerant_type": record[5],
                         "remark": record[6],
                         "img_path": record[7],
-                        "edit_time": record[8],
+                        "edit_time": record[8].strftime('%Y-%m-%d %H:%M'),
                     })
                 if record[9]:  # If there is a fill record
                     refrigerants[refrigerant_id]["fillrec"].append({
@@ -64,7 +64,7 @@ def read_refrigerant():
                         "fillrec_img_path": record[15],
                         "fillrec_user_id": record[16],
                         "fillrec_username": record[17],
-                        "fillrec_edit_time": record[18],
+                        "fillrec_edit_time": record[18].strftime('%Y-%m-%d %H:%M'),
                     })
             return {"refrigerants": list(refrigerants.values())}
         
