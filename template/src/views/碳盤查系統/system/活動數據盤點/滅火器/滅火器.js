@@ -131,7 +131,7 @@ export const FireExtinguisher = () => {
                       <button onClick={() => setAddFillModalVisible(true)}>新增</button>
                     </div>
                     <table>
-                      {extinguisher.fillrec && (
+                      {extinguisher.fillrec && extinguisher.fillrec.length > 0 && (
                         <>
                           <tr>
                             <th>發票/收據日期</th>
@@ -142,34 +142,36 @@ export const FireExtinguisher = () => {
                             <th>最近編輯</th>
                             <th>操作</th>
                           </tr>
-                          <tr>
-                            <td>{extinguisher.fillrec.Doc_date}</td>
-                            <td>{extinguisher.fillrec.Doc_number}</td>
-                            <td>{extinguisher.fillrec.usage}</td>
-                            <td>{extinguisher.fillrec.fillrec_remark}</td>
-                            <td>
-                              <Zoom>
-                                <img
-                                  src={`fastapi/${extinguisher.fillrec.fillrec_img_path}`}
-                                  alt="receipt"
-                                  style={{ width: '100px' }}
+                          {extinguisher.fillrec.map((fill, index) => (
+                            <tr key={fill.fillrec_id}>
+                              <td>{fill.Doc_date}</td>
+                              <td>{fill.Doc_number}</td>
+                              <td>{fill.usage}</td>
+                              <td>{fill.fillrec_remark}</td>
+                              <td>
+                                <Zoom>
+                                  <img
+                                    src={`fastapi/${fill.fillrec_img_path}`}
+                                    alt="receipt"
+                                    style={{ width: '100px' }}
+                                  />
+                                </Zoom>
+                              </td>
+                              <td>
+                                {fill.fillrec_username}
+                                <br />
+                                {fill.fillrec_edit_time}
+                              </td>
+                              <td>
+                                <FontAwesomeIcon
+                                  icon={faPenToSquare}
+                                  className={styles.iconPen}
+                                  onClick={() => setEditFillModalVisible(true)}
                                 />
-                              </Zoom>
-                            </td>
-                            <td>
-                              {extinguisher.fillrec.fillrec_username}
-                              <br />
-                              {extinguisher.fillrec.fillrec_edit_time}
-                            </td>
-                            <td>
-                              <FontAwesomeIcon
-                                icon={faPenToSquare}
-                                className={styles.iconPen}
-                                onClick={() => setEditFillModalVisible(true)}
-                              />
-                              <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
-                            </td>
-                          </tr>
+                                <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
+                              </td>
+                            </tr>
+                          ))}
                         </>
                       )}
                     </table>

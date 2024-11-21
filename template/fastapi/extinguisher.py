@@ -1,7 +1,6 @@
 from fastapi import APIRouter, HTTPException, status
 from connect.connect import connectDB
-from pydantic import BaseModel
-from fastapi.middleware.cors import CORSMiddleware
+from collections import defaultdict
 
 extinguisher = APIRouter()
 
@@ -30,37 +29,43 @@ def read_extinguisher():
             extinguisher_records = cursor.fetchall()
             conn.close()
 
-            if extinguisher_records:
-                # Convert each record to a dictionary
-                result = [
-                    {
+            if not extinguisher_records:  # If no records are found
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="No extinguishers found."
+                )
+
+            extinguishers = defaultdict(lambda: {
+                "fillrec": []  # Initialize with an empty list for fill records
+            })
+
+            for record in extinguisher_records:
+                extinguisher_id = record[0]
+                if extinguisher_id not in extinguishers:
+                    extinguishers[extinguisher_id].update({
                         "extinguisher_id": record[0],
                         "user_id": record[1],
                         "username": record[2],
                         "item_name": record[3],
                         "ingredient": record[4],
-                        "specification": record[5],  # Assuming BIT field
+                        "specification": record[5],
                         "remark": record[6],
                         "img_path": record[7],
                         "edit_time": record[8],
-                        "fillrec": {
-                            "fillrec_id": record[9],
-                            "Doc_date": record[10],
-                            "Doc_number": record[11],
-                            "usage": record[12],
-                            "fillrec_remark": record[13],
-                            "fillrec_img_path": record[14],
-                            "fillrec_user_id": record[15],
-                            "fillrec_username": record[16],
-                            "fillrec_edit_time": record[17],
-                        } if record[9] else None  # If no fillrec_id, set to None
-                    }
-                    for record in extinguisher_records
-                ]
-                return {"extinguishers": result}
-            else:
-                # Raise a 404 error if user has no extinguishers
-                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No extinguishers found for this user")
+                    })
+                if record[9]:  # If there is a fill record
+                    extinguishers[extinguisher_id]["fillrec"].append({
+                        "fillrec_id": record[9],
+                        "Doc_date": record[10],
+                        "Doc_number": record[11],
+                        "usage": record[12],
+                        "fillrec_remark": record[13],
+                        "fillrec_img_path": record[14],
+                        "fillrec_user_id": record[15],
+                        "fillrec_username": record[16],
+                        "fillrec_edit_time": record[17],
+                    })
+            return {"extinguishers": list(extinguishers.values())}
         
         except Exception as e:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error reading extinguishers credentials: {e}")
