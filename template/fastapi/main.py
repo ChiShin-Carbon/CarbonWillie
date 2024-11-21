@@ -38,6 +38,8 @@ from authorizedTable.authorizedTable import authorizedTable
 from authorizedTable.insert_authorized import insert_authorized
 from authorizedTable.edit_authorized import edit_authorized
 from vehicle import vehicle
+from Selling_waste import Selling_waste
+from Operational_Waste import Operational_Waste
 
 
 
@@ -93,3 +95,5 @@ app.include_router(insert_BusinessTrip)
 app.include_router(insert_waste)
 app.include_router(insert_Selling_waste)
 app.include_router(vehicle)
+app.include_router(Selling_waste)
+app.include_router(Operational_Waste)
