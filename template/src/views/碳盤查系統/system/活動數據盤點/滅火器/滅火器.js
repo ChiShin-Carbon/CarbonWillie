@@ -36,6 +36,16 @@ export const FireExtinguisher = () => {
   const [isEditFillModalVisible, setEditFillModalVisible] = useState(false)
   const [selectedRow, setSelectedRow] = useState(null) // 用於追蹤展開的列
 
+  const ingredientMap = {
+    1: 'CO2', // Replace with actual ingredient names
+    2: 'HFC-236ea',
+    3: 'HFC-236fa',
+    4: 'HFC-227ea',
+    5: 'CF3CFCF3',
+    6: 'CHF3',
+    7: '其他',
+  }
+
   const [extinguishers, setExtinguishers] = useState([]) // State to hold fetched extinguisher data
   // Function to fetch extinguisher data
   const getExtinguisherData = async () => {
@@ -63,34 +73,6 @@ export const FireExtinguisher = () => {
     getExtinguisherData()
   }, [])
 
-  //   const mockData = [
-  //     {
-  //       id: 1,
-  //       date: '2023/01/15',
-  //       invoiceNumber: '12345',
-  //       productName: '產品A',
-  //       ingredient: 'CO2',
-  //       spec: '500g',
-  //       note: '無',
-  //       imageUrl: 'https://i.pinimg.com/564x/35/a9/aa/35a9aa483e73b94c8b8605ed9107a381.jpg',
-  //       lastEditor: '蔡沂庭',
-  //       lastEditDate: '2024/10/16 12:09',
-  //     },
-  //     {
-  //       id: 2,
-  //       date: '2023/02/20',
-  //       invoiceNumber: '67890',
-  //       productName: '產品B',
-  //       ingredient: 'H2O',
-  //       spec: '250ml',
-  //       note: '重要',
-  //       imageUrl: 'https://i.pinimg.com/564x/35/a9/aa/35a9aa483e73b94c8b8605ed9107a381.jpg',
-  //       lastEditor: '張偉',
-  //       lastEditDate: '2024/10/17 09:15',
-  //     },
-  //     // 可以添加更多假資料
-  //   ]
-
   const toggleRow = (index) => {
     setSelectedRow(selectedRow === index ? null : index)
   }
@@ -114,7 +96,7 @@ export const FireExtinguisher = () => {
             <React.Fragment key={extinguisher.extinguisher_id}>
               <tr onClick={() => toggleRow(extinguisher_id)} className={styles.trChoose}>
                 <td>{extinguisher.item_name}</td>
-                <td>{extinguisher.ingredient}</td>
+                <td>{ingredientMap[extinguisher.ingredient]}</td>
                 <td>{extinguisher.specification}</td>
                 <td>{extinguisher.remark}</td>
                 <td>
@@ -127,7 +109,7 @@ export const FireExtinguisher = () => {
                   </Zoom>
                 </td>
                 <td>
-                  {extinguisher.user_id}
+                  {extinguisher.username}
                   <br />
                   {extinguisher.edit_time}
                 </td>
@@ -161,22 +143,23 @@ export const FireExtinguisher = () => {
                             <th>操作</th>
                           </tr>
                           <tr>
-                            <td>extinguisher.fillrec.Doc_date</td>
-                            <td>extinguisher.fillrec.Doc_number</td>
-                            <td>extinguisher.fillrec.usage</td>
-                            <td>extinguisher.fillrec.remark</td>
+                            <td>{extinguisher.fillrec.Doc_date}</td>
+                            <td>{extinguisher.fillrec.Doc_number}</td>
+                            <td>{extinguisher.fillrec.usage}</td>
+                            <td>{extinguisher.fillrec.fillrec_remark}</td>
                             <td>
                               <Zoom>
                                 <img
-                                  src="https://i.pinimg.com/564x/f3/d9/27/f3d92764f7e4d8ab25835b39f20e2e0f.jpg"
-                                  alt="image"
+                                  src={`fastapi/${extinguisher.fillrec.fillrec_img_path}`}
+                                  alt="receipt"
+                                  style={{ width: '100px' }}
                                 />
                               </Zoom>
                             </td>
                             <td>
-                              extinguisher.fillrec.user_id
+                              {extinguisher.fillrec.fillrec_username}
                               <br />
-                              extinguisher.fillrec.edit_time
+                              {extinguisher.fillrec.fillrec_edit_time}
                             </td>
                             <td>
                               <FontAwesomeIcon

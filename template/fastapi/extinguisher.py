@@ -14,13 +14,15 @@ def read_extinguisher():
             # Secure SQL query using a parameterized query to prevent SQL injection
             query = """
                 SELECT 
-                    e.extinguisher_id, e.user_id, e.item_name, e.ingredient,
+                    e.extinguisher_id, e.user_id, u.username, e.item_name, e.ingredient,
                     e.specification, e.remark, e.img_path, e.edit_time,
-                    f.fillrec_id, f.Doc_date, f.Doc_number, f.usage,
-                    f.remark AS fillrec_remark, f.img_path AS fillrec_img_path, f.edit_time AS fillrec_edit_time
+                    f.fillrec_id, f.Doc_date, f.Doc_number, f.usage, f.remark AS fillrec_remark,
+                    f.img_path AS fillrec_img_path, f.user_id AS fillrec_user_id, uf.username AS fillrec_username,
+                    f.edit_time AS fillrec_edit_time
                 FROM Extinguisher e
-                LEFT JOIN Extinguisher_FillRec f 
-                ON e.extinguisher_id = f.extinguisher_id
+                LEFT JOIN Extinguisher_FillRec f ON e.extinguisher_id = f.extinguisher_id
+                LEFT JOIN users u ON e.user_id = u.user_id
+                LEFT JOIN users uf ON f.user_id = uf.user_id
                 """
             cursor.execute(query)
             
@@ -34,21 +36,24 @@ def read_extinguisher():
                     {
                         "extinguisher_id": record[0],
                         "user_id": record[1],
-                        "item_name": record[2],
-                        "ingredient": record[3],
-                        "specification": bool(record[4]),  # Assuming BIT field
-                        "remark": record[5],
-                        "img_path": record[6],
-                        "edit_time": record[7],
+                        "username": record[2],
+                        "item_name": record[3],
+                        "ingredient": record[4],
+                        "specification": record[5],  # Assuming BIT field
+                        "remark": record[6],
+                        "img_path": record[7],
+                        "edit_time": record[8],
                         "fillrec": {
-                            "fillrec_id": record[8],
-                            "Doc_date": record[9],
-                            "Doc_number": record[10],
-                            "usage": record[11],
-                            "fillrec_remark": record[12],
-                            "fillrec_img_path": record[13],
-                            "fillrec_edit_time": record[14],
-                        } if record[8] else None  # If no fillrec_id, set to None
+                            "fillrec_id": record[9],
+                            "Doc_date": record[10],
+                            "Doc_number": record[11],
+                            "usage": record[12],
+                            "fillrec_remark": record[13],
+                            "fillrec_img_path": record[14],
+                            "fillrec_user_id": record[15],
+                            "fillrec_username": record[16],
+                            "fillrec_edit_time": record[17],
+                        } if record[9] else None  # If no fillrec_id, set to None
                     }
                     for record in extinguisher_records
                 ]
