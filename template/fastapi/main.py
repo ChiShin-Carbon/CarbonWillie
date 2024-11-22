@@ -43,6 +43,7 @@ from Operational_Waste import Operational_Waste
 from Business_trip import Business_Trip
 from commute import Commute
 from Electricity_Usage import Electricity_Usage
+from Emergency_Generator import Emergency_Generator
 
 
 
@@ -103,3 +104,4 @@ app.include_router(Operational_Waste)
 app.include_router(Business_Trip)
 app.include_router(Commute)
 app.include_router(Electricity_Usage)
+app.include_router(Emergency_Generator)
