@@ -45,6 +45,9 @@ from commute import Commute
 from Electricity_Usage import Electricity_Usage
 from Emergency_Generator import Emergency_Generator
 
+from extinguisher import extinguisher
+from refrigerant import refrigerant
+from employee import employee
 
 
 app = FastAPI()
@@ -105,3 +108,6 @@ app.include_router(Business_Trip)
 app.include_router(Commute)
 app.include_router(Electricity_Usage)
 app.include_router(Emergency_Generator)
+app.include_router(extinguisher)
+app.include_router(refrigerant)
+app.include_router(employee)
