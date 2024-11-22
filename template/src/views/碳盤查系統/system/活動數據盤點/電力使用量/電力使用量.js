@@ -1,20 +1,45 @@
-// functions.js
-import React, { useState } from 'react'; // 確保引入 useState
+import React, { useState, useEffect } from 'react'; // Added `useEffect` import
 import {
-    CTable, CTableHead, CTableBody, CFormSelect, CModal, CModalBody, CModalFooter, CModalHeader, CForm, CButton,
-    CFormLabel, CFormInput, CFormTextarea, CRow, CCol, CCollapse, CCard, CCardBody
+    CTable, CTableHead, CTableBody, CModal, CModalBody, CModalFooter, CModalHeader, CForm, CButton,
+    CFormLabel, CFormInput, CFormTextarea
 } from '@coreui/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPenToSquare, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 import styles from '../../../../../scss/活動數據盤點.module.css';
 import EditModal from './編輯Modal.js';
 
-
-import Zoom from 'react-medium-image-zoom'
-import 'react-medium-image-zoom/dist/styles.css'
+import Zoom from 'react-medium-image-zoom';
+import 'react-medium-image-zoom/dist/styles.css';
 
 export const ElectricityUsage = () => {
     const [isEditModalVisible, setEditModalVisible] = useState(false);
+    const [ElectricityUsage, setElectricityUsage] = useState([]);  // State to hold fetched electricity usage data
+
+    // Function to fetch electricity usage data
+    const getElectricityUsageData = async () => {
+        try {
+            const response = await fetch('http://localhost:8000/Electricity_Usage', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            const data = await response.json();
+
+            if (response.ok) {
+                setElectricityUsage(data.Electricity_Usage);  // Set data to state
+            } else {
+                console.error(`Error ${response.status}: ${data.detail}`);
+            }
+        } catch (error) {
+            console.error('Error fetching electricity usage data:', error);
+        }
+    };
+
+    // Fetch data on component mount
+    useEffect(() => {
+        getElectricityUsageData();
+    }, []);
 
     return (
         <div>
@@ -26,10 +51,6 @@ export const ElectricityUsage = () => {
                         <th>用電期間(起)</th>
                         <th>用電期間(迄)</th>
                         <th>填寫類型</th>
-                        <th>尖峰度數</th>
-                        <th>半尖峰度數</th>
-                        <th>週六半尖峰度數</th>
-                        <th>離峰度數</th>
                         <th>當月總用電量/總金額</th>
                         <th>備註</th>
                         <th>圖片</th>
@@ -38,25 +59,23 @@ export const ElectricityUsage = () => {
                     </tr>
                 </CTableHead>
                 <CTableBody className={styles.activityTableBody}>
-                    <tr>
-                        <td>1月</td>
-                        <td>XXXXX</td>
-                        <td>2024/01/12</td>
-                        <td>2024/02/12</td>
-                        <td>用電度數</td>
-                        <td>20600</td>
-                        <td>20600</td>
-                        <td>20600</td>
-                        <td>20600</td>
-                        <td>20600</td>
-                        <td>讚</td>
-                        <td><Zoom><img src="https://i.pinimg.com/564x/6a/e2/41/6ae2418f5b68d216f68e7ed2ab349e0c.jpg" alt="image" /></Zoom></td>
-                        <td>蔡沂庭<br />2024/10/16 12:09</td>
-                        <td>
-                            <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
-                            <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
-                        </td>
-                    </tr>
+                    {ElectricityUsage.map((usage, index) => (
+                        <tr key={index}>
+                            <td>{usage.Doc_date}</td>
+                            <td>{usage.Doc_number}</td>
+                            <td>{usage.period_start}</td>
+                            <td>{usage.period_end}</td>
+                            <td>{usage.usage}</td>
+                            <td>{usage.amount}</td>
+                            <td>{usage.remark}</td>
+                            <td><Zoom><img src={usage.img_path} alt="image" /></Zoom></td>
+                            <td>{usage.edit_time}</td>
+                            <td>
+                                <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
+                                <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
+                            </td>
+                        </tr>
+                    ))}
                 </CTableBody>
             </CTable>
             <EditModal

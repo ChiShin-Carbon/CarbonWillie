@@ -30,7 +30,7 @@ async def read_user_credentials(
         try:
             # Adjust placeholder syntax based on the database library you're using
             query = """
-                INSERT INTO Machinery (user_id, Doc_date, Doc_number, usage, remark, img_path, edit_time)
+                INSERT INTO Emergency_Generator (user_id, Doc_date, Doc_number, usage, remark, img_path, edit_time)
                 VALUES (?, ?, ?, ?, ?, ?, ?)
             """
             values = (user_id, date, number, usage, remark, str(image_path), datetime.now())

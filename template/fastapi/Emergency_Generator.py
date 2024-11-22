@@ -3,17 +3,17 @@ from connect.connect import connectDB
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 
-Commute = APIRouter()
+Emergency_Generator = APIRouter()
 
 
-@Commute.post("/Commute")
+@Emergency_Generator.post("/Emergency_Generator")
 def read_user_credentials():
     conn = connectDB()  # Establish connection using your custom connect function
     if conn:
         cursor = conn.cursor()
         try:
             # Secure SQL query using a parameterized query to prevent SQL injection
-            query = "SELECT * FROM Commute"
+            query = "SELECT * FROM Emergency_Generator"
             cursor.execute(query)
             
             # Fetch all records for the user
@@ -24,21 +24,21 @@ def read_user_credentials():
                 # Convert each record to a dictionary
                 result = [
                     {
-                        "commute_id": record[0],
+                        "generator_id": record[0],
                         "user_id": record[1],
-                        "transportation": record[2],
-                        "oil_species": bool(record[3]),  # Assuming oil_species is a BIT (True/False)
-                        "kilometer": float(record[4]),
+                        "Doc_date": record[2],
+                        "Doc_number": record[3],
+                        "usage": float(record[4]),  
                         "remark": record[5],
-                        "img_path": record[6],  # Assuming oil_species is a BIT (True/False)
+                        "img_path": record[6],
                         "edit_time": record[7],
                     }
                     for record in user_records
                 ]
-                return {"Commute": result}
+                return {"Emergency_Generator": result}
             else:
-                # Raise a 404 error if user has no vehicles
-                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No Commute found for this user")
+                # Raise a 404 error if user has no Emergency_Gnerator
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No Emergency_Generator found for this user")
         
         except Exception as e:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error reading user credentials: {e}")

@@ -94,13 +94,13 @@ export const EmergencyGeneratorAdd = ({ isAddModalVisible, setAddModalVisible })
                         <CRow className="mb-3">
                             <CFormLabel htmlFor="date" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票/收據日期*</CFormLabel>
                             <CCol>
-                                <CFormInput className={styles.addinput} type="date" id="C7date" value={date} required />
+                                <CFormInput className={styles.addinput} type="date" id="C7date" required />
                             </CCol>
                         </CRow>
                         <CRow className="mb-3">
                             <CFormLabel htmlFor="num" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票號碼/收據編號*</CFormLabel>
                             <CCol>
-                                <CFormInput className={styles.addinput} type="text" id="C7num" value={num} required />
+                                <CFormInput className={styles.addinput} type="text" id="C7num" required />
                             </CCol>
                         </CRow>
 

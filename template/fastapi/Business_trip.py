@@ -3,17 +3,17 @@ from connect.connect import connectDB
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 
-Commute = APIRouter()
+Business_Trip = APIRouter()
 
 
-@Commute.post("/Commute")
+@Business_Trip.post("/Business_Trip")
 def read_user_credentials():
     conn = connectDB()  # Establish connection using your custom connect function
     if conn:
         cursor = conn.cursor()
         try:
             # Secure SQL query using a parameterized query to prevent SQL injection
-            query = "SELECT * FROM Commute"
+            query = "SELECT * FROM Business_Trip"
             cursor.execute(query)
             
             # Fetch all records for the user
@@ -24,7 +24,7 @@ def read_user_credentials():
                 # Convert each record to a dictionary
                 result = [
                     {
-                        "commute_id": record[0],
+                        "business_id": record[0],
                         "user_id": record[1],
                         "transportation": record[2],
                         "oil_species": bool(record[3]),  # Assuming oil_species is a BIT (True/False)
@@ -35,10 +35,10 @@ def read_user_credentials():
                     }
                     for record in user_records
                 ]
-                return {"Commute": result}
+                return {"Business_Trip": result}
             else:
                 # Raise a 404 error if user has no vehicles
-                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No Commute found for this user")
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No Business_Trip found for this user")
         
         except Exception as e:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error reading user credentials: {e}")

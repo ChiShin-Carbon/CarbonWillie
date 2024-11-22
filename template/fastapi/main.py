@@ -38,9 +38,15 @@ from authorizedTable.authorizedTable import authorizedTable
 from authorizedTable.insert_authorized import insert_authorized
 from authorizedTable.edit_authorized import edit_authorized
 from vehicle import vehicle
+from Selling_waste import Selling_waste
+from Operational_Waste import Operational_Waste
+from Business_trip import Business_Trip
+from commute import Commute
+from Electricity_Usage import Electricity_Usage
+from Emergency_Generator import Emergency_Generator
+
 from extinguisher import extinguisher
 from refrigerant import refrigerant
-from commute import commute
 from employee import employee
 
 
@@ -96,7 +102,12 @@ app.include_router(insert_BusinessTrip)
 app.include_router(insert_waste)
 app.include_router(insert_Selling_waste)
 app.include_router(vehicle)
+app.include_router(Selling_waste)
+app.include_router(Operational_Waste)
+app.include_router(Business_Trip)
+app.include_router(Commute)
+app.include_router(Electricity_Usage)
+app.include_router(Emergency_Generator)
 app.include_router(extinguisher)
 app.include_router(refrigerant)
-app.include_router(commute)
 app.include_router(employee)
