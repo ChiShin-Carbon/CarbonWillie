@@ -70,7 +70,7 @@ export const Vehicle = () => {
                                    <img src={`fastapi/${vehicle.img_path}`} alt="receipt" style={{ width: '100px' }} />
                                 </Zoom>
                             </td>
-                            <td>{vehicle.edit_time}</td>
+                            <td>{vehicle.username}<br />{vehicle.edit_time}</td>
                             <td>
                                 <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
                                 <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />

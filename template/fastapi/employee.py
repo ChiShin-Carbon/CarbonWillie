@@ -12,7 +12,14 @@ def read_employee_data():
             # Use a context manager to ensure connection closes after use
             with conn.cursor() as cursor:
                 # Secure SQL query using a parameterized query to prevent SQL injection
-                query = "SELECT * FROM Employee"  # Update table name if needed
+                query = """
+                
+                SELECT Employee.employee_id, Employee.user_id, Employee.period_date, Employee.employee_number, Employee.daily_hours, Employee.workday, Employee.overtime, Employee.sick_leave, Employee.personal_leave, Employee.business_trip, Employee.wedding_and_funeral, Employee.special_leave, Employee.remark, Employee.img_path, Employee.edit_time
+                , users.username
+                FROM Employee
+                LEFT JOIN users ON Employee.user_id = users.user_id
+                
+                """  # Update table name if needed
                 cursor.execute(query)
                 
                 # Fetch all employee records
@@ -22,20 +29,22 @@ def read_employee_data():
                     # Convert each record to a dictionary format
                     result = [
                         {
-                            "user_id": record[0],
-                            "period_date": str(record[1]),  # Convert to string if it's a date
-                            "employee_number": record[2],
-                            "daily_hours": record[3],
-                            "workday": bool(record[4]),  # Assuming workday is a BIT (0/1)
-                            "overtime": float(record[5]),
-                            "sick_leave": record[6],
-                            "personal_leave": record[7],
-                            "business_trip": record[8],
-                            "wedding_and_funeral": record[9],
-                            "special_leave": record[10],
-                            "remark": record[11],
-                            "img_path": record[12],
-                            "edit_time": str(record[13]),  # Convert datetime to string if necessary
+                            "employee_id": record[0],
+                            "user_id": record[1],
+                            "period_date": str(record[2]),  # Convert to string if it's a date
+                            "employee_number": record[3],
+                            "daily_hours": record[4],
+                            "workday": record[5], 
+                            "overtime": float(record[6]),
+                            "sick_leave": record[7],
+                            "personal_leave": record[8],
+                            "business_trip": record[9],
+                            "wedding_and_funeral": record[10],
+                            "special_leave": record[11],
+                            "remark": record[12],
+                            "img_path": record[13],
+                            "edit_time": str(record[14]).strftime("%Y-%m-%d %H:%M"),  # Convert datetime to string if necessary
+                            "username": record[15]
                         }
                         for record in employee_records
                     ]

@@ -1,19 +1,16 @@
 from fastapi import APIRouter, HTTPException, status
 from connect.connect import connectDB
-from pydantic import BaseModel
-from fastapi.middleware.cors import CORSMiddleware
 
-Commute = APIRouter()
+Machinery = APIRouter()
 
-
-@Commute.post("/Commute")
+@Machinery.post("/Machinery")
 def read_user_credentials():
     conn = connectDB()  # Establish connection using your custom connect function
     if conn:
         cursor = conn.cursor()
         try:
             # Secure SQL query using a parameterized query to prevent SQL injection
-            query = "SELECT * FROM Commute"
+            query = "SELECT * FROM Machinery"
             cursor.execute(query)
             
             # Fetch all records for the user
@@ -21,24 +18,26 @@ def read_user_credentials():
             conn.close()
 
             if user_records:
-                # Convert each record to a dictionary
+                # Convert each record to a dictionary, handling None values for `usage`
                 result = [
                     {
-                        "commute_id": record[0],
+                        "machinery_id": record[0],
                         "user_id": record[1],
-                        "transportation": record[2],
-                        "oil_species": bool(record[3]),  # Assuming oil_species is a BIT (True/False)
-                        "kilometer": float(record[4]),
-                        "remark": record[5],
-                        "img_path": record[6],  # Assuming oil_species is a BIT (True/False)
-                        "edit_time": record[7].strftime("%Y-%m-%d %H:%M"),
+                        "Doc_date": record[2],
+                        "Doc_number": record[3],
+                        "machinery_location": record[4],
+                        "energy_type": record[5],
+                        "usage": float(record[6]) if record[6] is not None else None,  # Handle None values for usage
+                        "remark": record[7],
+                        "img_path": record[8],
+                        "edit_time": record[9].strftime("%Y-%m-%d %H:%M"),
                     }
                     for record in user_records
                 ]
-                return {"Commute": result}
+                return {"Machinery": result}
             else:
-                # Raise a 404 error if user has no vehicles
-                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No Commute found for this user")
+                # Raise a 404 error if no Machinery records are found
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No Machinery found for this user")
         
         except Exception as e:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error reading user credentials: {e}")

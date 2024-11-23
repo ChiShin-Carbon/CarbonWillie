@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-    CTable, CTableHead, CTableBody, CFormSelect, CModal, CModalBody, CModalFooter, CModalHeader, CForm, CButton,
-    CFormLabel, CFormInput, CFormTextarea, CRow, CCol, CCollapse, CCard, CCardBody
+    CTable, CTableHead, CTableBody, CButton,
 } from '@coreui/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPenToSquare, faTrashCan } from '@fortawesome/free-solid-svg-icons';
@@ -13,7 +12,8 @@ import 'react-medium-image-zoom/dist/styles.css';
 
 export const Employee = () => {
     const [isEditModalVisible, setEditModalVisible] = useState(false);
-    const [employeeData, setEmployeeData] = useState([]); // State to store fetched employee data
+    const [employeeData, setEmployeeData] = useState([]);
+    const [selectedEmployee, setSelectedEmployee] = useState(null); // Store selected employee for edit
 
     const getEmployeeData = async () => {
         try {
@@ -26,7 +26,7 @@ export const Employee = () => {
             const data = await response.json();
 
             if (response.ok) {
-                setEmployeeData(data.employees); // Set employee data to state
+                setEmployeeData(data.employees);
             } else {
                 console.error(`Error ${response.status}: ${data.detail}`);
             }
@@ -35,10 +35,14 @@ export const Employee = () => {
         }
     };
 
-    // Fetch employee data when the component mounts
     useEffect(() => {
         getEmployeeData();
     }, []);
+
+    const handleEditClick = (employee) => {
+        setSelectedEmployee(employee); // Set selected employee for editing
+        setEditModalVisible(true);
+    };
 
     return (
         <div>
@@ -57,6 +61,7 @@ export const Employee = () => {
                         <th>總特休時數</th>
                         <th>備註</th>
                         <th>圖片</th>
+                        <th>最近編輯</th>
                         <th>操作</th>
                     </tr>
                 </CTableHead>
@@ -66,7 +71,7 @@ export const Employee = () => {
                             <td>{employee.period_date}</td>
                             <td>{employee.employee_number}</td>
                             <td>{employee.daily_hours}</td>
-                            <td>{employee.workday ? '是' : '否'}</td>
+                            <td>{employee.workday}</td>
                             <td>{employee.overtime}</td>
                             <td>{employee.sick_leave}</td>
                             <td>{employee.personal_leave}</td>
@@ -74,13 +79,20 @@ export const Employee = () => {
                             <td>{employee.wedding_and_funeral}</td>
                             <td>{employee.special_leave}</td>
                             <td>{employee.remark}</td>
+                            
                             <td>
                                 <Zoom>
-                                    <img src={employee.img_path} alt="image" />
+                                    <img src={employee.img_path} alt="image" width="100" height="100" />
                                 </Zoom>
                             </td>
+
                             <td>
-                                <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
+                                {employee.username}<br />
+                                {new Date(employee.edit_time).toLocaleString()} {/* Format date */}
+                            </td>
+
+                            <td>
+                                <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => handleEditClick(employee)} />
                                 <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
                             </td>
                         </tr>
@@ -90,6 +102,7 @@ export const Employee = () => {
             <EditModal
                 isEditModalVisible={isEditModalVisible}
                 setEditModalVisible={setEditModalVisible}
+                employee={selectedEmployee} // Pass selected employee to modal
             />
         </div>
     );

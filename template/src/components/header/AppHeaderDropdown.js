@@ -87,6 +87,16 @@ const AppHeaderDropdown = () => {
     }
   }
 
+  const handleLogout = () => {
+    // Clear the user_id from sessionStorage
+    window.sessionStorage.removeItem('user_id');
+    // Optional: Clear all sessionStorage
+    // window.sessionStorage.clear();
+    
+    // Redirect to the login page or home page
+    window.location.href = '/#/Login';
+  };
+
   const setdept = () => {
     if (departmentID === 1) {
       setDepartment('管理部門')
@@ -208,8 +218,8 @@ const AppHeaderDropdown = () => {
           </CBadge>
         </CDropdownItem> */}
         <CDropdownDivider />
-        <CDropdownItem href="#">
-          <CIcon icon={cilAccountLogout} className="me-2" />
+        <CDropdownItem href="#" onClick={handleLogout}>
+        <CIcon icon={cilAccountLogout} className="me-2" />
           登出
         </CDropdownItem>
       </CDropdownMenu>

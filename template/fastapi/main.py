@@ -48,6 +48,9 @@ from Emergency_Generator import Emergency_Generator
 from extinguisher import extinguisher
 from refrigerant import refrigerant
 from employee import employee
+from Machinery import Machinery
+from Nonemployee import NonEmployee
+from insert.insert_nonemployee import insert_nonemployee
 
 
 app = FastAPI()
@@ -111,3 +114,6 @@ app.include_router(Emergency_Generator)
 app.include_router(extinguisher)
 app.include_router(refrigerant)
 app.include_router(employee)
+app.include_router(Machinery)
+app.include_router(NonEmployee)
+app.include_router(insert_nonemployee)
