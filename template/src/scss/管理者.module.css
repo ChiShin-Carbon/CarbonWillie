@@ -319,3 +319,10 @@
 .modalRight {
     width: 50%;
 }
+
+/* MultiSelect 的選單位置調整 */
+.multiselect {
+    z-index: 1055;
+    position: relative;
+    /* 根據需要調整定位 */
+}

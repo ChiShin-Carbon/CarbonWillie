@@ -71,6 +71,28 @@ const Tabs = () => {
             }
         };
     // 假設 ChatGPT API 實現
+
+    // 碳費百科
+        // Carbon Price定義(from WorldBank) 20140603
+        const carbonfee1 = () => {
+            window.open("https://www.worldbank.org/en/programs/pricing-carbon", "_blank", "noopener,noreferrer");
+        };
+        // 什麼是碳定價? 20210615
+        const carbonfee2 = () => {
+            window.open("https://csrone.com/topics/6941#:~:text=%E3%80%8C%E7%A2%B3%E5%AE%9A%E5%83%B9%E3%80%8D%EF%BC%88Carbon%20Pricing%EF%BC%89%E6%84%8F%E5%8D%B3%E3%80%8C%E7%82%BA%E4%BA%8C%E6%B0%A7%E5%8C%96%EE%80%80%E7%A2%B3%EE%80%81%E5%88%B6%E5%AE%9A%E4%B8%80%E5%80%8B%E5%83%B9%E6%A0%BC%E3%80%8D%EF%BC%88putting", "_blank", "noopener,noreferrer");
+        };
+        // 碳費制度上路正式邁入碳定價時代 20241011
+        const carbonfee3 = () => {
+            window.open("https://service.cca.gov.tw/File/Get/cca/zh-tw/oOC06indxnu6vqt", "_blank", "noopener,noreferrer");
+        };
+        // 碳費制度(含CBAM) 20240925
+        const carbonfee4 = () => {
+            window.open("https://service.cca.gov.tw/File/Get/cca/zh-tw/cFRixd4MsiJO56M", "_blank", "noopener,noreferrer");
+        };
+        // 臺灣2050淨零排放路徑及策略總說明 20220330
+        const carbonfee5 = () => {
+            window.open("https://ws.ndc.gov.tw/Download.ashx?u=LzAwMS9hZG1pbmlzdHJhdG9yLzEwL3JlbGZpbGUvMC8xNTA0MC82Yzg4MWJlZC04ZDBlLTRhZmEtOGY4ZC02NTI5ZTE1MjViMTQucGRm&n=6Ie654GjMjA1MOa3qOmbtuaOkuaUvui3r%2bW%2bkeWPiuetlueVpee4veiqquaYjl%2fnsKHloLEucGRm&icon=.pdf", "_blank", "noopener,noreferrer");
+        };
         
     //news
     useEffect(() => {
@@ -117,7 +139,7 @@ const Tabs = () => {
       //新聞總結
       const generateSummary = async (titles) => {
         try {
-            const response = await fetch("http://127.0.0.1:8000/botapi", {
+            const response = await fetch("http://127.0.0.1:8000/langchaingpt", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -769,18 +791,106 @@ const Tabs = () => {
                                                     {/* 左側：日期與標題 */}
                                                     <div style={{ display: 'flex',flex: 1, marginLeft: '20px', flexDirection: 'column' }}>
                                                         {/* 日期 */}
-                                                        <p style={{ color: '#d882c0', fontWeight: 'bold', margin: 0 }}>2022/12/01</p>
+                                                        <p style={{ color: '#d882c0', fontWeight: 'bold', margin: 0 }}>2014/06/03</p>
                                                         {/* 標題 */}
-                                                        <p style={{ fontWeight: 'bold', margin: 0 }}>2024各國碳費標準</p>
+                                                        <p style={{ fontWeight: 'bold', margin: 0 }}>Carbon Pricing from WorldBank</p>
                                                     </div>
                                                     {/* 右側：箭頭按鈕 */}
                                                     <CButton style={{ height: '60px', width: '60px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                                        <CIcon icon={cilArrowCircleRight}   style={{ width: '55px', height: '55px' }} />
+                                                        <CIcon icon={cilArrowCircleRight} onClick={carbonfee1} style={{ width: '55px', height: '55px' }} />
                                                     </CButton>
                                                     </div>
                                                 </CRow>
                                             </CCardBody>
                                         </CCard>
+                                        </CCol>
+                                        <CCol sm={12}>
+                                            <CCard style={{width: '1100px', fontSize: '1.2rem'}}>
+                                            <CCardBody>
+                                                <CRow>
+                                                    <div style={{ width: '100%', height: '50px', display: 'flex', justifyContent: 'space-between',alignItems:'center' }}>
+                                                    <div style={{width: '10px', height: '100%', backgroundColor: '#d882c0', borderRadius: '4px',}}></div> {/* 左側粉色 bar */}
+                                                    {/* 左側：日期與標題 */}
+                                                    <div style={{ display: 'flex',flex: 1, marginLeft: '20px', flexDirection: 'column' }}>
+                                                        {/* 日期 */}
+                                                        <p style={{ color: '#d882c0', fontWeight: 'bold', margin: 0 }}>2021/06/15</p>
+                                                        {/* 標題 */}
+                                                        <p style={{ fontWeight: 'bold', margin: 0 }}>什麼是碳定價?</p>
+                                                    </div>
+                                                    {/* 右側：箭頭按鈕 */}
+                                                    <CButton style={{ height: '60px', width: '60px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                                        <CIcon icon={cilArrowCircleRight} onClick={carbonfee2} style={{ width: '55px', height: '55px' }}/>
+                                                    </CButton>
+                                                    </div>
+                                                </CRow>
+                                            </CCardBody>
+                                            </CCard>
+                                        </CCol>
+                                        <CCol sm={12}>
+                                            <CCard style={{width: '1100px', fontSize: '1.2rem'}}>
+                                            <CCardBody>
+                                                <CRow>
+                                                    <div style={{ width: '100%', height: '50px', display: 'flex', justifyContent: 'space-between',alignItems:'center' }}>
+                                                    <div style={{width: '10px', height: '100%', backgroundColor: '#d882c0', borderRadius: '4px',}}></div> {/* 左側粉色 bar */}
+                                                    {/* 左側：日期與標題 */}
+                                                    <div style={{ display: 'flex',flex: 1, marginLeft: '20px', flexDirection: 'column' }}>
+                                                        {/* 日期 */}
+                                                        <p style={{ color: '#d882c0', fontWeight: 'bold', margin: 0 }}>2024/10/11</p>
+                                                        {/* 標題 */}
+                                                        <p style={{ fontWeight: 'bold', margin: 0 }}>碳費制度上路正式邁入碳定價時代</p>
+                                                    </div>
+                                                    {/* 右側：箭頭按鈕 */}
+                                                    <CButton style={{ height: '60px', width: '60px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                                        <CIcon icon={cilArrowCircleRight} onClick={carbonfee3} style={{ width: '55px', height: '55px' }}/>
+                                                    </CButton>
+                                                    </div>
+                                                </CRow>
+                                            </CCardBody>
+                                            </CCard>
+                                        </CCol>
+                                        <CCol sm={12}>
+                                            <CCard style={{width: '1100px', fontSize: '1.2rem'}}>
+                                            <CCardBody>
+                                                <CRow>
+                                                    <div style={{ width: '100%', height: '50px', display: 'flex', justifyContent: 'space-between',alignItems:'center' }}>
+                                                    <div style={{width: '10px', height: '100%', backgroundColor: '#d882c0', borderRadius: '4px',}}></div> {/* 左側粉色 bar */}
+                                                    {/* 左側：日期與標題 */}
+                                                    <div style={{ display: 'flex',flex: 1, marginLeft: '20px', flexDirection: 'column' }}>
+                                                        {/* 日期 */}
+                                                        <p style={{ color: '#d882c0', fontWeight: 'bold', margin: 0 }}>2024/09/25</p>
+                                                        {/* 標題 */}
+                                                        <p style={{ fontWeight: 'bold', margin: 0 }}>台灣碳費制度(含CBAM)</p>
+                                                    </div>
+                                                    {/* 右側：箭頭按鈕 */}
+                                                    <CButton style={{ height: '60px', width: '60px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                                        <CIcon icon={cilArrowCircleRight} onClick={carbonfee4} style={{ width: '55px', height: '55px' }}/>
+                                                    </CButton>
+                                                    </div>
+                                                </CRow>
+                                            </CCardBody>
+                                            </CCard>
+                                        </CCol>
+                                        <CCol sm={12}>
+                                            <CCard style={{width: '1100px', fontSize: '1.2rem'}}>
+                                            <CCardBody>
+                                                <CRow>
+                                                    <div style={{ width: '100%', height: '50px', display: 'flex', justifyContent: 'space-between',alignItems:'center' }}>
+                                                    <div style={{width: '10px', height: '100%', backgroundColor: '#d882c0', borderRadius: '4px',}}></div> {/* 左側粉色 bar */}
+                                                    {/* 左側：日期與標題 */}
+                                                    <div style={{ display: 'flex',flex: 1, marginLeft: '20px', flexDirection: 'column' }}>
+                                                        {/* 日期 */}
+                                                        <p style={{ color: '#d882c0', fontWeight: 'bold', margin: 0 }}>2022/03/30</p>
+                                                        {/* 標題 */}
+                                                        <p style={{ fontWeight: 'bold', margin: 0 }}>臺灣2050淨零排放路徑及策略總說明</p>
+                                                    </div>
+                                                    {/* 右側：箭頭按鈕 */}
+                                                    <CButton style={{ height: '60px', width: '60px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                                        <CIcon icon={cilArrowCircleRight} onClick={carbonfee5} style={{ width: '55px', height: '55px' }}/>
+                                                    </CButton>
+                                                    </div>
+                                                </CRow>
+                                            </CCardBody>
+                                            </CCard>
                                         </CCol>
                                     </CRow>
                                     </CCardBody>

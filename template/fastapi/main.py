@@ -24,7 +24,7 @@ from insert.insert_Extinguisher import insert_Extinguisher
 from insert.insert_employee import insert_employee
 from baseline import baseline
 from boundary import boundary
-
+from langchain_gpt import langchaingpt
 from insert.insert_machine import insert_machine
 
 from insert.insert_emergency import insert_emergency
@@ -38,13 +38,23 @@ from authorizedTable.authorizedTable import authorizedTable
 from authorizedTable.insert_authorized import insert_authorized
 from authorizedTable.edit_authorized import edit_authorized
 from vehicle import vehicle
+from Selling_waste import Selling_waste
+from Operational_Waste import Operational_Waste
+from Business_trip import Business_Trip
+from commute import Commute
+from Electricity_Usage import Electricity_Usage
+from Emergency_Generator import Emergency_Generator
+
+from extinguisher import extinguisher
+from refrigerant import refrigerant
+from employee import employee
+
+from emission_source import emission_source
 
 from 管理者.adminCompany import adminCompany
 from 管理者.insert_adminCompany import insert_adminCompany
 from 管理者.edit_adminCompany import edit_adminCompany
 from 管理者.delete_adminCompany import delete_adminCompany
-
-
 
 
 
@@ -101,8 +111,19 @@ app.include_router(insert_waste)
 app.include_router(insert_Selling_waste)
 app.include_router(vehicle)
 
+app.include_router(Selling_waste)
+app.include_router(Operational_Waste)
+app.include_router(Business_Trip)
+app.include_router(Commute)
+app.include_router(Electricity_Usage)
+app.include_router(Emergency_Generator)
+app.include_router(extinguisher)
+app.include_router(refrigerant)
+app.include_router(employee)
+app.include_router(langchaingpt)
+app.include_router(emission_source)
+
 app.include_router(adminCompany)
 app.include_router(insert_adminCompany)
 app.include_router(edit_adminCompany)
 app.include_router(delete_adminCompany)
-

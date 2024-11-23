@@ -3,9 +3,21 @@ import {
     CModal, CModalHeader, CModalBody, CModalFooter, CButton, CFormLabel, CFormInput, CFormTextarea, CRow, CCol, CFormSelect, CForm
 } from '@coreui/react';
 import styles from '../../../scss/管理者.module.css';
+import Select from 'react-select';
+
+const options = [
+    { value: 0, label: 'AAA股份有限公司' },
+    { value: 1, label: 'BBB股份有限公司' },
+];
 
 const AddModal = ({ isAddModalVisible, setAddModalVisible }) => {
     const handleClose = () => setAddModalVisible(false);
+
+    const [selectedOptions, setSelectedOptions] = useState([]);
+
+    const handleChange = (selected) => {
+        setSelectedOptions(selected);
+    };
 
     return (
         <CModal visible={isAddModalVisible} onClose={handleClose} className={styles.modal}>
@@ -46,7 +58,17 @@ const AddModal = ({ isAddModalVisible, setAddModalVisible }) => {
                             </CCol>
                         </CRow>
                         <hr />
-                        負責企業
+                        <CRow className="mb-3">
+                            <CFormLabel htmlFor="" className={`col-sm-2 col-form-label ${styles.addlabel}`} >負責企業</CFormLabel>
+                            <Select
+                                className={styles.addinput}
+                                options={options}
+                                isMulti
+                                value={selectedOptions}
+                                onChange={handleChange}
+                                closeMenuOnSelect={false}
+                            />
+                        </CRow>
                     </div>
                 </CModalBody>
                 <CModalFooter>

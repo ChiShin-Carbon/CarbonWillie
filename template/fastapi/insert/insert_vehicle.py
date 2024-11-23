@@ -41,6 +41,39 @@ async def read_user_credentials(
 
             cursor.execute(query, values)
             conn.commit()
+
+            # 構建對應的 Emission_Source（排放源鑑別） 插入邏輯
+            baseline_id = "SELECT TOP 1 baseline_id, cfv_start_date, cfv_end_date, edit_time FROM Baseline ORDER BY edit_time DESC"  # 假設基準年固定為 1，可根據需求調整
+            cursor.execute(baseline_id)
+            baseline_id = cursor.fetchone()[0]
+
+            fuel_code = "170001" if oil_species == 0 else "170006"  # 0: 汽油, 1: 柴油
+            remark = "公務車-汽油" if oil_species == 0 else "公務車-柴油"
+
+            # 查詢 Emission_Source 表，確認是否已經存在相同的 fuel_code
+            check_query = """
+                SELECT COUNT(*) FROM Emission_Source
+                WHERE fuel_code = ? AND source_table = ?
+            """
+            cursor.execute(check_query, (fuel_code, "Vehicle"))
+            existing_count = cursor.fetchone()[0]
+
+             # 如果該條記錄已經存在，則不插入
+            if existing_count == 0:
+                emission_source_query = """
+                    INSERT INTO Emission_Source (
+                        baseline_id, source_table, process_code, device_code, fuel_category, fuel_code,
+                        trust_category, credibility_info, emission_category, emission_pattern, 
+                        supplier, is_CHP, remark
+                    )
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """
+                emission_values = (
+                    baseline_id, "Vehicle", "G20900", "0020", 0, fuel_code, 2, "", 1, 2, "", 0, remark
+                )
+                cursor.execute(emission_source_query, emission_values)
+                conn.commit()
+
             return {"status": "success", "image_path": str(image_path)}
         except Exception as e:
             print("Database error:", e)  # Log specific error

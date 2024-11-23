@@ -3,17 +3,17 @@ from connect.connect import connectDB
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 
-vehicle = APIRouter()
+Business_Trip = APIRouter()
 
 
-@vehicle.post("/vehicle")
+@Business_Trip.post("/Business_Trip")
 def read_user_credentials():
     conn = connectDB()  # Establish connection using your custom connect function
     if conn:
         cursor = conn.cursor()
         try:
             # Secure SQL query using a parameterized query to prevent SQL injection
-            query = "SELECT * FROM Vehicle"
+            query = "SELECT * FROM Business_Trip"
             cursor.execute(query)
             
             # Fetch all records for the user
@@ -24,22 +24,21 @@ def read_user_credentials():
                 # Convert each record to a dictionary
                 result = [
                     {
-                        "vehicle_id": record[0],
+                        "business_id": record[0],
                         "user_id": record[1],
-                        "Doc_date": record[2],
-                        "Doc_number": record[3],
-                        "oil_species": bool(record[4]),  # Assuming oil_species is a BIT (True/False)
-                        "liters": float(record[5]),
-                        "remark": record[6],
-                        "img_path": record[7],
-                        "edit_time": record[8].strftime('%Y-%m-%d %H:%M'),
+                        "transportation": record[2],
+                        "oil_species": bool(record[3]),  # Assuming oil_species is a BIT (True/False)
+                        "kilometer": float(record[4]),
+                        "remark": record[5],
+                        "img_path": record[6],  # Assuming oil_species is a BIT (True/False)
+                        "edit_time": record[7],
                     }
                     for record in user_records
                 ]
-                return {"vehicles": result}
+                return {"Business_Trip": result}
             else:
                 # Raise a 404 error if user has no vehicles
-                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No vehicles found for this user")
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No Business_Trip found for this user")
         
         except Exception as e:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error reading user credentials: {e}")

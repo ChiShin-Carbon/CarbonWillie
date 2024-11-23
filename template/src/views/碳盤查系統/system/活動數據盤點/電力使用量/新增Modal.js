@@ -99,13 +99,13 @@ export const ElectricityUsageAdd = ({ isAddModalVisible, setAddModalVisible }) =
                     <div className={styles.addmodal}>
                         <CRow className="mb-3">
                             <CFormLabel htmlFor="month" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票/收據日期*</CFormLabel>
-                            <CCol><CFormInput className={styles.addinput} type="date" id="C8date" value={date} required />
+                            <CCol><CFormInput className={styles.addinput} type="date" id="C8date" required />
                             </CCol>
                         </CRow>
                         <CRow className="mb-3">
                             <CFormLabel htmlFor="num" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票號碼/收據編號*</CFormLabel>
                             <CCol>
-                                <CFormInput className={styles.addinput} type="text" id="C8num" value={num} required />
+                                <CFormInput className={styles.addinput} type="text" id="C8num" required />
                             </CCol>
                         </CRow>
                         <CRow className="mb-3">
