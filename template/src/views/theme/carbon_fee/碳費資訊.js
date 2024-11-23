@@ -609,8 +609,8 @@ const Tabs = () => {
                     {/* 碳費新聞 */}
                     {activeTab === 'tab3' && (
                         <>
-                            {/* 搜尋&篩選器 */}
-                            <div style={{ width: '70%' }}>
+                            {/* 搜尋&篩選器 先註解掉*/}
+                            {/* <div style={{ width: '70%' }}>
                                 <CInputGroup className="mb-3">
                                     <CFormInput
                                         type="search"
@@ -624,7 +624,7 @@ const Tabs = () => {
                                         <i className="pi pi-search" />
                                     </CButton>
                                 </CInputGroup>
-                            </div>
+                            </div> */}
                             {/* 碳費新聞 */}
                             <CCard style={{ width: '100%' }}>
                                 <CCardTitle>
@@ -743,7 +743,7 @@ const Tabs = () => {
                             <CCard style={{ width: '100%' }}>
                                 <CCardTitle>
                                     <div style={{ display: 'flex', flexDireaction: 'row'}}>
-                                        <div style={{ fontWeight:'bold', fontSize: '1.5rem',color:'white', backgroundColor:'#d882c0', borderTopLeftRadius:'5px', borderBottomRightRadius:'20px', display: 'flex', alignItems: 'center',padding: '10px 40px 10px 40px'}}>{query || '搜尋結果'}摘要</div>
+                                        <div style={{ fontWeight:'bold', fontSize: '1.5rem',color:'white', backgroundColor:'#9999CC', borderTopLeftRadius:'5px', borderBottomRightRadius:'20px', display: 'flex', alignItems: 'center',padding: '10px 40px 10px 40px'}}>{query || '搜尋結果'}摘要</div>
                                     </div>
                                 </CCardTitle>
                                 <CCardBody>
@@ -753,7 +753,6 @@ const Tabs = () => {
                                         <CCard style={{width: '1100px', fontSize: '1.2rem'}}>
                                             <CCardBody>
                                                 <CRow>
-                                                <div style={{width: '10px', height: '100%', backgroundColor: '#d882c0', borderRadius: '4px',}}></div>
                                                 {/* 左側：日期與標題 */}
                                                 <div style={{ display: 'flex',flex: 1, marginLeft: '20px', flexDirection: 'column' }}>
                                                 {loading ? (
