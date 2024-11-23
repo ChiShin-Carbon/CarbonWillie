@@ -78,6 +78,10 @@ const Tabs = () => {
     1: ['固定', '移動', '製程', '逸散'],
     2: ['外購電力', '外購蒸氣'],
     3: ['員工通勤', '商務旅行', '廢棄物處置'],
+    // 類別3: ['上游的運輸與配送', '下游的運輸與配送', '員工通勤', '客戶及訪客運輸', '商務旅行'],
+    // 類別4: ['採購之商品', '資本財', '廢棄物處置', '資產使用', '採購之能源', '其他服務'],
+    // 類別5: ['產品使用', '下游租賃資產', '產品壽命終止階段', '加盟/各項投資'],
+    // 類別6: ['其他排放'],
   }
   const process_category_Map = {
     1: '水泥製程',
@@ -154,56 +158,6 @@ const Tabs = () => {
     },
   }))
 
-  // 這裡設置 sourceType 和 sourcePower 的選項
-  const sourceTypeOptions = {
-    1: ['固定', '移動', '製程', '逸散'],
-    2: ['外購電力', '外購蒸氣'],
-    3: ['員工通勤', '商務旅行', '廢棄物處置'],
-    // 類別1: ['固定', '移動', '製程', '逸散'],
-    // 類別2: ['外購電力', '外購蒸氣'],
-    // 類別3: ['上游的運輸與配送', '下游的運輸與配送', '員工通勤', '客戶及訪客運輸', '商務旅行'],
-    // 類別4: ['採購之商品', '資本財', '廢棄物處置', '資產使用', '採購之能源', '其他服務'],
-    // 類別5: ['產品使用', '下游租賃資產', '產品壽命終止階段', '加盟/各項投資'],
-    // 類別6: ['其他排放'],
-  }
-
-  const sourcePowerOptions = {
-    製程: [
-      '水泥製程',
-      '鋼鐵製程-使用造渣劑',
-      '鋼鐵製程-使用添加劑',
-      '鋼鐵製程-金屬進料',
-      '鋼鐵製程-外售含碳產品(已知CO2排放係數',
-      '鋼鐵製程-使用添加劑(預焙陽極炭塊與煤碳電極',
-      '鋼鐵製程--外售含碳產品(已知含碳率)',
-      '半導體光電製程',
-      '石灰製程',
-      '碳酸鈉製程-碳酸鈉製造',
-      '碳酸鈉製程-碳酸鈉使用',
-      '碳化物鈉製程-碳化矽製造',
-      '碳化物鈉製程-碳化鈣製造',
-      '碳化物鈉製程-碳化鈣使用',
-      '碳酸製程',
-      '已二酸製程',
-      '二氟一氯甲烷',
-      '乙炔-焊接維修製程',
-      '濕式排煙脫硫-石灰石製程',
-      '其他',
-    ],
-    逸散: [
-      '廢棄物排放源',
-      '廢水排放源',
-      '廢棄污泥排放源',
-      '溶劑、噴霧劑及冷媒排放源',
-      'VOCs未經燃燒且含CH4',
-      '已知VOCs濃度',
-      '未知VOCs濃度已知CO2排放係數',
-      '化糞池排放源',
-      '其他',
-    ],
-    外購電力: ['併網', '離網'],
-  }
-
   const handleRowClick = (row) => {
     setSelectedRowData(row.details)
   }
@@ -213,7 +167,7 @@ const Tabs = () => {
     setSelectedRowData((prevData) => ({
       ...prevData,
       [field]: value,
-      ...(field === 'sourceClass' && { sourceType: sourceTypeOptions[value][0] || '' }), // 根據類別設置初始的 sourceType
+      ...(field === 'sourceClass' && { sourceType: emission_pattern_Map[value][0] || '' }), // 根據類別設置初始的 sourceType
       ...(field === 'sourceType' && { sourcePower: '' }), // 選擇 sourceType 後清空 sourcePower
     }))
   }
@@ -416,7 +370,7 @@ const Tabs = () => {
                         value={selectedRowData.sourceType}
                         onChange={(e) => handleInputChange(e, 'sourceType')}
                       >
-                        {sourceTypeOptions[selectedRowData.sourceClass]?.map((type) => (
+                        {emission_pattern_Map[selectedRowData.sourceClass]?.map((type) => (
                           <option key={type} value={type}>
                             {type}
                           </option>
@@ -430,11 +384,33 @@ const Tabs = () => {
                         value={selectedRowData.sourcePower}
                         onChange={(e) => handleInputChange(e, 'sourcePower')}
                       >
-                        {sourcePowerOptions[selectedRowData.sourceType]?.map((power) => (
+                        {/* {sourcePowerOptions[selectedRowData.sourceType]?.map((power) => (
                           <option key={power} value={power}>
                             {power}
                           </option>
-                        ))}
+                        ))} */}
+                        {(() => {
+                          // 根據 sourceType 選擇對應的映射物件
+                          const sourceType = selectedRowData?.sourceType
+                          let optionsMap = null
+
+                          if (sourceType === '製程') {
+                            optionsMap = process_category_Map
+                          } else if (sourceType === '逸散') {
+                            optionsMap = escape_category_Map
+                          } else if (sourceType === '外購電力') {
+                            optionsMap = power_category_Map
+                          }
+
+                          // 如果找到對應的映射物件，生成選項
+                          return optionsMap
+                            ? Object.values(optionsMap).map((value) => (
+                                <option key={value} value={value}>
+                                  {value}
+                                </option>
+                              ))
+                            : null
+                        })()}
                       </CFormSelect>
                     </div>
                   </div>
