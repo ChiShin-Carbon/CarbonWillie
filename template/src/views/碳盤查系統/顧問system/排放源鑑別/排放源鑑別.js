@@ -63,15 +63,18 @@ const Tabs = () => {
   const process_code_Map = {
     G20900: '交通運輸活動',
     G00099: '冷媒補充',
+    '000999': '其他未分類製程',
   }
   const device_code_Map = {
     '0020': '汽油引擎',
     4091: '住宅及商業建築冷氣機',
+    9999: '其他未歸類設施',
   }
   const fuel_code_Map = {
     170001: '車用汽油',
     170006: '柴油',
     GG1814: '冷媒－R410a，R32/125（50/50）',
+    350099: '其他電力',
   }
 
   const emission_pattern_Map = {
@@ -134,7 +137,7 @@ const Tabs = () => {
     return ''
   }
 
-  // 模擬表格數據
+  // 表格數據
   const tableData = emission_sources.map((source) => ({
     status: 'completed',
     process: process_code_Map[source.process_code],
@@ -152,6 +155,7 @@ const Tabs = () => {
       sourceClass: source.emission_category,
       sourceType: emission_pattern_Map[source.emission_category][source.emission_pattern - 1],
       sourcePower: getSourcePower(source),
+      sourceSupply: source.supplier,
       gaseType: ['CH4'],
       steamEle: source.is_CHP,
       remark: source.remark,
@@ -384,11 +388,6 @@ const Tabs = () => {
                         value={selectedRowData.sourcePower}
                         onChange={(e) => handleInputChange(e, 'sourcePower')}
                       >
-                        {/* {sourcePowerOptions[selectedRowData.sourceType]?.map((power) => (
-                          <option key={power} value={power}>
-                            {power}
-                          </option>
-                        ))} */}
                         {(() => {
                           // 根據 sourceType 選擇對應的映射物件
                           const sourceType = selectedRowData?.sourceType
@@ -401,8 +400,7 @@ const Tabs = () => {
                           } else if (sourceType === '外購電力') {
                             optionsMap = power_category_Map
                           }
-
-                          // 如果找到對應的映射物件，生成選項
+                          // 若找到對應的映射物件，生成選項
                           return optionsMap
                             ? Object.values(optionsMap).map((value) => (
                                 <option key={value} value={value}>
@@ -412,6 +410,14 @@ const Tabs = () => {
                             : null
                         })()}
                       </CFormSelect>
+                    </div>
+                    <div>
+                      <span>電力/蒸汽供應商名稱:</span>
+                      <CFormInput
+                        className={styles.input}
+                        value={selectedRowData.sourceSupply}
+                        onChange={(e) => handleInputChange(e, 'sourceSupply')}
+                      />
                     </div>
                   </div>
                 </div>
