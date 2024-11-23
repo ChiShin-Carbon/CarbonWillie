@@ -24,7 +24,7 @@ from insert.insert_Extinguisher import insert_Extinguisher
 from insert.insert_employee import insert_employee
 from baseline import baseline
 from boundary import boundary
-
+from langchain_gpt import langchaingpt
 from insert.insert_machine import insert_machine
 
 from insert.insert_emergency import insert_emergency
@@ -113,5 +113,5 @@ app.include_router(Emergency_Generator)
 app.include_router(extinguisher)
 app.include_router(refrigerant)
 app.include_router(employee)
-
+app.include_router(langchaingpt)
 app.include_router(emission_source)

@@ -139,7 +139,7 @@ const Tabs = () => {
       //新聞總結
       const generateSummary = async (titles) => {
         try {
-            const response = await fetch("http://127.0.0.1:8000/botapi", {
+            const response = await fetch("http://127.0.0.1:8000/langchaingpt", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
