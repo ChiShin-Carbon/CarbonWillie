@@ -39,6 +39,11 @@ from authorizedTable.insert_authorized import insert_authorized
 from authorizedTable.edit_authorized import edit_authorized
 from vehicle import vehicle
 
+from 管理者.adminCompany import adminCompany
+from 管理者.insert_adminCompany import insert_adminCompany
+from 管理者.edit_adminCompany import edit_adminCompany
+
+
 
 
 app = FastAPI()
@@ -93,3 +98,7 @@ app.include_router(insert_BusinessTrip)
 app.include_router(insert_waste)
 app.include_router(insert_Selling_waste)
 app.include_router(vehicle)
+
+app.include_router(adminCompany)
+app.include_router(insert_adminCompany)
+app.include_router(edit_adminCompany)

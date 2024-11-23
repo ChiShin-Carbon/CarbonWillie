@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
     CRow, CCol, CCard, CFormSelect, CTab, CTabList, CTabs,
     CTable, CTableBody, CTableHead, CModal, CModalHeader, CModalBody, CModalFooter, CModalTitle, CButton, CFormCheck
@@ -23,38 +23,39 @@ import AddModal from './新增Modal.js';
 const Tabs = () => {
     const [isEditModalVisible, setEditModalVisible] = useState(false);
     const [isAddModalVisible, setAddModalVisible] = useState(false);
-    // 設定 state 來儲存選擇的行數據，初始值為 null
-    const [selectedRowData, setSelectedRowData] = useState(null);
 
-    // 模擬表格數據
-    const tableData = [
-        {
-            org_name: "XXXXX股份有限公司",
-            details: {
-                org_name: "XXXXX股份有限公司", business_id: "123", registration_number: "XXX", factory_number: "XXX",
-                county: "XXX", town: "XXX", postal_code: "XXX",
-                org_address: "XXdddddddddddddX", charge_person: "XXX", org_email: "XXX",
-                contact_person: "XXX", email: "XXXdfdsf@gmail.com", telephone: "295115315",
-                phone: "080790909", industry_name: "XXX", industry_code: "XXX",
+
+    const [companyList, setCompanyList] = useState([]);
+    // 獲取企業資料的函數
+    const fetchCompanyInfo = async () => {
+        try {
+            const response = await fetch('http://127.0.0.1:8000/adminCompany', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                setCompanyList(data.companies); // 修正為 data.companies
+            } else {
+                console.log(`Error: ${response.status}`);
             }
-        },
-        {
-            org_name: "ABCV股份有限公司",
-            details: {
-                org_name: "ABCV股份有限公司", business_id: "123", registration_number: "asd", factory_number: "qwe",
-                county: "Xddd", town: "zxcxX", postal_code: "dfdf",
-                org_address: "XXaaaaaaadsa ao7o7oo7o7X", charge_person: "BBB", org_email: "XXX",
-                contact_person: "153X", email: "5656@gmail.com", telephone: "59012312132",
-                phone: "0890909X", industry_name: "AAA", industry_code: "BBB",
-            }
-        },
-    ];
-
-
-    const handleRowClick = (row) => {
-        setSelectedRowData(row.details);
+        } catch (error) {
+            console.error('Error fetching company info:', error);
+        }
     };
+    useEffect(() => {
+        fetchCompanyInfo();
+    }, []);
 
+
+    const [selectedRowData, setSelectedRowData] = useState(null);
+    const handleRowClick = (row) => {
+        setSelectedRowData(row);
+        console.log(selectedRowData)
+    };
 
 
     return (
@@ -88,7 +89,7 @@ const Tabs = () => {
                             </tr>
                         </CTableHead>
                         <CTableBody className={styles.tableBody}>
-                            {tableData.map((row, index) => (
+                            {companyList.map((row, index) => (
                                 <tr key={index} onClick={() => handleRowClick(row)}>
                                     <td>{row.org_name}</td>
                                 </tr>
@@ -148,6 +149,13 @@ const Tabs = () => {
                                 </div>
                                 <div className={styles.block}>
                                     <div className={styles.blockBody2}>
+                                        <div><span>行業名稱:</span><p>{selectedRowData.industry_name}</p></div>
+                                        <div><span>行業代碼:</span><p>{selectedRowData.industry_code}</p></div>
+                                    </div>
+                                </div>
+                                <hr />
+                                <div className={styles.block}>
+                                    <div className={styles.blockBody2}>
                                         <div><span>聯絡人姓名:</span><p>{selectedRowData.contact_person}</p></div>
                                         <div><span>聯絡人電子信箱:</span><p>{selectedRowData.email}</p></div>
                                     </div>
@@ -158,13 +166,6 @@ const Tabs = () => {
                                         <div><span>聯絡人手機:</span><p>{selectedRowData.phone}</p></div>
                                     </div>
                                 </div>
-                                <div className={styles.block}>
-                                    <div className={styles.blockBody2}>
-                                        <div><span>行業名稱:</span><p>{selectedRowData.industry_name}</p></div>
-                                        <div><span>行業代碼:</span><p>{selectedRowData.industry_code}</p></div>
-                                    </div>
-                                </div>
-                                <hr />
 
 
                             </div>
@@ -183,6 +184,7 @@ const Tabs = () => {
             <EditModal
                 isEditModalVisible={isEditModalVisible}
                 setEditModalVisible={setEditModalVisible}
+                selectedRowData={selectedRowData}
             />
 
             <AddModal
