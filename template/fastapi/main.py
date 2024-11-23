@@ -49,6 +49,8 @@ from extinguisher import extinguisher
 from refrigerant import refrigerant
 from employee import employee
 
+from emission_source import emission_source
+
 
 app = FastAPI()
 load_dotenv()
@@ -111,3 +113,5 @@ app.include_router(Emergency_Generator)
 app.include_router(extinguisher)
 app.include_router(refrigerant)
 app.include_router(employee)
+
+app.include_router(emission_source)
