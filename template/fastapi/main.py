@@ -51,6 +51,12 @@ from employee import employee
 
 from emission_source import emission_source
 
+from 管理者.adminCompany import adminCompany
+from 管理者.insert_adminCompany import insert_adminCompany
+from 管理者.edit_adminCompany import edit_adminCompany
+from 管理者.delete_adminCompany import delete_adminCompany
+
+
 
 app = FastAPI()
 load_dotenv()
@@ -104,6 +110,7 @@ app.include_router(insert_BusinessTrip)
 app.include_router(insert_waste)
 app.include_router(insert_Selling_waste)
 app.include_router(vehicle)
+
 app.include_router(Selling_waste)
 app.include_router(Operational_Waste)
 app.include_router(Business_Trip)
@@ -115,3 +122,8 @@ app.include_router(refrigerant)
 app.include_router(employee)
 app.include_router(langchaingpt)
 app.include_router(emission_source)
+
+app.include_router(adminCompany)
+app.include_router(insert_adminCompany)
+app.include_router(edit_adminCompany)
+app.include_router(delete_adminCompany)
