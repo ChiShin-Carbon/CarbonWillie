@@ -74,67 +74,91 @@ const Tabs = () => {
     GG1814: '冷媒－R410a，R32/125（50/50）',
   }
 
-  // emission_category&pattern 排放源資料
-  const emission_category_Map = {
-    1: '範疇1',
-    2: '範疇2',
-    3: '範疇3',
-  }
   const emission_pattern_Map = {
     1: ['固定', '移動', '製程', '逸散'],
     2: ['外購電力', '外購蒸氣'],
     3: ['員工通勤', '商務旅行', '廢棄物處置'],
   }
-  const getEmissionPatternName = (category, pattern, details) => {
-    if (category === 1 && pattern === 3) {
-      return details.process_category
+  const process_category_Map = {
+    1: '水泥製程',
+    2: '鋼鐵製程-使用造渣劑',
+    3: '鋼鐵製程-使用添加劑',
+    4: '鋼鐵製程-金屬進料',
+    5: '鋼鐵製程-外售含碳產品(已知CO2排放係數',
+    6: '鋼鐵製程-使用添加劑(預焙陽極炭塊與煤碳電極',
+    7: '鋼鐵製程--外售含碳產品(已知含碳率)',
+    8: '半導體光電製程',
+    9: '石灰製程',
+    10: '碳酸鈉製程-碳酸鈉製造',
+    11: '碳酸鈉製程-碳酸鈉使用',
+    12: '碳化物鈉製程-碳化矽製造',
+    13: '碳化物鈉製程-碳化鈣製造',
+    14: '碳化物鈉製程-碳化鈣使用',
+    15: '碳酸製程',
+    16: '已二酸製程',
+    17: '二氟一氯甲烷',
+    18: '乙炔-焊接維修製程',
+    19: '濕式排煙脫硫-石灰石製程',
+    20: '其他',
+  }
+  const escape_category_Map = {
+    1: '廢棄物排放源',
+    2: '廢水排放源',
+    3: '廢棄污泥排放源',
+    4: '溶劑、噴霧劑及冷媒排放源',
+    5: 'VOCs未經燃燒且含CH4',
+    6: '已知VOCs濃度',
+    7: '未知VOCs濃度已知CO2排放係數',
+    8: '化糞池排放源',
+    9: '其他',
+  }
+  const power_category_Map = {
+    1: '併網',
+    2: '離網',
+  }
+
+  const getSourcePower = (source) => {
+    if (source.emission_category === 1 && source.emission_pattern === 3) {
+      return process_category_Map[source.process_category]
     }
-    if (category === 1 && pattern === 4) {
-      return details.escape_category
+    if (source.emission_category === 1 && source.emission_pattern === 4) {
+      return escape_category_Map[source.escape_category]
     }
-    if (category === 2 && pattern === 1) {
-      return details.power_category
+    if (source.emission_category === 2 && source.emission_pattern === 1) {
+      return power_category_Map[source.power_category]
     }
-    return emission_pattern_Map[category]?.[pattern - 1]
+    return ''
   }
 
   // 模擬表格數據
-  const tableData = emission_sources.map((source) => {
-    const emissionPatternName = getEmissionPatternName(
-      source.emission_category,
-      source.emission_pattern,
-      source,
-    )
-
-    return {
-      status: 'completed',
-      process: process_code_Map[source.process_code],
-      equipment: device_code_Map[source.device_code],
-      material: fuel_code_Map[source.fuel_code],
-      details: {
-        processCode: source.process_code,
-        processName: process_code_Map[source.process_code],
-        equipCode: source.device_code,
-        equipName: device_code_Map[source.device_code],
-        matType: source.fuel_code ? '原燃物料' : '產品',
-        matCode: source.fuel_code,
-        matName: fuel_code_Map[source.fuel_code],
-        matbio: source.is_bioenergy ? '是' : '否',
-        sourceClass: emission_category_Map[source.emission_category],
-        sourceType: emissionPatternName,
-        sourcePower: source.process_category || source.escape_category || source.power_category,
-        gaseType: ['CH4'],
-        steamEle: source.is_CHP ? '是' : '否',
-        remark: source.remark,
-      },
-    }
-  })
+  const tableData = emission_sources.map((source) => ({
+    status: 'completed',
+    process: process_code_Map[source.process_code],
+    equipment: device_code_Map[source.device_code],
+    material: fuel_code_Map[source.fuel_code],
+    details: {
+      processCode: source.process_code,
+      processName: process_code_Map[source.process_code],
+      equipCode: source.device_code,
+      equipName: device_code_Map[source.device_code],
+      matType: source.fuel_category,
+      matCode: source.fuel_code,
+      matName: fuel_code_Map[source.fuel_code],
+      matbio: source.is_bioenergy,
+      sourceClass: source.emission_category,
+      sourceType: emission_pattern_Map[source.emission_category][source.emission_pattern - 1],
+      sourcePower: getSourcePower(source),
+      gaseType: ['CH4'],
+      steamEle: source.is_CHP,
+      remark: source.remark,
+    },
+  }))
 
   // 這裡設置 sourceType 和 sourcePower 的選項
   const sourceTypeOptions = {
-    範疇1: ['固定', '移動', '製程', '逸散'],
-    範疇2: ['外購電力', '外購蒸氣'],
-    範疇3: ['員工通勤', '商務旅行', '廢棄物處置'],
+    1: ['固定', '移動', '製程', '逸散'],
+    2: ['外購電力', '外購蒸氣'],
+    3: ['員工通勤', '商務旅行', '廢棄物處置'],
     // 類別1: ['固定', '移動', '製程', '逸散'],
     // 類別2: ['外購電力', '外購蒸氣'],
     // 類別3: ['上游的運輸與配送', '下游的運輸與配送', '員工通勤', '客戶及訪客運輸', '商務旅行'],
@@ -338,8 +362,8 @@ const Tabs = () => {
                         value={selectedRowData.matType}
                         onChange={(e) => handleInputChange(e, 'matType')} // 更新 matType
                       >
-                        <option value="原燃物料">原燃物料</option>
-                        <option value="產品">產品</option>
+                        <option value="false">原燃物料</option>
+                        <option value="true">產品</option>
                       </CFormSelect>
                       <p></p>
                     </div>
@@ -358,8 +382,8 @@ const Tabs = () => {
                         value={selectedRowData.matbio}
                         onChange={(e) => handleInputChange(e, 'matbio')}
                       >
-                        <option value="是">是</option>
-                        <option value="否">否</option>
+                        <option value="true">是</option>
+                        <option value="false">否</option>
                       </CFormSelect>
                       <p></p>
                     </div>
@@ -377,9 +401,9 @@ const Tabs = () => {
                         value={selectedRowData.sourceClass}
                         onChange={(e) => handleInputChange(e, 'sourceClass')}
                       >
-                        <option value="範疇1">範疇1</option>
-                        <option value="範疇2">範疇2</option>
-                        <option value="範疇3">範疇3</option>
+                        <option value="1">範疇1</option>
+                        <option value="2">範疇2</option>
+                        <option value="3">範疇3</option>
                         {/* <option value="類別4">類別4</option>
                         <option value="類別5">類別5</option>
                         <option value="類別6">類別6</option> */}
@@ -445,8 +469,8 @@ const Tabs = () => {
                         value={selectedRowData.steamEle}
                         onChange={(e) => handleInputChange(e, 'steamEle')}
                       >
-                        <option value="是">是</option>
-                        <option value="否">否</option>
+                        <option value="true">是</option>
+                        <option value="false">否</option>
                       </CFormSelect>
                       <p></p>
                     </div>
