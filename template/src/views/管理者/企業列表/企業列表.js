@@ -57,6 +57,59 @@ const Tabs = () => {
         console.log(selectedRowData)
     };
 
+    ///////////////////////////////刪除////////////////////////////////////////////////
+    const deleteCompanyInfo = async (businessID) => {
+        try {
+            const response = await fetch(`http://localhost:8000/delete_adminCompany/${businessID}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+
+            const result = await response.json()
+            if (response.ok) {
+                console.log(result.message)
+                // Refresh records after deletion
+                refreshAuthorizedRecords()
+            } else {
+                console.error('Failed to delete record:', result.detail)
+            }
+        } catch (error) {
+            console.error('Error deleting record:', error)
+        }
+    }
+    const [isDeleteModalVisible, setDeleteModalVisible] = useState(false)
+    const [selectedbusinessID, setSelectedbusinessID] = useState(null)
+
+    const openDeleteModal = (businessID) => {
+        setSelectedbusinessID(businessID)
+        setDeleteModalVisible(true)
+    }
+
+    // 刪除紀錄的函數
+    const deleteAndClose = (businessID) => {
+        deleteCompanyInfo(businessID)
+        setDeleteModalVisible(false) // 關閉 Modal
+    }
+
+
+    ///重整頁面用
+    const refreshAuthorizedRecords = () => {
+        fetchCompanyInfo()
+    }
+
+    useEffect(() => {
+        if (selectedRowData) {
+            const updatedRowData = companyList.find(
+                (row) => row.business_id === selectedRowData.business_id
+            );
+            if (updatedRowData) {
+                setSelectedRowData(updatedRowData);
+            }
+        }
+    }, [companyList]);
+
 
     return (
         <main>
@@ -112,7 +165,7 @@ const Tabs = () => {
                                 </div>
                                 <div className={styles.cardOperation}>
                                     <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
-                                    <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
+                                    <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} onClick={() => openDeleteModal(selectedRowData.business_id)} />
                                 </div>
                             </div>
 
@@ -185,12 +238,37 @@ const Tabs = () => {
                 isEditModalVisible={isEditModalVisible}
                 setEditModalVisible={setEditModalVisible}
                 selectedRowData={selectedRowData}
+                onSuccess={refreshAuthorizedRecords}
             />
 
             <AddModal
                 isAddModalVisible={isAddModalVisible}
                 setAddModalVisible={setAddModalVisible}
+                onSuccess={refreshAuthorizedRecords}
             />
+
+
+            <CModal
+                backdrop="static"
+                visible={isDeleteModalVisible}
+                onClose={() => setDeleteModalVisible(false)}
+                aria-labelledby="StaticBackdropExampleLabel3"
+            >
+                <CModalHeader>
+                    <CModalTitle id="StaticBackdropExampleLabel3">
+                        <b>提醒</b>
+                    </CModalTitle>
+                </CModalHeader>
+                <CModalBody>確定要刪除該企業資料嗎?</CModalBody>
+                <CModalFooter>
+                    <CButton className="modalbutton1" onClick={() => setDeleteModalVisible(false)} >
+                        取消
+                    </CButton>
+                    <CButton className="modalbutton2" onClick={() => deleteAndClose(selectedbusinessID)} >
+                        確認
+                    </CButton>
+                </CModalFooter>
+            </CModal>
 
         </main >
 

@@ -42,6 +42,8 @@ from vehicle import vehicle
 from 管理者.adminCompany import adminCompany
 from 管理者.insert_adminCompany import insert_adminCompany
 from 管理者.edit_adminCompany import edit_adminCompany
+from 管理者.delete_adminCompany import delete_adminCompany
+
 
 
 
@@ -102,3 +104,5 @@ app.include_router(vehicle)
 app.include_router(adminCompany)
 app.include_router(insert_adminCompany)
 app.include_router(edit_adminCompany)
+app.include_router(delete_adminCompany)
+

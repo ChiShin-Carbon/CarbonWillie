@@ -5,7 +5,7 @@ import {
 import styles from '../../../scss/管理者.module.css';
 import cities from './citiesData';
 
-const EditModal = ({ isEditModalVisible, setEditModalVisible,selectedRowData }) => {
+const EditModal = ({ isEditModalVisible, setEditModalVisible,selectedRowData,onSuccess }) => {
     const handleClose = () => setEditModalVisible(false);
 
     const [county, setCounty] = useState(''); // 縣市
@@ -101,7 +101,7 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible,selectedRowData }) 
                 if (response.ok) {
                     alert('企業資料已更新');
                     setEditModalVisible(false);  // 關閉編輯視窗
-                    window.location.reload();  // 編輯成功後重新載入頁面
+                    onSuccess()
                 } else {
                     const responseText = await response.text();
                     try {
@@ -124,7 +124,7 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible,selectedRowData }) 
 
 
     return (
-        <CModal visible={isEditModalVisible} onClose={handleClose} className={styles.modal} size="xl">
+        <CModal backdrop="static" visible={isEditModalVisible} onClose={handleClose} className={styles.modal} size="xl">
             <CModalHeader>
                 <h5><b>編輯企業資料</b></h5>
             </CModalHeader>

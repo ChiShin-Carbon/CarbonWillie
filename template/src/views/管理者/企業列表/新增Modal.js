@@ -7,7 +7,7 @@ import styles from '../../../scss/管理者.module.css';
 
 import cities from './citiesData';
 
-const AddModal = ({ isAddModalVisible, setAddModalVisible }) => {
+const AddModal = ({ isAddModalVisible, setAddModalVisible,onSuccess}) => {
     const handleClose = () => setAddModalVisible(false);
 
     const [county, setCounty] = useState(''); // 縣市
@@ -82,7 +82,7 @@ const AddModal = ({ isAddModalVisible, setAddModalVisible }) => {
                     alert('企業資料已新增');
                     setAddModalVisible(false);
                     // 新增成功後重整頁面
-                    window.location.reload();
+                    onSuccess()
                 } else {
                     const responseText = await response.text();
                     try {
@@ -103,7 +103,7 @@ const AddModal = ({ isAddModalVisible, setAddModalVisible }) => {
 
 
     return (
-        <CModal visible={isAddModalVisible} onClose={handleClose} className={styles.modal} size="xl">
+        <CModal backdrop="static" visible={isAddModalVisible} onClose={handleClose} className={styles.modal} size="xl">
             <CModalHeader>
                 <h5><b>新增企業資料</b></h5>
             </CModalHeader>
