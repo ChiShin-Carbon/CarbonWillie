@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react'
 import {
-  CRow,
-  CCol,
   CCard,
   CFormSelect,
   CTab,
@@ -10,32 +8,29 @@ import {
   CTable,
   CTableBody,
   CTableHead,
-  CModal,
-  CModalHeader,
-  CModalBody,
-  CModalFooter,
-  CModalTitle,
-  CButton,
   CFormCheck,
   CForm,
-  CFormLabel,
   CFormInput,
   CFormTextarea,
 } from '@coreui/react'
-import CIcon from '@coreui/icons-react'
-import { cilDataTransferDown } from '@coreui/icons'
 
 import '../../../../scss/碳盤查系統.css'
 import styles from '../../../../scss/顧問system.module.css'
 import { Link } from 'react-router-dom'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCircleCheck, faCircleXmark } from '@fortawesome/free-solid-svg-icons'
+
 import {
-  faCircleCheck,
-  faCircleXmark,
-  faPenToSquare,
-  faTrashCan,
-} from '@fortawesome/free-solid-svg-icons'
+  process_code_Map,
+  device_code_Map,
+  fuel_code_Map,
+  emission_pattern_Map,
+  process_category_Map,
+  escape_category_Map,
+  power_category_Map,
+  getSourcePower,
+} from '../EmissionSource'
 
 const Tabs = () => {
   // 設定 state 來儲存選擇的行數據，初始值為 null
@@ -60,86 +55,9 @@ const Tabs = () => {
     getEmissionSource()
   }, [])
 
-  const process_code_Map = {
-    G20900: '交通運輸活動',
-    G00099: '冷媒補充',
-    '000999': '其他未分類製程',
-  }
-  const device_code_Map = {
-    '0020': '汽油引擎',
-    4091: '住宅及商業建築冷氣機',
-    9999: '其他未歸類設施',
-  }
-  const fuel_code_Map = {
-    170001: '車用汽油',
-    170006: '柴油',
-    GG1814: '冷媒－R410a，R32/125（50/50）',
-    350099: '其他電力',
-  }
-
-  const emission_pattern_Map = {
-    1: ['固定', '移動', '製程', '逸散'],
-    2: ['外購電力', '外購蒸氣'],
-    3: ['員工通勤', '商務旅行', '廢棄物處置'],
-    // 類別3: ['上游的運輸與配送', '下游的運輸與配送', '員工通勤', '客戶及訪客運輸', '商務旅行'],
-    // 類別4: ['採購之商品', '資本財', '廢棄物處置', '資產使用', '採購之能源', '其他服務'],
-    // 類別5: ['產品使用', '下游租賃資產', '產品壽命終止階段', '加盟/各項投資'],
-    // 類別6: ['其他排放'],
-  }
-  const process_category_Map = {
-    1: '水泥製程',
-    2: '鋼鐵製程-使用造渣劑',
-    3: '鋼鐵製程-使用添加劑',
-    4: '鋼鐵製程-金屬進料',
-    5: '鋼鐵製程-外售含碳產品(已知CO2排放係數',
-    6: '鋼鐵製程-使用添加劑(預焙陽極炭塊與煤碳電極',
-    7: '鋼鐵製程--外售含碳產品(已知含碳率)',
-    8: '半導體光電製程',
-    9: '石灰製程',
-    10: '碳酸鈉製程-碳酸鈉製造',
-    11: '碳酸鈉製程-碳酸鈉使用',
-    12: '碳化物鈉製程-碳化矽製造',
-    13: '碳化物鈉製程-碳化鈣製造',
-    14: '碳化物鈉製程-碳化鈣使用',
-    15: '碳酸製程',
-    16: '已二酸製程',
-    17: '二氟一氯甲烷',
-    18: '乙炔-焊接維修製程',
-    19: '濕式排煙脫硫-石灰石製程',
-    20: '其他',
-  }
-  const escape_category_Map = {
-    1: '廢棄物排放源',
-    2: '廢水排放源',
-    3: '廢棄污泥排放源',
-    4: '溶劑、噴霧劑及冷媒排放源',
-    5: 'VOCs未經燃燒且含CH4',
-    6: '已知VOCs濃度',
-    7: '未知VOCs濃度已知CO2排放係數',
-    8: '化糞池排放源',
-    9: '其他',
-  }
-  const power_category_Map = {
-    1: '併網',
-    2: '離網',
-  }
-
-  const getSourcePower = (source) => {
-    if (source.emission_category === 1 && source.emission_pattern === 3) {
-      return process_category_Map[source.process_category]
-    }
-    if (source.emission_category === 1 && source.emission_pattern === 4) {
-      return escape_category_Map[source.escape_category]
-    }
-    if (source.emission_category === 2 && source.emission_pattern === 1) {
-      return power_category_Map[source.power_category]
-    }
-    return ''
-  }
-
   // 表格數據
   const tableData = emission_sources.map((source) => ({
-    status: 'completed',
+    status: 'completed', // completed or not completed
     process: process_code_Map[source.process_code],
     equipment: device_code_Map[source.device_code],
     material: fuel_code_Map[source.fuel_code],
