@@ -29,7 +29,7 @@ def read_user_credentials():
                         "waste_item": record[2],
                         "remark": record[3],
                         "img_path": record[4],  # Assuming oil_species is a BIT (True/False)
-                        "edit_time": record[5],
+                        "edit_time": record[5].strftime("%Y-%m-%d %H:%M"),
                     }
                     for record in user_records
                 ]

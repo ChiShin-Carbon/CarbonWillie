@@ -31,7 +31,7 @@ def read_user_credentials():
                         "usage": float(record[4]),  
                         "remark": record[5],
                         "img_path": record[6],
-                        "edit_time": record[7],
+                        "edit_time": record[7].strftime("%Y-%m-%d %H:%M"),
                     }
                     for record in user_records
                 ]

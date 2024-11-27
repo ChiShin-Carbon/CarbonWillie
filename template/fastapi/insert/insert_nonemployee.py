@@ -1,29 +1,19 @@
-
-
-
-
 from fastapi import FastAPI, APIRouter, HTTPException, UploadFile, File, Form
 from connect.connect import connectDB
 from datetime import datetime
 from pathlib import Path
 
-insert_employee = APIRouter()
+insert_nonemployee = APIRouter()
 uploads_dir = Path("uploads")
 uploads_dir.mkdir(exist_ok=True)
 
-@insert_employee.post("/insert_employee")
+@insert_nonemployee.post("/insert_nonemployee")
 async def read_user_credentials(
     user_id: int = Form(...),
-    month: datetime = Form(...),
-    employee: int = Form(...),
-    daily_hours: int = Form(...),
-    workday: int = Form(...),
-    overtime: float = Form(...),
-    sick: float = Form(...),
-    personal: float = Form(...),
-    business: float = Form(...),
-    funeral: float = Form(...),
-    special: float = Form(...),
+    month: str = Form(...),
+    nonemployee: int = Form(...),
+    total_hours: int = Form(...),
+    total_day: int = Form(...),
     explain: str = Form(None),
     image: UploadFile = File(...)
 ):
@@ -35,29 +25,28 @@ async def read_user_credentials(
     except Exception as e:
         raise HTTPException(status_code=500, detail="Could not save image file")
 
+    # Parse the month string and format it as YYYY-MM-DD
+    try:
+        formatted_month = datetime.strptime(month, "%Y-%m").strftime('%Y-%m-%d')
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid month format. Expected format: YYYY-MM")
+
     # Database insertion
     conn = connectDB()
     if conn:
         cursor = conn.cursor()
         try:
             query = """
-                INSERT INTO Employee (user_id, period_date, employee_number, daily_hours, workday, overtime,
-                                      sick_leave, personal_leave, business_trip, wedding_and_funeral, special_leave,
-                                      remark, img_path, edit_time)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO NonEmployee (user_id, period_date, nonemployee_number, total_hours, total_days,
+                                         remark, img_path, edit_time)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """
             values = (
                 user_id,
-                month,
-                employee,
-                daily_hours,
-                workday,
-                overtime,
-                sick,
-                personal,
-                business,
-                funeral,
-                special,
+                formatted_month,
+                nonemployee,
+                total_hours,
+                total_day,
                 explain,
                 str(image_path),
                 datetime.now()
@@ -74,4 +63,3 @@ async def read_user_credentials(
             conn.close()
     else:
         raise HTTPException(status_code=500, detail="Database connection error")
-

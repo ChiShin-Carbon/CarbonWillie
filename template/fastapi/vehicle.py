@@ -13,7 +13,12 @@ def read_user_credentials():
         cursor = conn.cursor()
         try:
             # Secure SQL query using a parameterized query to prevent SQL injection
-            query = "SELECT * FROM Vehicle"
+            query = """
+            SELECT Vehicle.vehicle_id, Vehicle.user_id, Vehicle.Doc_date, Vehicle.Doc_number, Vehicle.oil_species, Vehicle.liters, Vehicle.remark, Vehicle.img_path, Vehicle.edit_time
+            , users.username
+            FROM Vehicle
+            LEFT JOIN users ON Vehicle.user_id = users.user_id
+            """
             cursor.execute(query)
             
             # Fetch all records for the user
@@ -32,7 +37,8 @@ def read_user_credentials():
                         "liters": float(record[5]),
                         "remark": record[6],
                         "img_path": record[7],
-                        "edit_time": record[8].strftime('%Y-%m-%d %H:%M'),
+                        "edit_time": record[8].strftime("%Y-%m-%d %H:%M"),
+                        "username": record[9]
                     }
                     for record in user_records
                 ]
