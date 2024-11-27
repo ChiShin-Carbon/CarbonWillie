@@ -79,3 +79,13 @@ export const getSourcePower = (source) => {
   }
   return ''
 }
+
+export const gas_type_map = {
+  1: 'CO2',
+  2: 'CH4',
+  3: 'N2O',
+  4: 'HFCS',
+  5: 'PFCS',
+  6: 'SF6',
+  7: 'NF3',
+}

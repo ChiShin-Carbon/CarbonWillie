@@ -54,23 +54,32 @@ def read_emission_source():
     if conn:
         cursor = conn.cursor()
         try:
-            query = """
+            gas_type_query = """
+                SELECT fuel_code, STRING_AGG(gas_type, ', ') AS gas_types
+                FROM Emission_Factor
+                GROUP BY fuel_code
+            """
+            cursor.execute(gas_type_query)
+            gas_type_map = {row[0]: row[1] for row in cursor.fetchall()}
+
+            emission_source_query = """
                 SELECT 
                     source_id, process_code, device_code, fuel_category, fuel_code, trust_category, 
-                    credibility_info, is_bioenergy, emission_category, emission_pattern, 
-                    process_category, escape_category, power_category, supplier, is_CHP, remark
-                FROM Emission_Source 
+                    credibility_info, is_bioenergy, emission_category, emission_pattern, process_category, 
+                    escape_category, power_category, supplier, is_CHP, remark
+                FROM Emission_Source
                 WHERE baseline_id = (
                     SELECT TOP 1 baseline_id 
                     FROM Baseline ORDER BY edit_time DESC
-              )"""
-            cursor.execute(query)
+                )"""
+            cursor.execute(emission_source_query)
             emission_source_records = cursor.fetchall()
             conn.close()
 
             if emission_source_records:
                 result = []
                 for record in emission_source_records:
+                    gas_types = gas_type_map.get(record[4], "N/A")
                     result.append({
                         "source_id": record[0],
                         "process_code": record[1],
@@ -87,7 +96,8 @@ def read_emission_source():
                         "power_category": record[12],
                         "supplier": record[13],
                         "is_CHP": record[14],
-                        "remark": record[15]
+                        "remark": record[15],
+                        "gas_types": gas_types
                     }) 
                 return {"emission_sources": result}  
             else:

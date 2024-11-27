@@ -30,6 +30,7 @@ import {
   escape_category_Map,
   power_category_Map,
   getSourcePower,
+  gas_type_map,
 } from '../EmissionSource'
 
 const Tabs = () => {
@@ -56,29 +57,35 @@ const Tabs = () => {
   }, [])
 
   // 表格數據
-  const tableData = emission_sources.map((source) => ({
-    status: 'completed', // completed or not completed
-    process: process_code_Map[source.process_code],
-    equipment: device_code_Map[source.device_code],
-    material: fuel_code_Map[source.fuel_code],
-    details: {
-      processCode: source.process_code,
-      processName: process_code_Map[source.process_code],
-      equipCode: source.device_code,
-      equipName: device_code_Map[source.device_code],
-      matType: source.fuel_category,
-      matCode: source.fuel_code,
-      matName: fuel_code_Map[source.fuel_code],
-      matbio: source.is_bioenergy,
-      sourceClass: source.emission_category,
-      sourceType: emission_pattern_Map[source.emission_category][source.emission_pattern - 1],
-      sourcePower: getSourcePower(source),
-      sourceSupply: source.supplier,
-      gaseType: ['CH4'],
-      steamEle: source.is_CHP,
-      remark: source.remark,
-    },
-  }))
+  const tableData = emission_sources.map((source) => {
+    const gasTypes = source.gas_types
+      ? source.gas_types.split(',').map((gasId) => gas_type_map[parseInt(gasId)]) // 轉換為氣體名稱
+      : []
+
+    return {
+      status: 'completed', // completed or not completed
+      process: process_code_Map[source.process_code],
+      equipment: device_code_Map[source.device_code],
+      material: fuel_code_Map[source.fuel_code],
+      details: {
+        processCode: source.process_code,
+        processName: process_code_Map[source.process_code],
+        equipCode: source.device_code,
+        equipName: device_code_Map[source.device_code],
+        matType: source.fuel_category,
+        matCode: source.fuel_code,
+        matName: fuel_code_Map[source.fuel_code],
+        matbio: source.is_bioenergy,
+        sourceClass: source.emission_category,
+        sourceType: emission_pattern_Map[source.emission_category][source.emission_pattern - 1],
+        sourcePower: getSourcePower(source),
+        sourceSupply: source.supplier,
+        gasType: gasTypes,
+        steamEle: source.is_CHP,
+        remark: source.remark,
+      },
+    }
+  })
 
   const handleRowClick = (row) => {
     setSelectedRowData(row.details)
@@ -350,7 +357,7 @@ const Tabs = () => {
                         <CFormCheck
                           id={gas}
                           label={gas}
-                          checked={selectedRowData.gaseType.includes(gas)} // 預選邏輯
+                          checked={selectedRowData.gasType.includes(gas)} // 預選邏輯
                           onChange={() => handleGasChange(gas)} // 添加 onChange 事件
                         />
                       </div>
