@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
     CRow, CCol, CCard, CFormSelect, CTab, CTabList, CTabs,
     CTable, CTableBody, CTableHead, CModal, CModalHeader, CModalBody, CModalFooter, CModalTitle, CButton, CFormCheck
@@ -23,38 +23,92 @@ import AddModal from './新增Modal.js';
 const Tabs = () => {
     const [isEditModalVisible, setEditModalVisible] = useState(false);
     const [isAddModalVisible, setAddModalVisible] = useState(false);
-    // 設定 state 來儲存選擇的行數據，初始值為 null
+
+
+    const [companyList, setCompanyList] = useState([]);
+    // 獲取企業資料的函數
+    const fetchCompanyInfo = async () => {
+        try {
+            const response = await fetch('http://127.0.0.1:8000/adminCompany', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                setCompanyList(data.companies); // 修正為 data.companies
+            } else {
+                console.log(`Error: ${response.status}`);
+            }
+        } catch (error) {
+            console.error('Error fetching company info:', error);
+        }
+    };
+    useEffect(() => {
+        fetchCompanyInfo();
+    }, []);
+
+
     const [selectedRowData, setSelectedRowData] = useState(null);
-
-    // 模擬表格數據
-    const tableData = [
-        {
-            org_name: "XXXXX股份有限公司",
-            details: {
-                org_name: "XXXXX股份有限公司", business_id: "123", registration_number: "XXX", factory_number: "XXX",
-                county: "XXX", town: "XXX", postal_code: "XXX",
-                org_address: "XXdddddddddddddX", charge_person: "XXX", org_email: "XXX",
-                contact_person: "XXX", email: "XXXdfdsf@gmail.com", telephone: "295115315",
-                phone: "080790909", industry_name: "XXX", industry_code: "XXX",
-            }
-        },
-        {
-            org_name: "ABCV股份有限公司",
-            details: {
-                org_name: "ABCV股份有限公司", business_id: "123", registration_number: "asd", factory_number: "qwe",
-                county: "Xddd", town: "zxcxX", postal_code: "dfdf",
-                org_address: "XXaaaaaaadsa ao7o7oo7o7X", charge_person: "BBB", org_email: "XXX",
-                contact_person: "153X", email: "5656@gmail.com", telephone: "59012312132",
-                phone: "0890909X", industry_name: "AAA", industry_code: "BBB",
-            }
-        },
-    ];
-
-
     const handleRowClick = (row) => {
-        setSelectedRowData(row.details);
+        setSelectedRowData(row);
+        console.log(selectedRowData)
     };
 
+    ///////////////////////////////刪除////////////////////////////////////////////////
+    const deleteCompanyInfo = async (businessID) => {
+        try {
+            const response = await fetch(`http://localhost:8000/delete_adminCompany/${businessID}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+
+            const result = await response.json()
+            if (response.ok) {
+                console.log(result.message)
+                // Refresh records after deletion
+                refreshAuthorizedRecords()
+            } else {
+                console.error('Failed to delete record:', result.detail)
+            }
+        } catch (error) {
+            console.error('Error deleting record:', error)
+        }
+    }
+    const [isDeleteModalVisible, setDeleteModalVisible] = useState(false)
+    const [selectedbusinessID, setSelectedbusinessID] = useState(null)
+
+    const openDeleteModal = (businessID) => {
+        setSelectedbusinessID(businessID)
+        setDeleteModalVisible(true)
+    }
+
+    // 刪除紀錄的函數
+    const deleteAndClose = (businessID) => {
+        deleteCompanyInfo(businessID)
+        setDeleteModalVisible(false) // 關閉 Modal
+    }
+
+
+    ///重整頁面用
+    const refreshAuthorizedRecords = () => {
+        fetchCompanyInfo()
+    }
+
+    useEffect(() => {
+        if (selectedRowData) {
+            const updatedRowData = companyList.find(
+                (row) => row.business_id === selectedRowData.business_id
+            );
+            if (updatedRowData) {
+                setSelectedRowData(updatedRowData);
+            }
+        }
+    }, [companyList]);
 
 
     return (
@@ -88,7 +142,7 @@ const Tabs = () => {
                             </tr>
                         </CTableHead>
                         <CTableBody className={styles.tableBody}>
-                            {tableData.map((row, index) => (
+                            {companyList.map((row, index) => (
                                 <tr key={index} onClick={() => handleRowClick(row)}>
                                     <td>{row.org_name}</td>
                                 </tr>
@@ -111,7 +165,7 @@ const Tabs = () => {
                                 </div>
                                 <div className={styles.cardOperation}>
                                     <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
-                                    <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
+                                    <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} onClick={() => openDeleteModal(selectedRowData.business_id)} />
                                 </div>
                             </div>
 
@@ -148,6 +202,13 @@ const Tabs = () => {
                                 </div>
                                 <div className={styles.block}>
                                     <div className={styles.blockBody2}>
+                                        <div><span>行業名稱:</span><p>{selectedRowData.industry_name}</p></div>
+                                        <div><span>行業代碼:</span><p>{selectedRowData.industry_code}</p></div>
+                                    </div>
+                                </div>
+                                <hr />
+                                <div className={styles.block}>
+                                    <div className={styles.blockBody2}>
                                         <div><span>聯絡人姓名:</span><p>{selectedRowData.contact_person}</p></div>
                                         <div><span>聯絡人電子信箱:</span><p>{selectedRowData.email}</p></div>
                                     </div>
@@ -158,13 +219,6 @@ const Tabs = () => {
                                         <div><span>聯絡人手機:</span><p>{selectedRowData.phone}</p></div>
                                     </div>
                                 </div>
-                                <div className={styles.block}>
-                                    <div className={styles.blockBody2}>
-                                        <div><span>行業名稱:</span><p>{selectedRowData.industry_name}</p></div>
-                                        <div><span>行業代碼:</span><p>{selectedRowData.industry_code}</p></div>
-                                    </div>
-                                </div>
-                                <hr />
 
 
                             </div>
@@ -183,12 +237,38 @@ const Tabs = () => {
             <EditModal
                 isEditModalVisible={isEditModalVisible}
                 setEditModalVisible={setEditModalVisible}
+                selectedRowData={selectedRowData}
+                onSuccess={refreshAuthorizedRecords}
             />
 
             <AddModal
                 isAddModalVisible={isAddModalVisible}
                 setAddModalVisible={setAddModalVisible}
+                onSuccess={refreshAuthorizedRecords}
             />
+
+
+            <CModal
+                backdrop="static"
+                visible={isDeleteModalVisible}
+                onClose={() => setDeleteModalVisible(false)}
+                aria-labelledby="StaticBackdropExampleLabel3"
+            >
+                <CModalHeader>
+                    <CModalTitle id="StaticBackdropExampleLabel3">
+                        <b>提醒</b>
+                    </CModalTitle>
+                </CModalHeader>
+                <CModalBody>確定要刪除該企業資料嗎?</CModalBody>
+                <CModalFooter>
+                    <CButton className="modalbutton1" onClick={() => setDeleteModalVisible(false)} >
+                        取消
+                    </CButton>
+                    <CButton className="modalbutton2" onClick={() => deleteAndClose(selectedbusinessID)} >
+                        確認
+                    </CButton>
+                </CModalFooter>
+            </CModal>
 
         </main >
 

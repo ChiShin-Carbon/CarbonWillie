@@ -7,7 +7,7 @@ import styles from '../../../scss/管理者.module.css';
 
 import cities from './citiesData';
 
-const AddModal = ({ isAddModalVisible, setAddModalVisible }) => {
+const AddModal = ({ isAddModalVisible, setAddModalVisible,onSuccess}) => {
     const handleClose = () => setAddModalVisible(false);
 
     const [county, setCounty] = useState(''); // 縣市
@@ -29,31 +29,104 @@ const AddModal = ({ isAddModalVisible, setAddModalVisible }) => {
         }
     };
 
+    //////////////////////////////////////////////////////////////////////////////////
+
+    const [orgName, setOrgName] = useState('');
+    const [businessId, setBusinessId] = useState('');
+    const [registrationNumber, setRegistrationNumber] = useState('');
+    const [factoryNumber, setFactoryNumber] = useState('');
+    const [orgAddress, setOrgAddress] = useState('');
+    const [chargePerson, setChargePerson] = useState('');
+    const [orgEmail, setOrgEmail] = useState('');
+    const [contactPerson, setContactPerson] = useState('');
+    const [email, setEmail] = useState('');
+    const [telephone, setTelephone] = useState('');
+    const [phone, setPhone] = useState('');
+    const [industryName, setIndustryName] = useState('');
+    const [industryCode, setIndustryCode] = useState('');
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();  // 阻止表單的默認提交行為
+
+        // 使用原生 HTML 的驗證機制
+        if (e.target.checkValidity()) {
+            const companyData = {
+                business_id: businessId,
+                registration_number: registrationNumber,
+                org_name: orgName,
+                factory_number: factoryNumber,
+                county: county,
+                town: town,
+                postal_code: postal_code,
+                org_address: orgAddress,
+                charge_person: chargePerson,
+                org_email: orgEmail,
+                industry_name: industryName,
+                industry_code: industryCode,
+                contact_person: contactPerson,
+                telephone: telephone,
+                email: email,
+                phone: phone,
+            };
+
+            try {
+                const response = await fetch('http://localhost:8000/insert_adminCompany', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(companyData),
+                });
+
+                if (response.ok) {
+                    alert('企業資料已新增');
+                    setAddModalVisible(false);
+                    // 新增成功後重整頁面
+                    onSuccess()
+                } else {
+                    const responseText = await response.text();
+                    try {
+                        const errorData = JSON.parse(responseText);
+                        console.log('新增失敗，請稍後再試:', errorData);
+                    } catch (err) {
+                        console.log('Response is not JSON:', responseText);
+                    }
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                console.log('新增失敗，請稍後再試:', error.message);
+            }
+        } else {
+            console.log('表單驗證未通過');
+        }
+    };
+
+
     return (
-        <CModal visible={isAddModalVisible} onClose={handleClose} className={styles.modal} size="xl">
+        <CModal backdrop="static" visible={isAddModalVisible} onClose={handleClose} className={styles.modal} size="xl">
             <CModalHeader>
                 <h5><b>新增企業資料</b></h5>
             </CModalHeader>
-            <CForm>
+            <CForm onSubmit={handleSubmit}>
                 <CModalBody>
                     <div className={styles.addmodal}>
                         <CRow className="mb-3">
                             <CFormLabel htmlFor="org_name" className={`col-sm-2 col-form-label ${styles.addlabel}`} >公私場所名稱</CFormLabel>
-                            <CCol><CFormInput className={styles.addinput} type="text" id="org_name" required /></CCol>
+                            <CCol><CFormInput className={styles.addinput} type="text" id="org_name" value={orgName} onChange={(e) => setOrgName(e.target.value)} required /></CCol>
                         </CRow>
 
                         <CRow className="mb-3">
                             <CFormLabel htmlFor="business_id" className={`col-sm-2 col-form-label ${styles.addlabel}`} >統一編號</CFormLabel>
                             <CCol>
-                                <CFormInput className={styles.addinput} type="text" id="business_id" required />
+                                <CFormInput className={styles.addinput} type="text" id="business_id" value={businessId} onChange={(e) => setBusinessId(e.target.value)} required />
                             </CCol>
                             <CFormLabel htmlFor="registration_number" className={`col-sm-2 col-form-label ${styles.addlabel}`} >管制編號</CFormLabel>
                             <CCol>
-                                <CFormInput className={styles.addinput} type="text" id="registration_number" required />
+                                <CFormInput className={styles.addinput} type="text" id="registration_number" value={registrationNumber} onChange={(e) => setRegistrationNumber(e.target.value)} required />
                             </CCol>
                             <CFormLabel htmlFor="factory_number" className={`col-sm-2 col-form-label ${styles.addlabel}`} >工廠登記證編號</CFormLabel>
                             <CCol>
-                                <CFormInput className={styles.addinput} type="text" id="factory_number" required />
+                                <CFormInput className={styles.addinput} type="text" id="factory_number" value={factoryNumber} onChange={(e) => setFactoryNumber(e.target.value)} required />
                             </CCol>
                         </CRow>
 
@@ -90,52 +163,56 @@ const AddModal = ({ isAddModalVisible, setAddModalVisible }) => {
                         <CRow className="mb-3">
                             <CFormLabel htmlFor="org_address" className={`col-sm-2 col-form-label ${styles.addlabel}`} >地址</CFormLabel>
                             <CCol>
-                                <CFormInput className={styles.addinput} type="text" id="org_address" required />
+                                <CFormInput className={styles.addinput} type="text" id="org_address" value={orgAddress} onChange={(e) => setOrgAddress(e.target.value)} required />
                             </CCol>
                         </CRow>
                         <CRow className="mb-3">
                             <CFormLabel htmlFor="charge_perso" className={`col-sm-2 col-form-label ${styles.addlabel}`} >負責人姓名</CFormLabel>
                             <CCol>
-                                <CFormInput className={styles.addinput} type="text" id="charge_perso" required />
+                                <CFormInput className={styles.addinput} type="text" id="charge_perso" value={chargePerson} onChange={(e) => setChargePerson(e.target.value)} required />
                             </CCol>
                             <CFormLabel htmlFor="org_email" className={`col-sm-2 col-form-label ${styles.addlabel}`} >公私場所電子信箱</CFormLabel>
                             <CCol>
-                                <CFormInput className={styles.addinput} type="text" id="org_email" required />
+                                <CFormInput className={styles.addinput} type="email" id="org_email" value={orgEmail} onChange={(e) => setOrgEmail(e.target.value)} required />
                             </CCol>
                         </CRow>
+                         
+                        <CRow className="mb-3">
+                            <CFormLabel htmlFor="industry_name" className={`col-sm-2 col-form-label ${styles.addlabel}`} >行業名稱</CFormLabel>
+                            <CCol>
+                                <CFormInput className={styles.addinput} type="text" id="industry_name" value={industryName} onChange={(e) => setIndustryName(e.target.value)} required />
+                            </CCol>
+                            <CFormLabel htmlFor="industry_code" className={`col-sm-2 col-form-label ${styles.addlabel}`} >行業代碼</CFormLabel>
+                            <CCol>
+                                <CFormInput className={styles.addinput} type="text" id="industry_code" value={industryCode} onChange={(e) => setIndustryCode(e.target.value)} required />
+                            </CCol>
+                        </CRow>
+
+                        <hr />
 
                         <CRow className="mb-3">
                             <CFormLabel htmlFor="contact_person" className={`col-sm-2 col-form-label ${styles.addlabel}`} >聯絡人姓名</CFormLabel>
                             <CCol>
-                                <CFormInput className={styles.addinput} type="text" id="contact_person" required />
+                                <CFormInput className={styles.addinput} type="text" id="contact_person" value={contactPerson} onChange={(e) => setContactPerson(e.target.value)} required />
                             </CCol>
                             <CFormLabel htmlFor="email" className={`col-sm-2 col-form-label ${styles.addlabel}`} >電子信箱</CFormLabel>
                             <CCol>
-                                <CFormInput className={styles.addinput} type="text" id="email" required />
+                                <CFormInput className={styles.addinput} type="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
                             </CCol>
                         </CRow>
                         <CRow className="mb-3">
                             <CFormLabel htmlFor="telephone" className={`col-sm-2 col-form-label ${styles.addlabel}`} >電話</CFormLabel>
                             <CCol>
-                                <CFormInput className={styles.addinput} type="text" id="telephone" required />
+                                <CFormInput className={styles.addinput} type="text" id="telephone" value={telephone} onChange={(e) => setTelephone(e.target.value)} required />
                             </CCol>
                             <CFormLabel htmlFor="phone" className={`col-sm-2 col-form-label ${styles.addlabel}`} >手機</CFormLabel>
                             <CCol>
-                                <CFormInput className={styles.addinput} type="text" id="phone" required />
+                                <CFormInput className={styles.addinput} type="text" id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} required />
                             </CCol>
                         </CRow>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="industry_name" className={`col-sm-2 col-form-label ${styles.addlabel}`} >行業名稱</CFormLabel>
-                            <CCol>
-                                <CFormInput className={styles.addinput} type="text" id="industry_name" required />
-                            </CCol>
-                            <CFormLabel htmlFor="industry_code" className={`col-sm-2 col-form-label ${styles.addlabel}`} >行業代碼</CFormLabel>
-                            <CCol>
-                                <CFormInput className={styles.addinput} type="text" id="industry_code" required />
-                            </CCol>
-                        </CRow>
+                       
                         <hr />
-                        <CRow className="mb-3">
+                        {/* <CRow className="mb-3">
                             <CFormLabel htmlFor="industry_name" className={`col-sm-2 col-form-label ${styles.addlabel}`} >登錄原因</CFormLabel>
                             <CCol>
                                 <CFormSelect className={styles.addinput} id="edit_reason">
@@ -178,7 +255,7 @@ const AddModal = ({ isAddModalVisible, setAddModalVisible }) => {
                                     <option value="8">其他</option>
                                 </CFormSelect>
                             </CCol>
-                        </CRow>
+                        </CRow> */}
                     </div>
                 </CModalBody>
                 <CModalFooter>
