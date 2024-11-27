@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   CModal,
   CModalHeader,
@@ -56,6 +56,7 @@ export const VehicleAdd = ({ isAddModalVisible, setAddModalVisible }) => {
       if (res.ok) {
         console.log('Form submitted successfully', data)
         setAddModalVisible(false)
+        getVehicleData()
       } else {
         console.error('Failed to submit form data', data.detail)
       }
