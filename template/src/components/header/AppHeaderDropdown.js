@@ -88,14 +88,18 @@ const AppHeaderDropdown = () => {
   }
 
   const handleLogout = () => {
-    // Clear the user_id from sessionStorage
+    // Clear session storage
     window.sessionStorage.removeItem('user_id');
-    // Optional: Clear all sessionStorage
-    // window.sessionStorage.clear();
+    window.sessionStorage.removeItem('username');
+    window.sessionStorage.removeItem('address');
     
-    // Redirect to the login page or home page
+    // Redirect to login page
     window.location.href = '/#/Login';
+  
+    // Force reload to ensure app initializes fresh
+    window.location.reload();
   };
+  
 
   const setdept = () => {
     if (departmentID === 1) {
