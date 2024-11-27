@@ -750,7 +750,7 @@ const Tabs = () => {
                                     <CCardBody style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', }}>
                                     <CRow>
                                         <CCol sm={12}>
-                                        <CCard style={{width: '1100px', fontSize: '1.2rem'}}>
+                                        <CCard style={{width: '100%', fontSize: '1.2rem'}}>
                                             <CCardBody>
                                                 <CRow>
                                                 <div style={{width: '10px', height: '100%', backgroundColor: '#d882c0', borderRadius: '4px',}}></div>
@@ -773,7 +773,7 @@ const Tabs = () => {
                             </CCard>
                             <br></br>
                             {/* 碳費百科 */}
-                            <CCard style={{ width: '100%' }}>
+                            <CCard className="mb-4">
                                 <CCardTitle>
                                     <div style={{ display: 'flex', flexDireaction: 'row'}}>
                                         <div style={{ fontWeight:'bold', fontSize: '1.5rem',color:'white', backgroundColor:'#d882c0', borderTopLeftRadius:'5px', borderBottomRightRadius:'20px', display: 'flex', alignItems: 'center',padding: '10px 40px 10px 40px'}}>碳費百科</div>
@@ -783,7 +783,7 @@ const Tabs = () => {
                                     <CCardBody style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', }}>
                                     <CRow>
                                         <CCol sm={12}>
-                                        <CCard style={{width: '1100px', fontSize: '1.2rem'}}>
+                                        <CCard style={{width: '100%', fontSize: '1.2rem'}}>
                                             <CCardBody>
                                                 <CRow>
                                                     <div style={{ width: '100%', height: '50px', display: 'flex', justifyContent: 'space-between',alignItems:'center' }}>
@@ -793,7 +793,7 @@ const Tabs = () => {
                                                         {/* 日期 */}
                                                         <p style={{ color: '#d882c0', fontWeight: 'bold', margin: 0 }}>2014/06/03</p>
                                                         {/* 標題 */}
-                                                        <p style={{ fontWeight: 'bold', margin: 0 }}>Carbon Pricing from WorldBank</p>
+                                                        <p style={{ fontWeight: 'bold', margin: 0 }}>Carbon Pricing_WorldBank</p>
                                                     </div>
                                                     {/* 右側：箭頭按鈕 */}
                                                     <CButton style={{ height: '60px', width: '60px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -805,7 +805,7 @@ const Tabs = () => {
                                         </CCard>
                                         </CCol>
                                         <CCol sm={12}>
-                                            <CCard style={{width: '1100px', fontSize: '1.2rem'}}>
+                                            <CCard style={{width: '100%', fontSize: '1.2rem'}}>
                                             <CCardBody>
                                                 <CRow>
                                                     <div style={{ width: '100%', height: '50px', display: 'flex', justifyContent: 'space-between',alignItems:'center' }}>
@@ -815,7 +815,7 @@ const Tabs = () => {
                                                         {/* 日期 */}
                                                         <p style={{ color: '#d882c0', fontWeight: 'bold', margin: 0 }}>2021/06/15</p>
                                                         {/* 標題 */}
-                                                        <p style={{ fontWeight: 'bold', margin: 0 }}>什麼是碳定價?</p>
+                                                        <p style={{ fontWeight: 'bold', margin: 0 }}>什麼是碳定價?_永訊智庫</p>
                                                     </div>
                                                     {/* 右側：箭頭按鈕 */}
                                                     <CButton style={{ height: '60px', width: '60px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -827,7 +827,7 @@ const Tabs = () => {
                                             </CCard>
                                         </CCol>
                                         <CCol sm={12}>
-                                            <CCard style={{width: '1100px', fontSize: '1.2rem'}}>
+                                            <CCard style={{width: '100%', fontSize: '1.2rem'}}>
                                             <CCardBody>
                                                 <CRow>
                                                     <div style={{ width: '100%', height: '50px', display: 'flex', justifyContent: 'space-between',alignItems:'center' }}>
@@ -837,7 +837,7 @@ const Tabs = () => {
                                                         {/* 日期 */}
                                                         <p style={{ color: '#d882c0', fontWeight: 'bold', margin: 0 }}>2024/10/11</p>
                                                         {/* 標題 */}
-                                                        <p style={{ fontWeight: 'bold', margin: 0 }}>碳費制度上路正式邁入碳定價時代</p>
+                                                        <p style={{ fontWeight: 'bold', margin: 0 }}>碳費制度上路正式邁入碳定價時代_環境部</p>
                                                     </div>
                                                     {/* 右側：箭頭按鈕 */}
                                                     <CButton style={{ height: '60px', width: '60px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -849,7 +849,7 @@ const Tabs = () => {
                                             </CCard>
                                         </CCol>
                                         <CCol sm={12}>
-                                            <CCard style={{width: '1100px', fontSize: '1.2rem'}}>
+                                            <CCard style={{width: '100%', fontSize: '1.2rem'}}>
                                             <CCardBody>
                                                 <CRow>
                                                     <div style={{ width: '100%', height: '50px', display: 'flex', justifyContent: 'space-between',alignItems:'center' }}>
@@ -859,7 +859,7 @@ const Tabs = () => {
                                                         {/* 日期 */}
                                                         <p style={{ color: '#d882c0', fontWeight: 'bold', margin: 0 }}>2024/09/25</p>
                                                         {/* 標題 */}
-                                                        <p style={{ fontWeight: 'bold', margin: 0 }}>台灣碳費制度(含CBAM)</p>
+                                                        <p style={{ fontWeight: 'bold', margin: 0 }}>台灣碳費制度(含CBAM)_環境部</p>
                                                     </div>
                                                     {/* 右側：箭頭按鈕 */}
                                                     <CButton style={{ height: '60px', width: '60px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -871,7 +871,7 @@ const Tabs = () => {
                                             </CCard>
                                         </CCol>
                                         <CCol sm={12}>
-                                            <CCard style={{width: '1100px', fontSize: '1.2rem'}}>
+                                            <CCard style={{width: '100%', fontSize: '1.2rem'}}>
                                             <CCardBody>
                                                 <CRow>
                                                     <div style={{ width: '100%', height: '50px', display: 'flex', justifyContent: 'space-between',alignItems:'center' }}>
@@ -881,7 +881,7 @@ const Tabs = () => {
                                                         {/* 日期 */}
                                                         <p style={{ color: '#d882c0', fontWeight: 'bold', margin: 0 }}>2022/03/30</p>
                                                         {/* 標題 */}
-                                                        <p style={{ fontWeight: 'bold', margin: 0 }}>臺灣2050淨零排放路徑及策略總說明</p>
+                                                        <p style={{ fontWeight: 'bold', margin: 0 }}>臺灣2050淨零排放路徑及策略總說明_環境部</p>
                                                     </div>
                                                     {/* 右側：箭頭按鈕 */}
                                                     <CButton style={{ height: '60px', width: '60px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
