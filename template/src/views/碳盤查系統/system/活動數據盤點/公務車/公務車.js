@@ -1,44 +1,59 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'
 import {
-    CTable, CTableHead, CTableBody, CModal, CModalBody, CModalFooter, CModalHeader, CForm, CButton,
-    CFormLabel, CFormInput, CFormTextarea, CRow, CCol, CCollapse, CCard, CCardBody
-} from '@coreui/react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPenToSquare, faTrashCan } from '@fortawesome/free-solid-svg-icons';
-import styles from '../../../../../scss/活動數據盤點.module.css';
-import EditModal from './編輯Modal.js';
-import Zoom from 'react-medium-image-zoom';
-import 'react-medium-image-zoom/dist/styles.css';
+  CTable,
+  CTableHead,
+  CTableBody,
+  CModal,
+  CModalBody,
+  CModalFooter,
+  CModalHeader,
+  CForm,
+  CButton,
+  CFormLabel,
+  CFormInput,
+  CFormTextarea,
+  CRow,
+  CCol,
+  CCollapse,
+  CCard,
+  CCardBody,
+} from '@coreui/react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPenToSquare, faTrashCan } from '@fortawesome/free-solid-svg-icons'
+import styles from '../../../../../scss/活動數據盤點.module.css'
+import EditModal from './編輯Modal.js'
+import Zoom from 'react-medium-image-zoom'
+import 'react-medium-image-zoom/dist/styles.css'
 
 export const Vehicle = () => {
-    const [isEditModalVisible, setEditModalVisible] = useState(false);
-    const [vehicles, setVehicles] = useState([]);  // State to hold fetched vehicle data
+  const [isEditModalVisible, setEditModalVisible] = useState(false)
+  const [vehicles, setVehicles] = useState([]) // State to hold fetched vehicle data
 
-    // Function to fetch vehicle data
-    const getVehicleData = async () => {
-        try {
-            const response = await fetch('http://localhost:8000/vehicle', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-            const data = await response.json();
+  // Function to fetch vehicle data
+  const getVehicleData = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/vehicle', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      const data = await response.json()
 
-            if (response.ok) {
-                setVehicles(data.vehicles);  // Set vehicle data to state
-            } else {
-                console.error(`Error ${response.status}: ${data.detail}`);
-            }
-        } catch (error) {
-            console.error('Error fetching vehicle data:', error);
-        }
-    };
+      if (response.ok) {
+        setVehicles(data.vehicles) // Set vehicle data to state
+      } else {
+        console.error(`Error ${response.status}: ${data.detail}`)
+      }
+    } catch (error) {
+      console.error('Error fetching vehicle data:', error)
+    }
+  }
 
-    // Fetch vehicle data on component mount
-    useEffect(() => {
-        getVehicleData();
-    }, []);
+  // Fetch vehicle data on component mount
+  useEffect(() => {
+    getVehicleData()
+  }, [])
 
     return (
         <div>
