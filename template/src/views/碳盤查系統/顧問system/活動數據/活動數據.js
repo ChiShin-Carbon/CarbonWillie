@@ -20,7 +20,7 @@ import { Link } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleCheck, faCircleXmark } from '@fortawesome/free-solid-svg-icons'
 
-import { process_code_Map, device_code_Map, fuel_code_Map } from '../EmissionSource'
+import { process_code_Map, device_code_Map, fuel_code_Map, data_type_map } from '../EmissionSource'
 
 const Tabs = () => {
   // 設定 state 來儲存選擇的行數據，初始值為 null
@@ -46,26 +46,49 @@ const Tabs = () => {
   }, [])
 
   // 表格數據
-  const tableData = emission_sources.map((source) => ({
-    status: 'completed',
-    process: process_code_Map[source.process_code],
-    equipment: device_code_Map[source.device_code],
-    material: fuel_code_Map[source.fuel_code],
-    details: {
-      annual1: '23802.5',
-      annual2: '100%',
-      annual3: '人小時',
-      annual4: '',
-      annual5: '人事考勤系統',
-      annual6: '管理部',
-      annual7: '自行評估',
-      annual8: '',
-      annual9: 'Kcal/人小時',
-      annual10: '',
-      annual11: '',
-      remark: '化糞池',
-    },
-  }))
+  const tableData = emission_sources
+    .map((source) => {
+      // Check if activity_data is empty
+      const isActivityDataEmpty = !source.activity_data || source.activity_data.length === 0
+
+      // If activity_data is empty, set default values for its fields
+      const activityData = isActivityDataEmpty
+        ? [
+            {
+              activity_data: '',
+              distribution_ratio: '',
+              data_source: '',
+              save_unit: '',
+              data_type: '',
+              calorific_value: '',
+              moisture_content: '',
+              carbon_content: '',
+            },
+          ]
+        : source.activity_data
+
+      return activityData.map((activity) => ({
+        status: 'completed',
+        process: process_code_Map[source.process_code],
+        equipment: device_code_Map[source.device_code],
+        material: fuel_code_Map[source.fuel_code],
+        details: {
+          annual1: activity.activity_data || '',
+          annual2: activity.distribution_ratio || '',
+          annual3: '人小時',
+          annual4: '',
+          annual5: activity.data_source || '',
+          annual6: activity.save_unit || '',
+          annual7: data_type_map[activity.data_type] || '',
+          annual8: activity.calorific_value || '',
+          annual9: 'Kcal/人小時',
+          annual10: activity.moisture_content || '',
+          annual11: activity.carbon_content || '',
+          remark: source.remark,
+        },
+      }))
+    })
+    .flat() // Flatten the array to ensure all data is in a single level
 
   const handleRowClick = (row) => {
     setSelectedRowData(row.details)

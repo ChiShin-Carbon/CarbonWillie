@@ -74,12 +74,36 @@ def read_emission_source():
                 )"""
             cursor.execute(emission_source_query)
             emission_source_records = cursor.fetchall()
-            conn.close()
+
+            # conn.close()
 
             if emission_source_records:
                 result = []
                 for record in emission_source_records:
                     gas_types = gas_type_map.get(record[4], "N/A")
+
+                    # 查詢source_id對應之活動數據
+                    activity_data_query = """
+                    SELECT 
+                        activity_data, distribution_ratio, data_source, save_unit, 
+                        data_type, calorific_value, moisture_content, carbon_content
+                    FROM Activity_Data WHERE source_id = ?"""
+                    cursor.execute(activity_data_query, (record[0],))
+                    activity_data_records = cursor.fetchall()
+                    activity_data_list = [
+                        {
+                            "activity_data": activity[0],
+                            "distribution_ratio": activity[1],
+                            "data_source": activity[2],
+                            "save_unit": activity[3],
+                            "data_type": activity[4],
+                            "calorific_value": activity[5],
+                            "moisture_content": activity[6],
+                            "carbon_content": activity[7]
+                        }
+                        for activity in activity_data_records
+                    ]
+
                     result.append({
                         "source_id": record[0],
                         "process_code": record[1],
@@ -97,7 +121,8 @@ def read_emission_source():
                         "supplier": record[13],
                         "is_CHP": record[14],
                         "remark": record[15],
-                        "gas_types": gas_types
+                        "gas_types": gas_types,
+                        "activity_data": activity_data_list
                     }) 
                 return {"emission_sources": result}  
             else:
@@ -106,5 +131,7 @@ def read_emission_source():
         
         except Exception as e:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error reading emission_source credentials: {e}")
+        finally:
+            conn.close()
     else:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Could not connect to the database.")

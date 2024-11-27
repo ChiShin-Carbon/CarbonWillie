@@ -89,3 +89,9 @@ export const gas_type_map = {
   6: 'SF6',
   7: 'NF3',
 }
+export const data_type_map = {
+  1: '連續量測',
+  2: '定期(間歇)量測',
+  3: '財務會計推估',
+  4: '自行評估',
+}
