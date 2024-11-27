@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import {
   CModal,
   CModalHeader,
@@ -34,32 +34,6 @@ export const VehicleAdd = ({ isAddModalVisible, setAddModalVisible }) => {
 
   const [recognizedText, setRecognizedText] = useState('')
 
-  const [vehicles, setVehicles] = useState([])
-  const getVehicleData = async () => {
-    try {
-      const response = await fetch('http://localhost:8000/vehicle', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-      const data = await response.json()
-
-      if (response.ok) {
-        setVehicles(data.vehicles) // Set vehicle data to state
-      } else {
-        console.error(`Error ${response.status}: ${data.detail}`)
-      }
-    } catch (error) {
-      console.error('Error fetching vehicle data:', error)
-    }
-  }
-
-  // Fetch vehicle data on component mount
-  useEffect(() => {
-    getVehicleData()
-  }, [])
-
   const handleC1Submit = async (e) => {
     e.preventDefault()
 
@@ -81,7 +55,6 @@ export const VehicleAdd = ({ isAddModalVisible, setAddModalVisible }) => {
       const data = await res.json()
       if (res.ok) {
         console.log('Form submitted successfully', data)
-        getVehicleData()
         setAddModalVisible(false)
       } else {
         console.error('Failed to submit form data', data.detail)
