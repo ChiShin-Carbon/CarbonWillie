@@ -33,6 +33,8 @@ export const VehicleAdd = ({ isAddModalVisible, setAddModalVisible }) => {
   const handleClose = () => setAddModalVisible(false)
 
   const [recognizedText, setRecognizedText] = useState('')
+
+  const [vehicles, setVehicles] = useState([])
   const getVehicleData = async () => {
     try {
       const response = await fetch('http://localhost:8000/vehicle', {
