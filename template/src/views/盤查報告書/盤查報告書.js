@@ -46,6 +46,25 @@ const Tabs = () => {
 
         setActiveSection(section); // 設置當前選中的章節
     };
+
+
+    const handleDownload = () => {
+        // Specify the file URL and file name
+        const fileUrl = 'src/assets/files/啟新-2024溫室氣體盤查報告書_V1.docx';
+        const fileName = '啟新-2024溫室氣體盤查報告書_V1.docx';
+
+        // Create a temporary anchor element
+        const link = document.createElement('a');
+        link.href = fileUrl;
+        link.download = fileName;
+
+        // Append to the document, trigger the download, and remove it
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
+
     return (
         <main>
             <div className={styles.systemTablist}>
@@ -104,22 +123,22 @@ const Tabs = () => {
                             className={styles.CatalogTitle}
                             onClick={() => toggleSection('section3')}
                         >
-                            <span>第三章 排放源鑑別</span>
+                            <span>第三章 報告溫室氣體排放量</span>
                             <FontAwesomeIcon icon={openSections.section3 ? faChevronUp : faChevronDown} />
                         </div>
                         {openSections.section3 && (
                             <div className={styles.subBlock}>
                                 <div className={`${styles.CatalogTitle} ${activeSection === 'section3_1' ? styles.active : ''}`} onClick={() => setActiveSection('section3_1')}>
-                                    3.1 與前一年度相較之排放源增設、拆除或停止使用之情形
+                                    3.1 溫室氣體排放類型與排放量說明
                                 </div>
                                 <div className={`${styles.CatalogTitle} ${activeSection === 'section3_2' ? styles.active : ''}`} onClick={() => setActiveSection('section3_2')}>
-                                    3.2 製程流程圖說
+                                    3.2  直接溫室氣體排放(類別 1 排放)
                                 </div>
                                 <div className={`${styles.CatalogTitle} ${activeSection === 'section3_3' ? styles.active : ''}`} onClick={() => setActiveSection('section3_3')}>
-                                    3.3 產製期程及產品產量
+                                    3.3  能源間接溫室氣體排放(類別 2 排放)
                                 </div>
                                 <div className={`${styles.CatalogTitle} ${activeSection === 'section3_4' ? styles.active : ''}`} onClick={() => setActiveSection('section3_4')}>
-                                    3.4 排放源之單元名稱或程序及其排放之溫室氣體種類
+                                    3.4 溫室氣體總排放量
                                 </div>
                             </div>
                         )}
@@ -128,36 +147,31 @@ const Tabs = () => {
                             className={styles.CatalogTitle}
                             onClick={() => toggleSection('section4')}
                         >
-                            <span>第四章 排放量計算</span>
+                            <span>第四章 數據品質管理</span>
                             <FontAwesomeIcon icon={openSections.section4 ? faChevronUp : faChevronDown} />
                         </div>
                         {openSections.section4 && (
                             <div className={styles.subBlock}>
                                 <div className={`${styles.CatalogTitle} ${activeSection === 'section4_1' ? styles.active : ''}`} onClick={() => setActiveSection('section4_1')}>
-                                    4.1 與排放量有關之原(物)料、燃料之種類及用量
+                                    4.1 量化方法
                                 </div>
                                 <div className={`${styles.CatalogTitle} ${activeSection === 'section4_2' ? styles.active : ''}`} onClick={() => setActiveSection('section4_2')}>
-                                    4.2 排放量計算採用之方法、參數選用、數據來源、檢測方法及檢測日期
+                                    4.2 量化方法變更說明
                                 </div>
                                 <div
                                     className={styles.CatalogTitle}
                                     onClick={() => toggleSection('section4_3')}
                                 >
-                                    <span>4.3 排放源排放量計算過程</span>
-                                    <FontAwesomeIcon icon={openSections.section4_3 ? faChevronUp : faChevronDown} />
+                                    <span>4.3 排放係數與變更說明</span>
                                 </div>
-                                {openSections['section4_3'] && (
-                                    <div className={styles.subsubBlock}>
-                                        <div className={`${styles.CatalogTitle} ${activeSection === 'section4_3_1' ? styles.active : ''}`} onClick={() => setActiveSection('section4_3_1')}>
-                                            4.3.1 直接排放
-                                        </div>
-                                        <div className={`${styles.CatalogTitle} ${activeSection === 'section4_3_2' ? styles.active : ''}`} onClick={() => setActiveSection('section4_3_2')}>
-                                            4.3.2 能源間接排放
-                                        </div>
-                                    </div>
-                                )}
                                 <div className={`${styles.CatalogTitle} ${activeSection === 'section4_4' ? styles.active : ''}`} onClick={() => setActiveSection('section4_4')}>
-                                    4.4 全廠（場）溫室氣體排放量
+                                    4.4 有效位數
+                                </div>
+                                <div className={`${styles.CatalogTitle} ${activeSection === 'section4_5' ? styles.active : ''}`} onClick={() => setActiveSection('section4_5')}>
+                                    4.5 重大排放源之資訊流
+                                </div>
+                                <div className={`${styles.CatalogTitle} ${activeSection === 'section4_6' ? styles.active : ''}`} onClick={() => setActiveSection('section4_6')}>
+                                    4.6 本次盤含排除事項、注意事項及推估說明
                                 </div>
                             </div>
                         )}
@@ -166,34 +180,18 @@ const Tabs = () => {
                             className={styles.CatalogTitle}
                             onClick={() => toggleSection('section5')}
                         >
-                            <span>第五章 數據品質管理 </span>
+                            <span>第五章 基準年 </span>
                             <FontAwesomeIcon icon={openSections.section5 ? faChevronUp : faChevronDown} />
                         </div>
                         {openSections.section5 && (
                             <div className={styles.subBlock}>
                                 <div className={`${styles.CatalogTitle} ${activeSection === 'section5_1' ? styles.active : ''}`} onClick={() => setActiveSection('section5_1')}>
-                                    5.1 不確定性量化資料來源
-                                </div>
-                                <div className={`${styles.CatalogTitle} ${activeSection === 'section5_2' ? styles.active : ''}`} onClick={() => setActiveSection('section5_2')}>
-                                    5.2 不確定性評估結果
+                                    5.1 基準年設定
                                 </div>
                             </div>
                         )}
 
-                        <div
-                            className={styles.CatalogTitle}
-                            onClick={() => toggleSection('section6')}
-                        >
-                            <span>第六章 其他主管機關規定事項</span>
-                            <FontAwesomeIcon icon={openSections.section6 ? faChevronUp : faChevronDown} />
-                        </div>
-                        {openSections.section6 && (
-                            <div className={styles.subBlock}>
-                                <div className={`${styles.CatalogTitle} ${activeSection === 'section6_1' ? styles.active : ''}`} onClick={() => setActiveSection('section6_1')}>
-                                    6.1 事業執行減量措施及說明
-                                </div>
-                            </div>
-                        )}
+                        <div className={`${styles.CatalogTitle} ${activeSection === 'section6' ? styles.active : ''}`} onClick={() => setActiveSection('section6')}>第六章 參考文獻</div>
                     </div>
                     <div className={styles.CatalogFoot}>
                         <a href="src/assets/files/盤查報告書參考範本_各行業通用.odt" download="盤查報告書參考範本_各行業通用.odt">點此下載報告書範本</a>
@@ -201,11 +199,184 @@ const Tabs = () => {
                 </CCard>
 
 
+
+
                 <CCard className={styles.cardMain}>
                     <div style={{ height: '95%' }}>
+
+                        {activeSection === 'cover' && (
+                            <img
+                                src="../img/封面.jpeg"
+                                alt="Cover"
+                                style={{ width: '100%', height: 'auto' }}
+                            />
+                        )}
+                        {activeSection === 'catalog' && (
+                            <img
+                                src="../img/目錄.jpeg"
+                                alt="Catalog"
+                                style={{ width: '100%', height: 'auto' }}
+                            />
+                        )}
+
+                        {activeSection === 'section1' && (
+                            <img
+                                src="../img/第一章.jpeg"
+                                alt="Section1"
+                                style={{ width: '100%', height: 'auto' }}
+                            />
+                        )}
+
+                        {activeSection === 'section2' && (
+                            <img
+                                src="../img/第二章.jpeg"
+                                alt="Section2"
+                                style={{ width: '100%', height: 'auto' }}
+                            />
+                        )}
+
+                        {activeSection === 'section3_1' && (
+                            <img
+                                src="../img/第三章1.jpeg"
+                                alt="Section3_1"
+                                style={{ width: '100%', height: 'auto' }}
+                            />
+                        )}
+                        {activeSection === 'section3_2' && (
+                            <div>
+                                <img
+                                    src="../img/第三章2.jpeg"
+                                    alt="Section3_2"
+                                    style={{ width: '100%', height: 'auto' }}
+                                />
+                                <img
+                                    src="../img/第三章2_2.jpeg"
+                                    alt="Section3_3"
+                                    style={{ width: '100%', height: 'auto' }}
+                                />
+                            </div>
+                        )}
+
+                        {activeSection === 'section3_3' && (
+                            <img
+                                src="../img/第三章3.jpeg"
+                                alt="Section3_3"
+                                style={{ width: '100%', height: 'auto' }}
+                            />
+                        )}
+
+                        {activeSection === 'section3_4' && (
+                            <img
+                                src="../img/第三章4.jpeg"
+                                alt="Section3_4"
+                                style={{ width: '100%', height: 'auto' }}
+                            />
+                        )}
+
+                        {activeSection === 'section4_1' && (
+                            <div>
+                                <img
+                                    src="../img/第四章.jpeg"
+                                    alt="Section3_2"
+                                    style={{ width: '100%', height: 'auto' }}
+                                />
+                                <img
+                                    src="../img/第四章2.jpeg"
+                                    alt="Section3_3"
+                                    style={{ width: '100%', height: 'auto' }}
+                                />
+                                <img
+                                    src="../img/第四章3.jpeg"
+                                    alt="Section3_3"
+                                    style={{ width: '100%', height: 'auto' }}
+                                />
+                                <img
+                                    src="../img/第四章4.jpeg"
+                                    alt="Section3_3"
+                                    style={{ width: '100%', height: 'auto' }}
+                                />
+                                <img
+                                    src="../img/第四章5.jpeg"
+                                    alt="Section3_3"
+                                    style={{ width: '100%', height: 'auto' }}
+                                />
+                                <img
+                                    src="../img/第四章6.jpeg"
+                                    alt="Section3_3"
+                                    style={{ width: '100%', height: 'auto' }}
+                                />
+                                <img
+                                    src="../img/第四章7.jpeg"
+                                    alt="Section3_3"
+                                    style={{ width: '100%', height: 'auto' }}
+                                />
+                            </div>
+                        )}
+
+                        {activeSection === 'section4_2' && (
+                            <img
+                                src="../img/第四章_2.jpeg"
+                                alt="Section3_3"
+                                style={{ width: '100%', height: 'auto' }}
+                            />
+                        )}
+
+                        {activeSection === 'section4_3' && (
+                            <img
+                                src="../img/第四章_3.jpeg"
+                                alt="Section3_3"
+                                style={{ width: '100%', height: 'auto' }}
+                            />
+                        )}
+
+                        {activeSection === 'section4_4' && (
+                            <img
+                                src="../img/第四章_4.jpeg"
+                                alt="Section3_3"
+                                style={{ width: '100%', height: 'auto' }}
+                            />
+                        )}
+
+                        {activeSection === 'section4_5' && (
+                            <img
+                                src="../img/第四章_5.jpeg"
+                                alt="Section3_3"
+                                style={{ width: '100%', height: 'auto' }}
+                            />
+                        )}
+
+                        {activeSection === 'section4_6' && (
+                            <img
+                                src="../img/第四章8.jpeg"
+                                alt="Section3_3"
+                                style={{ width: '100%', height: 'auto' }}
+                            />
+                        )}
+
+                        {activeSection === 'section5_1' && (
+                            <img
+                                src="../img/第五章.jpeg"
+                                alt="Section3_3"
+                                style={{ width: '100%', height: 'auto' }}
+                            />
+                        )}
+
+                        {activeSection === 'section6' && (
+                            <img
+                                src="../img/第六章.jpeg"
+                                alt="Section3_3"
+                                style={{ width: '100%', height: 'auto' }}
+                            />
+                        )}
+
+
+
+
                     </div>
                     <div style={{ textAlign: 'right' }}>
-                        <button><FontAwesomeIcon icon={faArrowRightFromBracket} />&nbsp;匯出報告</button>
+                        <button onClick={handleDownload}>
+                            <FontAwesomeIcon icon={faArrowRightFromBracket} /> 匯出報告
+                        </button>
                     </div>
 
                 </CCard>

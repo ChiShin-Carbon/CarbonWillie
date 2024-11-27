@@ -55,7 +55,7 @@ export const VehicleAdd = ({ isAddModalVisible, setAddModalVisible }) => {
       const data = await res.json()
       if (res.ok) {
         console.log('Form submitted successfully', data)
-        setAddModalVisible(false)
+        handleClose(); // Close modal on success
       } else {
         console.error('Failed to submit form data', data.detail)
       }
