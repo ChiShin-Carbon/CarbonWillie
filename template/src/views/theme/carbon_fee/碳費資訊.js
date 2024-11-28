@@ -97,6 +97,8 @@ const Tabs = () => {
     //news
     useEffect(() => {
         const fetchNewsAndGenerateSummary = async () => {
+          if (!query) return;  // 如果沒有 query，就不執行
+      
           setLoading(true);
           try {
             // Fetch news from API
@@ -106,7 +108,7 @@ const Tabs = () => {
             }
             const data = await response.json();
             setNews(data.articles);
-    
+      
             // Filter titles for summary generation
             const filteredTitles = data.articles
               .filter((article) => {
@@ -116,50 +118,80 @@ const Tabs = () => {
                 return isYahooWithValidExtension && hasKeywordInTitle;
               })
               .map((article) => article.title);
-    
+      
             // Generate summary if titles are available
+            let summaryResult = "目前沒有可用的新聞標題供摘要。";
             if (filteredTitles.length > 0) {
-              const summaryResult = await generateSummary(filteredTitles);
+              summaryResult = await generateSummary(filteredTitles);
               setSummary(summaryResult);
             } else {
-              setSummary("目前沒有可用的新聞標題供摘要。");
+              setSummary(summaryResult);
             }
+      
+            // Save news data to database
+            const today = new Date().toISOString().split('T')[0]; // 取得今天日期
+            data.articles.forEach((article) => {
+              saveNewsToDatabase({
+                news_title: article.title,
+                news_url: article.url,
+                news_summary: summaryResult, // 針對每條新聞保存摘要
+                news_date: today,
+              });
+            });
           } catch (error) {
             console.error("Fetch error: ", error);
           } finally {
             setLoading(false);
           }
         };
-    
-        // Trigger only if query exists
-        if (query) {
-          fetchNewsAndGenerateSummary();
-        }
-      }, [query]);
-      //新聞總結
+      
+        fetchNewsAndGenerateSummary();
+      }, [query]); // 只有當 query 改變時才會觸發
+      
       const generateSummary = async (titles) => {
+        if (titles.length === 0) return "目前沒有可用的新聞標題供摘要。";
         try {
-            const response = await fetch("http://127.0.0.1:8000/langchaingpt", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    message: `請根據以下標題生成摘要：${titles.join(", ")}`,
-                }),
-            });
-    
-            if (!response.ok) {
-                throw new Error("Failed to generate summary from API: " + response.statusText);
-            }
-    
-            const data = await response.json();
-            return data.response; // 返回從 OpenAI API 獲得的摘要
+          const response = await fetch("http://127.0.0.1:8000/langchaingpt", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              message: `請根據以下標題生成摘要：${titles.join(", ")}`,
+            }),
+          });
+      
+          if (!response.ok) {
+            throw new Error("Failed to generate summary from API: " + response.statusText);
+          }
+      
+          const data = await response.json();
+          return data.response; // 返回從 OpenAI API 獲得的摘要
         } catch (error) {
-            console.error("Error generating summary: ", error);
-            return "摘要生成失敗，請稍後再試。";
+          console.error("Error generating summary: ", error);
+          return "摘要生成失敗，請稍後再試。";
         }
-    };
+      };
+      
+      const saveNewsToDatabase = async (newsData) => {
+        try {
+          const response = await fetch("http://127.0.0.1:8000/news", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(newsData),
+          });
+      
+          if (!response.ok) {
+            throw new Error("Failed to save news to the database: " + response.statusText);
+          }
+      
+          console.log("News saved successfully.");
+        } catch (error) {
+          console.error("Error saving news:", error);
+        }
+      };
     
     return (
         <CRow>
