@@ -86,3 +86,29 @@ def post_news(news_data: NewsData):
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error adding news: {e}")
     else:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Could not connect to the database.")
+@news.delete("/news")
+def delete_news(today_news_date: str):
+    conn = connectDB()
+    if conn:
+        cursor = conn.cursor()
+        try:
+            # 查詢是否存在要刪除的新聞
+            check_query = "SELECT COUNT(*) FROM news WHERE today_news_date = ?"
+            cursor.execute(check_query, (today_news_date,))
+            count = cursor.fetchone()[0]
+
+            if count == 0:
+                return {"message": "No news found for the specified date."}
+
+            # 刪除指定日期的新聞
+            delete_query = "DELETE FROM news WHERE today_news_date = ?"
+            cursor.execute(delete_query, (today_news_date,))
+            conn.commit()
+            conn.close()
+            return {"message": "News deleted successfully."}
+
+        except Exception as e:
+            conn.rollback()
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error deleting news: {e}")
+    else:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Could not connect to the database.")
