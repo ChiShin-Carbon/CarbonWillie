@@ -25,6 +25,7 @@ from insert.insert_employee import insert_employee
 from baseline import baseline
 from boundary import boundary
 from langchain_gpt import langchaingpt
+from news import news
 from insert.insert_machine import insert_machine
 
 from insert.insert_emergency import insert_emergency
@@ -128,6 +129,7 @@ app.include_router(NonEmployee)
 app.include_router(insert_nonemployee)
 app.include_router(langchaingpt)
 app.include_router(emission_source)
+app.include_router(news)
 app.include_router(adminCompany)
 app.include_router(insert_adminCompany)
 app.include_router(edit_adminCompany)
