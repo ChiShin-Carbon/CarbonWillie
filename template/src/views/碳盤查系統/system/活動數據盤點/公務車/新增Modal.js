@@ -31,36 +31,43 @@ export const VehicleAdd = ({ isAddModalVisible, setAddModalVisible }) => {
   const [C1date, setC1date] = useState('')
   const [C1num, setC1num] = useState('')
   const handleClose = () => setAddModalVisible(false)
+  const [isdatecorrect, setIsdatecorrect] = useState(true)
+  const [dateincorrectmessage, setDateincorrectmessage] = useState('')
+  const [isnumcorrect, setIsnumcorrect] = useState(true)
+  const [numincorrectmessage, setNumincorrectmessage] = useState('')
 
   const [recognizedText, setRecognizedText] = useState('')
 
   const handleC1Submit = async (e) => {
-    e.preventDefault()
 
-    const formData = new FormData()
-    // formData.append('user_id', 1)
-    formData.append('user_id', window.sessionStorage.getItem('user_id'))
-    formData.append('date', document.getElementById('date').value)
-    formData.append('number', document.getElementById('num').value)
-    formData.append('oil_species', document.getElementById('type').value)
-    formData.append('liters', document.getElementById('quantity').value)
-    formData.append('remark', document.getElementById('explain').value)
-    formData.append('image', document.getElementById('C1image').files[0])
+    if (isdatecorrect == true || isnumcorrect == true) {
+      e.preventDefault()
 
-    try {
-      const res = await fetch('http://localhost:8000/insert_vehicle', {
-        method: 'POST',
-        body: formData,
-      })
-      const data = await res.json()
-      if (res.ok) {
-        console.log('Form submitted successfully', data)
-        handleClose(); // Close modal on success
-      } else {
-        console.error('Failed to submit form data', data.detail)
+      const formData = new FormData()
+      // formData.append('user_id', 1)
+      formData.append('user_id', window.sessionStorage.getItem('user_id'))
+      formData.append('date', document.getElementById('date').value)
+      formData.append('number', document.getElementById('num').value)
+      formData.append('oil_species', document.getElementById('type').value)
+      formData.append('liters', document.getElementById('quantity').value)
+      formData.append('remark', document.getElementById('explain').value)
+      formData.append('image', document.getElementById('C1image').files[0])
+
+      try {
+        const res = await fetch('http://localhost:8000/insert_vehicle', {
+          method: 'POST',
+          body: formData,
+        })
+        const data = await res.json()
+        if (res.ok) {
+          console.log('Form submitted successfully', data)
+          handleClose(); // Close modal on success
+        } else {
+          console.error('Failed to submit form data', data.detail)
+        }
+      } catch (error) {
+        console.error('Error submitting form data', error)
       }
-    } catch (error) {
-      console.error('Error submitting form data', error)
     }
   }
 
@@ -88,6 +95,17 @@ export const VehicleAdd = ({ isAddModalVisible, setAddModalVisible }) => {
         setC1date(data.response_content[0])
         setC1num(data.response_content[1])
         console.log('Data submitted successfully')
+
+        if (data.response_content[0] != document.getElementById('date').value) {
+          setIsdatecorrect(false)
+          setDateincorrectmessage('日期不正確')
+        }
+
+        if (data.response_content[1] != document.getElementById('num').value) {
+          setIsnumcorrect(false)
+          setNumincorrectmessage('發票號碼不正確')
+        }
+
       } else {
         console.error('Failed to submit data')
       }
@@ -96,6 +114,19 @@ export const VehicleAdd = ({ isAddModalVisible, setAddModalVisible }) => {
     }
   }
 
+  const datecorrect = () => {
+    if (C1date == document.getElementById('date').value) {
+      setDateincorrectmessage('')
+      setIsnumcorrect(true)
+    }
+  }
+
+  const numcorrect = () => {
+    if (C1num == document.getElementById('num').value) {
+      setNumincorrectmessage('')
+      setIsnumcorrect(true)
+    }
+  }
   return (
     <CModal
       backdrop="static"
@@ -120,17 +151,19 @@ export const VehicleAdd = ({ isAddModalVisible, setAddModalVisible }) => {
                   發票/收據日期*
                 </CFormLabel>
                 <CCol>
-                  <CFormInput className={styles.addinput} type="date" id="date" required />
+                  <CFormInput className={styles.addinput} type="date" id="date" required onChange={datecorrect} />
                 </CCol>
               </CRow>
+              <p>{dateincorrectmessage}</p>
               <CRow className="mb-3">
                 <CFormLabel htmlFor="num" className={`col-sm-2 col-form-label ${styles.addlabel}`}>
                   發票號碼/收據編號*
                 </CFormLabel>
                 <CCol>
-                  <CFormInput className={styles.addinput} type="text" id="num" required />
+                  <CFormInput className={styles.addinput} type="text" id="num" required onChange={numcorrect} />
                 </CCol>
               </CRow>
+              <p>{numincorrectmessage}</p>
               <CRow className="mb-3">
                 <CFormLabel htmlFor="type" className={`col-sm-2 col-form-label ${styles.addlabel}`}>
                   油種*

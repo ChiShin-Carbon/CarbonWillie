@@ -5,11 +5,24 @@ import io
 from fastapi.concurrency import run_in_threadpool
 import openai
 import json
+from dotenv import load_dotenv  # Import for loading environment variables
+import os
+
+# Load environment variables from a .env file
+load_dotenv()
 
 ocrapi = APIRouter()
 
+
 @ocrapi.post("/ocrapi")
+
+
 async def ocr_image(image: UploadFile = File(...)):
+
+    
+    # Set your API key from the environment variable
+    openai.api_key = os.getenv("OPENAI_API_KEY")
+
     try:
         # Read and open the uploaded image
         img = Image.open(io.BytesIO(await image.read()))
