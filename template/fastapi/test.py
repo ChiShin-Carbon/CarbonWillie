@@ -8,14 +8,10 @@ load_dotenv()
 # Set your API key from the environment variable
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
-# Create a completion request with a valid model name
-from openai import OpenAI
-client = OpenAI()
-
-completion = client.chat.completions.create(
-    model="gpt-4o-mini",
+completion = openai.ChatCompletion.create(
+    model="gpt-4",  # Use a valid model like 'gpt-4' or 'gpt-3.5-turbo'
     messages=[
-        {"role": "system", "content": ""},
+        {"role": "system", "content": "You are a helpful assistant."},
         {
             "role": "user",
             "content": "請問碳盤查是什麼?"
@@ -23,4 +19,5 @@ completion = client.chat.completions.create(
     ]
 )
 
-print(completion.choices[0].message)
+# Print the response from the model
+print(completion.choices[0].message['content'])
