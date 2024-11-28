@@ -32,7 +32,7 @@ async def ocr_image(image: UploadFile = File(...)):
 
         # Request a summary of the receipt in array format
         completion = await run_in_threadpool(
-            openai.ChatCompletion.create,
+            openai.chat.completions.create,
             model="gpt-4o-mini",
             messages=[
                 {"role": "system", "content": "You are a helpful assistant."},
