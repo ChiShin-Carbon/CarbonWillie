@@ -108,11 +108,11 @@ const Tabs = () => {
               不確定性量化評估
             </CTab>
           </Link>
-          <Link to="/碳盤查系統/顧問system/全廠電力蒸汽供需情況 " className="system-tablist-link">
+          {/* <Link to="/碳盤查系統/顧問system/全廠電力蒸汽供需情況 " className="system-tablist-link">
             <CTab aria-controls="tab3" itemKey={2} className="system-tablist-choose">
               全廠電力蒸汽供需情況
             </CTab>
-          </Link>
+          </Link> */}
         </CTabList>
       </CTabs>
 
