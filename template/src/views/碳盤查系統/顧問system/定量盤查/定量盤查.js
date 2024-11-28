@@ -50,17 +50,17 @@ const Tabs = () => {
     equipment: device_code_Map[source.device_code],
     material: fuel_code_Map[source.fuel_code],
     details: {
-      activity: '23,802.50',
-      activityUnit: '人小時',
-      emiCoe1: 'CH4',
-      emiCoeType: '自訂',
-      emiCoeNum: '0.0000015938',
+      activity: '4267.52',
+      activityUnit: '公升',
+      emiCoe1: 'CH2',
+      emiCoeType: '預設',
+      emiCoeNum: '2.606',
       emiCoeSource:
         'GHG排放係數管理表(6.04版),CH4公噸人-年0.003825,換算成每工時0.0000015938~!係數單位:公噸-CH4/人-每工時',
       emiCoeUnit: 'TCH4/人小時',
-      emiCoeClass: '國家排放係數',
-      emiCoeEmission: '0.0379',
-      emiCoeGWP: '條件不符合',
+      emiCoeClass: '5國家排放係數',
+      emiCoeEmission: '',
+      emiCoeGWP: '1',
       emiCoeEqu: '',
       other1: '',
       other2: '',
@@ -318,7 +318,7 @@ const Tabs = () => {
                       </div>
                       <div>
                         <span>GWP:</span>
-                        <p>{selectedRowData.emiCoeEmission}</p>
+                        <p>{selectedRowData.emiCoeGWP}</p>
                       </div>
                       <div>
                         <span>排放當量(公噸CO2e/年):</span>

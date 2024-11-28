@@ -45,29 +45,116 @@ const Tabs = () => {
   }, [])
 
   // 表格數據
+  // const tableData = emission_sources.map((source) => ({
+  //   status: 'completed',
+  //   process: process_code_Map[source.process_code],
+  //   equipment: device_code_Map[source.device_code],
+  //   material: fuel_code_Map[source.fuel_code],
+  //   details: {
+  //     matCode: '36006',
+  //     matName: '水肥',
+  //     matClassLevel: '3',
+  //     matBelType: '未進行儀器校正或未進行紀錄彙整者',
+  //     matBelLevel: '3',
+  //     matInfo: '',
+  //     matUnit: '',
+  //     sourceClass: '類別1',
+  //     sourceType: '逸散',
+  //     emiCoeClass: '國家排放係數',
+  //     emiLevel: '3',
+  //     manage1: '27',
+  //     manage2: '',
+  //     manage3: '3',
+  //     manage4: '',
+  //   },
+  // }))
+
+  const generateDetails = (sourceId) => {
+    switch (sourceId) {
+      case 2:
+        return {
+          matCode: '170006',
+          matName: '柴油',
+          matClassLevel: '2',
+          matBelType: '有進行外部校正或有多組數據茲佐證者',
+          matBelLevel: '1',
+          matInfo: '',
+          matUnit: '',
+          sourceClass: '範疇1',
+          sourceType: '移動',
+          emiCoeClass: '5國家排放係數',
+          emiLevel: '3',
+          manage1: '6',
+          manage2: '',
+          manage3: '3',
+          manage4: '',
+        }
+      case 3:
+        return {
+          matCode: '170001',
+          matName: '車用汽油',
+          matClassLevel: '2',
+          matBelType: '有進行外部校正或有多組數據茲佐證者',
+          matBelLevel: '1',
+          matInfo: '',
+          matUnit: '',
+          sourceClass: '範疇1',
+          sourceType: '移動',
+          emiCoeClass: '5國家排放係數',
+          emiLevel: '3',
+          manage1: '6',
+          manage2: '',
+          manage3: '3',
+          manage4: '',
+        }
+      case 4:
+        return {
+          matCode: 'GG1814',
+          matName: '冷媒－R410a，R32/125（50/50）',
+          matClassLevel: '3',
+          matBelType: '未進行儀器校正或未進行紀錄彙整者',
+          matBelLevel: '3',
+          matInfo: '',
+          matUnit: '',
+          sourceClass: '範疇1',
+          sourceType: '逸散',
+          emiCoeClass: '5國家排放係數',
+          emiLevel: '3',
+          manage1: '27',
+          manage2: '',
+          manage3: '3',
+          manage4: '',
+        }
+      case 6:
+        return {
+          matCode: '350099',
+          matName: '其他電力',
+          matClassLevel: '1',
+          matBelType: '有進行外部校正或有多組數據茲佐證者',
+          matBelLevel: '1',
+          matInfo: '',
+          matUnit: '',
+          sourceClass: '範疇2',
+          sourceType: '外購電力',
+          emiCoeClass: '5國家排放係數',
+          emiLevel: '3',
+          manage1: '3',
+          manage2: '',
+          manage3: '1',
+          manage4: '',
+        }
+    }
+  }
+
   const tableData = emission_sources.map((source) => ({
     status: 'completed',
     process: process_code_Map[source.process_code],
     equipment: device_code_Map[source.device_code],
     material: fuel_code_Map[source.fuel_code],
-    details: {
-      matCode: '36006',
-      matName: '水肥',
-      matClassLevel: '3',
-      matBelType: '未進行儀器校正或未進行紀錄彙整者',
-      matBelLevel: '3',
-      matInfo: '',
-      matUnit: '',
-      sourceClass: '類別1',
-      sourceType: '逸散',
-      emiCoeClass: '國家排放係數',
-      emiLevel: '3',
-      manage1: '27',
-      manage2: '',
-      manage3: '3',
-      manage4: '',
-    },
+    details: generateDetails(source.source_id),
   }))
+
+  console.log(tableData)
 
   const handleRowClick = (row) => {
     setSelectedRowData(row.details)

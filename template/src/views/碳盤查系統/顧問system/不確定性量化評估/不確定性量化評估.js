@@ -18,7 +18,7 @@ import { Link } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleCheck, faCircleXmark } from '@fortawesome/free-solid-svg-icons'
 
-import { process_code_Map, device_code_Map, fuel_code_Map } from '../EmissionSource'
+import { process_code_Map, device_code_Map, fuel_code_Map, gas_type_map } from '../EmissionSource'
 
 const Tabs = () => {
   // 設定 state 來儲存選擇的行數據，初始值為 null
@@ -44,28 +44,34 @@ const Tabs = () => {
   }, [])
 
   // 表格數據
-  const tableData = emission_sources.map((source) => ({
-    status: 'completed',
-    process: process_code_Map[source.process_code],
-    equipment: device_code_Map[source.device_code],
-    material: fuel_code_Map[source.fuel_code],
-    details: {
-      act95down: '',
-      act95up: '',
-      actSource: '',
-      actUnit: '',
-      green: 'CH4',
-      greenNum: '',
-      green95down: '',
-      green95up: '',
-      greenSource: '',
-      greenUnit: '',
-      single95down: '',
-      single95up: '',
-      singleEmi95down: '',
-      singeEmi95up: '',
-    },
-  }))
+  const tableData = emission_sources.map((source) => {
+    const gasTypes = source.gas_types
+      ? source.gas_types.split(',').map((gasId) => gas_type_map[parseInt(gasId)]) // 轉換為氣體名稱
+      : []
+
+    return {
+      status: 'completed',
+      process: process_code_Map[source.process_code],
+      equipment: device_code_Map[source.device_code],
+      material: fuel_code_Map[source.fuel_code],
+      details: {
+        act95down: '',
+        act95up: '',
+        actSource: '',
+        actUnit: '',
+        green: gasTypes,
+        greenNum: '',
+        green95down: '',
+        green95up: '',
+        greenSource: '',
+        greenUnit: '',
+        single95down: '',
+        single95up: '',
+        singleEmi95down: '',
+        singeEmi95up: '',
+      },
+    }
+  })
 
   const handleRowClick = (row) => {
     setSelectedRowData(row.details)
