@@ -748,6 +748,7 @@ const Tabs = () => {
                                 </CCardTitle>
                                 <CCardBody>
                                     <CCardBody style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', }}>
+                                    <CCard style={{ width: '1100px', fontSize: '1.2rem' }}>
                                     <CRow>
                                         <CCol sm={12}>
                                         <CCard style={{width: '100%', fontSize: '1.2rem'}}>
@@ -763,10 +764,12 @@ const Tabs = () => {
                                                 }
                                                 </div>
                                                 </CRow>
+                                                
                                             </CCardBody>
                                         </CCard>
                                         </CCol>
                                     </CRow>
+                                    </CCard>
                                     </CCardBody>
                                 </CCardBody>
                             </CCard>
