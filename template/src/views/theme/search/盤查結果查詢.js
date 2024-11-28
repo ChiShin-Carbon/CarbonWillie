@@ -591,9 +591,6 @@ const Tabs = () => {
                         <th scope="col" style={cellStyle}>
                           外購電力
                         </th>
-                        <th scope="col" style={cellStyle}>
-                          外購蒸氣
-                        </th>
                       </tr>
                     </thead>
                     <tbody style={{ border: '1px solid white', backgroundColor: '#CCEEFF' }}>
@@ -617,19 +614,16 @@ const Tabs = () => {
                         <td style={cellStyle} colSpan={4}>
                           47.0206
                         </td>
-                        <td style={cellStyle} colSpan={2}>
+                        <td style={cellStyle} colSpan={2} rowSpan={2}>
                           197.7533
                         </td>
-                        <td style={cellStyle}>244.774</td>
+                        <td style={cellStyle} rowSpan={2}>244.774</td>
                       </tr>
                       <tr>
                         <td style={cellStyle}>0.0125</td>
                         <td style={cellStyle}>0.0000</td>
                         <td style={cellStyle}>10.0595</td>
                         <td style={cellStyle}>36.9486</td>
-                        <td style={cellStyle}></td>
-                        <td style={cellStyle}></td>
-                        <td style={cellStyle}></td>
                       </tr>
                       <tr>
                         <td
@@ -651,19 +645,16 @@ const Tabs = () => {
                         <td style={cellStyle} colSpan={4}>
                           19.21%
                         </td>
-                        <td style={cellStyle} colSpan={2}>
+                        <td style={cellStyle} colSpan={2} rowSpan={2}>
                           80.79%
                         </td>
-                        <td style={cellStyle}>100%</td>
+                        <td style={cellStyle} rowSpan={2}>100%</td>
                       </tr>
                       <tr>
                         <td style={cellStyle}>0.01%</td>
                         <td style={cellStyle}>0.00%</td>
                         <td style={cellStyle}>4.11%</td>
                         <td style={cellStyle}>15.09%</td>
-                        <td style={cellStyle}></td>
-                        <td style={cellStyle}></td>
-                        <td style={cellStyle}></td>
                       </tr>
                     </tbody>
                   </table>
