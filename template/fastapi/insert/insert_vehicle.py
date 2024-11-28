@@ -71,37 +71,37 @@ async def read_user_credentials(
                 )
                 cursor.execute(emission_source_query, emission_values)
                 conn.commit()
-                source_id = cursor.lastrowid
+                # source_id = cursor.lastrowid
 
             # 在 Activity_Data 表插入資料
-            data_source = "活動數據盤點-公務車"
-            save_unit = "管理部門"
-            data_type = 3
-            calorific_value = 7800 if oil_species == 0 else 8400  # 熱值
+            # data_source = "活動數據盤點-公務車"
+            # save_unit = "管理部門"
+            # data_type = 3
+            # calorific_value = 7800 if oil_species == 0 else 8400  # 熱值
 
             # 查詢是否已有相同 source_id 之 Activity_Data 記錄
-            check_activity_query = "SELECT activity_data FROM Activity_Data WHERE source_id = ?"
-            cursor.execute(check_activity_query, (source_id,))
-            existing_activity_data = cursor.fetchone()
+            # check_activity_query = "SELECT activity_data FROM Activity_Data WHERE source_id = ?"
+            # cursor.execute(check_activity_query, (source_id,))
+            # existing_activity_data = cursor.fetchone()
 
-            if existing_activity_data:
-                # 若存在，累加 activity_data
-                new_activity_data = existing_activity_data[0] + liters
-                update_activity_query = "UPDATE Activity_Data SET activity_data = ? WHERE source_id = ?"
-                cursor.execute(update_activity_query, (new_activity_data, source_id))
-            else:
-                # 若不存在，插入新記錄
-                insert_activity_query = """
-                    INSERT INTO Activity_Data (
-                        source_id, activity_data, distribution_ratio, data_source, save_unit, data_type,
-                        calorific_value, moisture_content, carbon_content
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """
-                insert_activity_values = (
-                    source_id, liters, 100, data_source, save_unit, data_type, calorific_value, 0, 0
-                )
-                cursor.execute(insert_activity_query, insert_activity_values)
-            conn.commit()
+            # if existing_activity_data:
+            #     # 若存在，累加 activity_data
+            #     new_activity_data = existing_activity_data[0] + liters
+            #     update_activity_query = "UPDATE Activity_Data SET activity_data = ? WHERE source_id = ?"
+            #     cursor.execute(update_activity_query, (new_activity_data, source_id))
+            # else:
+            #     # 若不存在，插入新記錄
+            #     insert_activity_query = """
+            #         INSERT INTO Activity_Data (
+            #             source_id, activity_data, distribution_ratio, data_source, save_unit, data_type,
+            #             calorific_value, moisture_content, carbon_content
+            #         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            #     """
+            #     insert_activity_values = (
+            #         source_id, liters, 100, data_source, save_unit, data_type, calorific_value, 0, 0
+            #     )
+            #     cursor.execute(insert_activity_query, insert_activity_values)
+            # conn.commit()
 
             return {"status": "success", "image_path": str(image_path)}
         except Exception as e:
