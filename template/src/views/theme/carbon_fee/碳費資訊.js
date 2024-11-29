@@ -27,6 +27,11 @@ import {
   CInputGroupText,
   CListGroup,
   CListGroupItem,
+  CModal,
+  CModalBody,
+  CModalFooter,
+  CModalHeader,
+  CModalTitle,
 } from '@coreui/react'
 import {
   CChartBar,
@@ -70,6 +75,11 @@ const Tabs = () => {
     height: '40px',
   }
   const rankingstyle = { border: '1px solid white', textAlign: 'center', verticalAlign: 'middle' }
+
+  const [visible1, setVisible1] = useState(false) // 削減率計算公式model
+  const [visible2, setVisible2] = useState(false) // 削減率計算公式model
+  const [visible3, setVisible3] = useState(false) // 削減率計算公式model
+
   //新聞const
   const [news, setNews] = useState([]) // 定義狀態變數
   const [query, setQuery] = useState('碳費') // 預設搜尋關鍵字
@@ -513,12 +523,32 @@ const Tabs = () => {
                         alignItems: 'center',
                         marginTop: '28px',
                       }}
+                      onClick={() => setVisible1(!visible1)}
                     >
                       <FontAwesomeIcon
                         icon={faCircleInfo}
                         style={{ width: '20px', height: '20px' }}
                       />
                     </CButton>
+                    <CModal visible={visible1} onClose={() => setVisible1(false)}>
+                      <CModalHeader>
+                        <CModalTitle><b>技術標竿指定削減率</b></CModalTitle>
+                      </CModalHeader>
+                      <CModalBody><ul>
+                                  <li>以<b>107~111年為基準年</b>，考量各排放源排放形式，包括燃料種類、製程、電力使用等訂定減量目標，適用<b>優惠費率B</b>。
+                                  <br/><font style={{backgroundColor:'#DCDCDC'}}>削減率 = [(基準年-當年分) / 基準年]*100%</font><br/>
+                                  </li>
+                                  <li>目標年溫室氣體年排放量削減率相對基準年應達6%。<br></br>
+                                  <font style={{backgroundColor:'#DCDCDC'}}>目標年溫室氣體排放量 = [基準年固定燃料燃燒溫室氣體年排放量*(1-削減率)]+[基準年製程溫室氣體年排放量*(1-削減率)]
+                                      +[基準年使用電力之溫室氣體年排放量*(1-削減率)]+[逸散及移動排放源基準年溫室氣體年排放量]</font><br/>
+                                  </li></ul>
+                      </CModalBody>
+                      <CModalFooter>
+                        <CButton color="secondary" onClick={() => setVisible(false)}>
+                          關閉
+                        </CButton>
+                      </CModalFooter>
+                    </CModal>
                     <CButton
                       style={{
                         position: 'absolute',
@@ -641,12 +671,31 @@ const Tabs = () => {
                         alignItems: 'center',
                         marginTop: '28px',
                       }}
+                      onClick={() => setVisible2(!visible2)}
                     >
                       <FontAwesomeIcon
                         icon={faCircleInfo}
                         style={{ width: '20px', height: '20px' }}
                       />
                     </CButton>
+                    <CModal visible={visible2} onClose={() => setVisible2(false)}>
+                      <CModalHeader>
+                        <CModalTitle><b>行業別指定削減率</b></CModalTitle>
+                      </CModalHeader>
+                      <CModalBody><ul>
+                                  <li>以<b>110年為基準年</b>，此目標參酌國際間科技基礎減量目標(SBT)訂定，適用<b>優惠費率A</b>。
+                                  <br/><font style={{backgroundColor:'#DCDCDC'}}>削減率 = [(基準年-當年分) / 基準年]*100%</font><br/>
+                                  </li>
+                                  <li>目標年訂為119年，目標年溫室氣體年排放量削減率相對基準年應達42%。<br/>
+                                  <font style={{backgroundColor:'#DCDCDC'}}>目標年溫室氣體排放量 = 基準年溫室氣體年排放量*(1-削減率)</font><br/>
+                                  </li></ul>
+                      </CModalBody>
+                      <CModalFooter>
+                        <CButton color="secondary" onClick={() => setVisible(false)}>
+                          關閉
+                        </CButton>
+                      </CModalFooter>
+                    </CModal>
                     <CButton
                       style={{
                         position: 'absolute',
@@ -864,12 +913,31 @@ const Tabs = () => {
                         alignItems: 'center',
                         marginTop: '28px',
                       }}
+                      onClick={() => setVisible3(!visible3)}
                     >
                       <FontAwesomeIcon
                         icon={faCircleInfo}
                         style={{ width: '20px', height: '20px' }}
                       />
                     </CButton>
+                    <CModal visible={visible3} onClose={() => setVisible3(false)}>
+                      <CModalHeader>
+                        <CModalTitle><b>碳費&排放當量</b></CModalTitle>
+                      </CModalHeader>
+                      <CModalBody><ul><li>
+                                  <font style={{backgroundColor:'#DCDCDC'}}>碳費 = 收費排放量*徵收費率</font>
+                                  </li>
+                                  <li><font style={{backgroundColor:'#DCDCDC'}}>收費排放量 = [年排放當量-K值]*排放量調整係數</font>
+                                  <br/><b>非高碳洩漏風險者K值為25,000公噸</b>；高碳洩漏風險者K值為0公噸二氧化碳當量。<br/>
+                                  <b>非高碳洩漏風險者的排放量調整係數為0</b>；高碳洩漏風險行業在初期適用0.2的排放量調整係數，第二期與第三期分別為0.4和0.6​。
+                                  </li></ul>
+                      </CModalBody>
+                      <CModalFooter>
+                        <CButton color="secondary" onClick={() => setVisible(false)}>
+                          關閉
+                        </CButton>
+                      </CModalFooter>
+                    </CModal>
                     <CButton
                       style={{
                         position: 'absolute',
