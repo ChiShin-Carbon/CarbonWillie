@@ -207,7 +207,10 @@
 }
 
 .addmodal {
-    margin: 0 30px
+    margin: 0 30px;
+    display:flex;
+    flex-direction: row;
+    gap:50px;
 }
 
 .activityAccordionDiv {
@@ -373,10 +376,6 @@
     background-color:#8c5454;
     transition:0.5s;
   }
-  .addmodal img{
-    width:100%;
-  }
-
 
 
 
@@ -460,4 +459,39 @@
   .complete:hover{
     background-color:#8c5454;
   
+  }
+
+  .modalLeft{
+    width:50%;
+    height:500px;
+  }
+  .modalRight{
+    width:50%;
+    height:100%;
+  }
+  .imgBlock {
+    background-color: #ececec;
+    border-radius: 10px;
+    border: 3px solid rgb(208, 208, 208);
+    height: 300px; /* 固定高度 */
+    width: 100%;   /* 容器寬度可以是靈活的 */
+    display: flex;
+    justify-content: center;
+    align-items: center; /* 水平和垂直居中 */
+  }
+  
+  .imgBlock img {
+    height:290px
+  }
+  
+  
+  .errorMSG{
+    width:100%;
+    color:#555
+  }
+
+  .errorMSG span{
+    margin-left:15px;
+    color:red;
+    font-weight: bold;
   }
