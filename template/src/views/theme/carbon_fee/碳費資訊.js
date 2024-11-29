@@ -146,52 +146,50 @@ const Tabs = () => {
   //news
   useEffect(() => {
     const fetchNewsAndGenerateSummary = async () => {
-      if (!query) return // 如果沒有 query，就不執行
+        if (!query) return; // 如果沒有 query，就不執行
+    
+        setLoading(true);
+        try {
+            // Fetch news from API
+            const response = await fetch(`http://127.0.0.1:5000/news?q=${query}`);
+            if (!response.ok) {
+                throw new Error("Network response was not ok " + response.statusText);
+            }
+            const data = await response.json();
+            setNews(data.articles);
 
-      setLoading(true)
-      try {
-        // Fetch news from API
-        const response = await fetch(`http://127.0.0.1:5000/news?q=${query}`)
-        if (!response.ok) {
-          throw new Error('Network response was not ok ' + response.statusText)
-        }
-        const data = await response.json()
-        setNews(data.articles)
+            // Filter titles for summary generation and database saving
+            const filteredArticles = data.articles.filter((article) => {
+                const isYahooWithValidExtension =
+                    !(article.url.includes("yahoo") && !/\.(png|html)$/.test(article.url));
+                const hasKeywordInTitle = article.title.includes(query);
+                return isYahooWithValidExtension && hasKeywordInTitle;
+            });
 
-        // Filter titles for summary generation
-        const filteredTitles = data.articles
-          .filter((article) => {
-            const isYahooWithValidExtension = !(
-              article.url.includes('yahoo') && !/\.(png|html)$/.test(article.url)
-            )
-            const hasKeywordInTitle = article.title.includes(query)
-            return isYahooWithValidExtension && hasKeywordInTitle
-          })
-          .map((article) => article.title)
+            // Generate summary if filtered articles are available
+            let summaryResult = "目前沒有可用的新聞標題供摘要。";
+            if (filteredArticles.length > 0) {
+                const filteredTitles = filteredArticles.map((article) => article.title);
+                summaryResult = await generateSummary(filteredTitles);
+                setSummary(summaryResult);
+            } else {
+                setSummary(summaryResult);
+            }
 
-        // Generate summary if titles are available
-        let summaryResult = '目前沒有可用的新聞標題供摘要。'
-        if (filteredTitles.length > 0) {
-          summaryResult = await generateSummary(filteredTitles)
-          setSummary(summaryResult)
-        } else {
-          setSummary(summaryResult)
-        }
+            // Save filtered articles to database
+            filteredArticles.forEach((article) => {
+                saveNewsToDatabase({
+                    news_title: article.title,
+                    news_url: article.url,
+                    news_summary: summaryResult, // 針對每條新聞保存摘要
+                    news_date: article.news_date || new Date().toISOString().split('T')[0], // 使用新聞發布日期
+                });
+            });
+        } catch (error) {
+            console.error("Fetch error: ", error);
+        } finally {
+            setLoading(false);
 
-        // Save news data to database
-        const today = new Date().toISOString().split('T')[0] // 取得今天日期
-        data.articles.forEach((article) => {
-          saveNewsToDatabase({
-            news_title: article.title,
-            news_url: article.url,
-            news_summary: summaryResult, // 針對每條新聞保存摘要
-            news_date: today,
-          })
-        })
-      } catch (error) {
-        console.error('Fetch error: ', error)
-      } finally {
-        setLoading(false)
       }
     }
 
