@@ -27,6 +27,9 @@ import {
 
 import styles from '../../../../../scss/活動數據盤點.module.css'
 
+import Zoom from 'react-medium-image-zoom'
+import 'react-medium-image-zoom/dist/styles.css'
+
 export const VehicleAdd = ({ isAddModalVisible, setAddModalVisible }) => {
   const [C1date, setC1date] = useState('')
   const [C1num, setC1num] = useState('')
@@ -99,6 +102,7 @@ export const VehicleAdd = ({ isAddModalVisible, setAddModalVisible }) => {
         if (data.response_content[0] != document.getElementById('date').value) {
           setIsdatecorrect(false)
           setDateincorrectmessage('日期不正確')
+          
         }
 
         if (data.response_content[1] != document.getElementById('num').value) {
@@ -127,12 +131,23 @@ export const VehicleAdd = ({ isAddModalVisible, setAddModalVisible }) => {
       setIsnumcorrect(true)
     }
   }
+
+
+  const [previewImage, setPreviewImage] = useState(null); // 用來存儲圖片的 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const previewUrl = URL.createObjectURL(file); // 創建圖片預覽 URL
+      setPreviewImage(previewUrl); // 保存 URL 到狀態
+    }
+  };
   return (
     <CModal
       backdrop="static"
       visible={isAddModalVisible}
       onClose={() => setAddModalVisible(false)}
       aria-labelledby="ActivityModalLabel"
+      size="xl"
     >
       <CModalHeader>
         <CModalTitle id="ActivityModalLabel">
@@ -141,102 +156,124 @@ export const VehicleAdd = ({ isAddModalVisible, setAddModalVisible }) => {
       </CModalHeader>
       <CForm>
         <CModalBody>
-          <div className={styles.addmodal}>
-            <form>
-              <CRow className="mb-3">
-                <CFormLabel
-                  htmlFor="month"
-                  className={`col-sm-2 col-form-label ${styles.addlabel}`}
-                >
-                  發票/收據日期*
-                </CFormLabel>
-                <CCol>
-                  <CFormInput className={styles.addinput} type="date" id="date" required onChange={datecorrect} />
-                </CCol>
-              </CRow>
-              <p>{dateincorrectmessage}</p>
-              <CRow className="mb-3">
-                <CFormLabel htmlFor="num" className={`col-sm-2 col-form-label ${styles.addlabel}`}>
-                  發票號碼/收據編號*
-                </CFormLabel>
-                <CCol>
-                  <CFormInput className={styles.addinput} type="text" id="num" required onChange={numcorrect} />
-                </CCol>
-              </CRow>
-              <p>{numincorrectmessage}</p>
-              <CRow className="mb-3">
-                <CFormLabel htmlFor="type" className={`col-sm-2 col-form-label ${styles.addlabel}`}>
-                  油種*
-                </CFormLabel>
-                <CCol>
-                  <CFormSelect
-                    aria-label="Default select example"
-                    id="type"
-                    className={styles.addinput}
+          <form>
+            <div className={styles.addmodal}>
+              <div className={styles.modalLeft}>
+
+                <CRow className="mb-3">
+                  <CFormLabel
+                    htmlFor="month"
+                    className={`col-sm-2 col-form-label ${styles.addlabel}`}
                   >
-                    <option value="0">汽油</option>
-                    <option value="1">柴油</option>
-                  </CFormSelect>
-                </CCol>
-              </CRow>
-              <CRow className="mb-3">
-                <CFormLabel htmlFor="unit" className={`col-sm-2 col-form-label ${styles.addlabel}`}>
-                  單位*<span className={styles.Note}> 選擇單位請以*公升*做為優先填寫項目</span>
-                </CFormLabel>
-                <CCol>
-                  <CFormSelect
-                    aria-label="Default select example"
-                    id="unit"
-                    className={styles.addinput}
+                    發票/收據日期*
+                  </CFormLabel>
+                  <CCol>
+                    <CFormInput className={styles.addinput} type="date" id="date" required onChange={datecorrect} />
+                  </CCol>
+                </CRow>
+
+                <CRow className="mb-3">
+                  <CFormLabel htmlFor="num" className={`col-sm-2 col-form-label ${styles.addlabel}`}>
+                    發票號碼/收據編號*
+                  </CFormLabel>
+                  <CCol>
+                    <CFormInput className={styles.addinput} type="text" id="num" required onChange={numcorrect} />
+                  </CCol>
+                </CRow>
+                <CRow className="mb-3">
+                  <CFormLabel htmlFor="type" className={`col-sm-2 col-form-label ${styles.addlabel}`}>
+                    油種*
+                  </CFormLabel>
+                  <CCol>
+                    <CFormSelect
+                      aria-label="Default select example"
+                      id="type"
+                      className={styles.addinput}
+                    >
+                      <option value="0">汽油</option>
+                      <option value="1">柴油</option>
+                    </CFormSelect>
+                  </CCol>
+                </CRow>
+                <CRow className="mb-3">
+                  <CFormLabel htmlFor="unit" className={`col-sm-2 col-form-label ${styles.addlabel}`}>
+                    單位*<span className={styles.Note}> 選擇單位請以*公升*做為優先填寫項目</span>
+                  </CFormLabel>
+                  <CCol>
+                    <CFormSelect
+                      aria-label="Default select example"
+                      id="unit"
+                      className={styles.addinput}
+                    >
+                      <option value="1">公升</option>
+                      <option value="2">金額</option>
+                    </CFormSelect>
+                  </CCol>
+                </CRow>
+                <CRow className="mb-3">
+                  <CFormLabel
+                    htmlFor="quantity"
+                    className={`col-sm-2 col-form-label ${styles.addlabel}`}
                   >
-                    <option value="1">公升</option>
-                    <option value="2">金額</option>
-                  </CFormSelect>
-                </CCol>
-              </CRow>
-              <CRow className="mb-3">
-                <CFormLabel
-                  htmlFor="quantity"
-                  className={`col-sm-2 col-form-label ${styles.addlabel}`}
-                >
-                  公升數/金額*
+                    公升數/金額*
+                  </CFormLabel>
+                  <CCol>
+                    <CFormInput
+                      className={styles.addinput}
+                      type="number"
+                      min="0"
+                      id="quantity"
+                      required
+                    />
+                  </CCol>
+                </CRow>
+                <CRow className="mb-3">
+                  <CFormLabel
+                    htmlFor="explain"
+                    className={`col-sm-2 col-form-label ${styles.addlabel}`}
+                  >
+                    備註
+                  </CFormLabel>
+                  <CCol>
+                    <CFormTextarea className={styles.addinput} type="text" id="explain" rows={3} />
+                  </CCol>
+                </CRow>
+                <CRow className="mb-3">
+                  <CFormLabel
+                    htmlFor="photo"
+                    className={`col-sm-2 col-form-label ${styles.addlabel}`}
+                  >
+                    圖片*
+                  </CFormLabel>
+                  <CCol>
+                    <CFormInput type="file" id="C1image" onChange={(e) => (handleImageChange(e), handleC1image(e))} required />
+                  </CCol>
+                </CRow>
+
+                <br />
+                <div style={{ textAlign: 'center' }}>*為必填欄位</div>
+              </div>
+              <div className={styles.modalRight}>
+                <CFormLabel className={`col-sm-2 col-form-label ${styles.addlabel}`} >
+                  圖片預覽
                 </CFormLabel>
-                <CCol>
-                  <CFormInput
-                    className={styles.addinput}
-                    type="number"
-                    min="0"
-                    id="quantity"
-                    required
-                  />
-                </CCol>
-              </CRow>
-              <CRow className="mb-3">
-                <CFormLabel
-                  htmlFor="explain"
-                  className={`col-sm-2 col-form-label ${styles.addlabel}`}
-                >
-                  備註
+                <div className={styles.imgBlock}>
+                  {previewImage && ( // 如果有圖片 URL，則顯示預覽
+                    <Zoom><img src={previewImage} alt="Uploaded Preview" /></Zoom>
+                  )}
+                </div>
+
+                <CFormLabel className={`col-sm-2 col-form-label ${styles.addlabel}`}>
+                  偵測錯誤提醒
                 </CFormLabel>
-                <CCol>
-                  <CFormTextarea className={styles.addinput} type="text" id="explain" rows={3} />
-                </CCol>
-              </CRow>
-              <CRow className="mb-3">
-                <CFormLabel
-                  htmlFor="photo"
-                  className={`col-sm-2 col-form-label ${styles.addlabel}`}
-                >
-                  圖片*
-                </CFormLabel>
-                <CCol>
-                  <CFormInput type="file" id="C1image" onChange={handleC1image} required />
-                </CCol>
-              </CRow>
-              <br />
-              <div style={{ textAlign: 'center' }}>*為必填欄位</div>
-            </form>
-          </div>
+                <div className={styles.errorMSG}>
+                  偵測日期:{C1date}  <span>{dateincorrectmessage}</span><br/>
+                  偵測號碼:{C1num}  <span>{numincorrectmessage}</span>
+                </div>
+
+              </div>
+            </div>
+          </form>
         </CModalBody>
         <CModalFooter>
           <CButton className="modalbutton1" onClick={handleClose}>
