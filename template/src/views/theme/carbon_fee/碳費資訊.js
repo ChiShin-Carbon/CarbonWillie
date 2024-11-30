@@ -544,7 +544,7 @@ const Tabs = () => {
                                   </li></ul>
                       </CModalBody>
                       <CModalFooter>
-                        <CButton color="secondary" onClick={() => setVisible(false)}>
+                        <CButton color="secondary" onClick={() => setVisible1(false)}>
                           關閉
                         </CButton>
                       </CModalFooter>
@@ -691,7 +691,7 @@ const Tabs = () => {
                                   </li></ul>
                       </CModalBody>
                       <CModalFooter>
-                        <CButton color="secondary" onClick={() => setVisible(false)}>
+                        <CButton color="secondary" onClick={() => setVisible2(false)}>
                           關閉
                         </CButton>
                       </CModalFooter>
@@ -933,7 +933,7 @@ const Tabs = () => {
                                   </li></ul>
                       </CModalBody>
                       <CModalFooter>
-                        <CButton color="secondary" onClick={() => setVisible(false)}>
+                        <CButton color="secondary" onClick={() => setVisible3(false)}>
                           關閉
                         </CButton>
                       </CModalFooter>
