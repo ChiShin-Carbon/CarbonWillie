@@ -101,11 +101,13 @@ const Tabs = () => {
                     <hr className="system-hr"></hr>
                 </div>
                 <div className={styles.titleRight}>
-                    <select>
+                    {/* <select>
                         <option>編輯完成</option>
                         <option value="1">編輯中</option>
                     </select>
-                    <button className={styles.save}>儲存</button>
+                    <button className={styles.save}>儲存</button> */}
+                    <span style={{color:'gray',fontWeight:'bold'}}>最後上傳資訊 : XX部門-蔡沂庭 2024/12/2 23:59:23</span>
+                    <button className={styles.save}>上傳編修後檔案</button> 
                 </div>
 
             </div>
