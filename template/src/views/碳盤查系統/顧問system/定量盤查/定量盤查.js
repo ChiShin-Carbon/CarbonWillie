@@ -18,7 +18,13 @@ import { Link } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleCheck, faCircleXmark } from '@fortawesome/free-solid-svg-icons'
 
-import { process_code_Map, device_code_Map, fuel_code_Map, gas_type_map } from '../EmissionSource'
+import {
+  process_code_Map,
+  device_code_Map,
+  fuel_code_Map,
+  activity_data_unit_map,
+  gas_type_map,
+} from '../EmissionSource'
 
 const Tabs = () => {
   // 設定 state 來儲存選擇的行數據，初始值為 null
@@ -51,16 +57,15 @@ const Tabs = () => {
 
       // If activity_data is empty, set default values for its fields
       const activityData = isActivityDataEmpty
-        ? [
-            {
-              activity_data: '',
-            },
-          ]
+        ? [{ activity_data: '', activity_data_unit: '' }]
         : source.activity_data
 
       const gasTypes = source.gas_types
         ? source.gas_types.split(',').map((gasId) => gas_type_map[parseInt(gasId)]) // 轉換為氣體名稱
         : []
+
+      const emissionFactors = source.emission_factors || {}
+
       return activityData.map((activity) => ({
         status: 'completed',
         process: process_code_Map[source.process_code],
@@ -70,13 +75,13 @@ const Tabs = () => {
           activity: activity.activity_data || '',
           activityUnit: '公升',
           emiCoe1: gasTypes,
-          emiCoeType: source.emission_factors.factor_type,
-          emiCoeNum: source.emission_factors.factor,
-          emiCoeSource: source.emission_factors.factor_source,
-          emiCoeUnit: 'TCH4/人小時',
+          emiCoeType: emissionFactors[0].factor_type,
+          emiCoeNum: emissionFactors[0].factor,
+          emiCoeSource: emissionFactors[0].factor_source,
+          emiCoeUnit: `T${gasTypes}/${activity_data_unit_map[activity.activity_data_unit]}`,
           emiCoeClass: '5國家排放係數',
           emiCoeEmission: '',
-          emiCoeGWP: source.emission_factors.GWP,
+          emiCoeGWP: emissionFactors[0].GWP,
           emiCoeEqu: '',
           other1: '',
           other2: '',
@@ -85,29 +90,6 @@ const Tabs = () => {
       }))
     })
     .flat()
-  // const tableData = emission_sources.map((source) => ({
-  //   status: 'completed',
-  //   process: process_code_Map[source.process_code],
-  //   equipment: device_code_Map[source.device_code],
-  //   material: fuel_code_Map[source.fuel_code],
-  //   details: {
-  //     activity: '4267.52',
-  //     activityUnit: '公升',
-  //     emiCoe1: 'CH2',
-  //     emiCoeType: '預設',
-  //     emiCoeNum: '2.606',
-  //     emiCoeSource:
-  //       'GHG排放係數管理表(6.04版),CH4公噸人-年0.003825,換算成每工時0.0000015938~!係數單位:公噸-CH4/人-每工時',
-  //     emiCoeUnit: 'TCH4/人小時',
-  //     emiCoeClass: '5國家排放係數',
-  //     emiCoeEmission: '',
-  //     emiCoeGWP: '1',
-  //     emiCoeEqu: '',
-  //     other1: '',
-  //     other2: '',
-  //     other3: '',
-  //   },
-  // }))
 
   const handleRowClick = (row) => {
     setSelectedRowData(row.details)
@@ -303,7 +285,7 @@ const Tabs = () => {
                     selectedRowData.emiCoe1.length > 0 &&
                     selectedRowData.emiCoe1.map((gasType, index) => (
                       <>
-                        <div className={styles.blockBodySpecial}>
+                        <div key={index} className={styles.blockBodySpecial}>
                           <div className={styles.blockBodyTitle}>
                             <div className={styles.line}></div>
                             <div className={styles.titleBox}>
@@ -350,14 +332,14 @@ const Tabs = () => {
                                 value={selectedRowData.emiCoeClass}
                                 onChange={(e) => handleInputChange(e, 'emiCoeClass')}
                               >
-                                <option value="自廠發展係數/質量平衡所得係數">
-                                  自廠發展係數/質量平衡所得係數
+                                <option value="1自廠發展係數/質量平衡所得係數">
+                                  1自廠發展係數/質量平衡所得係數
                                 </option>
-                                <option value="同製程/設備經驗係數">同製程/設備經驗係數</option>
-                                <option value="製造廠提供係數">製造廠提供係數</option>
-                                <option value="區域排放係數">區域排放係數</option>
-                                <option value="國家排放係數">國家排放係數</option>
-                                <option value="國際排放係數">國際排放係數</option>
+                                <option value="2同製程/設備經驗係數">2同製程/設備經驗係數</option>
+                                <option value="3製造廠提供係數">3製造廠提供係數</option>
+                                <option value="4區域排放係數">4區域排放係數</option>
+                                <option value="5國家排放係數">5國家排放係數</option>
+                                <option value="6國際排放係數">6國際排放係數</option>
                               </CFormSelect>
                             </div>
                             <div>
