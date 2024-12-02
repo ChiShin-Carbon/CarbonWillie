@@ -24,8 +24,8 @@ import {
   process_code_Map,
   device_code_Map,
   fuel_code_Map,
-  data_type_map,
   activity_data_unit_map,
+  data_type_map,
 } from '../EmissionSource'
 
 const Tabs = () => {
@@ -81,8 +81,8 @@ const Tabs = () => {
         equipment: device_code_Map[source.device_code],
         material: fuel_code_Map[source.fuel_code],
         details: {
-          annual1: activity.activity_data || '',
-          annual2: activity.distribution_ratio || '',
+          annual1: activity.activity_data || 0,
+          annual2: activity.distribution_ratio || 0,
           annual3: activity.activity_data_unit || '',
           annual4: activity.custom_unit_name || '',
           annual5: activity.data_source || '',
@@ -424,6 +424,7 @@ const Tabs = () => {
                         rows={2}
                         value={selectedRowData.remark}
                         onChange={(e) => handleInputChange(e, 'remark')}
+                        disabled
                       />
                     </div>
                   </div>
