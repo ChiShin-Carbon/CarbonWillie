@@ -95,3 +95,14 @@ export const data_type_map = {
   3: '財務會計推估',
   4: '自行評估',
 }
+export const activity_data_unit_map = {
+  1: '公噸',
+  2: '公秉',
+  3: '千立方公尺',
+  4: '千度',
+  5: '人小時',
+  6: 'tkm',
+  7: 'pkm',
+  8: 'tCO2e',
+  9: '其他',
+}

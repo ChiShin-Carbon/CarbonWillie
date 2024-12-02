@@ -85,8 +85,8 @@ def read_emission_source():
                     # 查詢source_id對應之活動數據
                     activity_data_query = """
                     SELECT 
-                        activity_data, distribution_ratio, data_source, save_unit, 
-                        data_type, calorific_value, moisture_content, carbon_content
+                        activity_data, distribution_ratio, activity_data_unit, custom_unit_name,
+                        data_source, save_unit, data_type, calorific_value, moisture_content, carbon_content
                     FROM Activity_Data WHERE source_id = ?"""
                     cursor.execute(activity_data_query, (record[0],))
                     activity_data_records = cursor.fetchall()
@@ -94,12 +94,14 @@ def read_emission_source():
                         {
                             "activity_data": activity[0],
                             "distribution_ratio": activity[1],
-                            "data_source": activity[2],
-                            "save_unit": activity[3],
-                            "data_type": activity[4],
-                            "calorific_value": activity[5],
-                            "moisture_content": activity[6],
-                            "carbon_content": activity[7]
+                            "activity_data_unit": activity[2],
+                            "custom_unit_name": activity[3],
+                            "data_source": activity[4],
+                            "save_unit": activity[5],
+                            "data_type": activity[6],
+                            "calorific_value": activity[7],
+                            "moisture_content": activity[8],
+                            "carbon_content": activity[9]
                         }
                         for activity in activity_data_records
                     ]
