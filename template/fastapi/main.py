@@ -60,6 +60,19 @@ from 管理者.insert_adminCompany import insert_adminCompany
 from 管理者.edit_adminCompany import edit_adminCompany
 from 管理者.delete_adminCompany import delete_adminCompany
 
+from findone.vehicle import vehicle_findone
+from findone.employee import employee_findone
+from findone.Nonemployee import NonEmployee_findone
+from findone.Machinery import Machinery_findone
+from findone.Emergency_Generator import Emergency_Generator_findone
+from findone.Electricity_Usage import Electricity_Usage_findone
+from findone.Machinery import Machinery_findone
+from findone.Emergency_Generator import Emergency_Generator_findone
+from findone.Electricity_Usage import Electricity_Usage_findone
+from findone.commute import Commute_findone
+from findone.Business_trip import Business_Trip_findone
+from findone.Operational_Waste import Operational_Waste_findone
+from findone.Selling_waste import Selling_waste_findone
 
 
 app = FastAPI()
@@ -134,3 +147,13 @@ app.include_router(adminCompany)
 app.include_router(insert_adminCompany)
 app.include_router(edit_adminCompany)
 app.include_router(delete_adminCompany)
+app.include_router(vehicle_findone)
+app.include_router(employee_findone)
+app.include_router(NonEmployee_findone)
+app.include_router(Machinery_findone)
+app.include_router(Emergency_Generator_findone)
+app.include_router(Electricity_Usage_findone)
+app.include_router(Commute_findone)
+app.include_router(Business_Trip_findone)
+app.include_router(Operational_Waste_findone)
+app.include_router(Selling_waste_findone)
