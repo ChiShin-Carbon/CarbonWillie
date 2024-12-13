@@ -40,7 +40,6 @@ export const Employee = () => {
     }, []);
 
     const handleEditClick = (employee) => {
-        setSelectedEmployee(employee); // Set selected employee for editing
         setEditModalVisible(true);
     };
 
@@ -92,7 +91,10 @@ export const Employee = () => {
                             </td>
 
                             <td>
-                                <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => handleEditClick(employee)} />
+                                <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => {
+                                        setSelectedEmployee(employee.employee_id) // Set the selected vehicle ID
+                                        setEditModalVisible(true) // Open the modal
+                                    }} />
                                 <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
                             </td>
                         </tr>
@@ -102,7 +104,7 @@ export const Employee = () => {
             <EditModal
                 isEditModalVisible={isEditModalVisible}
                 setEditModalVisible={setEditModalVisible}
-                employee={selectedEmployee} // Pass selected employee to modal
+                selectedEmployee={selectedEmployee} // Pass selected employee to modal
             />
         </div>
     );

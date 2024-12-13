@@ -14,6 +14,7 @@ import 'react-medium-image-zoom/dist/styles.css';
 export const Commuting = () => {
     const [isEditModalVisible, setEditModalVisible] = useState(false);
     const [Commute, setCommute] = useState([]);  // State to hold fetched commute data
+    const [selectedCommute, setSelectedCommute] = useState(null); // Store selected commute for edit
 
     // Function to fetch commute data
     const getCommuteData = async () => {
@@ -69,7 +70,12 @@ export const Commuting = () => {
                             </td>
                             <td>{commute.edit_time}</td>
                             <td>
-                                <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
+                                <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => 
+                                    {
+                                    setEditModalVisible(true)
+                                    setSelectedCommute(commute.commute_id)
+                                    console.log(commute.commute_id)
+                                    }} />
                                 <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
                             </td>
                         </tr>
@@ -79,6 +85,7 @@ export const Commuting = () => {
             <EditModal
                 isEditModalVisible={isEditModalVisible}
                 setEditModalVisible={setEditModalVisible}
+                selectedCommute={selectedCommute}
             />
         </div>
     );

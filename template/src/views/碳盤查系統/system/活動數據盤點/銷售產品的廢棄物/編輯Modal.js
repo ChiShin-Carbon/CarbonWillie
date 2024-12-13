@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     CModal, CModalHeader, CModalBody, CModalFooter, CButton, CFormLabel, CFormInput, CFormTextarea, CRow, CCol, CFormSelect, CForm
 } from '@coreui/react';
@@ -7,7 +7,7 @@ import styles from '../../../../../scss/活動數據盤點.module.css';
 import Zoom from 'react-medium-image-zoom'
 import 'react-medium-image-zoom/dist/styles.css'
 
-const EditModal = ({ isEditModalVisible, setEditModalVisible }) => {
+const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedWaste }) => {
     const handleClose = () => setEditModalVisible(false);
 
     const [previewImage, setPreviewImage] = useState(null); // 用來存儲圖片的 
@@ -18,6 +18,52 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible }) => {
             setPreviewImage(previewUrl); // 保存 URL 到狀態
         }
     };
+
+    const [FormValues, setFormValues] = useState({
+        waste_item: '',
+        remark: '',
+    });
+
+
+    const handleInputChange = (e) => {
+        const { id, value } = e.target;
+        setFormValues((prevValues) => ({ ...prevValues, [id]: value }));
+    };
+
+    
+
+    useEffect(() => {
+        const fetchSellingData = async () => {
+            if (!selectedWaste) return;
+
+            try {
+                const response = await fetch('http://localhost:8000/Selling_waste_findone', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ SW_id: selectedWaste }),
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const SellingData = data.Selling_Waste[0];
+                    setFormValues({
+                        waste_item: SellingData?.waste_item || '',
+                        remark: SellingData?.remark || '',
+                    });
+                    setPreviewImage(SellingData?.img_path || null);
+                } else {
+                    console.error('Error fetching machinery data:', await response.text());
+                }
+            } catch (error) {
+                console.error('Error fetching machinery data:', error);
+            }
+        };
+
+        fetchSellingData();
+    }, [selectedWaste]);
+
 
     return (
         <CModal backdrop="static" visible={isEditModalVisible} onClose={handleClose} className={styles.modal}>
@@ -30,14 +76,24 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible }) => {
                         <CRow className="mb-3">
                             <CFormLabel htmlFor="item" className={`col-sm-2 col-form-label ${styles.addlabel}`} >廢棄物項目*</CFormLabel>
                             <CCol>
-                                <CFormInput className={styles.addinput} type="text" id="item" required />
+                                <CFormInput className={styles.addinput} type="text" 
+                                id="item"
+                                value={FormValues.waste_item}
+                                onChange={handleInputChange}
+                                required />
                             </CCol>
                         </CRow>
 
                         <CRow className="mb-3">
                             <CFormLabel htmlFor="explain" className={`col-sm-2 col-form-label ${styles.addlabel}`} >備註</CFormLabel>
                             <CCol>
-                                <CFormTextarea className={styles.addinput} type="text" id="explain" rows={3} />
+                                <CFormTextarea 
+                                className={styles.addinput} 
+                                type="text" 
+                                id="explain" 
+                                value={FormValues.remark}
+                                onChange={handleInputChange}
+                                rows={3} />
 
                             </CCol>
                         </CRow>

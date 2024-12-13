@@ -13,6 +13,8 @@ import 'react-medium-image-zoom/dist/styles.css';
 export const EmergencyGenerator = () => {
     const [isEditModalVisible, setEditModalVisible] = useState(false);
     const [Emergency_Generator, setEmergency_Generator] = useState([]);  // Set default as an empty array
+    const [selectedGenerator, setSelectedGenerator] = useState(null);
+    
 
     // Function to fetch generator data
     const getEmergency_GeneratorData = async () => {
@@ -65,7 +67,10 @@ export const EmergencyGenerator = () => {
                                 <td><Zoom><img src={record.img_path} alt="Generator usage" /></Zoom></td>
                                 <td>{record.edit_time}</td>
                                 <td>
-                                    <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
+                                    <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => {
+                                        setEditModalVisible(true)
+                                        setSelectedGenerator(record.generator_id)
+                                        }} />
                                     <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
                                 </td>
                             </tr>
@@ -80,6 +85,7 @@ export const EmergencyGenerator = () => {
             <EditModal
                 isEditModalVisible={isEditModalVisible}
                 setEditModalVisible={setEditModalVisible}
+                selectedGenerator={selectedGenerator}
             />
         </div>
     );

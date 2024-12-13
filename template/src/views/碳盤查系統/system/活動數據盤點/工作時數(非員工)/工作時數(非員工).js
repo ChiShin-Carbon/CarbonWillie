@@ -13,6 +13,8 @@ import 'react-medium-image-zoom/dist/styles.css';
 export const NonEmployee = () => {
     const [isEditModalVisible, setEditModalVisible] = useState(false);
     const [employeeData, setEmployeeData] = useState([]); // State to store fetched employee data
+    const [selectedNonemployeeId, setSelectedNonemployeeId] = useState(null) // State to store selected vehicle ID
+
 
     const getEmployeeData = async () => {
         try {
@@ -37,6 +39,7 @@ export const NonEmployee = () => {
     // Fetch employee data when the component mounts
     useEffect(() => {
         getEmployeeData();
+
     }, []);
 
     return (
@@ -71,7 +74,11 @@ export const NonEmployee = () => {
                             <td>{item.edit_time}</td>
 
                             <td>
-                                <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
+                                <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen}
+                                    onClick={() => {
+                                        setSelectedNonemployeeId(item.nonemployee_id) // Set the selected vehicle ID
+                                        setEditModalVisible(true) // Open the modal
+                                    }} />
                                 <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
                             </td>
                         </tr>
@@ -81,6 +88,7 @@ export const NonEmployee = () => {
             <EditModal
                 isEditModalVisible={isEditModalVisible}
                 setEditModalVisible={setEditModalVisible}
+                selectedNonemployeeId={selectedNonemployeeId}
             />
         </div>
     );

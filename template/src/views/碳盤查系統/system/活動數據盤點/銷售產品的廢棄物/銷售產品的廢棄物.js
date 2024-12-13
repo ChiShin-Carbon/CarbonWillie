@@ -14,6 +14,7 @@ import 'react-medium-image-zoom/dist/styles.css';
 export const SellingWaste = () => {
     const [isEditModalVisible, setEditModalVisible] = useState(false);
     const [sellingWasteData, setSellingWasteData] = useState([]);  // State to hold fetched selling waste data
+    const [selectedWaste, setSelectedWaste] = useState(null); // Store selected waste for edit
 
     // Function to fetch selling waste data
     const getSellingWasteData = async () => {
@@ -65,7 +66,11 @@ export const SellingWaste = () => {
                             </td>
                             <td>{waste.edit_time}</td>
                             <td>
-                                <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
+                                <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => {
+                                    setEditModalVisible(true)
+                                    setSelectedWaste(waste.waste_id)
+                                    console.log(waste.waste_id)
+                                    }} />
                                 <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
                             </td>
                         </tr>
@@ -75,6 +80,7 @@ export const SellingWaste = () => {
             <EditModal
                 isEditModalVisible={isEditModalVisible}
                 setEditModalVisible={setEditModalVisible}
+                selectedWaste={selectedWaste}
             />
         </div>
     );

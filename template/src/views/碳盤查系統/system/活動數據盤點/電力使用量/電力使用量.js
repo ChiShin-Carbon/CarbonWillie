@@ -14,6 +14,7 @@ import 'react-medium-image-zoom/dist/styles.css';
 export const ElectricityUsage = () => {
     const [isEditModalVisible, setEditModalVisible] = useState(false);
     const [ElectricityUsage, setElectricityUsage] = useState([]);  // State to hold fetched electricity usage data
+    const [selectedUsage, setSelectedUsage] = useState(null); // Store selected usage for edit
 
     // Function to fetch electricity usage data
     const getElectricityUsageData = async () => {
@@ -71,7 +72,10 @@ export const ElectricityUsage = () => {
                             <td><Zoom><img src={usage.img_path} alt="image" /></Zoom></td>
                             <td>{usage.edit_time}</td>
                             <td>
-                                <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
+                                <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => 
+                                {setEditModalVisible(true)
+                                setSelectedUsage(usage.electricity_id)
+                                }} />
                                 <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
                             </td>
                         </tr>
@@ -81,6 +85,7 @@ export const ElectricityUsage = () => {
             <EditModal
                 isEditModalVisible={isEditModalVisible}
                 setEditModalVisible={setEditModalVisible}
+                selectedUsage={selectedUsage}
             />
         </div>
     );
