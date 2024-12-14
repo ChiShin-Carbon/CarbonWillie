@@ -145,9 +145,35 @@ const Tabs = () => {
 
   //news
   useEffect(() => {
+    const fetchOrGenerateNews = async () => {
+        setLoading(true);
+        try {
+            // 檢查今天是否有新聞
+            const today = new Date().toISOString().split('T')[0];
+            const response = await fetch(`http://127.0.0.1:8000/filtered-news?today_news_date=${today}`);
+            const data = await response.json();
+
+            console.log('API response data:', data);  // 檢查回應資料結構
+
+            if (data.news.length > 0) {
+                // 資料庫中已有新聞，直接設置到狀態
+                setNews(data.news);
+                console.log('Updated news state:', data.news); // 確認狀態是否更新
+                setSummary(data.news[0].news_summary || "摘要不可用");
+            } else {
+                // 若無新聞，生成並儲存
+                await fetchNewsAndGenerateSummary();
+            }
+        } catch (error) {
+            console.error("Error fetching or generating news:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const fetchNewsAndGenerateSummary = async () => {
         if (!query) return; // 如果沒有 query，就不執行
-    
+
         setLoading(true);
         try {
             // Fetch news from API
@@ -156,15 +182,17 @@ const Tabs = () => {
                 throw new Error("Network response was not ok " + response.statusText);
             }
             const data = await response.json();
-            setNews(data.articles);
 
-            // Filter titles for summary generation and database saving
+            // 篩選符合條件的文章
             const filteredArticles = data.articles.filter((article) => {
                 const isYahooWithValidExtension =
                     !(article.url.includes("yahoo") && !/\.(png|html)$/.test(article.url));
                 const hasKeywordInTitle = article.title.includes(query);
-                return isYahooWithValidExtension && hasKeywordInTitle;
+                const isTitleLengthValid = article.title.length <= 30; // 新增篩選條件：標題長度小於等於 30 字元
+                return isYahooWithValidExtension && hasKeywordInTitle && isTitleLengthValid;
             });
+
+            setNews(filteredArticles);
 
             // Generate summary if filtered articles are available
             let summaryResult = "目前沒有可用的新聞標題供摘要。";
@@ -189,57 +217,56 @@ const Tabs = () => {
             console.error("Fetch error: ", error);
         } finally {
             setLoading(false);
+        }
+    };
 
-      }
-    }
+    fetchOrGenerateNews();
+}, [query]); // 只有當 query 改變時才會觸發
 
-    fetchNewsAndGenerateSummary()
-  }, [query]) // 只有當 query 改變時才會觸發
-
-  const generateSummary = async (titles) => {
-    if (titles.length === 0) return '目前沒有可用的新聞標題供摘要。'
+const generateSummary = async (titles) => {
+    if (titles.length === 0) return "目前沒有可用的新聞標題供摘要。";
     try {
-      const response = await fetch('http://127.0.0.1:8000/langchaingpt', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message: `請根據以下標題生成摘要：${titles.join(', ')}`,
-        }),
-      })
+        const response = await fetch("http://127.0.0.1:8000/langchaingpt", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                message: `請根據以下標題生成摘要：${titles.join(", ")}`,
+            }),
+        });
 
-      if (!response.ok) {
-        throw new Error('Failed to generate summary from API: ' + response.statusText)
-      }
+        if (!response.ok) {
+            throw new Error("Failed to generate summary from API: " + response.statusText);
+        }
 
-      const data = await response.json()
-      return data.response // 返回從 OpenAI API 獲得的摘要
+        const data = await response.json();
+        return data.response; // 返回從 OpenAI API 獲得的摘要
     } catch (error) {
-      console.error('Error generating summary: ', error)
-      return '摘要生成失敗，請稍後再試。'
+        console.error("Error generating summary: ", error);
+        return "摘要生成失敗，請稍後再試。";
     }
-  }
+};
 
-  const saveNewsToDatabase = async (newsData) => {
+const saveNewsToDatabase = async (newsData) => {
     try {
-      const response = await fetch('http://127.0.0.1:8000/news', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newsData),
-      })
+        const response = await fetch("http://127.0.0.1:8000/news", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(newsData),
+        });
 
-      if (!response.ok) {
-        throw new Error('Failed to save news to the database: ' + response.statusText)
-      }
+        if (!response.ok) {
+            throw new Error("Failed to save news to the database: " + response.statusText);
+        }
 
-      console.log('News saved successfully.')
+        console.log("News saved successfully.", newsData);
     } catch (error) {
-      console.error('Error saving news:', error)
+        console.error("Error saving news:", error);
     }
-  }
+};
 
   return (
     <CRow>
@@ -1119,26 +1146,13 @@ const Tabs = () => {
                           <center>
                             <p>正在載入新聞...</p>
                           </center>
-                        ) : news.filter((article) => {
-                            const isYahooWithValidExtension = !(
-                              article.url.includes('yahoo') && !/\.(png|html)$/.test(article.url)
-                            )
-                            const hasKeywordInTitle = article.title.includes(query)
-                            return isYahooWithValidExtension && hasKeywordInTitle
-                          }).length === 0 ? ( // 如果篩選後的新聞數量為 0
+                        ) : news.length === 0 ? ( // 如果篩選後的新聞數量為 0
                           <center>
                             <p>暫無新聞!</p>
                             <p>可搜尋關鍵字!</p>
                           </center>
                         ) : (
                           news
-                            .filter((article) => {
-                              const isYahooWithValidExtension = !(
-                                article.url.includes('yahoo') && !/\.(png|html)$/.test(article.url)
-                              )
-                              const hasKeywordInTitle = article.title.includes(query)
-                              return isYahooWithValidExtension && hasKeywordInTitle
-                            })
                             .sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt))
                             .slice(0, 20)
                             .map((article, index) => (
@@ -1189,10 +1203,12 @@ const Tabs = () => {
                                       }}
                                     >
                                       <p style={{ color: 'green', fontWeight: 'bold', margin: 0 }}>
-                                        {new Date(article.publishedAt).toLocaleDateString()}
+                                      {article.news_date}
+                                        {/** {new Date(article.publishedAt).toLocaleDateString()}*/}
+                                      
                                       </p>
                                       <p style={{ fontWeight: 'bold', margin: 0 }}>
-                                        {article.title}
+                                        {article.news_title}
                                       </p>
                                     </div>
                                     <CButton
@@ -1203,7 +1219,12 @@ const Tabs = () => {
                                         justifyContent: 'center',
                                         alignItems: 'center',
                                       }}
-                                      onClick={() => window.open(article.url, '_blank')}
+                                      onClick={() => {
+                                        if (article.url) {
+                                          window.open(article.news_url, '_blank');
+                                        } else {
+                                          alert('連結不可用');
+                                        }}}
                                     >
                                       <CIcon
                                         icon={cilArrowCircleRight}
@@ -1267,7 +1288,10 @@ const Tabs = () => {
                                       <p>正在載入摘要...</p>
                                     </center>
                                   ) : (
+                                    news.map((article, index) => (
                                     <p style={{ fontWeight: 'bold', margin: 0 }}>{summary}</p>
+                                    )
+                                  )
                                   )}
                                 </div>
                               </CRow>
