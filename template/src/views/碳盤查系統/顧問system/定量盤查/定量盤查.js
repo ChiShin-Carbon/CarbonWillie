@@ -75,14 +75,17 @@ const Tabs = () => {
           activity: activity.activity_data || '',
           activityUnit: '公升',
           emiCoe1: gasTypes,
-          emiCoeType: emissionFactors[0].factor_type,
-          emiCoeNum: emissionFactors[0].factor,
-          emiCoeSource: emissionFactors[0].factor_source,
-          emiCoeUnit: `T${gasTypes}/${activity_data_unit_map[activity.activity_data_unit]}`,
-          emiCoeClass: '5國家排放係數',
-          emiCoeEmission: '',
-          emiCoeGWP: emissionFactors[0].GWP,
-          emiCoeEqu: '',
+          emiCoeList: gasTypes.map((gasType, index) => ({
+            gasType,
+            emiCoeType: emissionFactors[index].factor_type,
+            emiCoeNum: emissionFactors[index].factor,
+            emiCoeSource: emissionFactors[index].factor_source,
+            emiCoeUnit: `${gasType}/${activity_data_unit_map[activity.activity_data_unit]}`,
+            emiCoeClass: '5國家排放係數',
+            emiCoeEmission: '',
+            emiCoeGWP: emissionFactors[index].GWP,
+            emiCoeEqu: '',
+          })),
           other1: '',
           other2: '',
           other3: '',
@@ -281,15 +284,15 @@ const Tabs = () => {
                   <div className={styles.blockHead}>
                     <h5>排放係數數據</h5>
                   </div>
-                  {selectedRowData.emiCoe1 &&
-                    selectedRowData.emiCoe1.length > 0 &&
-                    selectedRowData.emiCoe1.map((gasType, index) => (
+                  {selectedRowData.emiCoeList &&
+                    selectedRowData.emiCoeList.length > 0 &&
+                    selectedRowData.emiCoeList.map((emiCoe, index) => (
                       <>
                         <div key={index} className={styles.blockBodySpecial}>
                           <div className={styles.blockBodyTitle}>
                             <div className={styles.line}></div>
                             <div className={styles.titleBox}>
-                              <span>{`溫室氣體#${index + 1}: ${gasType}`}</span>
+                              <span>{`溫室氣體#${index + 1}: ${emiCoe.gasType}`}</span>
                             </div>
                             <div className={styles.line}></div>
                           </div>
@@ -298,8 +301,8 @@ const Tabs = () => {
                               <span>係數類型:</span>
                               <CFormSelect
                                 className={styles.input}
-                                value={selectedRowData.emiCoeType}
-                                onChange={(e) => handleInputChange(e, 'emiCoeType')}
+                                value={emiCoe.emiCoeType}
+                                onChange={(e) => handleInputChange(e, 'emiCoeType', index)}
                               >
                                 <option value="1">預設</option>
                                 <option value="0">自訂</option>
@@ -307,30 +310,28 @@ const Tabs = () => {
                             </div>
                             <div>
                               <span>
-                                {selectedRowData.emiCoeType === '自訂'
-                                  ? '自訂排放係數'
-                                  : '預設排放係數'}
+                                {emiCoe.emiCoeType === '自訂' ? '自訂排放係數' : '預設排放係數'}
                               </span>
-                              <p>{selectedRowData.emiCoeNum}</p>
+                              <p>{emiCoe.emiCoeNum}</p>
                             </div>
-                            <div>
+                            {/* <div>
                               <span>
                                 {selectedRowData.emiCoeType === '自訂'
                                   ? '自訂排放來源'
                                   : '預設排放來源'}
                               </span>
                               <p>{selectedRowData.emiCoeSource}</p>
-                            </div>
+                            </div> */}
                             <div>
                               <span>係數單位:</span>
-                              <p>{selectedRowData.emiCoeUnit}</p>
+                              <p>{emiCoe.emiCoeUnit}</p>
                             </div>
                             <div>
                               <span>係數種類:</span>
                               <CFormSelect
                                 className={styles.input}
-                                value={selectedRowData.emiCoeClass}
-                                onChange={(e) => handleInputChange(e, 'emiCoeClass')}
+                                value={emiCoe.emiCoeClass}
+                                onChange={(e) => handleInputChange(e, 'emiCoeClass', index)}
                               >
                                 <option value="1自廠發展係數/質量平衡所得係數">
                                   1自廠發展係數/質量平衡所得係數
@@ -344,11 +345,11 @@ const Tabs = () => {
                             </div>
                             <div>
                               <span>排放量(公噸/年):</span>
-                              <p>{selectedRowData.emiCoeEmission}</p>
+                              <p>{(selectedRowData.activity / 1000) * emiCoe.emiCoeNum}</p>
                             </div>
                             <div>
                               <span>GWP:</span>
-                              <p>{selectedRowData.emiCoeGWP}</p>
+                              <p>{emiCoe.emiCoeGWP}</p>
                             </div>
                             <div>
                               <span>排放當量(公噸CO2e/年):</span>
