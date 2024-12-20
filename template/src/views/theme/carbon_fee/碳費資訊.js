@@ -1253,7 +1253,7 @@ const saveNewsToDatabase = async (newsData) => {
                         padding: '10px 40px 10px 40px',
                       }}
                     >
-                      {query || '搜尋結果'}摘要
+                      {query || '搜尋結果'}AI摘要
                     </div>
                   </div>
                 </CCardTitle>
