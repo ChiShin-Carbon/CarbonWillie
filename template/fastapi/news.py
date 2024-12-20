@@ -14,7 +14,7 @@ class NewsData(BaseModel):
     news_title: str
     news_url: str
     news_summary: str
-    news_date: str  # 接收今天的日期
+    news_date: str  
 
 @news.get("/news")
 def get_news_by_date(today_news_date: str):
@@ -56,7 +56,8 @@ def post_news(news_data: NewsData):
     if conn:
         cursor = conn.cursor()
         try:
-            # 檢查今天是否已有新聞
+            # Ensure proper date format and debug info
+            print(f"Received news data: {news_data}")
             check_query = """
                 SELECT COUNT(*) FROM news WHERE today_news_date = ?
             """
@@ -66,10 +67,10 @@ def post_news(news_data: NewsData):
             if count > 0:
                 return {"message": "News for today already exists."}
 
-            # 若今天沒有新聞，插入新新聞
+            # Adjust for database compatibility (e.g., CURRENT_TIMESTAMP for SQLite)
             insert_query = """
                 INSERT INTO news (news_title, news_url, news_summary, news_date, today_news_date)
-                VALUES (?, ?, ?, ?, GETDATE())
+                VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
             """
             cursor.execute(insert_query, (
                 news_data.news_title,
@@ -78,17 +79,59 @@ def post_news(news_data: NewsData):
                 news_data.news_date
             ))
             conn.commit()
-            print(f"News saved: {news_data['news_title']}")  # 日誌記錄
+            print(f"News saved: {news_data.news_title}")  # Log the saved news title
             
             return {"message": "News added successfully."}
 
         except Exception as e:
             conn.rollback()
+            print(f"Error occurred: {str(e)}")  # Log the full error
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error adding news: {e}")
         finally:
             conn.close()
     else:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Could not connect to the database.")
+
+
+# @news.post("/news")
+# def post_news(news_data: NewsData):
+#     conn = connectDB()
+#     if conn:
+#         cursor = conn.cursor()
+#         try:
+#             # 檢查今天是否已有新聞
+#             check_query = """
+#                 SELECT COUNT(*) FROM news WHERE today_news_date = ?
+#             """
+#             cursor.execute(check_query, (news_data.news_date,))
+#             count = cursor.fetchone()[0]
+
+#             if count > 0:
+#                 return {"message": "News for today already exists."}
+
+#             # 若今天沒有新聞，插入新新聞
+#             insert_query = """
+#                 INSERT INTO news (news_title, news_url, news_summary, news_date, today_news_date)
+#                 VALUES (?, ?, ?, ?, GETDATE())
+#             """
+#             cursor.execute(insert_query, (
+#                 news_data.news_title,
+#                 news_data.news_url,
+#                 news_data.news_summary,
+#                 news_data.news_date
+#             ))
+#             conn.commit()
+#             print(f"News saved: {news_data['news_title']}")  # 日誌記錄
+            
+#             return {"message": "News added successfully."}
+
+#         except Exception as e:
+#             conn.rollback()
+#             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error adding news: {e}")
+#         finally:
+#             conn.close()
+#     else:
+#         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Could not connect to the database.")
 @news.delete("/news")
 def delete_news(today_news_date: str):
     conn = connectDB()
