@@ -210,7 +210,7 @@ const Tabs = () => {
                     news_title: article.title,
                     news_url: article.url,
                     news_summary: summaryResult, // 針對每條新聞保存摘要
-                    news_date: article.news_date || new Date().toISOString().split('T')[0], // 使用新聞發布日期
+                    news_date: article.publishedAt || new Date().toISOString().split('T')[0], // 改用正確屬性//article.news_date || new Date().toISOString().split('T')[0], // 使用新聞發布日期
                 });
             });
         } catch (error) {
@@ -1153,8 +1153,6 @@ const saveNewsToDatabase = async (newsData) => {
                           </center>
                         ) : (
                           news
-                            .sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt))
-                            .slice(0, 20)
                             .map((article, index) => (
                               <li
                                 key={index}
@@ -1166,7 +1164,7 @@ const saveNewsToDatabase = async (newsData) => {
                                 }}
                               >
                                 <a
-                                  href={article.url}
+                                  href={article.news_url}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   style={{
@@ -1219,12 +1217,7 @@ const saveNewsToDatabase = async (newsData) => {
                                         justifyContent: 'center',
                                         alignItems: 'center',
                                       }}
-                                      onClick={() => {
-                                        if (article.url) {
-                                          window.open(article.news_url, '_blank');
-                                        } else {
-                                          alert('連結不可用');
-                                        }}}
+                                      onClick={() => window.open(article.news_url, '_blank')}
                                     >
                                       <CIcon
                                         icon={cilArrowCircleRight}
@@ -1260,7 +1253,7 @@ const saveNewsToDatabase = async (newsData) => {
                         padding: '10px 40px 10px 40px',
                       }}
                     >
-                      {query || '搜尋結果'}摘要
+                      {query || '搜尋結果'}AI摘要
                     </div>
                   </div>
                 </CCardTitle>
@@ -1288,11 +1281,9 @@ const saveNewsToDatabase = async (newsData) => {
                                       <p>正在載入摘要...</p>
                                     </center>
                                   ) : (
-                                    news.map((article, index) => (
                                     <p style={{ fontWeight: 'bold', margin: 0 }}>{summary}</p>
                                     )
-                                  )
-                                  )}
+                                  }
                                 </div>
                               </CRow>
                             </CCardBody>
