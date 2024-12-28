@@ -89,6 +89,21 @@ export const gas_type_map = {
   6: 'SF6',
   7: 'NF3',
 }
+
+// 活動數據單位
+export const activity_data_unit_map = {
+  1: '公噸',
+  2: '公秉',
+  3: '千立方公尺',
+  4: '千度',
+  5: '人小時',
+  6: 'tkm',
+  7: 'pkm',
+  8: 'tCO2e',
+  9: '其他',
+}
+
+// 活動數據種類
 export const data_type_map = {
   1: '連續量測',
   2: '定期(間歇)量測',

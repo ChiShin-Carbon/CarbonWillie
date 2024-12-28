@@ -54,6 +54,7 @@ def read_emission_source():
     if conn:
         cursor = conn.cursor()
         try:
+            # 查詢每個fuel_code對應之氣體類型
             gas_type_query = """
                 SELECT fuel_code, STRING_AGG(gas_type, ', ') AS gas_types
                 FROM Emission_Factor
@@ -62,6 +63,36 @@ def read_emission_source():
             cursor.execute(gas_type_query)
             gas_type_map = {row[0]: row[1] for row in cursor.fetchall()}
 
+            # 查詢每個fuel_code對應之factor_data
+            emission_factor_query = """
+                SELECT 
+                    fuel_code, 
+                    gas_type, 
+                    factor_type, 
+                    factor, 
+                    factor_source, 
+                    confidence_interval_L, 
+                    confidence_interval_U, 
+                    GWP
+                FROM Emission_Factor
+                WHERE fuel_code IN (SELECT DISTINCT fuel_code FROM Emission_Source)
+            """
+            cursor.execute(emission_factor_query)
+            emission_factor_map = {}
+            for row in cursor.fetchall():
+                if row[0] not in emission_factor_map:
+                    emission_factor_map[row[0]] = []
+                emission_factor_map[row[0]].append({
+                    "gas_type": row[1],
+                    "factor_type": row[2],
+                    "factor": row[3],
+                    "factor_source": row[4],
+                    "confidence_interval_L": row[5],
+                    "confidence_interval_U": row[6],
+                    "GWP": row[7]
+                })
+
+            # 排放源鑑別
             emission_source_query = """
                 SELECT 
                     source_id, process_code, device_code, fuel_category, fuel_code, trust_category, 
@@ -75,18 +106,17 @@ def read_emission_source():
             cursor.execute(emission_source_query)
             emission_source_records = cursor.fetchall()
 
-            # conn.close()
-
             if emission_source_records:
                 result = []
                 for record in emission_source_records:
                     gas_types = gas_type_map.get(record[4], "N/A")
+                    emission_factors = emission_factor_map.get(record[4], [])
 
                     # 查詢source_id對應之活動數據
                     activity_data_query = """
                     SELECT 
-                        activity_data, distribution_ratio, data_source, save_unit, 
-                        data_type, calorific_value, moisture_content, carbon_content
+                        activity_data, distribution_ratio, activity_data_unit, custom_unit_name,
+                        data_source, save_unit, data_type, calorific_value, moisture_content, carbon_content
                     FROM Activity_Data WHERE source_id = ?"""
                     cursor.execute(activity_data_query, (record[0],))
                     activity_data_records = cursor.fetchall()
@@ -94,12 +124,14 @@ def read_emission_source():
                         {
                             "activity_data": activity[0],
                             "distribution_ratio": activity[1],
-                            "data_source": activity[2],
-                            "save_unit": activity[3],
-                            "data_type": activity[4],
-                            "calorific_value": activity[5],
-                            "moisture_content": activity[6],
-                            "carbon_content": activity[7]
+                            "activity_data_unit": activity[2],
+                            "custom_unit_name": activity[3],
+                            "data_source": activity[4],
+                            "save_unit": activity[5],
+                            "data_type": activity[6],
+                            "calorific_value": activity[7],
+                            "moisture_content": activity[8],
+                            "carbon_content": activity[9]
                         }
                         for activity in activity_data_records
                     ]
@@ -122,6 +154,7 @@ def read_emission_source():
                         "is_CHP": record[14],
                         "remark": record[15],
                         "gas_types": gas_types,
+                        "emission_factors": emission_factors,
                         "activity_data": activity_data_list
                     }) 
                 return {"emission_sources": result}  

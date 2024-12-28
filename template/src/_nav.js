@@ -22,12 +22,11 @@ import {
   cilUser,
   cilCash,
   cilStorage,
-  cilHandshake
+  cilHandshake,
 } from '@coreui/icons'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 
 const _nav = [
-
   // {
   //   component: CNavTitle,
   //   name: 'Theme',
@@ -52,7 +51,7 @@ const _nav = [
     items: [
       {
         component: CNavItem,
-        name: '碳盤查–啟新',
+        name: '碳盤查–組織內',
         to: '/碳盤查系統/system',
       },
       {
@@ -93,7 +92,7 @@ const _nav = [
     to: '/theme/qa',
     icon: <CIcon icon={cilSatelite} customClassName="nav-icon" />,
   },
-  
+
   {
     component: CNavTitle,
     name: '帳號管理',
@@ -110,7 +109,7 @@ const _nav = [
     to: '/theme/company_info',
     icon: <CIcon icon={cilBuilding} customClassName="nav-icon" />,
   },
-    
+
   {
     component: CNavTitle,
     name: '管理者頁面',
@@ -137,7 +136,6 @@ const _nav = [
     to: '/login',
   },
   {
-    
     component: CNavGroup,
     name: 'Base',
     to: '/base',
@@ -383,7 +381,6 @@ const _nav = [
     icon: <CIcon icon={cilPencil} customClassName="nav-icon" />,
   },
 
-
   {
     component: CNavTitle,
     name: 'Extras',
@@ -393,7 +390,6 @@ const _nav = [
     name: 'Pages',
     icon: <CIcon icon={cilStar} customClassName="nav-icon" />,
     items: [
-
       {
         component: CNavItem,
         name: 'Register',

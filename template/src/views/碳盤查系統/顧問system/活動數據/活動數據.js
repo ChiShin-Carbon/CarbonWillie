@@ -20,7 +20,13 @@ import { Link } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleCheck, faCircleXmark } from '@fortawesome/free-solid-svg-icons'
 
-import { process_code_Map, device_code_Map, fuel_code_Map, data_type_map } from '../EmissionSource'
+import {
+  process_code_Map,
+  device_code_Map,
+  fuel_code_Map,
+  activity_data_unit_map,
+  data_type_map,
+} from '../EmissionSource'
 
 const Tabs = () => {
   // 設定 state 來儲存選擇的行數據，初始值為 null
@@ -57,6 +63,8 @@ const Tabs = () => {
             {
               activity_data: '',
               distribution_ratio: '',
+              activity_data_unit: '',
+              custom_unit_name: '',
               data_source: '',
               save_unit: '',
               data_type: '',
@@ -73,17 +81,17 @@ const Tabs = () => {
         equipment: device_code_Map[source.device_code],
         material: fuel_code_Map[source.fuel_code],
         details: {
-          annual1: activity.activity_data || '',
-          annual2: activity.distribution_ratio || '',
-          annual3: '人小時',
-          annual4: '',
+          annual1: activity.activity_data || 0,
+          annual2: activity.distribution_ratio || 0,
+          annual3: activity.activity_data_unit || '',
+          annual4: activity.custom_unit_name || '',
           annual5: activity.data_source || '',
           annual6: activity.save_unit || '',
           annual7: data_type_map[activity.data_type] || '',
           annual8: activity.calorific_value || '',
-          annual9: 'Kcal/人小時',
-          annual10: activity.moisture_content || '',
-          annual11: activity.carbon_content || '',
+          annual9: `Kcal/${activity_data_unit_map[activity.activity_data_unit]}`,
+          annual10: activity.moisture_content != null ? activity.moisture_content : '',
+          annual11: activity.carbon_content != null ? activity.carbon_content : '',
           remark: source.remark,
         },
       }))
@@ -96,12 +104,35 @@ const Tabs = () => {
 
   const handleInputChange = (e, field) => {
     const value = e.target.value
-    setSelectedRowData((prevData) => ({
-      ...prevData,
-      [field]: value,
-      ...(field === 'annual3' && { annual9: `Kcal/${value}` }),
-    }))
+    setSelectedRowData((prevData) => {
+      const updatedData = {
+        ...prevData,
+        [field]: value,
+      }
+
+      if (field === 'annual3') {
+        if (value === '9') {
+          updatedData.annual4 = ''
+          updatedData.annual9 = ''
+        } else {
+          updatedData.annual4 = ''
+          updatedData.annual9 = `Kcal/${activity_data_unit_map[value] === '其他' ? prevData.custom_unit_name : activity_data_unit_map[value]}`
+        }
+      }
+
+      if (field === 'annual4' && prevData.annual3 === '9') {
+        updatedData.annual9 = `Kcal/${value}`
+      }
+
+      return updatedData
+    })
   }
+
+  // updatedData.annual9 = `Kcal/${
+  //   activity_data_unit_map[value] === '其他'
+  //     ? prevData.custom_unit_name
+  //     : activity_data_unit_map[value]
+  // }`
 
   return (
     <main>
@@ -301,14 +332,15 @@ const Tabs = () => {
                         value={selectedRowData.annual3}
                         onChange={(e) => handleInputChange(e, 'annual3')}
                       >
-                        <option value="公秉">公秉</option>
-                        <option value="千立方公尺">千立方公尺</option>
-                        <option value="千度">千度</option>
-                        <option value="人小時">人小時</option>
-                        <option value="tkm">tkm</option>
-                        <option value="pkm">pkm</option>
-                        <option value="tCO2e">tCO2e</option>
-                        <option value="其他">其他</option>
+                        <option value="1">公噸</option>
+                        <option value="2">公秉</option>
+                        <option value="3">千立方公尺</option>
+                        <option value="4">千度</option>
+                        <option value="5">人小時</option>
+                        <option value="6">tkm</option>
+                        <option value="7">pkm</option>
+                        <option value="8">tCO2e</option>
+                        <option value="9">其他</option>
                       </CFormSelect>
                     </div>
                     <div>
@@ -317,6 +349,7 @@ const Tabs = () => {
                         className={styles.input}
                         value={selectedRowData.annual4}
                         onChange={(e) => handleInputChange(e, 'annual4')}
+                        disabled={selectedRowData.annual3 !== '9'}
                       />
                     </div>
                     <div>
@@ -391,6 +424,7 @@ const Tabs = () => {
                         rows={2}
                         value={selectedRowData.remark}
                         onChange={(e) => handleInputChange(e, 'remark')}
+                        disabled
                       />
                     </div>
                   </div>
