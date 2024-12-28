@@ -73,7 +73,8 @@ from findone.commute import Commute_findone
 from findone.Business_trip import Business_Trip_findone
 from findone.Operational_Waste import Operational_Waste_findone
 from findone.Selling_waste import Selling_waste_findone
-
+from edit.edit_vehicle import edit_vehicle
+from edit.edit_employee import edit_employee
 
 app = FastAPI()
 load_dotenv()
@@ -157,3 +158,5 @@ app.include_router(Commute_findone)
 app.include_router(Business_Trip_findone)
 app.include_router(Operational_Waste_findone)
 app.include_router(Selling_waste_findone)
+app.include_router(edit_vehicle)
+app.include_router(edit_employee)
