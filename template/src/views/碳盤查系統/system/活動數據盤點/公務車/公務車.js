@@ -28,6 +28,8 @@ import 'react-medium-image-zoom/dist/styles.css'
 export const Vehicle = () => {
   const [isEditModalVisible, setEditModalVisible] = useState(false)
   const [vehicles, setVehicles] = useState([]) // State to hold fetched vehicle data
+  const [selectedVehicleId, setSelectedVehicleId] = useState(null) // State to store selected vehicle ID
+
 
   // Function to fetch vehicle data
   const getVehicleData = async () => {
@@ -55,49 +57,57 @@ export const Vehicle = () => {
     getVehicleData()
   }, [])
 
-    return (
-        <div>
-            <CTable hover className={styles.activityTable1}>
-                <CTableHead className={styles.activityTableHead}>
-                    <tr>
-                        <th>發票/收據日期</th>
-                        <th>發票號碼/收據編號</th>
-                        <th>油種</th>
-                        <th>單位</th>
-                        <th>公升數/金額</th>
-                        <th>備註</th>
-                        <th>圖片</th>
-                        <th>最近編輯</th>
-                        <th>操作</th>
-                    </tr>
-                </CTableHead>
-                <CTableBody className={styles.activityTableBody}>
-                    {vehicles.map((vehicle) => (
-                        <tr key={vehicle.vehicle_id}>
-                            <td>{vehicle.Doc_date}</td>
-                            <td>{vehicle.Doc_number}</td>
-                            <td>{vehicle.oil_species ? '柴油' : '汽油'}</td>
-                            <td>公升</td>
-                            <td>{vehicle.liters}</td>
-                            <td>{vehicle.remark}</td>
-                            <td>
-                                <Zoom>
-                                   <img src={`fastapi/${vehicle.img_path}`} alt="receipt" style={{ width: '100px' }} />
-                                </Zoom>
-                            </td>
-                            <td>{vehicle.username}<br />{vehicle.edit_time}</td>
-                            <td>
-                                <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
-                                <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
-                            </td>
-                        </tr>
-                    ))}
-                </CTableBody>
-            </CTable>
-            <EditModal
-                isEditModalVisible={isEditModalVisible}
-                setEditModalVisible={setEditModalVisible}
-            />
-        </div>
-    );
+  return (
+    <div>
+      <CTable hover className={styles.activityTable1}>
+        <CTableHead className={styles.activityTableHead}>
+          <tr>
+            <th>發票/收據日期</th>
+            <th>發票號碼/收據編號</th>
+            <th>油種</th>
+            <th>單位</th>
+            <th>公升數/金額</th>
+            <th>備註</th>
+            <th>圖片</th>
+            <th>最近編輯</th>
+            <th>操作</th>
+          </tr>
+        </CTableHead>
+        <CTableBody className={styles.activityTableBody}>
+          {vehicles.map((vehicle) => (
+            <tr key={vehicle.vehicle_id}>
+              <td>{vehicle.Doc_date}</td>
+              <td>{vehicle.Doc_number}</td>
+              <td>{vehicle.oil_species ? '柴油' : '汽油'}</td>
+              <td>公升</td>
+              <td>{vehicle.liters}</td>
+              <td>{vehicle.remark}</td>
+              <td>
+                <Zoom>
+                  <img src={`fastapi/${vehicle.img_path}`} alt="receipt" style={{ width: '100px' }} />
+                </Zoom>
+              </td>
+              <td>{vehicle.username}<br />{vehicle.edit_time}</td>
+              <td>
+                <FontAwesomeIcon
+                  icon={faPenToSquare}
+                  className={styles.iconPen}
+                  onClick={() => {
+                    setSelectedVehicleId(vehicle.vehicle_id) // Set the selected vehicle ID
+                    setEditModalVisible(true) // Open the modal
+                  }}
+                />
+                <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
+              </td>
+            </tr>
+          ))}
+        </CTableBody>
+      </CTable>
+      <EditModal
+        isEditModalVisible={isEditModalVisible}
+        setEditModalVisible={setEditModalVisible}
+        selectedVehicleId={selectedVehicleId}
+      />
+    </div>
+  );
 };

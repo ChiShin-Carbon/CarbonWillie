@@ -13,6 +13,8 @@ import 'react-medium-image-zoom/dist/styles.css';
 export const BusinessTrip = () => {
     const [isEditModalVisible, setEditModalVisible] = useState(false);
     const [BT, setBT] = useState([]);  // State to hold fetched vehicle data
+    const [selectedbusiness, setSelectedbusiness] = useState(null);
+    
 
     // Function to fetch vehicle data
     const getBusiness_TripData = async () => {
@@ -68,7 +70,10 @@ export const BusinessTrip = () => {
                             </td>
                             <td>{Business_Trip.edit_time}</td>
                             <td>
-                                <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
+                                <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => {
+                                    setEditModalVisible(true)
+                                    setSelectedbusiness(Business_Trip.business_id)
+                                    }} />
                                 <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
                             </td>
                         </tr>
@@ -78,6 +83,7 @@ export const BusinessTrip = () => {
             <EditModal
                 isEditModalVisible={isEditModalVisible}
                 setEditModalVisible={setEditModalVisible}
+                selectedbusiness={selectedbusiness}
             />
         </div>
     );

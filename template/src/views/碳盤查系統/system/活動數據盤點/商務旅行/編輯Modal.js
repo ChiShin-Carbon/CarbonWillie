@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     CModal, CModalHeader, CModalBody, CModalFooter, CButton, CFormLabel, CFormInput, CFormTextarea, CRow, CCol, CFormSelect, CForm
 } from '@coreui/react';
@@ -8,7 +8,7 @@ import Zoom from 'react-medium-image-zoom'
 import 'react-medium-image-zoom/dist/styles.css'
 
 
-const EditModal = ({ isEditModalVisible, setEditModalVisible }) => {
+const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedbusiness }) => {
     const handleClose = () => setEditModalVisible(false);
     const [transportType, setTransportType] = useState("1"); // 默認選擇汽車
 
@@ -21,8 +21,56 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible }) => {
         }
     };
 
+    const [formValues, setFormValues] = useState({
+        transportation: '',
+        oil_species: '',
+        kilometer: '',
+        remark: '',
+    });
+
+    useEffect(() => {
+        const fetchBusinessData = async () => {
+            if (!selectedbusiness) return;
+
+            try {
+                const response = await fetch('http://localhost:8000/Business_Trip_findone', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ BT_id: selectedbusiness }),
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const BusinessData = data.Business_Trip[0];
+                    setFormValues({
+                        transportation: BusinessData?.transportation || '',
+                        oil_species: BusinessData?.oil_species || '',
+                        kilometer: BusinessData?.kilometer || '',
+                        remark: BusinessData?.remark || '',
+                    });
+                    setPreviewImage(BusinessData?.img_path || null);
+                } else {
+                    console.error('Error fetching machinery data:', await response.text());
+                }
+            } catch (error) {
+                console.error('Error fetching machinery data:', error);
+            }
+        };
+
+        fetchBusinessData();
+    }, [selectedbusiness]);
+
+    // Handle form input changes
+    const handleChange = (e) => {
+        const { id, value } = e.target;
+        setFormValues((prev) => ({ ...prev, [id]: value }));
+    };
+
+
     return (
-        <CModal backdrop="static"   visible={isEditModalVisible} onClose={handleClose} className={styles.modal}>
+        <CModal backdrop="static" visible={isEditModalVisible} onClose={handleClose} className={styles.modal}>
             <CModalHeader>
                 <h5><b>編輯數據-商務旅行</b></h5>
             </CModalHeader>
@@ -33,7 +81,11 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible }) => {
                             <CFormLabel htmlFor="type" className={`col-sm-2 col-form-label ${styles.addlabel}`} >交通方式*</CFormLabel>
                             <CCol>
                                 <CFormSelect aria-label="Default select example" id="type" className={styles.addinput}
-                                    onChange={(e) => setTransportType(e.target.value)} >
+                                    value={formValues.transportation}
+                                    onChange={(e) => {
+                                        handleChange(e);
+                                        setTransportType(e.target.value)
+                                        }} >
                                     <option value="1">汽車</option>
                                     <option value="2">機車</option>
                                     <option value="3">公車</option>
@@ -49,7 +101,12 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible }) => {
                         <CRow className="mb-3">
                             <CFormLabel htmlFor="oil" className={`col-sm-2 col-form-label ${styles.addlabel}`} >油種*<span className={styles.Note}>僅汽/機車須填寫</span></CFormLabel>
                             <CCol>
-                                <CFormSelect aria-label="Default select example" id="type" className={styles.addinput} disabled={!(transportType === "1" || transportType === "2")} >
+                                <CFormSelect aria-label="Default select example" 
+                                id="type" 
+                                value={formValues.oil_species}
+                                onChange={handleChange}
+                                className={styles.addinput} 
+                                disabled={!(transportType === "1" || transportType === "2")} >
                                     <option value="1">無</option>
                                     <option value="2">汽油</option>
                                     <option value="3">柴油</option>
@@ -59,14 +116,27 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible }) => {
                         <CRow className="mb-3">
                             <CFormLabel htmlFor="km" className={`col-sm-2 col-form-label ${styles.addlabel}`} >公里數*</CFormLabel>
                             <CCol>
-                                <CFormInput className={styles.addinput} type="number" id="km" required />
+                                <CFormInput 
+                                className={styles.addinput} 
+                                type="number" 
+                                id="km" 
+                                value={formValues.kilometer}
+                                onChange={handleChange}
+                                required />
                             </CCol>
                         </CRow>
 
                         <CRow className="mb-3">
                             <CFormLabel htmlFor="explain" className={`col-sm-2 col-form-label ${styles.addlabel}`} >備註</CFormLabel>
                             <CCol>
-                                <CFormTextarea className={styles.addinput} type="text" id="explain" rows={3} />
+                                <CFormTextarea 
+                                className={styles.addinput} 
+                                type="text" 
+                                id="explain" 
+                                rows={3} 
+                                value={formValues.remark}
+                                onChange={handleChange}
+                                />
 
                             </CCol>
                         </CRow>

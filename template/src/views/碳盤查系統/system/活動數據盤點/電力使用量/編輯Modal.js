@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     CModal, CModalHeader, CModalBody, CModalFooter, CButton, CFormLabel, CFormInput, CFormTextarea, CRow, CCol, CFormSelect, CForm
 } from '@coreui/react';
@@ -7,7 +7,7 @@ import styles from '../../../../../scss/活動數據盤點.module.css';
 import Zoom from 'react-medium-image-zoom'
 import 'react-medium-image-zoom/dist/styles.css'
 
-const EditModal = ({ isEditModalVisible, setEditModalVisible }) => {
+const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedUsage }) => {
     const handleClose = () => setEditModalVisible(false);
 
     const [previewImage, setPreviewImage] = useState(null); // 用來存儲圖片的 
@@ -19,6 +19,61 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible }) => {
         }
     };
 
+        const [FormValues, setFormValues] = useState({
+            Doc_date: '',
+            Doc_number: '',
+            period_start: '',
+            period_end: '',
+            usage: '',
+            amount: '',
+            remark: '',
+        });
+    
+
+    
+    useEffect(() => {
+            const fetchElectricityData = async () => {
+                if (!selectedUsage) return;
+    
+                try {
+                    const response = await fetch('http://localhost:8000/Electricity_Usage_findone', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ electricity_id: selectedUsage }),
+                    });
+    
+                    if (response.ok) {
+                        const data = await response.json();
+                        const UsageData = data.Electricity_Usage[0];
+                        setFormValues({
+                            Doc_date: UsageData?.Doc_date || '',
+                            Doc_number: UsageData?.Doc_number || '',
+                            period_start: UsageData?.period_start || '',
+                            period_end: UsageData?.period_end || '',
+                            usage: UsageData?.usage || '',
+                            amount: UsageData?.amount || '',
+                            remark: UsageData?.remark || '',
+                        });
+                        setPreviewImage(UsageData?.img_path || null);
+                    } else {
+                        console.error('Error fetching machinery data:', await response.text());
+                    }
+                } catch (error) {
+                    console.error('Error fetching machinery data:', error);
+                }
+            };
+    
+            fetchElectricityData();
+        }, [selectedUsage]);
+
+        const handleInputChange = (e) => {
+            const { id, value } = e.target;
+            setFormValues((prevValues) => ({ ...prevValues, [id]: value }));
+        };
+
+
     return (
         <CModal backdrop="static" visible={isEditModalVisible} onClose={handleClose} className={styles.modal}>
             <CModalHeader>
@@ -29,71 +84,89 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible }) => {
                     <div className={styles.addmodal}>
                         <CRow className="mb-3">
                             <CFormLabel htmlFor="month" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票/收據日期*</CFormLabel>
-                            <CCol><CFormInput className={styles.addinput} type="date" id="date" required />
+                            <CCol><CFormInput 
+                            className={styles.addinput} 
+                            type="date" 
+                            id="date" 
+                            value={FormValues.Doc_date}
+                            onChange={handleInputChange}
+                            required />
                             </CCol>
                         </CRow>
                         <CRow className="mb-3">
                             <CFormLabel htmlFor="num" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票號碼/收據編號*</CFormLabel>
                             <CCol>
-                                <CFormInput className={styles.addinput} type="text" id="num" required />
+                                <CFormInput 
+                                className={styles.addinput} 
+                                type="text" 
+                                id="num" 
+                                value={FormValues.Doc_number}
+                                onChange={handleInputChange}
+                                required />
                             </CCol>
                         </CRow>
                         <CRow className="mb-3">
                             <CFormLabel htmlFor="datestart" className={`col-sm-2 col-form-label ${styles.addlabel}`} >用電期間(起)*</CFormLabel>
                             <CCol>
-                                <CFormInput className={styles.addinput} type="date" id="datestart" required />
+                                <CFormInput 
+                                className={styles.addinput} 
+                                type="date" 
+                                id="datestart" 
+                                value={FormValues.period_start}
+                                onChange={handleInputChange}
+                                required />
                             </CCol>
                         </CRow>
                         <CRow className="mb-3">
                             <CFormLabel htmlFor="dateend" className={`col-sm-2 col-form-label ${styles.addlabel}`} >用電期間(迄)*</CFormLabel>
                             <CCol>
-                                <CFormInput className={styles.addinput} type="date" id="dateend" required />
+                                <CFormInput 
+                                className={styles.addinput} 
+                                type="date" 
+                                id="dateend" 
+                                value={FormValues.period_end}
+                                onChange={handleInputChange}
+                                required />
                             </CCol>
                         </CRow>
                         <CRow className="mb-3">
                             <CFormLabel htmlFor="type" className={`col-sm-2 col-form-label ${styles.addlabel}`} >填寫類型*<span className={styles.Note}> 選擇填寫請以*用電度數*作為優先填寫項目</span></CFormLabel>
                             <CCol>
-                                <CFormSelect aria-label="Default select example" id="type" className={styles.addinput} >
+                                <CFormSelect 
+                                aria-label="Default select example" 
+                                id="type" 
+                                className={styles.addinput}
+                                value={FormValues.usage}
+                                onChange={handleInputChange}
+                                >
                                     <option value="1">用電度數</option>
                                     <option value="2">用電金額</option>
                                 </CFormSelect>
                             </CCol>
                         </CRow>
-
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="quantity" className={`col-sm-2 col-form-label ${styles.addlabel}`} >尖峰度數*</CFormLabel>
-                            <CCol>
-                                <CFormInput className={styles.addinput} type="number" min='0' id="quantity" required />
-                            </CCol>
-                        </CRow>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="quantity2" className={`col-sm-2 col-form-label ${styles.addlabel}`} >半尖峰度數</CFormLabel>
-                            <CCol>
-                                <CFormInput className={styles.addinput} type="number" min='0' id="quantity2" />
-                            </CCol>
-                        </CRow>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="quantity3" className={`col-sm-2 col-form-label ${styles.addlabel}`} >周六尖峰度數</CFormLabel>
-                            <CCol>
-                                <CFormInput className={styles.addinput} type="number" min='0' id="quantity3" required />
-                            </CCol>
-                        </CRow>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="quantity4" className={`col-sm-2 col-form-label ${styles.addlabel}`} >離峰度數</CFormLabel>
-                            <CCol>
-                                <CFormInput className={styles.addinput} type="number" min='0' id="quantity4" required />
-                            </CCol>
-                        </CRow>
                         <CRow className="mb-3">
                             <CFormLabel htmlFor="monthusage" className={`col-sm-2 col-form-label ${styles.addlabel}`} >當月總用電量或總金額</CFormLabel>
                             <CCol>
-                                <CFormInput className={styles.addinput} type="number" min='0' id="monthusage" />
+                                <CFormInput 
+                                className={styles.addinput} 
+                                type="number" 
+                                min='0' 
+                                id="monthusage"
+                                value={FormValues.amount}
+                                onChange={handleInputChange}
+                                 />
                             </CCol>
                         </CRow>
                         <CRow className="mb-3">
                             <CFormLabel htmlFor="explain" className={`col-sm-2 col-form-label ${styles.addlabel}`} >備註</CFormLabel>
                             <CCol>
-                                <CFormTextarea className={styles.addinput} type="text" id="explain" rows={3} />
+                                <CFormTextarea 
+                                className={styles.addinput} 
+                                type="text" 
+                                id="explain" rows={3} 
+                                value={FormValues.remark}
+                                onChange={handleInputChange}
+                                />
 
                             </CCol>
                         </CRow>

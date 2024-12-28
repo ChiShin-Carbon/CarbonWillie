@@ -13,6 +13,8 @@ import 'react-medium-image-zoom/dist/styles.css';
 export const Machinery = () => {
     const [isEditModalVisible, setEditModalVisible] = useState(false);
     const [machineryData, setMachineryData] = useState([]);  // Updated state name for clarity
+    const [selectedMachinery, setSelectedMachinery] = useState(null); // Store selected employee for edit
+    
 
     // Function to fetch Machinery data
     const getMachineryData = async () => {
@@ -72,7 +74,12 @@ export const Machinery = () => {
                             </td>
                             <td>{item.edit_time}</td>
                             <td>
-                                <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => setEditModalVisible(true)} />
+                                <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() =>{
+                                    setEditModalVisible(true)
+                                    setSelectedMachinery(item.machinery_id)
+                                    console.log(item.machinery_id)    
+                                }}
+                                      />
                                 <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
                             </td>
                         </tr>
@@ -82,6 +89,7 @@ export const Machinery = () => {
             <EditModal
                 isEditModalVisible={isEditModalVisible}
                 setEditModalVisible={setEditModalVisible}
+                selectedMachinery={selectedMachinery}
             />
         </div>
     );

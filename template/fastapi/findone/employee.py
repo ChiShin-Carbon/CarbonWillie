@@ -2,10 +2,13 @@ from fastapi import APIRouter, HTTPException, status
 from connect.connect import connectDB
 from pydantic import BaseModel
 
-employee = APIRouter()
+employee_findone = APIRouter()
 
-@employee.post("/employee")
-def read_employee_data():
+class EmployeeRequest(BaseModel):
+    Employee_id: int
+
+@employee_findone.post("/employee_findone")
+def read_employee_data(request: EmployeeRequest):
     conn = connectDB()  # Establish connection using your custom connect function
     if conn:
         try:
@@ -15,12 +18,11 @@ def read_employee_data():
                 query = """
                 
                 SELECT Employee.employee_id, Employee.user_id, Employee.period_date, Employee.employee_number, Employee.daily_hours, Employee.workday, Employee.overtime, Employee.sick_leave, Employee.personal_leave, Employee.business_trip, Employee.wedding_and_funeral, Employee.special_leave, Employee.remark, Employee.img_path, Employee.edit_time
-                , users.username
                 FROM Employee
-                LEFT JOIN users ON Employee.user_id = users.user_id
-                
+                WHERE Employee.employee_id = ?
                 """  # Update table name if needed
-                cursor.execute(query)
+                cursor.execute(query, (request.Employee_id,))  # Use the user's input in the query
+
                 
                 # Fetch all employee records
                 employee_records = cursor.fetchall()
@@ -44,7 +46,6 @@ def read_employee_data():
                             "remark": record[12],
                             "img_path": record[13],
                             "edit_time": record[14].strftime("%Y-%m-%d %H:%M") if record[8] else None,
-                            "username": record[15]
                         }
                         for record in employee_records
                     ]
