@@ -210,11 +210,14 @@ const Tabs = () => {
             <EditModal
                 isEditModalVisible={isEditModalVisible}
                 setEditModalVisible={setEditModalVisible}
+                onSuccess={refreshAuthorizedRecords}
             />
 
             <AddModal
                 isAddModalVisible={isAddModalVisible}
                 setAddModalVisible={setAddModalVisible}
+                businessId={businessId} 
+                onSuccess={refreshAuthorizedRecords}
             />
 
 

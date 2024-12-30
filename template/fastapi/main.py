@@ -61,6 +61,8 @@ from 管理者.edit_adminCompany import edit_adminCompany
 from 管理者.delete_adminCompany import delete_adminCompany
 from 管理者.adminUser import adminUser
 from 管理者.delete_adminUser import delete_adminUser
+from 管理者.insert_adminUser import insert_adminUser
+
 
 
 
@@ -154,6 +156,8 @@ app.include_router(edit_adminCompany)
 app.include_router(delete_adminCompany)
 app.include_router(adminUser)
 app.include_router(delete_adminUser)
+app.include_router(insert_adminUser)
+
 
 
 
