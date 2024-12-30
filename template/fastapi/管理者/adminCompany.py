@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, status
 from connect.connect import connectDB
 from fastapi.middleware.cors import CORSMiddleware
 
-adminCompany = APIRouter()
+adminCompany = APIRouter(tags=["admin"])
 
 @adminCompany.get("/adminCompany")
 def read_all_company_data():

@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
 
-edit_adminCompany = APIRouter()
+edit_adminCompany = APIRouter(tags=["admin"])
 
 # 定義接收的資料模型
 class CompanyData(BaseModel):
