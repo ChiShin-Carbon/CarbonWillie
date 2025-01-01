@@ -5,16 +5,7 @@ import {
   CCard,
   CCardBody,
   CCardTitle,
-  CButton,
-  CInputGroup,
-  CInputGroupText,
-  CListGroup,
-  CListGroupItem,
-  CModal,
-  CModalBody,
-  CModalFooter,
-  CModalHeader,
-  CModalTitle,
+  CButton,  
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import {
@@ -269,6 +260,11 @@ const 新聞 = () => {
                 </center>
             ) : (
                 news
+                .sort((a, b) => {
+                    const dateA = new Date(a.news_date);
+                    const dateB = new Date(b.news_date);
+                    return dateB - dateA; // 從新到舊排序
+                })
                 .map((article, index) => (
                     <li
                     key={index}
