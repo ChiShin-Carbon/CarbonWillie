@@ -79,9 +79,9 @@ hr {
 .text h1{
     text-align:left;
 }
-.text h3{
+.text h5{
     text-align:right;
-    font-size: 40px;
+    font-size: 28px;
     font-family: Garamond, serif;
 }
 .text p{

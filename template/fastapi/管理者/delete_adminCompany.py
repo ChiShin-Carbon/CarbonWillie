@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, status
 from connect.connect import connectDB
 
-delete_adminCompany = APIRouter()
+delete_adminCompany = APIRouter(tags=["admin"])
 
 @delete_adminCompany.delete("/delete_adminCompany/{business_id}")
 def delete_company_data(business_id: str):

@@ -76,11 +76,11 @@ const Login = () => {
         <CCardGroup>
           <div className="text-white py-5" class="text">
             <div>
-              <h1>Chi Shin</h1>
-              <h3>
-                Carbon Footprint <br></br>
-                Verification System
-              </h3>
+              <h1>健達出其碳</h1>
+              <h5>
+                Carbon Footprint Verification &<br></br>
+                Carbon Fee Assessment Management System
+              </h5>
               <hr class="texthr"></hr>
               <p>
                 精準碳盤查，全面掌握碳足跡， <br></br>
@@ -91,7 +91,7 @@ const Login = () => {
           <div class="card1">
             <CCard class="logincard" className="p-4">
               <CCardBody class="aligncenter">
-                <img src="/src/assets/images/啟新logo.png"></img>
+                <img src="/src/assets/images/健達出其碳.png" width="50%"></img>
                 <CForm onKeyDown={handleKeyPress}>
                   <div class="aligncenter">
                     <h2>登入</h2>
@@ -131,12 +131,12 @@ const Login = () => {
                   <CRow>
                     <CCol>
                       <p className="px-0" style={{ color: 'black' }}>
-                        尚未有帳號?
+                        忘記密碼?
                       </p>
                     </CCol>
                     <CCol>
                       <Link to="../register">
-                        <p>建立新帳號</p>
+                        <p>忘記密碼（驗證信）</p>
                       </Link>
                     </CCol>
                   </CRow>

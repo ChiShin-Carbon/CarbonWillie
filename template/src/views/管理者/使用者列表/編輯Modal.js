@@ -9,7 +9,7 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible }) => {
     const handleClose = () => setEditModalVisible(false);
 
     return (
-        <CModal visible={isEditModalVisible} onClose={handleClose} className={styles.modal}>
+        <CModal visible={isEditModalVisible} onClose={handleClose} className={styles.modal}  backdrop="static">
             <CModalHeader>
                 <h5><b>編輯企業資料</b></h5>
             </CModalHeader>

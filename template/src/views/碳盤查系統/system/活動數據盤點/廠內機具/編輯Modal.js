@@ -95,115 +95,128 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedMachinery 
     }, [selectedMachinery]);
 
     return (
-        <CModal backdrop="static" visible={isEditModalVisible} onClose={handleClose} className={styles.modal}>
+        <CModal backdrop="static" visible={isEditModalVisible} onClose={handleClose} className={styles.modal} size='xl'>
             <CModalHeader>
                 <h5><b>編輯數據-廠內機具</b></h5>
             </CModalHeader>
             <CForm onSubmit={handleSubmit}>
                 <CModalBody>
                     <div className={styles.addmodal}>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="Doc_date" className={`col-sm-2 col-form-label ${styles.addlabel}`}>發票/收據日期*</CFormLabel>
-                            <CCol>
-                                <CFormInput
-                                    className={styles.addinput}
-                                    type="date"
-                                    id="Doc_date"
-                                    value={FormValues.Doc_date}
-                                    onChange={handleInputChange}
-                                    required
-                                />
-                            </CCol>
-                        </CRow>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="Doc_number" className={`col-sm-2 col-form-label ${styles.addlabel}`}>發票號碼/收據編號*</CFormLabel>
-                            <CCol>
-                                <CFormInput
-                                    className={styles.addinput}
-                                    type="text"
-                                    id="Doc_number"
-                                    value={FormValues.Doc_number}
-                                    onChange={handleInputChange}
-                                    required
-                                />
-                            </CCol>
-                        </CRow>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="machinery_location" className={`col-sm-2 col-form-label ${styles.addlabel}`}>設備位置*</CFormLabel>
-                            <CCol>
-                                <CFormInput
-                                    className={styles.addinput}
-                                    type="text"
-                                    id="machinery_location"
-                                    value={FormValues.machinery_location}
-                                    onChange={handleInputChange}
-                                    required
-                                />
-                            </CCol>
-                        </CRow>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="energy_type" className={`col-sm-2 col-form-label ${styles.addlabel}`}>能源類型*</CFormLabel>
-                            <CCol>
-                                <CFormSelect
-                                    id="energy_type"
-                                    className={styles.addinput}
-                                    value={FormValues.energy_type}
-                                    onChange={handleInputChange}
-                                >
-                                    <option value="">請選擇</option>
-                                    <option value="Diesel">柴油</option>
-                                    <option value="Gasoline">汽油</option>
-                                    <option value="Other">其他</option>
-                                </CFormSelect>
-                            </CCol>
-                        </CRow>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="usage" className={`col-sm-2 col-form-label ${styles.addlabel}`}>使用量(公克)*</CFormLabel>
-                            <CCol>
-                                <CFormInput
-                                    className={styles.addinput}
-                                    type="number"
-                                    min="0"
-                                    id="usage"
-                                    value={FormValues.usage}
-                                    onChange={handleInputChange}
-                                    required
-                                />
-                            </CCol>
-                        </CRow>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="remark" className={`col-sm-2 col-form-label ${styles.addlabel}`}>備註</CFormLabel>
-                            <CCol>
-                                <CFormTextarea
-                                    className={styles.addinput}
-                                    id="remark"
-                                    value={FormValues.remark}
-                                    onChange={handleInputChange}
-                                    rows={3}
-                                />
-                            </CCol>
-                        </CRow>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="photo" className={`col-sm-2 col-form-label ${styles.addlabel}`}>圖片*</CFormLabel>
-                            <CCol>
-                                <CFormInput
-                                    type="file"
-                                    id="photo"
-                                    onChange={handleImageChange}
-                                    required
-                                />
-                            </CCol>
-                        </CRow>
-                        {previewImage && (
+                        <div className={styles.modalLeft}>
                             <CRow className="mb-3">
-                                <CCol className="text-center">
-                                    <Zoom>
-                                        <img src={previewImage} alt="Uploaded Preview" style={{ maxWidth: '100%' }} />
-                                    </Zoom>
+                                <CFormLabel htmlFor="Doc_date" className={`col-sm-2 col-form-label ${styles.addlabel}`}>發票/收據日期*</CFormLabel>
+                                <CCol>
+                                    <CFormInput
+                                        className={styles.addinput}
+                                        type="date"
+                                        id="Doc_date"
+                                        value={FormValues.Doc_date}
+                                        onChange={handleInputChange}
+                                        required
+                                    />
                                 </CCol>
                             </CRow>
-                        )}
-                        <div style={{ textAlign: 'center' }}>*為必填欄位</div>
+                            <CRow className="mb-3">
+                                <CFormLabel htmlFor="Doc_number" className={`col-sm-2 col-form-label ${styles.addlabel}`}>發票號碼/收據編號*</CFormLabel>
+                                <CCol>
+                                    <CFormInput
+                                        className={styles.addinput}
+                                        type="text"
+                                        id="Doc_number"
+                                        value={FormValues.Doc_number}
+                                        onChange={handleInputChange}
+                                        required
+                                    />
+                                </CCol>
+                            </CRow>
+                            <CRow className="mb-3">
+                                <CFormLabel htmlFor="machinery_location" className={`col-sm-2 col-form-label ${styles.addlabel}`}>設備位置*</CFormLabel>
+                                <CCol>
+                                    <CFormInput
+                                        className={styles.addinput}
+                                        type="text"
+                                        id="machinery_location"
+                                        value={FormValues.machinery_location}
+                                        onChange={handleInputChange}
+                                        required
+                                    />
+                                </CCol>
+                            </CRow>
+                            <CRow className="mb-3">
+                                <CFormLabel htmlFor="energy_type" className={`col-sm-2 col-form-label ${styles.addlabel}`}>能源類型*</CFormLabel>
+                                <CCol>
+                                    <CFormSelect
+                                        id="energy_type"
+                                        className={styles.addinput}
+                                        value={FormValues.energy_type}
+                                        onChange={handleInputChange}
+                                    >
+                                        <option value="">請選擇</option>
+                                        <option value="Diesel">柴油</option>
+                                        <option value="Gasoline">汽油</option>
+                                        <option value="Other">其他</option>
+                                    </CFormSelect>
+                                </CCol>
+                            </CRow>
+                            <CRow className="mb-3">
+                                <CFormLabel htmlFor="usage" className={`col-sm-2 col-form-label ${styles.addlabel}`}>使用量(公克)*</CFormLabel>
+                                <CCol>
+                                    <CFormInput
+                                        className={styles.addinput}
+                                        type="number"
+                                        min="0"
+                                        id="usage"
+                                        value={FormValues.usage}
+                                        onChange={handleInputChange}
+                                        required
+                                    />
+                                </CCol>
+                            </CRow>
+                            <CRow className="mb-3">
+                                <CFormLabel htmlFor="remark" className={`col-sm-2 col-form-label ${styles.addlabel}`}>備註</CFormLabel>
+                                <CCol>
+                                    <CFormTextarea
+                                        className={styles.addinput}
+                                        id="remark"
+                                        value={FormValues.remark}
+                                        onChange={handleInputChange}
+                                        rows={3}
+                                    />
+                                </CCol>
+                            </CRow>
+                            <CRow className="mb-3">
+                                <CFormLabel
+                                    htmlFor="photo"
+                                    className={`col-sm-2 col-form-label ${styles.addlabel}`}
+                                >
+                                    圖片*
+                                </CFormLabel>
+                                <CCol>
+                                    <CFormInput type="file" id="C1image" onChange={(e) => (handleImageChange(e), handleC1image(e))} required />
+                                </CCol>
+                            </CRow>
+                            <br />
+                            <div style={{ textAlign: 'center' }}>*為必填欄位</div>
+                        </div>
+                        <div className={styles.modalRight}>
+                            <CFormLabel className={`col-sm-2 col-form-label ${styles.addlabel}`} >
+                                圖片預覽
+                            </CFormLabel>
+                            <div className={styles.imgBlock}>
+                                {previewImage && ( // 如果有圖片 URL，則顯示預覽
+                                    <Zoom><img src={previewImage} alt="Uploaded Preview" /></Zoom>
+                                )}
+                            </div>
+
+                            <CFormLabel className={`col-sm-2 col-form-label ${styles.addlabel}`}>
+                                偵測錯誤提醒
+                            </CFormLabel>
+                            <div className={styles.errorMSG}>
+                                {/* 偵測日期:{C1date}  <span>{dateincorrectmessage}</span><br />
+                                偵測號碼:{C1num}  <span>{numincorrectmessage}</span> */}
+                            </div>
+
+                        </div>
                     </div>
                 </CModalBody>
                 <CModalFooter>

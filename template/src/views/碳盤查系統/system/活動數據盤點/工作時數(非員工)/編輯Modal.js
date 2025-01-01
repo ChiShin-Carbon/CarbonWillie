@@ -24,7 +24,7 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedNonemploye
     useEffect(() => {
         const fetchNonemployeeData = async () => {
             if (!selectedNonemployeeId) return;
-    
+
             try {
                 const response = await fetch('http://localhost:8000/NonEmployee_findone', {
                     method: 'POST',
@@ -33,7 +33,7 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedNonemploye
                     },
                     body: JSON.stringify({ Nonemployee_id: selectedNonemployeeId }),
                 });
-    
+
                 if (response.ok) {
                     const data = await response.json();
                     const nonemployee = data.Nonemployees[0]; // Ensure correct structure
@@ -53,10 +53,10 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedNonemploye
                 console.error('Error fetching NonEmployee data:', error);
             }
         };
-    
+
         fetchNonemployeeData();
     }, [selectedNonemployeeId]);
-    
+
 
     // Handle input changes
     const handleInputChange = (e) => {
@@ -101,95 +101,111 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedNonemploye
     };
 
     return (
-        <CModal backdrop="static" visible={isEditModalVisible} onClose={handleClose} className={styles.modal}>
+        <CModal backdrop="static" visible={isEditModalVisible} onClose={handleClose} className={styles.modal} size='xl'>
             <CModalHeader>
                 <h5><b>編輯數據-工作時數(非員工)</b></h5>
             </CModalHeader>
             <CForm onSubmit={handleSubmit}>
                 <CModalBody>
                     <div className={styles.addmodal}>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="period_date" className={`col-sm-2 col-form-label ${styles.addlabel}`}>月份*</CFormLabel>
-                            <CCol>
-                                <CFormInput
-                                    className={styles.addinput}
-                                    type="month"
-                                    id="period_date"
-                                    value={formValues.period_date}
-                                    onChange={handleInputChange}
-                                    required
-                                />
-                            </CCol>
-                        </CRow>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="nonemployee_number" className={`col-sm-2 col-form-label ${styles.addlabel}`}>人數*</CFormLabel>
-                            <CCol>
-                                <CFormInput
-                                    className={styles.addinput}
-                                    type="number"
-                                    id="nonemployee_number"
-                                    value={formValues.nonemployee_number}
-                                    onChange={handleInputChange}
-                                    required
-                                />
-                            </CCol>
-                        </CRow>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="total_hours" className={`col-sm-2 col-form-label ${styles.addlabel}`}>總工作時數*</CFormLabel>
-                            <CCol>
-                                <CFormInput
-                                    className={styles.addinput}
-                                    type="number"
-                                    id="total_hours"
-                                    value={formValues.total_hours}
-                                    onChange={handleInputChange}
-                                    required
-                                />
-                            </CCol>
-                        </CRow>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="total_days" className={`col-sm-2 col-form-label ${styles.addlabel}`}>總工作人天*</CFormLabel>
-                            <CCol>
-                                <CFormInput
-                                    className={styles.addinput}
-                                    type="number"
-                                    id="total_days"
-                                    value={formValues.total_days}
-                                    onChange={handleInputChange}
-                                    required
-                                />
-                            </CCol>
-                        </CRow>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="remark" className={`col-sm-2 col-form-label ${styles.addlabel}`}>備註</CFormLabel>
-                            <CCol>
-                                <CFormTextarea
-                                    className={styles.addinput}
-                                    id="remark"
-                                    rows={3}
-                                    value={formValues.remark}
-                                    onChange={handleInputChange}
-                                />
-                            </CCol>
-                        </CRow>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="photo" className={`col-sm-2 col-form-label ${styles.addlabel}`}>圖片*</CFormLabel>
-                            <CCol>
-                                <CFormInput
-                                    type="file"
-                                    id="photo"
-                                    onChange={handleImageChange}
-                                    required
-                                />
-                            </CCol>
-                        </CRow>
-                        {previewImage && (
+                        <div className={styles.modalLeft}>
                             <CRow className="mb-3">
-                                <CCol className="text-center">
-                                    <Zoom><img src={previewImage} alt="Uploaded Preview" /></Zoom>
+                                <CFormLabel htmlFor="period_date" className={`col-sm-2 col-form-label ${styles.addlabel}`}>月份*</CFormLabel>
+                                <CCol>
+                                    <CFormInput
+                                        className={styles.addinput}
+                                        type="month"
+                                        id="period_date"
+                                        value={formValues.period_date}
+                                        onChange={handleInputChange}
+                                        required
+                                    />
                                 </CCol>
                             </CRow>
-                        )}
+                            <CRow className="mb-3">
+                                <CFormLabel htmlFor="nonemployee_number" className={`col-sm-2 col-form-label ${styles.addlabel}`}>人數*</CFormLabel>
+                                <CCol>
+                                    <CFormInput
+                                        className={styles.addinput}
+                                        type="number"
+                                        id="nonemployee_number"
+                                        value={formValues.nonemployee_number}
+                                        onChange={handleInputChange}
+                                        required
+                                    />
+                                </CCol>
+                            </CRow>
+                            <CRow className="mb-3">
+                                <CFormLabel htmlFor="total_hours" className={`col-sm-2 col-form-label ${styles.addlabel}`}>總工作時數*</CFormLabel>
+                                <CCol>
+                                    <CFormInput
+                                        className={styles.addinput}
+                                        type="number"
+                                        id="total_hours"
+                                        value={formValues.total_hours}
+                                        onChange={handleInputChange}
+                                        required
+                                    />
+                                </CCol>
+                            </CRow>
+                            <CRow className="mb-3">
+                                <CFormLabel htmlFor="total_days" className={`col-sm-2 col-form-label ${styles.addlabel}`}>總工作人天*</CFormLabel>
+                                <CCol>
+                                    <CFormInput
+                                        className={styles.addinput}
+                                        type="number"
+                                        id="total_days"
+                                        value={formValues.total_days}
+                                        onChange={handleInputChange}
+                                        required
+                                    />
+                                </CCol>
+                            </CRow>
+                            <CRow className="mb-3">
+                                <CFormLabel htmlFor="remark" className={`col-sm-2 col-form-label ${styles.addlabel}`}>備註</CFormLabel>
+                                <CCol>
+                                    <CFormTextarea
+                                        className={styles.addinput}
+                                        id="remark"
+                                        rows={3}
+                                        value={formValues.remark}
+                                        onChange={handleInputChange}
+                                    />
+                                </CCol>
+                            </CRow>
+                            <CRow className="mb-3">
+                                <CFormLabel
+                                    htmlFor="photo"
+                                    className={`col-sm-2 col-form-label ${styles.addlabel}`}
+                                >
+                                    圖片*
+                                </CFormLabel>
+                                <CCol>
+                                    <CFormInput type="file" id="C1image" onChange={(e) => (handleImageChange(e), handleC1image(e))} required />
+                                </CCol>
+                            </CRow>
+                            <br />
+                            <div style={{ textAlign: 'center' }}>*為必填欄位</div>
+                        </div>
+                        <div className={styles.modalRight}>
+                            <CFormLabel className={`col-sm-2 col-form-label ${styles.addlabel}`} >
+                                圖片預覽
+                            </CFormLabel>
+                            <div className={styles.imgBlock}>
+                                {previewImage && ( // 如果有圖片 URL，則顯示預覽
+                                    <Zoom><img src={previewImage} alt="Uploaded Preview" /></Zoom>
+                                )}
+                            </div>
+
+                            <CFormLabel className={`col-sm-2 col-form-label ${styles.addlabel}`}>
+                                偵測錯誤提醒
+                            </CFormLabel>
+                            <div className={styles.errorMSG}>
+                                {/* 偵測日期:{C1date}  <span>{dateincorrectmessage}</span><br />
+                                偵測號碼:{C1num}  <span>{numincorrectmessage}</span> */}
+                            </div>
+
+                        </div>
                     </div>
                 </CModalBody>
                 <CModalFooter>

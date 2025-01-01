@@ -223,7 +223,8 @@ const Tabs = () => {
 
                             </div>
                             <div className={styles.userList}>
-                                <div><Link to="../管理者/使用者列表"><FontAwesomeIcon icon={faUsers} /> 該企業使用者資料列表</Link></div>
+                                <div><Link to="../管理者/使用者列表" state={{ business_id: selectedRowData.business_id,org_name: selectedRowData.org_name}}>
+                                <FontAwesomeIcon icon={faUsers} /> 該企業使用者資料列表</Link></div>
                             </div>
                         </>
 
