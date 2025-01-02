@@ -22,8 +22,8 @@ def read_users_with_company_info():
                     cc.assigned_date, 
                     ci.org_name
                 FROM users u
-                JOIN CompanyConsultant cc ON u.user_id = cc.user_id
-                JOIN Company_Info ci ON cc.business_id = ci.business_id
+                LEFT JOIN CompanyConsultant cc ON u.user_id = cc.user_id
+                LEFT JOIN Company_Info ci ON cc.business_id = ci.business_id
                 WHERE u.role = 1
             """
             cursor.execute(query)

@@ -77,48 +77,50 @@ const Tabs = () => {
         fetchUserInfo();
     }, []); // 加載時執行資料獲取
 
+ 
+
 
     ///////////////////////////////刪除////////////////////////////////////////////////
-        const deleteUserInfo = async (user_id) => {
-            try {
-                const response = await fetch(`http://localhost:8000/delete_adminconsultant/${user_id}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                })
-    
-                const result = await response.json()
-                if (response.ok) {
-                    console.log(result.message)
-                    // Refresh records after deletion
-                    refreshAuthorizedRecords()
-                } else {
-                    console.error('Failed to delete record:', result.detail)
-                }
-            } catch (error) {
-                console.error('Error deleting record:', error)
+    const deleteUserInfo = async (user_id) => {
+        try {
+            const response = await fetch(`http://localhost:8000/delete_adminconsultant/${user_id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+
+            const result = await response.json()
+            if (response.ok) {
+                console.log(result.message)
+                // Refresh records after deletion
+                refreshAuthorizedRecords()
+            } else {
+                console.error('Failed to delete record:', result.detail)
             }
+        } catch (error) {
+            console.error('Error deleting record:', error)
         }
-        const [isDeleteModalVisible, setDeleteModalVisible] = useState(false)
-        const [selecteduserId, setSelecteduserId] = useState(null)
-    
-        const openDeleteModal = (user_id) => {
-            setSelecteduserId(user_id)
-            setDeleteModalVisible(true)
-        }
-    
-        // 刪除紀錄的函數
-        const deleteAndClose = (user_id) => {
-            deleteUserInfo(user_id)
-            setDeleteModalVisible(false) // 關閉 Modal
-        }
-    
-    
-        ///重整頁面用
-        const refreshAuthorizedRecords = () => {
-            fetchUserInfo()
-        }
+    }
+    const [isDeleteModalVisible, setDeleteModalVisible] = useState(false)
+    const [selecteduserId, setSelecteduserId] = useState(null)
+
+    const openDeleteModal = (user_id) => {
+        setSelecteduserId(user_id)
+        setDeleteModalVisible(true)
+    }
+
+    // 刪除紀錄的函數
+    const deleteAndClose = (user_id) => {
+        deleteUserInfo(user_id)
+        setDeleteModalVisible(false) // 關閉 Modal
+    }
+
+
+    ///重整頁面用
+    const refreshAuthorizedRecords = () => {
+        fetchUserInfo()
+    }
 
     return (
         <main>
@@ -168,12 +170,16 @@ const Tabs = () => {
                                         <td>{user.email}</td>
                                         <td>{user.phone}</td>
                                         <td>
-                                            {user.businesses.map((business, i) => (
-                                                <React.Fragment key={i}>
-                                                    {business.org_name} / {business.assigned_date}
-                                                    <br />
-                                                </React.Fragment>
-                                            ))}
+                                            {user.businesses.length > 0 ? (
+                                                user.businesses.map((business, i) => (
+                                                    <React.Fragment key={i}>
+                                                        {business.org_name} / {business.assigned_date}
+                                                        <br />
+                                                    </React.Fragment>
+                                                ))
+                                            ) : (
+                                                <span>目前無指派企業</span>
+                                            )}
                                         </td>
                                         <td>
                                             <FontAwesomeIcon
@@ -202,6 +208,7 @@ const Tabs = () => {
             <AddModal
                 isAddModalVisible={isAddModalVisible}
                 setAddModalVisible={setAddModalVisible}
+                onSuccess={refreshAuthorizedRecords}
             />
 
 
