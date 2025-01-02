@@ -17,6 +17,12 @@ export const fuel_code_Map = {
   350099: '其他電力',
 }
 
+export const emission_category_Map = {
+  1: '類別1',
+  2: '類別2',
+  3: '類別3',
+}
+
 export const emission_pattern_Map = {
   1: ['固定', '移動', '製程', '逸散'],
   2: ['外購電力', '外購蒸氣'],
