@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import {
   CCard,
   CFormSelect,
+  CFormInput,
   CTab,
   CTabList,
   CTabs,
@@ -73,7 +74,7 @@ const Tabs = () => {
         material: fuel_code_Map[source.fuel_code],
         details: {
           activity: activity.activity_data || '',
-          activityUnit: '公升',
+          activityUnit: activity_data_unit_map[activity.activity_data_unit],
           emiCoe1: gasTypes,
           emiCoeList: gasTypes.map((gasType, index) => ({
             gasType,
@@ -82,12 +83,10 @@ const Tabs = () => {
             emiCoeSource: emissionFactors[index].factor_source,
             emiCoeUnit: `${gasType}/${activity_data_unit_map[activity.activity_data_unit]}`,
             emiCoeClass: '5國家排放係數',
-            emiCoeEmission: '',
             emiCoeGWP: emissionFactors[index].GWP,
-            emiCoeEqu: '',
           })),
-          other1: '',
-          other2: '',
+          other1: source.is_bioenergy,
+          other2: source.is_bioenergy,
           other3: '',
         },
       }))
@@ -98,13 +97,24 @@ const Tabs = () => {
     setSelectedRowData(row.details)
   }
 
-  const handleInputChange = (e, field) => {
+  const handleInputChange = (e, field, index) => {
     const value = e.target.value
-    setSelectedRowData((prevData) => ({
-      ...prevData,
-      [field]: value,
-      ...(field === 'annual3' && { annual9: `Kcal/${value}` }),
-    }))
+    setSelectedRowData((prevData) => {
+      const updatedEmiCoeList = [...prevData.emiCoeList]
+      updatedEmiCoeList[index] = {
+        ...updatedEmiCoeList[index],
+        [field]: value,
+      }
+
+      if (field === 'emiCoeType' && value === '0') {
+        updatedEmiCoeList[index].emiCoeNum = updatedEmiCoeList[index].emiCoeNum || ''
+      }
+
+      return {
+        ...prevData,
+        emiCoeList: updatedEmiCoeList,
+      }
+    })
   }
 
   return (
@@ -310,18 +320,19 @@ const Tabs = () => {
                             </div>
                             <div>
                               <span>
-                                {emiCoe.emiCoeType === '自訂' ? '自訂排放係數' : '預設排放係數'}
+                                {emiCoe.emiCoeType === '0' ? '自訂排放係數' : '預設排放係數'}
                               </span>
-                              <p>{emiCoe.emiCoeNum}</p>
+                              {emiCoe.emiCoeType === '0' ? (
+                                <CFormInput
+                                  type="number"
+                                  className={styles.input}
+                                  value={emiCoe.emiCoeNum}
+                                  onChange={(e) => handleInputChange(e, 'emiCoeNum', index)}
+                                />
+                              ) : (
+                                <p>{emiCoe.emiCoeNum}</p>
+                              )}
                             </div>
-                            {/* <div>
-                              <span>
-                                {selectedRowData.emiCoeType === '自訂'
-                                  ? '自訂排放來源'
-                                  : '預設排放來源'}
-                              </span>
-                              <p>{selectedRowData.emiCoeSource}</p>
-                            </div> */}
                             <div>
                               <span>係數單位:</span>
                               <p>{emiCoe.emiCoeUnit}</p>
@@ -353,7 +364,11 @@ const Tabs = () => {
                             </div>
                             <div>
                               <span>排放當量(公噸CO2e/年):</span>
-                              <p>{selectedRowData.emiCoeEqu}</p>
+                              <p>
+                                {(selectedRowData.activity / 1000) *
+                                  emiCoe.emiCoeNum *
+                                  emiCoe.emiCoeGWP}
+                              </p>
                             </div>
                           </div>
                           <hr />
@@ -369,14 +384,64 @@ const Tabs = () => {
                   <div className={styles.blockBody1}>
                     <div>
                       <span>單一排放源排放當量小計(CO2e公噸/年):</span>
-                      <p>{selectedRowData.other1}</p>
+                      <p>
+                        {(() => {
+                          const totalEmissions = selectedRowData.emiCoeList
+                            ? selectedRowData.emiCoeList.reduce((sum, emiCoe) => {
+                                return (
+                                  sum +
+                                  (selectedRowData.activity / 1000) *
+                                    emiCoe.emiCoeNum *
+                                    emiCoe.emiCoeGWP
+                                )
+                              }, 0)
+                            : 0
+
+                          if (selectedRowData.other1) {
+                            const firstGasType = selectedRowData.emiCoeList?.[0]?.gasType
+                            if (firstGasType === 'CO2') {
+                              return selectedRowData.emiCoeList.slice(1).reduce((sum, emiCoe) => {
+                                return (
+                                  sum +
+                                  (selectedRowData.activity / 1000) *
+                                    emiCoe.emiCoeNum *
+                                    emiCoe.emiCoeGWP
+                                )
+                              }, 0)
+                            } else {
+                              return totalEmissions
+                            }
+                          } else {
+                            return totalEmissions !== 0 ? totalEmissions.toFixed(4) : ''
+                          }
+                        })()}
+                      </p>
                     </div>
                     <div>
                       <span>單一排放源生質燃料之CO2排放當量小計(CO2e公噸/年):</span>
-                      <p>{selectedRowData.other2}</p>
+                      <p>
+                        {(() => {
+                          if (selectedRowData.other2) {
+                            const firstGasType = selectedRowData.emiCoeList?.[0]?.gasType
+                            if (firstGasType === 'CO2') {
+                              const firstEmission = selectedRowData.emiCoeList?.[0]
+                              return (
+                                (selectedRowData.activity / 1000) *
+                                firstEmission.emiCoeNum *
+                                firstEmission.emiCoeGWP
+                              ).toFixed(2)
+                            } else {
+                              return ''
+                            }
+                          } else {
+                            return ''
+                          }
+                        })()}
+                      </p>
                     </div>
                     <div>
                       <span>單一排放源占排放總量比(%):</span>
+                      {/* 單一排放源排放當量小計/七種溫室氣體年總排放當量 */}
                       <p>{selectedRowData.other3}</p>
                     </div>
                   </div>
