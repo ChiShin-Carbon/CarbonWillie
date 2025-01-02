@@ -31,6 +31,14 @@ const Tabs = () => {
     const [userList, setUserList] = useState([]);
     const [noData, setNoData] = useState(false); // 新增一個狀態來判斷是否有資料
 
+    const [selectedUser, setSelectedUser] = useState(null); // 新增狀態存儲被選中的行資料
+    // 編輯按鈕點擊事件
+    const handleEditClick = (user) => {
+        setSelectedUser(user); // 設置選中的行資料
+        setEditModalVisible(true); // 顯示編輯 Modal
+    };
+
+
     // 獲取企業使用者資料的函數
     const fetchUserInfo = async () => {
         try {
@@ -88,9 +96,9 @@ const Tabs = () => {
 
 
     ///////////////////////////////刪除////////////////////////////////////////////////
-    const deleteUserInfo = async (address) => {
+    const deleteUserInfo = async (user_id) => {
         try {
-            const response = await fetch(`http://localhost:8000/delete_adminuser/${address}`, {
+            const response = await fetch(`http://localhost:8000/delete_adminuser/${user_id}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -110,16 +118,16 @@ const Tabs = () => {
         }
     }
     const [isDeleteModalVisible, setDeleteModalVisible] = useState(false)
-    const [selecteduserAddress, setSelecteduserAddress] = useState(null)
+    const [selecteduserId, setSelecteduserId] = useState(null)
 
-    const openDeleteModal = (address) => {
-        setSelecteduserAddress(address)
+    const openDeleteModal = (user_id) => {
+        setSelecteduserId(user_id)
         setDeleteModalVisible(true)
     }
 
     // 刪除紀錄的函數
-    const deleteAndClose = (address) => {
-        deleteUserInfo(address)
+    const deleteAndClose = (user_id) => {
+        deleteUserInfo(user_id)
         setDeleteModalVisible(false) // 關閉 Modal
     }
 
@@ -189,12 +197,12 @@ const Tabs = () => {
                                             <FontAwesomeIcon
                                                 icon={faPenToSquare}
                                                 className={styles.iconPen}
-                                                onClick={() => setEditModalVisible(true)}
+                                                onClick={() => handleEditClick(user)} // 傳遞行資料
                                             />
                                             <FontAwesomeIcon
                                                 icon={faTrashCan}
                                                 className={styles.iconTrash}
-                                                onClick={() => openDeleteModal(user.address)}
+                                                onClick={() => openDeleteModal(user.user_id)}
                                             />
                                         </td>
                                     </tr>
@@ -211,12 +219,13 @@ const Tabs = () => {
                 isEditModalVisible={isEditModalVisible}
                 setEditModalVisible={setEditModalVisible}
                 onSuccess={refreshAuthorizedRecords}
+                userInfo={selectedUser}
             />
 
             <AddModal
                 isAddModalVisible={isAddModalVisible}
                 setAddModalVisible={setAddModalVisible}
-                businessId={businessId} 
+                businessId={businessId}
                 onSuccess={refreshAuthorizedRecords}
             />
 
@@ -237,7 +246,7 @@ const Tabs = () => {
                     <CButton className="modalbutton1" onClick={() => setDeleteModalVisible(false)} >
                         取消
                     </CButton>
-                    <CButton className="modalbutton2" onClick={() => deleteAndClose(selecteduserAddress)} >
+                    <CButton className="modalbutton2" onClick={() => deleteAndClose(selecteduserId)} >
                         確認
                     </CButton>
                 </CModalFooter>

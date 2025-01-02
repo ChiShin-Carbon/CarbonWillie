@@ -12,7 +12,7 @@ def read_users_by_business_id(business_id: str):
             # SQL 查詢語句，改用 '?' 作為佔位符
             query = """
                 SELECT 
-                    address, username, email, telephone, phone, department, position
+                    user_id, address, username, email, telephone, phone, department, position, password
                 FROM users
                 WHERE business_id = ? AND role = 2
             """
@@ -25,13 +25,15 @@ def read_users_by_business_id(business_id: str):
                 results = []
                 for record in user_records:
                     results.append({
-                        "address": record[0],
-                        "username": record[1],
-                        "email": record[2],
-                        "telephone": record[3],
-                        "phone": record[4],
-                        "department": record[5],
-                        "position": record[6]
+                        "user_id": record[0],
+                        "address": record[1],
+                        "username": record[2],
+                        "email": record[3],
+                        "telephone": record[4],
+                        "phone": record[5],
+                        "department": record[6],
+                        "position": record[7],
+                        "password": record[8]
                     })
                 return {"users": results}
             else:

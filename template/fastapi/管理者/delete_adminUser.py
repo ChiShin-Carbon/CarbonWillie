@@ -3,23 +3,23 @@ from connect.connect import connectDB
 
 delete_adminUser = APIRouter(tags=["admin"])
 
-@delete_adminUser.delete("/delete_adminuser/{address}")
-def delete_user(address: str):
+@delete_adminUser.delete("/delete_adminuser/{user_id}")
+def delete_user(user_id: str):
     conn = connectDB()  # 建立資料庫連線
     if conn:
         cursor = conn.cursor()
         try:
             # 先刪除與 user 相關的授權資料
             query_delete_authorized = """
-                DELETE FROM Authorized_Table WHERE user_id = (SELECT user_id FROM users WHERE address = ?)
+                DELETE FROM Authorized_Table WHERE user_id = ?
             """
-            cursor.execute(query_delete_authorized, (address,))
+            cursor.execute(query_delete_authorized, (user_id,))
 
             # 刪除 users 表中的資料
             query_delete_user = """
-                DELETE FROM users WHERE address = ?
+                DELETE FROM users WHERE user_id = ?
             """
-            cursor.execute(query_delete_user, (address,))
+            cursor.execute(query_delete_user, (user_id,))
 
             # 提交事務
             conn.commit()
@@ -28,10 +28,10 @@ def delete_user(address: str):
             if cursor.rowcount == 0:  # 如果 `rowcount` 為 0，表示無資料被刪除
                 raise HTTPException(
                     status_code=status.HTTP_404_NOT_FOUND, 
-                    detail=f"No user found with address: {address}"
+                    detail=f"No user found with user_id: {user_id}"
                 )
 
-            return {"message": f"User data with address {address} deleted successfully!"}
+            return {"message": f"User data with user_id {user_id} deleted successfully!"}
         
         except Exception as e:
             conn.rollback()  # 如果發生錯誤，回滾事務
