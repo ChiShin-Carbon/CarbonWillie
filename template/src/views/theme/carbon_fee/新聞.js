@@ -152,7 +152,6 @@ const 新聞 = () => {
               console.error("Fetch error: ", error);
           } finally {
               setLoading(false);
-              fetchOrGenerateNews();
           }
       };
   
