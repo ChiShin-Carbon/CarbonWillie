@@ -56,9 +56,21 @@ def insert_company_data(company_data: CompanyData):
                 company_data.email, company_data.phone
             )
 
+            # 插入 CFV_Info 表的 SQL
+            query_cfv_info = """
+                INSERT INTO CFV_Info (
+                    business_id, reason, GHG_Reg_Guide, ISO_CNS_14064_1, GHG_Protocol, verification, 
+                    inspection_agency, significance, materiality, exclusion, GWP_version
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """
+            cfv_values = (
+                company_data.business_id, 1, 1, 1, 1, 0, 0, "3.0%", "5.0%", "0.5%", "AR6"
+            )
+
             # 執行 SQL 查詢
             cursor.execute(query_company_info, company_values)
             cursor.execute(query_contact_info, contact_values)
+            cursor.execute(query_cfv_info, cfv_values)
 
             # 提交事務
             conn.commit()
