@@ -128,6 +128,20 @@ const Tabs = () => {
         setEditModalVisible(true); // 顯示編輯 Modal
     };
 
+
+    const [searchQuery, setSearchQuery] = useState(""); // 儲存搜尋關鍵字
+    // 處理搜尋關鍵字變更
+    const handleSearchChange = (event) => {
+        setSearchQuery(event.target.value);
+    };
+    // 過濾公司列表
+    const filteredUserList = userList.filter((user) =>
+        // 檢查所有欄位的值，並確保每個欄位都能正確處理 null 或 undefined
+        Object.values(user).some(value =>
+            value != null && value.toString().toLowerCase().includes(searchQuery.toLowerCase())
+        )
+    );
+
     return (
         <main>
             <div className="system-titlediv">
@@ -141,7 +155,9 @@ const Tabs = () => {
                 <div className={styles.userCardBody}>
                     <div className={styles.searchAndUpdate}>
                         <CInputGroup className={styles.searchAndUpdateLeft}>
-                            <CFormInput type="search" placeholder="Search" aria-label="Search" />
+                            <CFormInput type="search" placeholder="Search" aria-label="Search" value={searchQuery} // 綁定搜尋關鍵字
+                                onChange={handleSearchChange} // 處理搜尋變更 
+                            />
                             <CButton type="button" color="secondary" variant="outline">
                                 <i className="pi pi-search" />
                             </CButton>
@@ -169,7 +185,7 @@ const Tabs = () => {
                                     <td colSpan="6" className={styles.noDataMessage}>無顧問資料</td>
                                 </tr>
                             ) : (
-                                userList.map((user, index) => (
+                                filteredUserList.map((user, index) => (
                                     <tr key={index}>
                                         <td>{user.address}</td>
                                         <td>{user.username}</td>

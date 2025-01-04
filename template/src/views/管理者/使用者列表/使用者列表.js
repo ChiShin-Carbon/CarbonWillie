@@ -137,6 +137,22 @@ const Tabs = () => {
         fetchUserInfo()
     }
 
+    const [searchQuery, setSearchQuery] = useState(""); // 儲存搜尋關鍵字
+    // 處理搜尋關鍵字變更
+    const handleSearchChange = (event) => {
+        setSearchQuery(event.target.value);
+    };
+    // 過濾公司列表
+    const filteredUserList = userList.filter((user) =>
+        // 檢查所有欄位的值，並確保每個欄位都能正確處理 null 或 undefined
+        Object.values(user).some(value =>
+            value != null && value.toString().toLowerCase().includes(searchQuery.toLowerCase())
+        ) ||
+        // 檢查 departmentMap 和 positionMap 中對應的值
+        (departmentMap[user.department] && departmentMap[user.department].toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (positionMap[user.position] && positionMap[user.position].toLowerCase().includes(searchQuery.toLowerCase()))
+    );
+
     return (
         <main>
             <div className="system-titlediv">
@@ -154,8 +170,10 @@ const Tabs = () => {
                 <div className={styles.userCardBody}>
                     <div className={styles.searchAndUpdate}>
                         <CInputGroup className={styles.searchAndUpdateLeft}>
-                            <CFormInput type="search" placeholder="Search" aria-label="Search" />
-                            <CButton type="button" color="secondary" variant="outline">
+                            <CFormInput type="search" placeholder="Search" aria-label="Search" value={searchQuery} // 綁定搜尋關鍵字
+                                onChange={handleSearchChange} // 處理搜尋變更 
+                            />
+                            <CButton type="button" color="secondary" variant="outline" disabled>
                                 <i className="pi pi-search" />
                             </CButton>
                         </CInputGroup>
@@ -184,7 +202,7 @@ const Tabs = () => {
                                     <td colSpan="8" className={styles.noDataMessage}>無該企業的使用者資料</td>
                                 </tr>
                             ) : (
-                                userList.map((user, index) => (
+                                filteredUserList.map((user, index) => (
                                     <tr key={index}>
                                         <td>{user.address}</td>
                                         <td>{user.username}</td>

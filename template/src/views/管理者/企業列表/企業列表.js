@@ -110,6 +110,16 @@ const Tabs = () => {
         }
     }, [companyList]);
 
+    const [searchQuery, setSearchQuery] = useState(""); // 儲存搜尋關鍵字
+    // 處理搜尋關鍵字變更
+    const handleSearchChange = (event) => {
+        setSearchQuery(event.target.value);
+    };
+    // 過濾公司列表
+    const filteredCompanyList = companyList.filter((row) =>
+        row.org_name.toLowerCase().includes(searchQuery.toLowerCase()) // 根據公司名稱過濾
+    );
+
 
     return (
         <main>
@@ -122,8 +132,10 @@ const Tabs = () => {
             </div>
             <div className={styles.searchAndUpdate}>
                 <CInputGroup className={styles.searchAndUpdateLeft}>
-                    <CFormInput type="search" placeholder="Search" aria-label="Search" />
-                    <CButton type="button" color="secondary" variant="outline">
+                    <CFormInput type="search" placeholder="Search" aria-label="Search" value={searchQuery} // 綁定搜尋關鍵字
+                        onChange={handleSearchChange} // 處理搜尋變更 
+                    />
+                    <CButton type="button" color="secondary" variant="outline" disabled>
                         <i className="pi pi-search" />
                     </CButton>
                 </CInputGroup>
@@ -142,7 +154,7 @@ const Tabs = () => {
                             </tr>
                         </CTableHead>
                         <CTableBody className={styles.tableBody}>
-                            {companyList.map((row, index) => (
+                            {filteredCompanyList.map((row, index) => (
                                 <tr key={index} onClick={() => handleRowClick(row)}>
                                     <td>{row.org_name}</td>
                                 </tr>
@@ -150,8 +162,6 @@ const Tabs = () => {
 
                         </CTableBody>
                     </CTable>
-
-
                 </CCard>
 
                 <CCard className={styles.cardRight}>
@@ -223,8 +233,8 @@ const Tabs = () => {
 
                             </div>
                             <div className={styles.userList}>
-                                <div><Link to="../管理者/使用者列表" state={{ business_id: selectedRowData.business_id,org_name: selectedRowData.org_name}}>
-                                <FontAwesomeIcon icon={faUsers} /> 該企業使用者資料列表</Link></div>
+                                <div><Link to="../管理者/使用者列表" state={{ business_id: selectedRowData.business_id, org_name: selectedRowData.org_name }}>
+                                    <FontAwesomeIcon icon={faUsers} /> 該企業使用者資料列表</Link></div>
                             </div>
                         </>
 
