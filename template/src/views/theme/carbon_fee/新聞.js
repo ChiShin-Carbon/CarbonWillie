@@ -184,24 +184,31 @@ const 新聞 = () => {
   };
   
   const saveNewsToDatabase = async (newsData) => {
-      try {
-          const response = await fetch("http://127.0.0.1:8000/news", {
-              method: "POST",
-              headers: {
-                  "Content-Type": "application/json",
-              },
-              body: JSON.stringify(newsData),
-          });
-  
-          if (!response.ok) {
-              throw new Error("Failed to save news to the database: " + response.statusText);
-          }
-  
-          console.log("News saved successfully.", newsData);
-      } catch (error) {
-          console.error("Error saving news:", error);
-      }
-  };
+    try {
+        // 格式化日期為 'YYYY-MM-DD' 格式
+        const formattedDate = new Date(newsData.news_date).toISOString().split('T')[0]; // 這樣會得到 '2024-12-31' 格式的日期
+
+        // 更新 newsData 以包含格式化後的日期
+        const updatedNewsData = { ...newsData, news_date: formattedDate };
+
+        // 儲存到資料庫
+        const response = await fetch("http://127.0.0.1:8000/news", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(updatedNewsData),
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to save news to the database: " + response.statusText);
+        }
+
+        console.log("News saved successfully.", updatedNewsData);
+    } catch (error) {
+        console.error("Error saving news:", error);
+    }
+};
 
   return (
     <>

@@ -44,34 +44,54 @@ const Tabs = () => {
   }, [])
 
   // 表格數據
-  const tableData = emission_sources.map((source) => {
-    const gasTypes = source.gas_types
-      ? source.gas_types.split(',').map((gasId) => gas_type_map[parseInt(gasId)]) // 轉換為氣體名稱
-      : []
+  const tableData = emission_sources
+    .map((source) => {
+      // Check if activity_data is empty
+      const isActivityDataEmpty = !source.activity_data || source.activity_data.length === 0
 
-    return {
-      status: 'completed',
-      process: process_code_Map[source.process_code],
-      equipment: device_code_Map[source.device_code],
-      material: fuel_code_Map[source.fuel_code],
-      details: {
-        act95down: '',
-        act95up: '',
-        actSource: '',
-        actUnit: '',
-        green: gasTypes,
-        greenNum: '',
-        green95down: '',
-        green95up: '',
-        greenSource: '',
-        greenUnit: '',
-        single95down: '',
-        single95up: '',
-        singleEmi95down: '',
-        singeEmi95up: '',
-      },
-    }
-  })
+      // If activity_data is empty, set default values for its fields
+      const activityData = isActivityDataEmpty
+        ? [{ activity_data: '', activity_data_unit: '' }]
+        : source.activity_data
+
+      const gasTypes = source.gas_types
+        ? source.gas_types.split(',').map((gasId) => gas_type_map[parseInt(gasId)]) // 轉換為氣體名稱
+        : []
+
+      const emissionFactors = source.emission_factors || {}
+
+      return activityData.map((activity) => ({
+        status: 'completed',
+        process: process_code_Map[source.process_code],
+        equipment: device_code_Map[source.device_code],
+        material: fuel_code_Map[source.fuel_code],
+        details: {
+          act95down: '',
+          act95up: '',
+          actSource: '',
+          actUnit: '',
+          green: gasTypes,
+          greenList: gasTypes.map((gasType, index) => {
+            const activityData = parseFloat(activity.activity_data)
+            const factor = emissionFactors[index]?.factor
+            const GWP = emissionFactors[index]?.GWP
+            return {
+              gasType,
+              greenNum: (activityData / 1000) * factor * GWP,
+            }
+          }),
+          green95down: '',
+          green95up: '',
+          greenSource: '',
+          greenUnit: '',
+          single95down: '',
+          single95up: '',
+          singleEmi95down: '',
+          singeEmi95up: '',
+        },
+      }))
+    })
+    .flat()
 
   const handleRowClick = (row) => {
     setSelectedRowData(row.details)
@@ -266,74 +286,80 @@ const Tabs = () => {
                   <div className={styles.blockHead}>
                     <h5>排放係數不確定性</h5>
                   </div>
-                  <div className={styles.blockBodySpecial}>
-                    <div className={styles.blockBodyTitle}>
-                      <div className={styles.line}></div>
-                      <div className={styles.titleBox}>
-                        <span>溫室氣體#1</span>
-                      </div>
-                      <div className={styles.line}></div>
-                    </div>
-                    <div className={styles.blockBody}>
-                      <div>
-                        <span>溫室氣體:</span>
-                        <p>{selectedRowData.green}</p>
-                      </div>
-                      <div>
-                        <span>溫室氣體排放當量(噸CO2e/年):</span>
-                        <p>{selectedRowData.greenNum}</p>
-                      </div>
-                      <div>
-                        <span>95%信賴區間之下限:</span>
-                        <CFormInput
-                          className={styles.input}
-                          value={selectedRowData.green95down}
-                          onChange={(e) => handleInputChange(e, 'green95down')}
-                        />
-                      </div>
-                      <div>
-                        <span>95%信賴區間之上限:</span>
-                        <CFormInput
-                          className={styles.input}
-                          value={selectedRowData.green95up}
-                          onChange={(e) => handleInputChange(e, 'green95up')}
-                        />
-                      </div>
-                      <div>
-                        <span>係數不確定性資料來源:</span>
-                        <CFormInput
-                          className={styles.input}
-                          value={selectedRowData.greenSource}
-                          onChange={(e) => handleInputChange(e, 'greenSource')}
-                        />
-                      </div>
-                      <div>
-                        <span>排放係數保存單位:</span>
-                        <CFormInput
-                          className={styles.input}
-                          value={selectedRowData.greenUnit}
-                          onChange={(e) => handleInputChange(e, 'greenUnit')}
-                        />
-                      </div>
-                      <div>
-                        <span>
-                          單一溫室氣體不確定性
-                          <br />
-                          95%信賴區間之下限:
-                        </span>
-                        <p>{selectedRowData.single95down}</p>
-                      </div>
-                      <div>
-                        <span>
-                          單一溫室氣體不確定性
-                          <br />
-                          95%信賴區間之上限:
-                        </span>
-                        <p>{selectedRowData.single95up}</p>
-                      </div>
-                    </div>
-                    <hr />
-                  </div>
+                  {selectedRowData.greenList &&
+                    selectedRowData.greenList.length > 0 &&
+                    selectedRowData.greenList.map((green, index) => (
+                      <>
+                        <div key={index} className={styles.blockBodySpecial}>
+                          <div className={styles.blockBodyTitle}>
+                            <div className={styles.line}></div>
+                            <div className={styles.titleBox}>
+                              <span>{`溫室氣體#${index + 1}`}</span>
+                            </div>
+                            <div className={styles.line}></div>
+                          </div>
+                          <div className={styles.blockBody}>
+                            <div>
+                              <span>溫室氣體:</span>
+                              <p>{green.gasType}</p>
+                            </div>
+                            <div>
+                              <span>溫室氣體排放當量(噸CO2e/年):</span>
+                              <p>{green.greenNum}</p>
+                            </div>
+                            <div>
+                              <span>95%信賴區間之下限:</span>
+                              <CFormInput
+                                className={styles.input}
+                                value={selectedRowData.green95down}
+                                onChange={(e) => handleInputChange(e, 'green95down')}
+                              />
+                            </div>
+                            <div>
+                              <span>95%信賴區間之上限:</span>
+                              <CFormInput
+                                className={styles.input}
+                                value={selectedRowData.green95up}
+                                onChange={(e) => handleInputChange(e, 'green95up')}
+                              />
+                            </div>
+                            <div>
+                              <span>係數不確定性資料來源:</span>
+                              <CFormInput
+                                className={styles.input}
+                                value={selectedRowData.greenSource}
+                                onChange={(e) => handleInputChange(e, 'greenSource')}
+                              />
+                            </div>
+                            <div>
+                              <span>排放係數保存單位:</span>
+                              <CFormInput
+                                className={styles.input}
+                                value={selectedRowData.greenUnit}
+                                onChange={(e) => handleInputChange(e, 'greenUnit')}
+                              />
+                            </div>
+                            <div>
+                              <span>
+                                單一溫室氣體不確定性
+                                <br />
+                                95%信賴區間之下限:
+                              </span>
+                              <p>{selectedRowData.single95down}</p>
+                            </div>
+                            <div>
+                              <span>
+                                單一溫室氣體不確定性
+                                <br />
+                                95%信賴區間之上限:
+                              </span>
+                              <p>{selectedRowData.single95up}</p>
+                            </div>
+                          </div>
+                          <hr />
+                        </div>
+                      </>
+                    ))}
                 </div>
 
                 <div className={styles.block}>
