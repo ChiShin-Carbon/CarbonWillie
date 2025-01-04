@@ -3,7 +3,7 @@ from connect.connect import connectDB
 from pydantic import BaseModel
 from typing import Optional, List
 
-insert_adminConsultant = APIRouter(tags=["consultant"])
+insert_adminConsultant = APIRouter(tags=["admin"])
 
 # 定義接收的資料模型
 class ConsultantData(BaseModel):

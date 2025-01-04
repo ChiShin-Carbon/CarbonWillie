@@ -77,8 +77,6 @@ const Tabs = () => {
         fetchUserInfo();
     }, []); // 加載時執行資料獲取
 
- 
-
 
     ///////////////////////////////刪除////////////////////////////////////////////////
     const deleteUserInfo = async (user_id) => {
@@ -115,12 +113,20 @@ const Tabs = () => {
         deleteUserInfo(user_id)
         setDeleteModalVisible(false) // 關閉 Modal
     }
+    ///////////////////////////////////////////////////////////////////////////////////////////
 
 
     ///重整頁面用
     const refreshAuthorizedRecords = () => {
         fetchUserInfo()
     }
+
+    const [selectedUser, setSelectedUser] = useState(null); // 新增狀態存儲被選中的行資料
+    // 編輯按鈕點擊事件
+    const handleEditClick = (user) => {
+        setSelectedUser(user); // 設置選中的行資料
+        setEditModalVisible(true); // 顯示編輯 Modal
+    };
 
     return (
         <main>
@@ -185,6 +191,7 @@ const Tabs = () => {
                                             <FontAwesomeIcon
                                                 icon={faPenToSquare}
                                                 className={styles.iconPen}
+                                                onClick={() => handleEditClick(user)}
                                             />
                                             <FontAwesomeIcon
                                                 icon={faTrashCan}
@@ -203,6 +210,8 @@ const Tabs = () => {
             <EditModal
                 isEditModalVisible={isEditModalVisible}
                 setEditModalVisible={setEditModalVisible}
+                onSuccess={refreshAuthorizedRecords}
+                userInfo={selectedUser}
             />
 
             <AddModal
