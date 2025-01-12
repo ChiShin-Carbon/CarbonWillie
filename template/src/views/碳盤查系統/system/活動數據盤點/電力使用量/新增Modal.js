@@ -57,8 +57,6 @@ export const ElectricityUsageAdd = ({ isAddModalVisible, setAddModalVisible }) =
       formData.append('start', document.getElementById('C8datestart').value)
       formData.append('end', document.getElementById('C8dateend').value)
       formData.append('electricity_type', document.getElementById('C8type').value)
-      // formData.append('usage', document.getElementById('C8usage').value)
-      // formData.append('amount', document.getElementById('C8amount').value)
       if (electricityType === '1') {
         formData.append('usage', usage)
         formData.append('amount', 0)
