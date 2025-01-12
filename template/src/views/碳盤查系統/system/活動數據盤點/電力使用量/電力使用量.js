@@ -83,7 +83,7 @@ export const ElectricityUsage = () => {
               <td>{usage.remark}</td>
               <td>
                 <Zoom>
-                  <img src={usage.img_path} alt="image" />
+                  <img src={`fastapi/${usage.img_path}`} alt="receipt" style={{ width: '100px' }} />
                 </Zoom>
               </td>
               <td>
