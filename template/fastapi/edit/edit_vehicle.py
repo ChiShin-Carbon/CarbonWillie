@@ -21,15 +21,18 @@ edit_vehicle = APIRouter()
 
 @edit_vehicle.post("/edit_vehicle")
 async def update_vehicle_record(
-    vehicle_id: int,
+    vehicle_id: int = Form(...),  # Ensure this is passed in the FormData
     user_id: int = Form(...),
     date: str = Form(...),
     number: str = Form(...),
     oil_species: int = Form(...),
     liters: float = Form(...),
     remark: str = Form(...),
-    image: UploadFile = None
+    image: UploadFile = File(None)  # Use File() for file uploads
 ):
+    print(f"Received data: vehicle_id={vehicle_id}, user_id={user_id}, date={date}, number={number}, oil_species={oil_species}, liters={liters}, remark={remark}, image={image.filename if image else None}")
+
+    
     image_path = None
     if image:
         image_path = edit_dir / image.filename
