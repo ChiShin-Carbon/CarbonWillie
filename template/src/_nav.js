@@ -23,6 +23,7 @@ import {
   cilCash,
   cilStorage,
   cilHandshake,
+  cilList,
 } from '@coreui/icons'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 
@@ -78,6 +79,13 @@ const _nav = [
     name: '碳費資訊',
     to: '/theme/carbon_fee',
     icon: <CIcon icon={cilCash} customClassName="nav-icon" />,
+  },
+
+  {
+    component: CNavItem,
+    name: '排放係數_GWP值',
+    to: '/theme/carbon_factor',
+    icon: <CIcon icon={cilList} customClassName="nav-icon" />,
   },
 
   {
