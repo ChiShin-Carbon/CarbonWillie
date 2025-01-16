@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   CCard,
   CCardBody,
@@ -27,92 +27,63 @@ import '../../../../scss/盤查進度管理.css'
 import '../../../../scss/碳盤查系統.css'
 import styles from '../../../../scss/活動數據盤點.module.css'
 
-import { cilCheckAlt, cilPencil, cilX } from '@coreui/icons'
+import { cilCheckAlt, cilX } from '@coreui/icons'
 
 const Tabs = () => {
   const [searchInput, setSearchInput] = useState('') // 存放輸入框的臨時搜尋值
   const [searchValue, setSearchValue] = useState('') // 觸發搜尋的值
-  const [selectedFeedback, setSelectedFeedback] = useState('')
+  const [selectedFeedback, setSelectedFeedback] = useState('') // 資料回報狀態
+  const [tableData, setTableData] = useState([]) // 新增狀態來存放從後端獲取的資料
 
-  // 表格資料
-  const tableData = [
-    {
-      item: '公務車',
-      //   fuel: '燃料油-車用汽油',
-      department: '資訊部門',
-      person: '蔡xx',
-      date: '2024/10/5',
-      status: (
-        <div className="check_icon">
-          <CIcon icon={cilCheckAlt} className="check" />
-        </div>
-      ),
-      feedback: '已審核',
-    },
-    {
-      item: '冷媒',
-      //   fuel: '冷媒',
-      department: '管理部門',
-      person: '陳xx',
-      date: '2024/9/30',
-      status: (
-        <div className="x_icon">
-          <CIcon icon={cilX} className="x" />
-        </div>
-      ),
-      feedback: '待補件',
-    },
-    {
-      item: '公務車',
-      //   fuel: '燃料油-車用汽油',
-      department: '健檢部門',
-      person: '陳xx',
-      date: '2024/9/1',
-      status: (
-        <div className="check_icon">
-          <CIcon icon={cilCheckAlt} className="check" />
-        </div>
-      ),
-      feedback: '已審核',
-    },
-    {
-      item: '冷媒',
-      //   fuel: '冷媒',
-      department: '健檢部門',
-      person: '詹xx',
-      date: '2024/8/31',
-      status: (
-        <div className="check_icon">
-          <CIcon icon={cilCheckAlt} className="check" />
-        </div>
-      ),
-      feedback: '已審核',
-    },
-    {
-      item: '公務車',
-      //   fuel: '燃料油-車用汽油',
-      department: '健檢部門',
-      person: '鄭xx',
-      date: '2024/9/3',
-      status: (
-        <div className="edit_icon">
-          <CIcon icon={cilPencil} className="edit" />
-        </div>
-      ),
-      feedback: '尚未審核',
-    },
-  ]
+  // 呼叫 API 獲取資料
+  const getAuthorizedRecords = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/authorizedTable', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      const data = await response.json()
+      setTableData(data) // 設置表格資料
+    } catch (error) {
+      console.error('Error fetching data:', error)
+    }
+  }
+
+  // 使用 useEffect 在組件加載時呼叫 API
+  useEffect(() => {
+    getAuthorizedRecords()
+  }, [])
+
+  // 定義部門轉換函數
+  const getDepartmentName = (departmentID) => {
+    switch (departmentID) {
+      case 1:
+        return '管理部門'
+      case 2:
+        return '資訊部門'
+      case 3:
+        return '業務部門'
+      case 4:
+        return '門診部門'
+      case 5:
+        return '健檢部門'
+      case 6:
+        return '檢驗部門'
+      default:
+        return '其他'
+    }
+  }
 
   // 過濾後的表格資料，排除 status 欄位的搜尋
   const filteredData = tableData.filter(
     (row) =>
-      (row.item.includes(searchValue) ||
-        row.fuel.includes(searchValue) ||
-        row.department.includes(searchValue) ||
-        row.person.includes(searchValue) ||
-        row.date.includes(searchValue) ||
-        row.feedback.includes(searchValue)) &&
-      (selectedFeedback === '' || row.feedback === selectedFeedback), // 新增的篩選條件，資料回報狀態
+      (row.table_name.includes(searchValue) ||
+        row.username.includes(searchValue) ||
+        getDepartmentName(row.department).includes(searchValue) || // 使用轉換後的部門名稱
+        row.completed_at.includes(searchValue)) &&
+      (selectedFeedback === '' || (row.is_done ? '已審核' : '尚未審核') === selectedFeedback),
   )
 
   // handleSearchInput 處理輸入框變化
@@ -124,13 +95,6 @@ const Tabs = () => {
   const handleSearch = () => {
     setSearchValue(searchInput) // 將輸入框的值更新到 searchValue
   }
-  // handleSearch 函數處理輸入變化
-  /*
-        const handleSearch = (e) => {
-        setSearchValue(e.target.value);
-        console.log("Search Value:", e.target.value);
-        };
-    */
 
   // 監聽鍵盤事件以判斷是否按下 Enter 鍵
   const handleKeyDown = (e) => {
@@ -143,7 +107,6 @@ const Tabs = () => {
   // handleFeedbackChange 函數處理下拉選單變化
   const handleFeedbackChange = (e) => {
     setSelectedFeedback(e.target.value)
-    //console.log("Selected Feedback:", e.target.value);
   }
 
   return (
@@ -162,7 +125,7 @@ const Tabs = () => {
                   活動數據分配
                 </CTab>
               </Link>
-              <Link to="." className="system-tablist-link">
+              <Link to="/碳盤查系統/system/活動數據盤點" className="system-tablist-link">
                 <CTab aria-controls="tab3" itemKey={2} className="system-tablist-choose">
                   活動數據盤點
                 </CTab>
@@ -188,7 +151,6 @@ const Tabs = () => {
       <CCol xs={12}>
         <div className="d-flex align-items-center">
           <CCol sm={8}>
-            {/* 搜尋框與圖標 */}
             <CInputGroup>
               <CInputGroupText
                 style={{
@@ -203,15 +165,14 @@ const Tabs = () => {
                 type="search"
                 placeholder="Search"
                 aria-label="Search"
-                //onChange={handleSearch} // 綁定搜尋事件
-                onChange={handleSearchInput} // 綁定輸入框的臨時搜尋事件
-                onKeyDown={handleKeyDown} // 監聽 Enter 鍵
+                onChange={handleSearchInput}
+                onKeyDown={handleKeyDown}
               />
               <CButton
                 type="button"
                 color="secondary"
                 variant="outline"
-                onClick={handleSearch} // 按下按鈕後執行搜尋
+                onClick={handleSearch}
                 style={{ borderRadius: '0 25px 25px 0' }}
               >
                 <i className="pi pi-search" />
@@ -223,11 +184,10 @@ const Tabs = () => {
             <CFormSelect
               aria-label="Default select example"
               style={{ borderRadius: '25px' }}
-              onChange={handleFeedbackChange} // 綁定資料回報狀態選擇事件
+              onChange={handleFeedbackChange}
             >
               <option value="">資料回報狀態</option>
               <option value="已審核">已審核</option>
-              <option value="待補件">待補件</option>
               <option value="尚未審核">尚未審核</option>
             </CFormSelect>
           </CCol>
@@ -245,7 +205,6 @@ const Tabs = () => {
                   <CTableRow>
                     <CTableHeaderCell scope="col">勾選</CTableHeaderCell>
                     <CTableHeaderCell scope="col">排放源項目</CTableHeaderCell>
-                    {/* <CTableHeaderCell scope="col">排放源</CTableHeaderCell> */}
                     <CTableHeaderCell scope="col">填寫單位</CTableHeaderCell>
                     <CTableHeaderCell scope="col">負責人</CTableHeaderCell>
                     <CTableHeaderCell scope="col">資料蒐集完成日</CTableHeaderCell>
@@ -260,13 +219,14 @@ const Tabs = () => {
                         <CTableDataCell>
                           <CFormCheck style={{ borderColor: 'black' }} />
                         </CTableDataCell>
-                        <CTableDataCell>{row.item}</CTableDataCell>
-                        {/* <CTableDataCell>{row.fuel}</CTableDataCell> */}
-                        <CTableDataCell>{row.department}</CTableDataCell>
-                        <CTableDataCell>{row.person}</CTableDataCell>
-                        <CTableDataCell>{row.date}</CTableDataCell>
-                        <CTableDataCell>{row.status}</CTableDataCell>
-                        <CTableDataCell>{row.feedback}</CTableDataCell>
+                        <CTableDataCell>{row.table_name}</CTableDataCell>
+                        <CTableDataCell>{getDepartmentName(row.department)}</CTableDataCell> {/* 顯示部門名稱 */}
+                        <CTableDataCell>{row.username}</CTableDataCell>
+                        <CTableDataCell>{row.completed_at}</CTableDataCell>
+                        <CTableDataCell>
+                          {row.is_done ? <div className="check_icon"><CIcon icon={cilCheckAlt} className="check" /></div> : <div className="x_icon"><CIcon icon={cilX} className="x" /></div>}
+                        </CTableDataCell>
+                        <CTableDataCell>{row.is_done ? '已審核' : '尚未審核'}</CTableDataCell>
                       </CTableRow>
                     ))
                   ) : (
@@ -276,7 +236,6 @@ const Tabs = () => {
                       </CTableDataCell>
                     </CTableRow>
                   )}
-                  {/** ))} */}
                 </CTableBody>
               </CTable>
               <div style={{ textAlign: 'center' }}>
