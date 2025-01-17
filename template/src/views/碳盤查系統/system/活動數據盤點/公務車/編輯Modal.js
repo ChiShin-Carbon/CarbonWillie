@@ -227,6 +227,7 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedVehicleId 
                                 </CCol>
                             </CRow>
                             <CRow className="mb-3">
+
                                 <CFormLabel htmlFor="image" className={`col-sm-2 col-form-label ${styles.addlabel}`}>
                                     圖片*
                                 </CFormLabel>

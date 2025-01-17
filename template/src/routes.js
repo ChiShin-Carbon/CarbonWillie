@@ -8,6 +8,7 @@ const 個人資料 = React.lazy(() => import('./views/theme/user_info/個人資�
 const 企業資料 = React.lazy(() => import('./views/theme/company_info/企業資料'))
 const 盤查結果查詢 = React.lazy(() => import('./views/theme/search/盤查結果查詢'))
 const 碳費資訊 = React.lazy(() => import('./views/theme/carbon_fee/碳費資訊'))
+const 排放係數_GWP值 = React.lazy(() => import('./views/theme/carbon_factor/排放係數_GWP值'))
 const 常見問題 = React.lazy(() => import('./views/theme/qa/常見問題'))
 const 首頁 = React.lazy(() => import('./views/theme/dashboard/首頁'))
 
@@ -94,6 +95,7 @@ const routes = [
   { path: '/theme/company_info', name: '企業資料', element: 企業資料 },
   { path: '/theme/search', name: '盤查結果查詢', element: 盤查結果查詢 },
   { path: '/theme/carbon_fee', name: '碳費資訊', element: 碳費資訊 },
+  { path: '/theme/carbon_factor', name: '排放係數_GWP值', element: 排放係數_GWP值 },
   //碳盤查系統
   { path: '/碳盤查系統/system', name: '碳盤查系統', element: 碳盤查系統 },
   { path: '/碳盤查系統/system/活動數據盤點', name: '活動數據盤點', element: 活動數據盤點 },

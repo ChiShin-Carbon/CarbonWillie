@@ -231,7 +231,7 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible,selectedRowData,onS
                                 <CFormInput className={styles.addinput} type="text" id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} required />
                             </CCol>
                         </CRow>
-                        <hr />
+
                         {/* <CRow className="mb-3">
                             <CFormLabel htmlFor="industry_name" className={`col-sm-2 col-form-label ${styles.addlabel}`} >登錄原因</CFormLabel>
                             <CCol>

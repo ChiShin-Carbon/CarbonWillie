@@ -30,7 +30,6 @@ export const Vehicle = () => {
   const [vehicles, setVehicles] = useState([]) // State to hold fetched vehicle data
   const [selectedVehicleId, setSelectedVehicleId] = useState(null) // State to store selected vehicle ID
 
-
   // Function to fetch vehicle data
   const getVehicleData = async () => {
     try {
@@ -84,10 +83,18 @@ export const Vehicle = () => {
               <td>{vehicle.remark}</td>
               <td>
                 <Zoom>
-                  <img src={`fastapi/${vehicle.img_path}`} alt="receipt" style={{ width: '100px' }} />
+                  <img
+                    src={`fastapi/${vehicle.img_path}`}
+                    alt="receipt"
+                    style={{ width: '100px' }}
+                  />
                 </Zoom>
               </td>
-              <td>{vehicle.username}<br />{vehicle.edit_time}</td>
+              <td>
+                {vehicle.username}
+                <br />
+                {vehicle.edit_time}
+              </td>
               <td>
                 <FontAwesomeIcon
                   icon={faPenToSquare}
@@ -109,5 +116,5 @@ export const Vehicle = () => {
         selectedVehicleId={selectedVehicleId}
       />
     </div>
-  );
-};
+  )
+}

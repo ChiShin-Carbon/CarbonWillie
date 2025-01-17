@@ -211,7 +211,6 @@ const AddModal = ({ isAddModalVisible, setAddModalVisible,onSuccess}) => {
                             </CCol>
                         </CRow>
                        
-                        <hr />
                         {/* <CRow className="mb-3">
                             <CFormLabel htmlFor="industry_name" className={`col-sm-2 col-form-label ${styles.addlabel}`} >登錄原因</CFormLabel>
                             <CCol>

@@ -21,62 +21,85 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible }) => {
     };
 
     return (
-        <CModal backdrop="static" visible={isEditModalVisible} onClose={handleClose} className={styles.modal}>
+        <CModal
+            backdrop="static"
+            visible={isEditModalVisible}
+            onClose={handleClose}
+            aria-labelledby="ActivityModalLabel"
+            size="xl"
+            className={styles.modal}
+        >
             <CModalHeader>
                 <h5><b>編輯數據-滅火器</b></h5>
             </CModalHeader>
             <CForm>
                 <CModalBody>
                     <div className={styles.addmodal}>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="name" className={`col-sm-2 col-form-label ${styles.addlabel}`} >品名*</CFormLabel>
-                            <CCol>
-                                <CFormInput className={styles.addinput} type="text" id="name" required />
-                            </CCol>
-                        </CRow>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="element" className={`col-sm-2 col-form-label ${styles.addlabel}`} >成分*</CFormLabel>
-                            <CCol>
-                                <CFormSelect aria-label="Default select example" id="element" className={styles.addinput}>
-                                    <option value="1">CO2</option>
-                                    <option value="2">HFC-236ea</option>
-                                    <option value="3">HFC-236fa</option>
-                                    <option value="4">HFC-227ea</option>
-                                    <option value="5">CF3CHFCF3</option>
-                                    <option value="6">CHF3</option>
-                                    <option value="7">其他</option>
-                                </CFormSelect>
-                            </CCol>
-                        </CRow>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="weight" className={`col-sm-2 col-form-label ${styles.addlabel}`} >規格(重量)*</CFormLabel>
-                            <CCol>
-                                <CFormInput className={styles.addinput} type="number" min='0' id="weight" required />
-                            </CCol>
-                        </CRow>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="explain" className={`col-sm-2 col-form-label ${styles.addlabel}`} >備註</CFormLabel>
-                            <CCol>
-                                <CFormTextarea className={styles.addinput} type="text" id="explain" rows={3} />
-
-                            </CCol>
-                        </CRow>
-                        <CRow className="mb-3">
-                            <CFormLabel htmlFor="photo" className={`col-sm-2 col-form-label ${styles.addlabel}`}  >圖片*</CFormLabel>
-                            <CCol>
-                                <CFormInput type="file" id="photo" onChange={(e) => handleImageChange(e)} required />
-                            </CCol>
-                        </CRow>
-                        {previewImage && ( // 如果有圖片 URL，則顯示預覽
+                        <div className={styles.modalLeft}>
                             <CRow className="mb-3">
-                                <CCol className="text-center">
-                                    <Zoom><img src={previewImage} alt="Uploaded Preview" /></Zoom>
+                                <CFormLabel htmlFor="name" className={`col-sm-2 col-form-label ${styles.addlabel}`} >品名*</CFormLabel>
+                                <CCol>
+                                    <CFormInput className={styles.addinput} type="text" id="name" required />
                                 </CCol>
                             </CRow>
-                        )}
-                        <br />
-                        <div style={{ textAlign: 'center' }}>*為必填欄位</div>
+                            <CRow className="mb-3">
+                                <CFormLabel htmlFor="element" className={`col-sm-2 col-form-label ${styles.addlabel}`} >成分*</CFormLabel>
+                                <CCol>
+                                    <CFormSelect aria-label="Default select example" id="element" className={styles.addinput}>
+                                        <option value="1">CO2</option>
+                                        <option value="2">HFC-236ea</option>
+                                        <option value="3">HFC-236fa</option>
+                                        <option value="4">HFC-227ea</option>
+                                        <option value="5">CF3CHFCF3</option>
+                                        <option value="6">CHF3</option>
+                                        <option value="7">其他</option>
+                                    </CFormSelect>
+                                </CCol>
+                            </CRow>
+                            <CRow className="mb-3">
+                                <CFormLabel htmlFor="weight" className={`col-sm-2 col-form-label ${styles.addlabel}`} >規格(重量)*</CFormLabel>
+                                <CCol>
+                                    <CFormInput className={styles.addinput} type="number" min='0' id="weight" required />
+                                </CCol>
+                            </CRow>
+                            <CRow className="mb-3">
+                                <CFormLabel htmlFor="explain" className={`col-sm-2 col-form-label ${styles.addlabel}`} >備註</CFormLabel>
+                                <CCol>
+                                    <CFormTextarea className={styles.addinput} type="text" id="explain" rows={3} />
 
+                                </CCol>
+                            </CRow>
+                            <CRow className="mb-3">
+                                <CFormLabel htmlFor="image" className={`col-sm-2 col-form-label ${styles.addlabel}`}>
+                                    圖片*
+                                </CFormLabel>
+                                <CCol>
+                                    <CFormInput type="file" id="image" onChange={handleImageChange} required />
+                                </CCol>
+                            </CRow>
+                            <br />
+                            <div style={{ textAlign: 'center' }}>*為必填欄位</div>
+                        </div>
+                        <div className={styles.modalRight}>
+                            <CFormLabel className={`col-sm-2 col-form-label ${styles.addlabel}`} >
+                                圖片預覽
+                            </CFormLabel>
+                            <div className={styles.imgBlock}>
+                                {previewImage && (
+                                    <Zoom>
+                                        <img src={previewImage} alt="Uploaded Preview" />
+                                    </Zoom>
+                                )}
+                            </div>
+
+                            <CFormLabel className={`col-sm-2 col-form-label ${styles.addlabel}`}>
+                                偵測錯誤提醒
+                            </CFormLabel>
+                            <div className={styles.errorMSG}>
+                                {/* 偵測日期:{C1date}  <span>{dateincorrectmessage}</span><br />
+                                偵測號碼:{C1num}  <span>{numincorrectmessage}</span> */}
+                            </div>
+                        </div>
                     </div>
                 </CModalBody>
                 <CModalFooter>

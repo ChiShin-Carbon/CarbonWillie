@@ -59,6 +59,21 @@ from 管理者.adminCompany import adminCompany
 from 管理者.insert_adminCompany import insert_adminCompany
 from 管理者.edit_adminCompany import edit_adminCompany
 from 管理者.delete_adminCompany import delete_adminCompany
+from 管理者.adminUser import adminUser
+from 管理者.delete_adminUser import delete_adminUser
+from 管理者.insert_adminUser import insert_adminUser
+from 管理者.edit_adminUser import edit_adminUser
+from 管理者.adminConsultant import adminConsultant
+from 管理者.delete_adminConsultant import delete_adminConsultant
+from 管理者.insert_adminConsultant import insert_adminConsultant
+from 管理者.edit_adminConsultant import edit_adminConsultant
+
+
+
+
+
+
+
 
 from findone.vehicle import vehicle_findone
 from findone.employee import employee_findone
@@ -144,10 +159,27 @@ app.include_router(insert_nonemployee)
 app.include_router(langchaingpt)
 app.include_router(emission_source)
 app.include_router(news)
+
 app.include_router(adminCompany)
 app.include_router(insert_adminCompany)
 app.include_router(edit_adminCompany)
 app.include_router(delete_adminCompany)
+app.include_router(adminUser)
+app.include_router(delete_adminUser)
+app.include_router(insert_adminUser)
+app.include_router(edit_adminUser)
+app.include_router(adminConsultant)
+app.include_router(delete_adminConsultant)
+app.include_router(insert_adminConsultant)
+app.include_router(edit_adminConsultant)
+
+
+
+
+
+
+
+
 app.include_router(vehicle_findone)
 app.include_router(employee_findone)
 app.include_router(NonEmployee_findone)

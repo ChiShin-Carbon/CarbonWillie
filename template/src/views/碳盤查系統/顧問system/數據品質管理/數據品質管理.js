@@ -19,7 +19,13 @@ import { Link } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleCheck, faCircleXmark } from '@fortawesome/free-solid-svg-icons'
 
-import { process_code_Map, device_code_Map, fuel_code_Map } from '../EmissionSource'
+import {
+  process_code_Map,
+  device_code_Map,
+  fuel_code_Map,
+  emission_category_Map,
+  emission_pattern_Map,
+} from '../EmissionSource'
 
 const Tabs = () => {
   // 設定 state 來儲存選擇的行數據，初始值為 null
@@ -44,115 +50,163 @@ const Tabs = () => {
     getEmissionSource()
   }, [])
 
-  // 表格數據
-  // const tableData = emission_sources.map((source) => ({
-  //   status: 'completed',
-  //   process: process_code_Map[source.process_code],
-  //   equipment: device_code_Map[source.device_code],
-  //   material: fuel_code_Map[source.fuel_code],
-  //   details: {
-  //     matCode: '36006',
-  //     matName: '水肥',
-  //     matClassLevel: '3',
-  //     matBelType: '未進行儀器校正或未進行紀錄彙整者',
-  //     matBelLevel: '3',
-  //     matInfo: '',
-  //     matUnit: '',
-  //     sourceClass: '類別1',
-  //     sourceType: '逸散',
-  //     emiCoeClass: '國家排放係數',
-  //     emiLevel: '3',
-  //     manage1: '27',
-  //     manage2: '',
-  //     manage3: '3',
-  //     manage4: '',
-  //   },
-  // }))
+  // const generateDetails = (sourceId) => {
+  //   switch (sourceId) {
+  //     case 2:
+  //       return {
+  //         matCode: '170006',
+  //         matName: '柴油',
+  //         matClassLevel: '2',
+  //         matBelType: '有進行外部校正或有多組數據茲佐證者',
+  //         matBelLevel: '1',
+  //         matInfo: '',
+  //         matUnit: '',
+  //         sourceClass: '範疇1',
+  //         sourceType: '移動',
+  //         emiCoeClass: '5國家排放係數',
+  //         emiLevel: '3',
+  //         manage1: '6',
+  //         manage2: '',
+  //         manage3: '3',
+  //         manage4: '',
+  //       }
+  //     case 3:
+  //       return {
+  //         matCode: '170001',
+  //         matName: '車用汽油',
+  //         matClassLevel: '2',
+  //         matBelType: '有進行外部校正或有多組數據茲佐證者',
+  //         matBelLevel: '1',
+  //         matInfo: '',
+  //         matUnit: '',
+  //         sourceClass: '範疇1',
+  //         sourceType: '移動',
+  //         emiCoeClass: '5國家排放係數',
+  //         emiLevel: '3',
+  //         manage1: '6',
+  //         manage2: '',
+  //         manage3: '3',
+  //         manage4: '',
+  //       }
+  //     case 4:
+  //       return {
+  //         matCode: 'GG1814',
+  //         matName: '冷媒－R410a，R32/125（50/50）',
+  //         matClassLevel: '3',
+  //         matBelType: '未進行儀器校正或未進行紀錄彙整者',
+  //         matBelLevel: '3',
+  //         matInfo: '',
+  //         matUnit: '',
+  //         sourceClass: '範疇1',
+  //         sourceType: '逸散',
+  //         emiCoeClass: '5國家排放係數',
+  //         emiLevel: '3',
+  //         manage1: '27',
+  //         manage2: '',
+  //         manage3: '3',
+  //         manage4: '',
+  //       }
+  //     case 6:
+  //       return {
+  //         matCode: '350099',
+  //         matName: '其他電力',
+  //         matClassLevel: '1',
+  //         matBelType: '有進行外部校正或有多組數據茲佐證者',
+  //         matBelLevel: '1',
+  //         matInfo: '',
+  //         matUnit: '',
+  //         sourceClass: '範疇2',
+  //         sourceType: '外購電力',
+  //         emiCoeClass: '5國家排放係數',
+  //         emiLevel: '3',
+  //         manage1: '3',
+  //         manage2: '',
+  //         manage3: '1',
+  //         manage4: '',
+  //       }
+  //   }
+  // }
 
-  const generateDetails = (sourceId) => {
-    switch (sourceId) {
-      case 2:
-        return {
-          matCode: '170006',
-          matName: '柴油',
-          matClassLevel: '2',
-          matBelType: '有進行外部校正或有多組數據茲佐證者',
-          matBelLevel: '1',
-          matInfo: '',
-          matUnit: '',
-          sourceClass: '範疇1',
-          sourceType: '移動',
-          emiCoeClass: '5國家排放係數',
-          emiLevel: '3',
-          manage1: '6',
-          manage2: '',
-          manage3: '3',
-          manage4: '',
-        }
-      case 3:
-        return {
-          matCode: '170001',
-          matName: '車用汽油',
-          matClassLevel: '2',
-          matBelType: '有進行外部校正或有多組數據茲佐證者',
-          matBelLevel: '1',
-          matInfo: '',
-          matUnit: '',
-          sourceClass: '範疇1',
-          sourceType: '移動',
-          emiCoeClass: '5國家排放係數',
-          emiLevel: '3',
-          manage1: '6',
-          manage2: '',
-          manage3: '3',
-          manage4: '',
-        }
-      case 4:
-        return {
-          matCode: 'GG1814',
-          matName: '冷媒－R410a，R32/125（50/50）',
-          matClassLevel: '3',
-          matBelType: '未進行儀器校正或未進行紀錄彙整者',
-          matBelLevel: '3',
-          matInfo: '',
-          matUnit: '',
-          sourceClass: '範疇1',
-          sourceType: '逸散',
-          emiCoeClass: '5國家排放係數',
-          emiLevel: '3',
-          manage1: '27',
-          manage2: '',
-          manage3: '3',
-          manage4: '',
-        }
-      case 6:
-        return {
-          matCode: '350099',
-          matName: '其他電力',
-          matClassLevel: '1',
-          matBelType: '有進行外部校正或有多組數據茲佐證者',
-          matBelLevel: '1',
-          matInfo: '',
-          matUnit: '',
-          sourceClass: '範疇2',
-          sourceType: '外購電力',
-          emiCoeClass: '5國家排放係數',
-          emiLevel: '3',
-          manage1: '3',
-          manage2: '',
-          manage3: '1',
-          manage4: '',
-        }
-    }
-  }
+  const tableData = emission_sources
+    .map((source) => {
+      // Check if activity_data is empty
+      const isActivityDataEmpty = !source.activity_data || source.activity_data.length === 0
 
-  const tableData = emission_sources.map((source) => ({
-    status: 'completed',
-    process: process_code_Map[source.process_code],
-    equipment: device_code_Map[source.device_code],
-    material: fuel_code_Map[source.fuel_code],
-    details: generateDetails(source.source_id),
-  }))
+      // If activity_data is empty, set default values for its fields
+      const activityData = isActivityDataEmpty
+        ? [
+            {
+              data_type: '',
+            },
+          ]
+        : source.activity_data
+
+      return activityData.map((activity) => {
+        // 活動數據種類等級
+        const matClassLevel = activity.data_type
+          ? activity.data_type === 1
+            ? 1
+            : activity.data_type === 2
+              ? 2
+              : activity.data_type === 3 || activity.data_type === 4
+                ? 3
+                : 0
+          : ''
+        // 活動數據可信種類(儀器校正誤差等級)
+        const matBelType =
+          activity.data_type === 1 || activity.data_type === 2
+            ? '有進行外部校正或有多組數據茲佐證者'
+            : activity.data_type === 3
+              ? '有進行內部校正或經過會計簽證等証明者'
+              : '未進行儀器校正或未進行紀錄彙整者'
+        // 活動數據可信等級
+        const matBelLevel =
+          matBelType === '有進行外部校正或有多組數據茲佐證者'
+            ? '1'
+            : matBelType === '有進行內部校正或經過會計簽證等証明者'
+              ? '2'
+              : '3'
+        // 係數種類等級
+        const emiLevel = '3'
+        // 單一排放源數據誤差等級
+        const manage1 =
+          matClassLevel && matBelLevel && emiLevel ? matClassLevel * matBelLevel * emiLevel : ''
+        // 評分區間範圍
+        const manage3 =
+          manage1 === '' ? '' : manage1 < 10 ? '1' : manage1 < 19 ? '2' : manage1 >= 27 ? '3' : '-'
+        // 係數種類等級
+        const manage2 = ''
+        // 排放量占比加權平均
+        const manage4 =
+          manage1 === '' || manage2 === ''
+            ? ''
+            : (parseFloat(manage2) * parseFloat(manage1)).toFixed(2)
+        return {
+          status: 'completed',
+          process: process_code_Map[source.process_code],
+          equipment: device_code_Map[source.device_code],
+          material: fuel_code_Map[source.fuel_code],
+          details: {
+            matCode: source.fuel_code,
+            matName: fuel_code_Map[source.fuel_code],
+            matClassLevel, // 活動數據種類等級
+            matBelType, // 活動數據可信種類(儀器校正誤差等級)
+            matBelLevel, // 活動數據可信等級
+            matInfo: '',
+            matUnit: '',
+            sourceClass: emission_category_Map[source.emission_category],
+            sourceType: emission_pattern_Map[source.emission_category][source.emission_pattern - 1],
+            emiCoeClass: '5國家排放係數',
+            emiLevel,
+            manage1,
+            manage2,
+            manage3,
+            manage4,
+          },
+        }
+      })
+    })
+    .flat() // Flatten the array to ensure all data is in a single level
 
   console.log(tableData)
 
