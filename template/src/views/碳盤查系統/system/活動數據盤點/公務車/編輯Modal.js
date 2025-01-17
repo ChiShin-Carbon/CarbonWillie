@@ -14,7 +14,6 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedVehicleId 
         date: '',
         num: '',
         type: '',
-        unit: '',
         quantity: '',
         explain: '',
         image: null,
@@ -28,7 +27,6 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedVehicleId 
             date: '',
             num: '',
             type: '',
-            unit: '',
             quantity: '',
             explain: '',
             image: null,
@@ -44,6 +42,7 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedVehicleId 
             setFormValues((prev) => ({ ...prev, image: file }));
         }
     };
+
 
     // Fetch vehicle data when selectedVehicleId changes
     useEffect(() => {
@@ -66,11 +65,11 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedVehicleId 
                         date: vehicle?.Doc_date || '',
                         num: vehicle?.Doc_number || '',
                         type: vehicle?.oil_species ? '1' : '2', // Map to options
-                        unit: '1', // Default unit
                         quantity: vehicle?.liters || '',
                         explain: vehicle?.remark || '',
-                        image: null,
+                        image: vehicle?.img_path || null,
                     });
+                    setPreviewImage(`fastapi/${vehicle?.img_path}` || null);
                 } else {
                     console.error(`Error ${response.status}: ${data.detail}`);
                 }
@@ -82,17 +81,55 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedVehicleId 
         fetchVehicleData();
     }, [selectedVehicleId]);
 
+    const handleEditSubmit = async (e) => {
+        e.preventDefault();
+
+        if (!formValues.date || !formValues.num || !formValues.type || !formValues.quantity) {
+            alert("Please fill in all required fields.");
+            return;
+        }
+
+        const form = new FormData();
+        form.append("vehicle_id", selectedVehicleId);
+        form.append("user_id", window.sessionStorage.getItem('user_id'));
+        form.append("date", formValues.date);
+        form.append("number", formValues.num);
+        form.append("oil_species", formValues.type);
+        form.append("liters", formValues.quantity);
+        form.append("remark", formValues.explain);
+        if (formValues.image) {
+            form.append("image", formValues.image);
+        }
+
+        for (let [key, value] of form.entries()) {
+            console.log(`${key}:`, value); // Debugging output
+        }
+
+        try {
+            const response = await fetch('http://localhost:8000/edit_vehicle', {
+                method: 'POST',
+                body: form, // Send FormData directly
+            });
+
+            const data = await response.json();
+            if (response.ok && data.status === "success") {
+                alert("Vehicle record updated successfully!");
+                handleClose();
+            } else {
+                alert(data.message || "Failed to update vehicle record.");
+            }
+        } catch (error) {
+            console.error("Error updating vehicle record:", error);
+            alert("An error occurred while updating the vehicle record.");
+        }
+    };
+
+
+
     // Handle form input changes
     const handleChange = (e) => {
         const { id, value } = e.target;
         setFormValues((prev) => ({ ...prev, [id]: value }));
-    };
-
-    // Handle form submission
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        // Process formValues and submit them
-        console.log('Form submitted:', formValues);
     };
 
     return (
@@ -109,7 +146,7 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedVehicleId 
                     <h5><b>編輯數據-公務車</b></h5>
                 </CModalTitle>
             </CModalHeader>
-            <CForm onSubmit={handleSubmit}>
+            <CForm onSubmit={handleEditSubmit}>
                 <CModalBody>
                     <div className={styles.addmodal}>
                         <div className={styles.modalLeft}>
@@ -160,24 +197,8 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedVehicleId 
                                 </CCol>
                             </CRow>
                             <CRow className="mb-3">
-                                <CFormLabel htmlFor="unit" className={`col-sm-2 col-form-label ${styles.addlabel}`}>
-                                    單位*<span className={styles.Note}> 選擇單位請以*公升*做為優先填寫項目</span>
-                                </CFormLabel>
-                                <CCol>
-                                    <CFormSelect
-                                        id="unit"
-                                        className={styles.addinput}
-                                        value={formValues.unit}
-                                        onChange={handleChange}
-                                    >
-                                        <option value="1">公升</option>
-                                        <option value="2">金額</option>
-                                    </CFormSelect>
-                                </CCol>
-                            </CRow>
-                            <CRow className="mb-3">
                                 <CFormLabel htmlFor="quantity" className={`col-sm-2 col-form-label ${styles.addlabel}`}>
-                                    公升數/金額*
+                                    公升數
                                 </CFormLabel>
                                 <CCol>
                                     <CFormInput
@@ -206,6 +227,7 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedVehicleId 
                                 </CCol>
                             </CRow>
                             <CRow className="mb-3">
+
                                 <CFormLabel htmlFor="image" className={`col-sm-2 col-form-label ${styles.addlabel}`}>
                                     圖片*
                                 </CFormLabel>
