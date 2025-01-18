@@ -19,18 +19,12 @@ import 'primereact/resources/primereact.min.css';          // 核心 CSS
 import 'primeicons/primeicons.css';                        // 图标样式
 
 import { Division } from './各表格檔案/分工說明表.js';
-import { Vehicle } from './各表格檔案/公務車.js';
-import { FireExtinguisher } from './各表格檔案/滅火器.js';
-import { Employee } from './各表格檔案/工作時數(員工).js';
-import { NonEmployee } from './各表格檔案/工作時數(非員工).js';
-import { Refrigerant } from './各表格檔案/冷媒.js';
-import { Machinery } from './各表格檔案/廠內機具.js';
-import { EmergencyGenerator } from './各表格檔案/緊急發電機.js';
-import { ElectricityUsage } from './各表格檔案/電力使用量.js';
-import { Commuting } from './各表格檔案/員工通勤.js';
-import { BusinessTrip } from './各表格檔案/商務旅行.js';
-import { OperationalWaste } from './各表格檔案/營運產生廢棄物.js';
-import { SellingWaste } from './各表格檔案/銷售產品的廢棄物.js';
+import { ClassOne } from './類別一.js';
+import { ClassTwo } from './類別二.js';
+import { ClassThree } from './類別三.js';
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 
 
 const Tabs = () => {
@@ -57,7 +51,7 @@ const Tabs = () => {
                             選擇計畫
                         </strong>
                         <select>
-                            <option>xx2024盤查報告</option>
+                            <option>xx2024盤查清冊</option>
                             <option value="1">xx2023盤查清冊</option>
                             <option value="2">xx2022盤查清冊</option>
                         </select>
@@ -84,7 +78,7 @@ const Tabs = () => {
 
             </div>
 
-            <CNav variant="tabs" className={styles.navContainer} >
+            <CNav variant="tabs" className="card-header-tabs">
                 <CNavItem>
                     <CNavLink
                         active={activeTab === 'tab1'}
@@ -103,7 +97,7 @@ const Tabs = () => {
                         className={activeTab === 'tab2' ? styles.tabChoose : styles.tabNoChoose}
                     >
                         <div>
-                            公務車
+                            類別一
                         </div>
                     </CNavLink>
                 </CNavItem>
@@ -114,7 +108,7 @@ const Tabs = () => {
                         className={activeTab === 'tab3' ? styles.tabChoose : styles.tabNoChoose}
                     >
                         <div>
-                            滅火器
+                            類別二
                         </div>
                     </CNavLink>
                 </CNavItem>
@@ -125,180 +119,26 @@ const Tabs = () => {
                         className={activeTab === 'tab4' ? styles.tabChoose : styles.tabNoChoose}
                     >
                         <div>
-                            工作時數(員工)
+                            類別三
                         </div>
                     </CNavLink>
                 </CNavItem>
-                <CNavItem>
-                    <CNavLink
-                        active={activeTab === 'tab5'}
-                        onClick={() => setActiveTab('tab5')}
-                        className={activeTab === 'tab5' ? styles.tabChoose : styles.tabNoChoose}
-                    >
-                        <div>
-                            工作時數(非員工)
-                        </div>
-                    </CNavLink>
-                </CNavItem>
-                <CNavItem>
-                    <CNavLink
-                        active={activeTab === 'tab6'}
-                        onClick={() => setActiveTab('tab6')}
-                        className={activeTab === 'tab6' ? styles.tabChoose : styles.tabNoChoose}
-                    >
-                        <div>
-                            冷媒
-                        </div>
-                    </CNavLink>
-                </CNavItem>
-                <CNavItem>
-                    <CNavLink
-                        active={activeTab === 'tab7'}
-                        onClick={() => setActiveTab('tab7')}
-                        className={activeTab === 'tab7' ? styles.tabChoose : styles.tabNoChoose}
-                    >
-                        <div>
-                            廠內機具
-                        </div>
-                    </CNavLink>
-                </CNavItem>
-                <CNavItem>
-                    <CNavLink
-                        active={activeTab === 'tab8'}
-                        onClick={() => setActiveTab('tab8')}
-                        className={activeTab === 'tab8' ? styles.tabChoose : styles.tabNoChoose}
-                    >
-                        <div>
-                            緊急發電機
-                        </div>
-                    </CNavLink>
-                </CNavItem>
-                <CNavItem>
-                    <CNavLink
-                        active={activeTab === 'tab9'}
-                        onClick={() => setActiveTab('tab9')}
-                        className={activeTab === 'tab9' ? styles.tabChoose : styles.tabNoChoose}
-                    >
-                        <div>
-                            電力使用量
-                        </div>
-                    </CNavLink>
-                </CNavItem>
-                <CNavItem>
-                    <CNavLink
-                        active={activeTab === 'tab10'}
-                        onClick={() => setActiveTab('tab10')}
-                        className={activeTab === 'tab10' ? styles.tabChoose : styles.tabNoChoose}
-                    >
-                        <div>
-                            員工通勤
-                        </div>
-                    </CNavLink>
-                </CNavItem>
-                <CNavItem>
-                    <CNavLink
-                        active={activeTab === 'tab11'}
-                        onClick={() => setActiveTab('tab11')}
-                        className={activeTab === 'tab11' ? styles.tabChoose : styles.tabNoChoose}
-                    >
-                        <div>
-                            商務旅行
-                        </div>
-                    </CNavLink>
-                </CNavItem>
-                <CNavItem>
-                    <CNavLink
-                        active={activeTab === 'tab12'}
-                        onClick={() => setActiveTab('tab12')}
-                        className={activeTab === 'tab12' ? styles.tabChoose : styles.tabNoChoose}
-                    >
-                        <div>
-                            營運產生廢棄物
-                        </div>
-                    </CNavLink>
-                </CNavItem>
-                <CNavItem>
-                    <CNavLink
-                        active={activeTab === 'tab13'}
-                        onClick={() => setActiveTab('tab13')}
-                        className={activeTab === 'tab13' ? styles.tabChoose : styles.tabNoChoose}
-                    >
-                        <div>
-                            銷售產品的廢棄物
-                        </div>
-                    </CNavLink>
-                </CNavItem>
-
-
             </CNav>
 
             <div className={styles.body}>
-                {/* /*碳費計算 */}
-                {activeTab === 'tab1' && (
-                    <>
-                        <Division />
-                    </>
-                )}
-                {activeTab === 'tab2' && (
-                    <>
-                        <Vehicle />
-                    </>
-                )}
-                {activeTab === 'tab3' && (
-                    <>
-                        <FireExtinguisher />
-                    </>
-                )}
-                {activeTab === 'tab4' && (
-                    <>
-                        <Employee />
-                    </>
-                )}
-                {activeTab === 'tab5' && (
-                    <>
-                        <NonEmployee />
-                    </>
-                )}
-                {activeTab === 'tab6' && (
-                    <>
-                        <Refrigerant />
-                    </>
-                )}
-                {activeTab === 'tab7' && (
-                    <>
-                        <Machinery />
-                    </>
-                )}
-                {activeTab === 'tab8' && (
-                    <>
-                        <EmergencyGenerator />
-                    </>
-                )}
-                {activeTab === 'tab9' && (
-                    <>
-                        <ElectricityUsage />
-                    </>
-                )}
-                {activeTab === 'tab10' && (
-                    <>
-                        <Commuting />
-                    </>
-                )}
-                {activeTab === 'tab11' && (
-                    <>
-                        <BusinessTrip />
-                    </>
-                )}
-                {activeTab === 'tab12' && (
-                    <>
-                        <OperationalWaste />
-                    </>
-                )}
-                {activeTab === 'tab13' && (
-                    <>
-                        <SellingWaste />
-                    </>
-                )}
+                <div className={styles.bodyMain}>
+                    {/* 內容 */}
+                    {activeTab === 'tab1' && <Division />}
+                    {activeTab === 'tab2' && <ClassOne />}
+                    {activeTab === 'tab3' && <ClassTwo />}
+                    {activeTab === 'tab4' && <ClassThree />}
+                </div>
+                {/* 按鈕固定在底部 */}
+                <div className={styles.bodyBottom}>
+                    <button>
+                        <FontAwesomeIcon icon={faArrowRightFromBracket} /> 匯出清冊
+                    </button>
+                </div>
             </div>
 
         </main >
