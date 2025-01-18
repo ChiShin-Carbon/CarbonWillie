@@ -52,6 +52,7 @@ from employee import employee
 from Machinery import Machinery
 from Nonemployee import NonEmployee
 from insert.insert_nonemployee import insert_nonemployee
+from insert.insert_Extinguisher_FillRec import insert_extinguisher_fill
 
 from emission_source import emission_source
 
@@ -93,6 +94,9 @@ from edit.edit_employee import edit_employee
 from edit.edit_nonemployee import edit_nonemployee
 from edit.edit_machine import edit_machine
 from edit.edit_emergency import edit_emergency
+from findone.extinguisher import Extinguisher_findone
+from edit.edit_extinguisher import edit_extinguisher
+from findone.extinguisher_Fill import ExtinguisherFill_findone
 
 app = FastAPI()
 load_dotenv()
@@ -145,6 +149,7 @@ app.include_router(insert_commute)
 app.include_router(insert_BusinessTrip)
 app.include_router(insert_waste)
 app.include_router(insert_Selling_waste)
+app.include_router(insert_extinguisher_fill)
 app.include_router(vehicle)
 
 app.include_router(Selling_waste)
@@ -198,3 +203,6 @@ app.include_router(edit_employee)
 app.include_router(edit_nonemployee)
 app.include_router(edit_machine)
 app.include_router(edit_emergency)
+app.include_router(Extinguisher_findone)
+app.include_router(edit_extinguisher)
+app.include_router(ExtinguisherFill_findone)
