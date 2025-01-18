@@ -90,6 +90,7 @@ from findone.Operational_Waste import Operational_Waste_findone
 from findone.Selling_waste import Selling_waste_findone
 from edit.edit_vehicle import edit_vehicle
 from edit.edit_employee import edit_employee
+from edit.edit_nonemployee import edit_nonemployee
 
 app = FastAPI()
 load_dotenv()
@@ -192,3 +193,4 @@ app.include_router(Operational_Waste_findone)
 app.include_router(Selling_waste_findone)
 app.include_router(edit_vehicle)
 app.include_router(edit_employee)
+app.include_router(edit_nonemployee)

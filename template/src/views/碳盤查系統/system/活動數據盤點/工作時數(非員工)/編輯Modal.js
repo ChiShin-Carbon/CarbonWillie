@@ -37,8 +37,11 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedNonemploye
                 if (response.ok) {
                     const data = await response.json();
                     const nonemployee = data.Nonemployees[0]; // Ensure correct structure
+                    const date = nonemployee?.period_date;
+                    const month = date.slice(0, 7);
+
                     setFormValues({
-                        period_date: nonemployee?.period_date || '',
+                        period_date: month || '',
                         nonemployee_number: nonemployee?.nonemployee_number || '',
                         total_hours: nonemployee?.total_hours || '',
                         total_days: nonemployee?.total_days || '',
@@ -100,12 +103,59 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedNonemploye
         }
     };
 
+    
+    const handleEditSubmit = async (e) => {
+        e.preventDefault();
+
+        const form = new FormData();
+
+        
+        form.append("nonemployee_id", selectedNonemployeeId);
+        form.append("user_id", window.sessionStorage.getItem('user_id'));
+        form.append("month", formValues.period_date);
+        form.append("nonemployee", formValues.nonemployee_number);
+        form.append("total_hours", formValues.total_hours);
+        form.append("total_day", formValues.total_days);
+        form.append("explain", formValues.remark);
+        if (formValues.img_path) {
+            form.append("image", formValues.img_path);
+        }
+        
+        if (formValues.image) {
+            form.append("image", formValues.image);
+        }
+
+        for (let [key, value] of form.entries()) {
+            console.log(`${key}:`, value); // Debugging output
+        }
+
+        try {
+            const response = await fetch('http://localhost:8000/edit_nonemployee', {
+                method: 'POST',
+                body: form, // Send FormData directly
+            });
+
+            const data = await response.json();
+            if (response.ok && data.status === "success") {
+                alert("Employee record updated successfully!");
+                handleClose();
+            } else {
+                alert(data.message || "Failed to update employee record.");
+            }
+        } catch (error) {
+            console.error("Error updating employee record:", error);
+            alert("An error occurred while updating the employee record.");
+        }
+    };
+
+
+
     return (
         <CModal backdrop="static" visible={isEditModalVisible} onClose={handleClose} className={styles.modal} size='xl'>
             <CModalHeader>
                 <h5><b>編輯數據-工作時數(非員工)</b></h5>
             </CModalHeader>
-            <CForm onSubmit={handleSubmit}>
+            <CForm onSubmit={handleEditSubmit}>
                 <CModalBody>
                     <div className={styles.addmodal}>
                         <div className={styles.modalLeft}>
