@@ -16,6 +16,7 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedMachinery 
         energy_type: '',
         usage: '',
         remark: '',
+        img_path: '',
     });
     const handleClose = () => setEditModalVisible(false);
 
@@ -33,27 +34,41 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedMachinery 
         setFormValues((prevValues) => ({ ...prevValues, [id]: value }));
     };
 
-    const handleSubmit = async (e) => {
+
+    const handleEditSubmit = async (e) => {
         e.preventDefault();
+
+        const form = new FormData();
+        form.append("machine_id", selectedMachinery);
+        form.append("user_id", window.sessionStorage.getItem('user_id'));
+        form.append("date", FormValues.Doc_date);
+        form.append("number", FormValues.Doc_number);
+        form.append("location", FormValues.machinery_location);
+        form.append("type", FormValues.energy_type);
+        form.append("usage", FormValues.usage);
+        form.append("remark", FormValues.remark);
+        form.append("image", e.target.C1image.files[0]);
+
+        for (let [key, value] of form.entries()) {
+            console.log(`${key}:`, value); // Debugging output
+        }
+
         try {
-            const formData = new FormData();
-            Object.keys(FormValues).forEach((key) => {
-                formData.append(key, FormValues[key]);
-            });
-
-            const response = await fetch('http://localhost:8000/Machinery_update', {
+            const response = await fetch('http://localhost:8000/edit_machine', {
                 method: 'POST',
-                body: formData,
+                body: form, // Send FormData directly
             });
 
-            if (response.ok) {
-                console.log('Machinery updated successfully');
+            const data = await response.json();
+            if (response.ok && data.status === "success") {
+                alert("Employee record updated successfully!");
                 handleClose();
             } else {
-                console.error('Error updating machinery:', await response.text());
+                alert(data.message || "Failed to update employee record.");
             }
         } catch (error) {
-            console.error('Error submitting form:', error);
+            console.error("Error updating employee record:", error);
+            alert("An error occurred while updating the employee record.");
         }
     };
 
@@ -81,6 +96,7 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedMachinery 
                         energy_type: machineryData?.energy_type || '',
                         usage: machineryData?.usage || '',
                         remark: machineryData?.remark || '',
+                        img_path: machineryData?.img_path || '',
                     });
                     setPreviewImage(machineryData?.img_path || null);
                 } else {
@@ -99,7 +115,7 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedMachinery 
             <CModalHeader>
                 <h5><b>編輯數據-廠內機具</b></h5>
             </CModalHeader>
-            <CForm onSubmit={handleSubmit}>
+            <CForm onSubmit={handleEditSubmit}>
                 <CModalBody>
                     <div className={styles.addmodal}>
                         <div className={styles.modalLeft}>
@@ -152,9 +168,9 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedMachinery 
                                         onChange={handleInputChange}
                                     >
                                         <option value="">請選擇</option>
-                                        <option value="Diesel">柴油</option>
-                                        <option value="Gasoline">汽油</option>
-                                        <option value="Other">其他</option>
+                                        <option value="0">柴油</option>
+                                        <option value="1">汽油</option>
+                                        <option value="2">其他</option>
                                     </CFormSelect>
                                 </CCol>
                             </CRow>

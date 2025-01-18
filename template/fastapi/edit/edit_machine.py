@@ -17,15 +17,17 @@ class machineRequest(BaseModel):
     remark: str
     image: str
 
-insert_machine = APIRouter()
+edit_machine = APIRouter()
 
-@insert_machine.post("/insert_machine")
+@edit_machine.post("/edit_machine")
 async def read_user_credentials(
     user_id: int = Form(...),
+    machine_id: int = Form(...),
     date: str = Form(...),
     number: str = Form(...),
-    location: int = Form(...),
-    type: float = Form(...),
+    location: str = Form(...),
+    type: int = Form(...),
+    usage: float = Form(...),
     remark: str = Form(...),
     image: UploadFile = File(...)
 ):
@@ -42,10 +44,21 @@ async def read_user_credentials(
         try:
             # Adjust placeholder syntax based on the database library you're using
             query = """
-                INSERT INTO Machinery (user_id, Doc_date, Doc_number, machinery_location, energy_type, remark, img_path, edit_time)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                UPDATE Machinery SET user_id = ?, Doc_date = ?, Doc_number = ?, machinery_location = ?, energy_type = ?, usage=?, remark = ?, img_path = ?, edit_time = ?
+                WHERE machinery_id = ?
             """
-            values = (user_id, date, number, location, type, remark, str(image_path), datetime.now())
+            values = (
+                user_id,
+                date,
+                number,
+                location,
+                type,
+                usage,
+                remark,
+                str(image_path),
+                datetime.now(),
+                machine_id
+            )
             print("Executing query:", query)  # Debug print
             print("With values:", values)     # Debug print
 

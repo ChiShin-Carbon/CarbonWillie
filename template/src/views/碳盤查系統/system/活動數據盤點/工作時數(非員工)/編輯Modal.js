@@ -120,11 +120,7 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedNonemploye
         if (formValues.img_path) {
             form.append("image", formValues.img_path);
         }
-        
-        if (formValues.image) {
-            form.append("image", formValues.image);
-        }
-
+    
         for (let [key, value] of form.entries()) {
             console.log(`${key}:`, value); // Debugging output
         }
