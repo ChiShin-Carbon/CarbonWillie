@@ -18,6 +18,21 @@ import 'primereact/resources/themes/saga-blue/theme.css';  // 主题样式
 import 'primereact/resources/primereact.min.css';          // 核心 CSS
 import 'primeicons/primeicons.css';                        // 图标样式
 
+import { Division } from './各表格檔案/分工說明表.js';
+import { Vehicle } from './各表格檔案/公務車.js';
+import { FireExtinguisher } from './各表格檔案/滅火器.js';
+import { Employee } from './各表格檔案/工作時數(員工).js';
+import { NonEmployee } from './各表格檔案/工作時數(非員工).js';
+import { Refrigerant } from './各表格檔案/冷媒.js';
+import { Machinery } from './各表格檔案/廠內機具.js';
+import { EmergencyGenerator } from './各表格檔案/緊急發電機.js';
+import { ElectricityUsage } from './各表格檔案/電力使用量.js';
+import { Commuting } from './各表格檔案/員工通勤.js';
+import { BusinessTrip } from './各表格檔案/商務旅行.js';
+import { OperationalWaste } from './各表格檔案/營運產生廢棄物.js';
+import { SellingWaste } from './各表格檔案/銷售產品的廢棄物.js';
+
+
 const Tabs = () => {
 
     const [activeTab, setActiveTab] = useState('tab1') // 記錄當前活動的分頁
@@ -69,7 +84,7 @@ const Tabs = () => {
 
             </div>
 
-            <CNav variant="tabs" className="card-header-tabs">
+            <CNav variant="tabs" className={styles.navContainer} >
                 <CNavItem>
                     <CNavLink
                         active={activeTab === 'tab1'}
@@ -221,18 +236,69 @@ const Tabs = () => {
                 {/* /*碳費計算 */}
                 {activeTab === 'tab1' && (
                     <>
-
+                        <Division />
                     </>
                 )}
-
-                {/* /*碳費分析&圖表呈現頁 */}
                 {activeTab === 'tab2' && (
                     <>
-
+                        <Vehicle />
                     </>
                 )}
-
-
+                {activeTab === 'tab3' && (
+                    <>
+                        <FireExtinguisher />
+                    </>
+                )}
+                {activeTab === 'tab4' && (
+                    <>
+                        <Employee />
+                    </>
+                )}
+                {activeTab === 'tab5' && (
+                    <>
+                        <NonEmployee />
+                    </>
+                )}
+                {activeTab === 'tab6' && (
+                    <>
+                        <Refrigerant />
+                    </>
+                )}
+                {activeTab === 'tab7' && (
+                    <>
+                        <Machinery />
+                    </>
+                )}
+                {activeTab === 'tab8' && (
+                    <>
+                        <EmergencyGenerator />
+                    </>
+                )}
+                {activeTab === 'tab9' && (
+                    <>
+                        <ElectricityUsage />
+                    </>
+                )}
+                {activeTab === 'tab10' && (
+                    <>
+                        <Commuting />
+                    </>
+                )}
+                {activeTab === 'tab11' && (
+                    <>
+                        <BusinessTrip />
+                    </>
+                )}
+                {activeTab === 'tab12' && (
+                    <>
+                        <OperationalWaste />
+                    </>
+                )}
+                {activeTab === 'tab13' && (
+                    <>
+                        <SellingWaste />
+                    </>
+                )}
             </div>
 
         </main >
