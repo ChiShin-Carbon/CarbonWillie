@@ -12,7 +12,7 @@ uploads_dir.mkdir(exist_ok=True)
 class EmployeeRequest(BaseModel):
     employee_id: int
     user_id: int
-    month: datetime
+    month: str
     employee: int
     daily_hours: int
     workday: int
@@ -29,7 +29,7 @@ class EmployeeRequest(BaseModel):
 async def update_employee_record(
     employee_id: int = Form(...),
     user_id: int = Form(...),
-    month: datetime = Form(...),
+    month: str = Form(...),
     employee: int = Form(...),
     daily_hours: int = Form(...),
     workday: int = Form(...),
