@@ -24,6 +24,7 @@ import {
   cilStorage,
   cilHandshake,
   cilList,
+  cilBook,
 } from '@coreui/icons'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 
@@ -69,10 +70,22 @@ const _nav = [
     icon: <CIcon icon={cilSearch} customClassName="nav-icon" />,
   },
   {
-    component: CNavItem,
-    name: '盤查報告書',
-    to: '/盤查報告書',
-    icon: <CIcon icon={cilFile} customClassName="nav-icon" />,
+    component: CNavGroup,
+    name: '碳盤查文件',
+    to: '/碳盤查文件',
+    icon: <CIcon icon={cilBook} customClassName="nav-icon" />,
+    items: [
+      {
+        component: CNavItem,
+        name: '盤查報告書',
+        to: '/盤查報告書',
+      },
+      {
+        component: CNavItem,
+        name: '盤查清冊',
+        to: '/盤查清冊',
+      },
+    ],
   },
   {
     component: CNavItem,
