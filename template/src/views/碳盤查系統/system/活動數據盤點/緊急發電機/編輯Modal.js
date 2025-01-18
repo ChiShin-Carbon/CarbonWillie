@@ -65,12 +65,49 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedGenerator 
         fetchGeneratorData();
     }, [selectedGenerator]);
 
+    const handleEditSubmit = async (e) => {
+        e.preventDefault();
+
+        const form = new FormData();
+        form.append("generator_id", selectedGenerator);
+        form.append("user_id", window.sessionStorage.getItem('user_id'));
+        form.append("date", FormValues.Doc_date);
+        form.append("number", FormValues.Doc_number);
+        form.append("usage", FormValues.usage);
+        form.append("remark", FormValues.remark);
+        form.append("image", document.getElementById("C1image").files[0]);
+
+        for (let [key, value] of form.entries()) {
+            console.log(`${key}:`, value); // Debugging output
+        }
+
+        try {
+            const response = await fetch('http://localhost:8000/edit_emergency', {
+                method: 'POST',
+                body: form, // Send FormData directly
+            });
+
+            const data = await response.json();
+            if (response.ok && data.status === "success") {
+                alert("Employee record updated successfully!");
+                handleClose();
+            } else {
+                alert(data.message || "Failed to update employee record.");
+            }
+        } catch (error) {
+            console.error("Error updating employee record:", error);
+            alert("An error occurred while updating the employee record.");
+        }
+    };
+
+
+
     return (
         <CModal backdrop="static" visible={isEditModalVisible} onClose={handleClose} className={styles.modal} size='xl'>
             <CModalHeader>
                 <h5><b>編輯數據-緊急發電機</b></h5>
             </CModalHeader>
-            <CForm>
+            <CForm onSubmit={handleEditSubmit}>
                 <CModalBody>
                     <div className={styles.addmodal}>
                         <div className={styles.modalLeft}>
@@ -81,7 +118,7 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedGenerator 
                                     <CFormInput
                                         className={styles.addinput}
                                         type="date"
-                                        id="date"
+                                        id="Doc_date"
                                         value={FormValues.Doc_date}
                                         onChange={handleInputChange}
                                         required />
@@ -93,7 +130,7 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedGenerator 
                                     <CFormInput
                                         className={styles.addinput}
                                         type="text"
-                                        id="num"
+                                        id="Doc_number"
                                         value={FormValues.Doc_number}
                                         onChange={handleInputChange}
                                         required />
@@ -107,7 +144,7 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedGenerator 
                                         className={styles.addinput}
                                         type="number"
                                         min='0'
-                                        id="quantity"
+                                        id="usage"
                                         value={FormValues.usage}
                                         onChange={handleInputChange}
                                         required />
@@ -119,7 +156,7 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedGenerator 
                                     <CFormTextarea
                                         className={styles.addinput}
                                         type="text"
-                                        id="explain"
+                                        id="remark"
                                         value={FormValues.remark}
                                         onChange={handleInputChange}
                                         rows={3} />

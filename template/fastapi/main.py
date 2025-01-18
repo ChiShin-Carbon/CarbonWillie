@@ -92,6 +92,7 @@ from edit.edit_vehicle import edit_vehicle
 from edit.edit_employee import edit_employee
 from edit.edit_nonemployee import edit_nonemployee
 from edit.edit_machine import edit_machine
+from edit.edit_emergency import edit_emergency
 
 app = FastAPI()
 load_dotenv()
@@ -196,3 +197,4 @@ app.include_router(edit_vehicle)
 app.include_router(edit_employee)
 app.include_router(edit_nonemployee)
 app.include_router(edit_machine)
+app.include_router(edit_emergency)

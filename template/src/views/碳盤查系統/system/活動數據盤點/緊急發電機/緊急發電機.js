@@ -64,7 +64,7 @@ export const EmergencyGenerator = () => {
                                 <td>{record.Doc_number}</td>
                                 <td>{record.usage}</td>
                                 <td>{record.remark}</td>
-                                <td><Zoom><img src={record.img_path} alt="Generator usage" /></Zoom></td>
+                                <td><Zoom><img src={`fastapi/${record.img_path}`} alt="Generator usage" /></Zoom></td>
                                 <td>{record.edit_time}</td>
                                 <td>
                                     <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => {
