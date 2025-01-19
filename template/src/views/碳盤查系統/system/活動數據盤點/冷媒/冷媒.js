@@ -38,6 +38,8 @@ export const Refrigerant = () => {
   const [isAddFillModalVisible, setAddFillModalVisible] = useState(false)
   const [isEditFillModalVisible, setEditFillModalVisible] = useState(false)
 
+  const[selectedRefId, setSelectedRefId] = useState(null)
+
   const device_type_Map = {
     1: '冷氣機', // Replace with actual device_type names
     2: '飲水機',
@@ -147,7 +149,12 @@ export const Refrigerant = () => {
                     {/* 在展開的區塊中放置你需要的內容 */}
                     <div className={styles.fill}>
                       <div>填充紀錄</div>
-                      <button onClick={() => setAddFillModalVisible(true)}>新增</button>
+                      <button onClick={() => {
+                        setAddFillModalVisible(true)
+                        const selectedRefId = refrigerant.refrigerant_id
+                        setSelectedRefId(selectedRefId)
+                        console.log(selectedRefId)
+                        }}>新增</button>
                     </div>
                     <table>
                       {refrigerant.fillrec && refrigerant.fillrec.length > 0 && (
@@ -213,6 +220,7 @@ export const Refrigerant = () => {
       <AddFillModal
         isAddFillModalVisible={isAddFillModalVisible}
         setAddFillModalVisible={setAddFillModalVisible}
+        selectedRefId={selectedRefId}
       />
 
       <EditFillModal

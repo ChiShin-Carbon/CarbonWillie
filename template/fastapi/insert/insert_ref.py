@@ -17,7 +17,6 @@ async def read_user_credentials(
     device_location: str = Form(...),
     refrigerant_type: int = Form(...),
     filling: float = Form(...),
-    quantity: float = Form(...),
     leakage_rate: float = Form(...),
     remark: str = Form(...),
     image: UploadFile = File(...)

@@ -8,7 +8,7 @@ import styles from '../../../../../scss/活動數據盤點.module.css';
 import Zoom from 'react-medium-image-zoom'
 import 'react-medium-image-zoom/dist/styles.css'
 
-const AddFillModal = ({ isAddFillModalVisible, setAddFillModalVisible }) => {
+const AddFillModal = ({ isAddFillModalVisible, setAddFillModalVisible, selectedRefId }) => {
     const addFillClose = () => setAddFillModalVisible(false);
     const [collapseVisible, setCollapseVisible] = useState(false)
 
@@ -18,6 +18,44 @@ const AddFillModal = ({ isAddFillModalVisible, setAddFillModalVisible }) => {
         if (file) {
             const previewUrl = URL.createObjectURL(file); // 創建圖片預覽 URL
             setPreviewImage(previewUrl); // 保存 URL 到狀態
+        }
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData();
+        formData.append("user_id", 1);
+        formData.append("refrigerant_id", selectedRefId);
+        formData.append("Doc_date", document.getElementById("date").value);
+        formData.append("Doc_number", document.getElementById("num").value);
+        formData.append("usage", document.getElementById("usage").value);
+        formData.append("escape_rate", document.getElementById("percent").value);
+        formData.append("remark", document.getElementById("remark").value);
+        formData.append("image", document.getElementById("C5image").files[0]);
+
+        try {
+            // Send form data to the backend
+            const res = await fetch("http://localhost:8000/insert_RefFill", {
+                method: "POST",
+                body: formData,
+            });
+
+            for (let [key, value] of formData.entries()) {
+                console.log(`${key}:`, value); // Debugging output
+            }
+
+            if (res.ok) {
+                const data = await res.json();
+                console.log("Form submitted successfully:", data);
+                alert("Form submitted successfully");
+            } else {
+                console.error("Failed to submit form data");
+                alert("Failed to submit form data");
+            }
+        } catch (error) {
+            console.error("Error submitting form data", error);
+            alert("Error submitting form data");
         }
     };
 
@@ -45,7 +83,7 @@ const AddFillModal = ({ isAddFillModalVisible, setAddFillModalVisible }) => {
                             </CRow>
                             <CRow className="mb-3">
                                 <CFormLabel htmlFor="num" className={`col-sm-2 col-form-label ${styles.addlabel}`} >填充量*</CFormLabel>
-                                <CCol><CFormInput className={styles.addinput} type="number" id="num" required /></CCol>
+                                <CCol><CFormInput className={styles.addinput} type="number" id="usage" required /></CCol>
                             </CRow>
                             <CRow className="mb-3">
                                 <CFormLabel htmlFor="percent" className={`col-sm-2 col-form-label ${styles.addlabel}`}>
@@ -63,7 +101,7 @@ const AddFillModal = ({ isAddFillModalVisible, setAddFillModalVisible }) => {
                             </CRow>
                             <CRow className="mb-3">
                                 <CFormLabel htmlFor="explain" className={`col-sm-2 col-form-label ${styles.addlabel}`} >備註</CFormLabel>
-                                <CCol><CFormTextarea className={styles.addinput} type="text" id="explain" rows={3} /></CCol>
+                                <CCol><CFormTextarea className={styles.addinput} type="text" id="remark" rows={3} /></CCol>
                             </CRow>
                             <CRow className="mb-3">
                                 <CFormLabel
@@ -73,7 +111,7 @@ const AddFillModal = ({ isAddFillModalVisible, setAddFillModalVisible }) => {
                                     圖片*
                                 </CFormLabel>
                                 <CCol>
-                                    <CFormInput type="file" id="C1image" onChange={(e) => (handleImageChange(e), handleC1image(e))} required />
+                                    <CFormInput type="file" id="C5image" onChange={(e) => (handleImageChange(e), handleC1image(e))} required />
                                 </CCol>
                             </CRow>
                             <br />
@@ -101,7 +139,7 @@ const AddFillModal = ({ isAddFillModalVisible, setAddFillModalVisible }) => {
                 </CModalBody>
                 <CModalFooter>
                     <CButton className="modalbutton1" onClick={addFillClose}>取消</CButton>
-                    <CButton className="modalbutton2" type="submit">新增</CButton>
+                    <CButton className="modalbutton2" type="submit" onClick={handleSubmit}>新增</CButton>
                 </CModalFooter>
             </CForm>
         </CModal>
