@@ -69,7 +69,7 @@ export const Machinery = () => {
                             <td>{item.remark}</td>
                             <td>
                                 <Zoom>
-                                    <img src={item.img_path} alt="image" width="100" />
+                                    <img src={`fastapi/${item.img_path}`} alt="image" width="100" />
                                 </Zoom>
                             </td>
                             <td>{item.edit_time}</td>

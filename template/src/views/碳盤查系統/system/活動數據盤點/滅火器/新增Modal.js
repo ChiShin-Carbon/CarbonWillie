@@ -33,7 +33,7 @@ export const FireExtinguisherAdd = ({ isAddModalVisible, setAddModalVisible }) =
 
         // Prepare form data
         const formData = new FormData();
-        formData.append("user_id", 1); // Example user_id, you should use the actual user ID
+        formData.append("user_id", window.sessionStorage.getItem("user_id"));
         formData.append("name", name);
         formData.append("element", element);
         formData.append("weight", weight);
@@ -50,13 +50,18 @@ export const FireExtinguisherAdd = ({ isAddModalVisible, setAddModalVisible }) =
             if (res.ok) {
                 const data = await res.json();
                 console.log("Form submitted successfully:", data);
+                alert("Form submitted successfully");
             } else {
                 console.error("Failed to submit form data");
+                alert("Failed to submit form data");
             }
         } catch (error) {
             console.error("Error submitting form data", error);
+            alert("Error submitting form data");
         }
     };
+
+    
 
 
     const [previewImage, setPreviewImage] = useState(null); // 用來存儲圖片的 
@@ -124,7 +129,7 @@ export const FireExtinguisherAdd = ({ isAddModalVisible, setAddModalVisible }) =
                                     圖片*
                                 </CFormLabel>
                                 <CCol>
-                                    <CFormInput type="file" id="C1image" onChange={(e) => (handleImageChange(e), handleC1image(e))} required />
+                                    <CFormInput type="file" id="C2image" onChange={(e) => (handleImageChange(e), handleC1image(e))} required />
                                 </CCol>
                             </CRow>
 

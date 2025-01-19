@@ -81,7 +81,7 @@ export const Employee = () => {
                             
                             <td>
                                 <Zoom>
-                                    <img src={employee.img_path} alt="image" width="100" height="100" />
+                                    <img src={`fastapi/${employee.img_path}`} alt="image" width="100" height="100" />
                                 </Zoom>
                             </td>
 

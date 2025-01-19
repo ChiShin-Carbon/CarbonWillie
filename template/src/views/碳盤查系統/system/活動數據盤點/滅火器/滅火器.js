@@ -35,6 +35,9 @@ export const FireExtinguisher = () => {
   const [isAddFillModalVisible, setAddFillModalVisible] = useState(false)
   const [isEditFillModalVisible, setEditFillModalVisible] = useState(false)
   const [selectedRow, setSelectedRow] = useState(null) // 用於追蹤展開的列
+  const [selectedExtinguisher, setSelectedExtinguisher] = useState(null) // Store selected extinguisher for edit
+  const [selectedFill, setSelectedFill] = useState(null) // Store selected fill for edit
+  const [selectedExtinguisherId, setSelectedExtinguisherId] = useState(null) // Store selected extinguisher for fill
 
   const ingredientMap = {
     1: 'CO2', // Replace with actual ingredient names
@@ -117,7 +120,10 @@ export const FireExtinguisher = () => {
                   <FontAwesomeIcon
                     icon={faPenToSquare}
                     className={styles.iconPen}
-                    onClick={() => setEditModalVisible(true)}
+                    onClick={() => {
+                      setEditModalVisible(true)
+                      setSelectedExtinguisher(extinguisher.extinguisher_id)
+                    }}
                   />
                   <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
                 </td>
@@ -128,7 +134,14 @@ export const FireExtinguisher = () => {
                     {/* 在展開的區塊中放置你需要的內容 */}
                     <div className={styles.fill}>
                       <div>填充紀錄</div>
-                      <button onClick={() => setAddFillModalVisible(true)}>新增</button>
+                      <button
+                        onClick={() => {
+                          setAddFillModalVisible(true);
+                          const extinguisherId = extinguisher.extinguisher_id; // Capture the ID directly
+                          setSelectedExtinguisherId(extinguisherId);
+                          console.log(extinguisherId); // Log the correct ID
+                        }}
+                      >新增</button>
                     </div>
                     <table>
                       {extinguisher.fillrec && extinguisher.fillrec.length > 0 && (
@@ -166,7 +179,10 @@ export const FireExtinguisher = () => {
                                 <FontAwesomeIcon
                                   icon={faPenToSquare}
                                   className={styles.iconPen}
-                                  onClick={() => setEditFillModalVisible(true)}
+                                  onClick={() => {
+                                    setEditFillModalVisible(true)
+                                    setSelectedFill(fill.fillrec_id)
+                                  }}
                                 />
                                 <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
                               </td>
@@ -185,17 +201,20 @@ export const FireExtinguisher = () => {
       <EditModal
         isEditModalVisible={isEditModalVisible}
         setEditModalVisible={setEditModalVisible}
+        selectedExtinguisher={selectedExtinguisher}
       />
 
       {/* 填充新增編輯modal */}
       <AddFillModal
         isAddFillModalVisible={isAddFillModalVisible}
         setAddFillModalVisible={setAddFillModalVisible}
+        selectedExtinguisherId={selectedExtinguisherId}
       />
 
       <EditFillModal
         isEditFillModalVisible={isEditFillModalVisible}
         setEditFillModalVisible={setEditFillModalVisible}
+        selectedFill={selectedFill}
       />
     </div>
   )

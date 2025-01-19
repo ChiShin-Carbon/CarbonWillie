@@ -38,9 +38,8 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedEmployee }
 
     const handleInputChange = (e) => {
         const { id, value } = e.target;
-        setFormValues((prevValues) => ({ ...prevValues, [id]: value }));
+        setFormValues((prev) => ({ ...prev, [id]: value }));
     };
-
 
 
     useEffect(() => {
@@ -86,12 +85,61 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedEmployee }
         fetchEmployeeData();
     }, [selectedEmployee]);
 
+    const handleEditSubmit = async (e) => {
+        e.preventDefault();
+
+        const form = new FormData();
+        form.append("employee_id", selectedEmployee);
+        form.append("user_id", window.sessionStorage.getItem('user_id'));
+        form.append("month", formValues.period_date);
+        form.append("employee", formValues.employee_number);
+        form.append("daily_hours", formValues.daily_hours);
+        form.append("workday", formValues.workday);
+        form.append("overtime", formValues.overtime);
+        form.append("sick", formValues.sick_leave);
+        form.append("personal", formValues.personal_leave);
+        form.append("business", formValues.business_trip);
+        form.append("funeral", formValues.wedding_and_funeral);
+        form.append("special", formValues.special_leave);
+        form.append("explain", formValues.remark);
+        if (formValues.img_path) {
+            form.append("image", formValues.img_path);
+        }
+        
+        if (formValues.image) {
+            form.append("image", formValues.image);
+        }
+
+        for (let [key, value] of form.entries()) {
+            console.log(`${key}:`, value); // Debugging output
+        }
+
+        try {
+            const response = await fetch('http://localhost:8000/edit_employee', {
+                method: 'POST',
+                body: form, // Send FormData directly
+            });
+
+            const data = await response.json();
+            if (response.ok && data.status === "success") {
+                alert("Employee record updated successfully!");
+                handleClose();
+            } else {
+                alert(data.message || "Failed to update employee record.");
+            }
+        } catch (error) {
+            console.error("Error updating employee record:", error);
+            alert("An error occurred while updating the employee record.");
+        }
+    };
+
+
     return (
         <CModal backdrop="static" visible={isEditModalVisible} onClose={handleClose} className={styles.modal} size='xl'>
             <CModalHeader>
                 <h5><b>編輯數據-工作時數(員工)</b></h5>
             </CModalHeader>
-            <CForm>
+            <CForm onSubmit={handleEditSubmit}>
                 <CModalBody>
                     <div className={styles.addmodal}>
                         <div className={styles.modalLeft}>
@@ -100,8 +148,8 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedEmployee }
                                 <CFormLabel htmlFor="month" className={`col-sm-2 col-form-label ${styles.addlabel}`} >月份*</CFormLabel>
                                 <CCol><CFormInput
                                     className={styles.addinput}
-                                    type="month"
-                                    id="date"
+                                    type="date"
+                                    id="period_date"
                                     value={formValues.period_date}
                                     onChange={handleInputChange}
                                     required /></CCol>
@@ -113,7 +161,7 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedEmployee }
                                         className={styles.addinput}
                                         type="number"
                                         min='0'
-                                        id="people"
+                                        id="employee_number"
                                         value={formValues.employee_number}
                                         onChange={handleInputChange}
                                         required />
@@ -126,7 +174,7 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedEmployee }
                                         className={styles.addinput}
                                         type="number"
                                         min='0'
-                                        id="workhour"
+                                        id="daily_hours"
                                         value={formValues.daily_hours}
                                         onChange={handleInputChange}
                                         required />
