@@ -32,9 +32,9 @@ import Zoom from 'react-medium-image-zoom'
 import 'react-medium-image-zoom/dist/styles.css'
 
 export const VehicleAdd = ({ isAddModalVisible, setAddModalVisible }) => {
+  const handleClose = () => setAddModalVisible(false)
   const [C1date, setC1date] = useState('')
   const [C1num, setC1num] = useState('')
-  const handleClose = () => setAddModalVisible(false)
   const [isdatecorrect, setIsdatecorrect] = useState(true)
   const [dateincorrectmessage, setDateincorrectmessage] = useState('')
   const [isnumcorrect, setIsnumcorrect] = useState(true)
