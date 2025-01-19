@@ -39,7 +39,7 @@ def read_user_credentials(request: ExtinguisherFillRequest):
                     }
                     for record in user_records
                 ]
-                return {"Extinguisher": result}
+                return {"ExtinguisherFill": result}
             else:
                 # Raise a 404 error if user has no Emergency_Gnerator
                 raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No Extinguisher found for this user")

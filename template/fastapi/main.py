@@ -97,6 +97,7 @@ from edit.edit_emergency import edit_emergency
 from findone.extinguisher import Extinguisher_findone
 from edit.edit_extinguisher import edit_extinguisher
 from findone.extinguisher_Fill import ExtinguisherFill_findone
+from edit.edit_extinguisherFill import edit_ExtinguisherFill
 
 app = FastAPI()
 load_dotenv()
@@ -206,3 +207,4 @@ app.include_router(edit_emergency)
 app.include_router(Extinguisher_findone)
 app.include_router(edit_extinguisher)
 app.include_router(ExtinguisherFill_findone)
+app.include_router(edit_ExtinguisherFill)

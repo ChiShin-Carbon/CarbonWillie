@@ -26,83 +26,82 @@ const EditFillModal = ({ isEditFillModalVisible, setEditFillModalVisible, select
     };
 
     const handleInputChange = (e) => {
-            const { id, value } = e.target;
-            setFormValues((prevValues) => ({ ...prevValues, [id]: value }));
-        };
-    
-        const handleEditSubmit = async (e) => {
-                e.preventDefault();
-        
-                const form = new FormData();
-                form.append('extinguisher_id', selectedExtinguisher);
-                form.append('user_id', window.sessionStorage.getItem('user_id'));
-                form.append('item_name', FormValues.item_name);
-                form.append('ingredient', FormValues.ingredient);
-                form.append('specification', FormValues.specification);
-                form.append('remark', FormValues.remark);
-                form.append("image", e.target.image.files[0]); // Assuming the image is selected
-    
-                for (let [key, value] of form.entries()) {
-                    console.log(`${key}:`, value); // Debugging output
-                }
-        
-                try {
-                    const response = await fetch('http://localhost:8000/edit_extinguisher', {
-                        method: 'POST',
-                        body: form, // Send FormData directly
-                    });
-        
+        const { id, value } = e.target;
+        setFormValues((prevValues) => ({ ...prevValues, [id]: value }));
+    };
+
+    const handleEditSubmit = async (e) => {
+        e.preventDefault();
+
+        const form = new FormData();
+        form.append('fillrec_id', selectedFill);
+        form.append('user_id', window.sessionStorage.getItem('user_id'));
+        form.append('Doc_date', FormValues.Doc_date);
+        form.append('Doc_number', FormValues.Doc_number);
+        form.append('usage', FormValues.usage);
+        form.append('remark', FormValues.remark);
+        form.append("image", e.target.image.files[0]); // Assuming the image is selected
+
+        for (let [key, value] of form.entries()) {
+            console.log(`${key}:`, value); // Debugging output
+        }
+
+        try {
+            const response = await fetch('http://localhost:8000/edit_ExtinguisherFill', {
+                method: 'POST',
+                body: form, // Send FormData directly
+            });
+
+            const data = await response.json();
+            if (response.ok && data.status === "success") {
+                alert("Employee record updated successfully!");
+                handleClose();
+            } else {
+                alert(data.message || "Failed to update employee record.");
+            }
+        } catch (error) {
+            
+        }
+    };
+
+
+    useEffect(() => {
+        const fetchExtinguisherFillData = async () => {
+            console.log('Fetching Extinguisher data for ID:', selectedFill);
+            if (!selectedFill) return;
+
+            try {
+                const response = await fetch('http://localhost:8000/ExtinguisherFill_findone', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ ExtinguisherFill_id: selectedFill }),
+                });
+
+                if (response.ok) {
                     const data = await response.json();
-                    if (response.ok && data.status === "success") {
-                        alert("Employee record updated successfully!");
-                        handleClose();
-                    } else {
-                        alert(data.message || "Failed to update employee record.");
-                    }
-                } catch (error) {
-                    console.error("Error updating employee record:", error);
-                    alert("An error occurred while updating the employee record.");
+                    const ExtinguisherFillData = data.ExtinguisherFill[0];
+                    setFormValues({
+                        Doc_date: ExtinguisherFillData?.Doc_date || '',
+                        Doc_number: ExtinguisherFillData?.Doc_number || '',
+                        usage: ExtinguisherFillData?.usage || '',
+                        remark: ExtinguisherFillData?.remark || '',
+                        img_path: ExtinguisherFillData?.img_path || '',
+                    });
+                    setPreviewImage(ExtinguisherFillData?.img_path || null);
+                    console.log('Fetched Extinguisher data:', ExtinguisherFillData);
+                } else {
+                    console.error('Error fetching Extinguisher data:', await response.text());
                 }
-            };
-        
-        
-            useEffect(() => {
-                const fetchExtinguisherFillData = async () => {
-                    console.log('Fetching Extinguisher data for ID:', selectedFill);
-                    if (!selectedFill) return;
-        
-                    try {
-                        const response = await fetch('http://localhost:8000/ExtinguisherFill_findone', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({ ExtinguisherFill_id: selectedFill }),
-                        });
-        
-                        if (response.ok) {
-                            const data = await response.json();
-                            const ExtinguisherFillData = data.ExtinguisherFill[0];
-                            setFormValues({
-                                Doc_date: ExtinguisherFillData?.Doc_date || '',
-                                Doc_number: ExtinguisherFillData?.Doc_number || '',
-                                usage: ExtinguisherFillData?.usage || '',
-                                remark: ExtinguisherFillData?.remark || '',
-                                img_path: ExtinguisherFillData?.img_path || '',
-                            });
-                            setPreviewImage(ExtinguisherFillData?.img_path || null);
-                            console.log('Fetched Extinguisher data:', ExtinguisherFillData);
-                        } else {
-                            console.error('Error fetching Extinguisher data:', await response.text());
-                        }
-                    } catch (error) {
-                        console.error('Error fetching Extinguisher data:', error);
-                    }
-                };
-        
-                fetchExtinguisherFillData();
-            }, [selectedFill]);
-    
+            } catch (error) {
+                console.error('Error fetching Extinguisher data:', error);
+            }
+        };
+
+        fetchExtinguisherFillData();
+    }, [selectedFill]);
+
 
     return (
         <CModal
@@ -115,55 +114,55 @@ const EditFillModal = ({ isEditFillModalVisible, setEditFillModalVisible, select
             <CModalHeader>
                 <h5><b>編輯填充紀錄</b></h5>
             </CModalHeader>
-            <CForm>
+            <CForm onSubmit={handleEditSubmit}>
                 <CModalBody>
                     <div className={styles.addmodal}>
                         <div className={styles.modalLeft}>
                             <CRow className="mb-3">
                                 <CFormLabel htmlFor="month" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票/收據日期*</CFormLabel>
-                                <CCol><CFormInput 
-                                className={styles.addinput} 
-                                type="date" 
-                                id="Doc_date" 
-                                value={FormValues.Doc_date}
-                                onChange={handleInputChange}
-                                required />
+                                <CCol><CFormInput
+                                    className={styles.addinput}
+                                    type="date"
+                                    id="Doc_date"
+                                    value={FormValues.Doc_date}
+                                    onChange={handleInputChange}
+                                    required />
                                 </CCol>
                             </CRow>
                             <CRow className="mb-3">
                                 <CFormLabel htmlFor="num" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票號碼/收據編號*</CFormLabel>
                                 <CCol>
-                                    <CFormInput 
-                                    className={styles.addinput} 
-                                    type="text" 
-                                    id="Doc_number" 
-                                    value={FormValues.Doc_number}
-                                    onChange={handleInputChange}
-                                    required />
+                                    <CFormInput
+                                        className={styles.addinput}
+                                        type="text"
+                                        id="Doc_number"
+                                        value={FormValues.Doc_number}
+                                        onChange={handleInputChange}
+                                        required />
                                 </CCol>
                             </CRow>
                             <CRow className="mb-3">
                                 <CFormLabel htmlFor="num" className={`col-sm-2 col-form-label ${styles.addlabel}`} >填充量*</CFormLabel>
                                 <CCol>
-                                    <CFormInput 
-                                    className={styles.addinput} 
-                                    type="number" 
-                                    id="usage" 
-                                    value={FormValues.usage}
-                                    onChange={handleInputChange}
-                                    required />
+                                    <CFormInput
+                                        className={styles.addinput}
+                                        type="number"
+                                        id="usage"
+                                        value={FormValues.usage}
+                                        onChange={handleInputChange}
+                                        required />
                                 </CCol>
                             </CRow>
                             <CRow className="mb-3">
                                 <CFormLabel htmlFor="explain" className={`col-sm-2 col-form-label ${styles.addlabel}`} >備註</CFormLabel>
                                 <CCol>
-                                    <CFormTextarea 
-                                    className={styles.addinput} 
-                                    type="text" 
-                                    id="remark" 
-                                    value={FormValues.remark}
-                                    onChange={handleInputChange}
-                                    rows={3} />
+                                    <CFormTextarea
+                                        className={styles.addinput}
+                                        type="text"
+                                        id="remark"
+                                        value={FormValues.remark}
+                                        onChange={handleInputChange}
+                                        rows={3} />
 
                                 </CCol>
                             </CRow>
@@ -172,8 +171,8 @@ const EditFillModal = ({ isEditFillModalVisible, setEditFillModalVisible, select
                                     圖片*
                                 </CFormLabel>
                                 <CCol>
-                                    <CFormInput 
-                                    type="file" id="image" onChange={handleImageChange} required />
+                                    <CFormInput
+                                        type="file" id="image" onChange={handleImageChange} required />
                                 </CCol>
                             </CRow>
                             <br />
