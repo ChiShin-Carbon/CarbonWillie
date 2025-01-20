@@ -35,6 +35,20 @@ const Tabs = () => {
   const [selectedFeedback, setSelectedFeedback] = useState('') // 資料回報狀態
   const [tableData, setTableData] = useState([]) // 新增狀態來存放從後端獲取的資料
 
+  const formatDate = (isoDate) => {
+    if (!isoDate) {
+      return ''; // 如果 isoDate 为 null 或 undefined，则返回空字符串
+    }
+    const date = new Date(isoDate);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // 月份从0开始，需要+1
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    return `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
+  };
+
   // 呼叫 API 獲取資料
   const getAuthorizedRecords = async () => {
     try {
@@ -222,9 +236,17 @@ const Tabs = () => {
                         <CTableDataCell>{row.table_name}</CTableDataCell>
                         <CTableDataCell>{getDepartmentName(row.department)}</CTableDataCell> {/* 顯示部門名稱 */}
                         <CTableDataCell>{row.username}</CTableDataCell>
-                        <CTableDataCell>{row.completed_at}</CTableDataCell>
+                        <CTableDataCell>{formatDate(row.completed_at)}</CTableDataCell>
                         <CTableDataCell>
-                          {row.is_done ? <div className="check_icon"><CIcon icon={cilCheckAlt} className="check" /></div> : <div className="x_icon"><CIcon icon={cilX} className="x" /></div>}
+                          {row.is_done ? (
+                            <div className="check_icon">
+                              <CIcon icon={cilCheckAlt} className="check" />
+                            </div>
+                          ) : (
+                            <div className="x_icon">
+                              <CIcon icon={cilX} className="x" />
+                            </div>
+                          )}
                         </CTableDataCell>
                         <CTableDataCell>{row.is_done ? '已審核' : '尚未審核'}</CTableDataCell>
                       </CTableRow>
