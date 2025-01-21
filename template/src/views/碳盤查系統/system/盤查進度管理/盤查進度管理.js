@@ -95,8 +95,9 @@ const Tabs = () => {
     (row) =>
       (row.table_name.includes(searchValue) ||
         row.username.includes(searchValue) ||
-        getDepartmentName(row.department).includes(searchValue) || // 使用轉換後的部門名稱
-        row.completed_at.includes(searchValue)) &&
+        getDepartmentName(row.department).includes(searchValue) //|| // 使用轉換後的部門名稱
+        //row.completed_at.includes(searchValue)  先註解因為只要table裡面有completed_at==null時就會失敗
+      )&&
       (selectedFeedback === '' || (row.is_done ? '已審核' : '尚未審核') === selectedFeedback),
   )
 
@@ -108,6 +109,7 @@ const Tabs = () => {
   // handleSearch 按下按鈕時觸發
   const handleSearch = () => {
     setSearchValue(searchInput) // 將輸入框的值更新到 searchValue
+    console.log('搜尋結果:', searchInput) // 偵錯用
   }
 
   // 監聽鍵盤事件以判斷是否按下 Enter 鍵

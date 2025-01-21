@@ -24,18 +24,18 @@ const 新聞 = () => {
       const [loading, setLoading] = useState(false) // 加載狀態
       const [summary, setSummary] = useState('') //摘要總結
     //搜尋
-      const handleSearchInput = (e) => {
-        setSearchInput(e.target.value) // 更新輸入框的值
-      }
-      const handleSearch = () => {
-        setQuery(searchInput) // 將暫存的搜尋框值設定到 query
-      }
-      const handleKeyDown = (e) => {
-        if (e.key === 'Enter') {
-          e.preventDefault() // 防止表單默認提交行為
-          handleSearch() // 呼叫搜尋函數
-        }
-      }
+    //   const handleSearchInput = (e) => {
+    //     setSearchInput(e.target.value) // 更新輸入框的值
+    //   }
+    //   const handleSearch = () => {
+    //     setQuery(searchInput) // 將暫存的搜尋框值設定到 query
+    //   }
+    //   const handleKeyDown = (e) => {
+    //     if (e.key === 'Enter') {
+    //       e.preventDefault() // 防止表單默認提交行為
+    //       handleSearch() // 呼叫搜尋函數
+    //     }
+    //   }
     // 碳費百科
         // Carbon Price定義(from WorldBank) 20140603
         const carbonfee1 = () => {
@@ -78,137 +78,135 @@ const 新聞 = () => {
         )
         }
 
+        useEffect(() => {
+            const fetchOrGenerateNews = async () => {
+                setLoading(true);
+                try {
+                    const today = new Date().toISOString().split('T')[0];
+                    const response = await fetch(`http://127.0.0.1:8000/filtered-news?today_news_date=${today}`);
+                    const data = await response.json();
+    
+                    console.log('API response data:', data);// 檢查回應資料結構
+    
+                    if (data.news.length > 0) {
+                        // 資料庫中已有新聞，直接設置到狀態
+                        setNews(data.news);
+                        console.log('Updated news state:', data.news); // 確認狀態是否更新
+                        setSummary(data.news[0].news_summary || "摘要不可用");      
+                    } else {
+                        // 若無新聞，生成並儲存
+                        await fetchNewsAndGenerateSummary();
+                    }
+                } catch (error) {
+                    console.error("Error fetching or generating news:", error);
+                } finally {
+                    setLoading(false);
+                }
+            };
+    
+            const fetchNewsAndGenerateSummary = async () => {
+                if (!query) return;// 如果沒有 query，就不執行
+    
+                setLoading(true);
+                try {
+                     // Fetch news from API
+                    const response = await fetch(`http://127.0.0.1:5000/news?q=${query}`);
+                    if (!response.ok) {
+                        throw new Error("Network response was not ok " + response.statusText);
+                    }
+                    const data = await response.json();
+    
+                    // 篩選符合條件的文章
+                    const filteredArticles = data.articles.filter((article) => {
+                        const isYahooWithValidExtension =
+                        article.url.includes("yahoo")
+                            ? article.url.endsWith(".html")  // 如果包含 "yahoo"，檢查是否以 .html 結尾
+                            : true;  // 如果不包含 "yahoo"，不需要額外篩選
+                        const hasKeywordInTitle = article.title.includes(query);
+                        return isYahooWithValidExtension && hasKeywordInTitle ;
+                    });
+    
+                    setNews(filteredArticles);
+                    // Generate summary if filtered articles are available
+                    let summaryResult = "目前沒有可用的新聞標題供摘要。";
+                    if (filteredArticles.length > 0) {
+                        const filteredTitles = filteredArticles.map((article) => article.title);
+                        summaryResult = await generateSummary(filteredTitles);
+                        setSummary(summaryResult);
+                    } else {
+                        setSummary(summaryResult);
+                    }
 
-  useEffect(() => {
-      const fetchOrGenerateNews = async () => {
-          setLoading(true);
-          try {
-              // 檢查今天是否有新聞
-              const today = new Date().toISOString().split('T')[0];
-              const response = await fetch(`http://127.0.0.1:8000/filtered-news?today_news_date=${today}`);
-              const data = await response.json();
-  
-              console.log('API response data:', data);  // 檢查回應資料結構
-  
-              if (data.news.length > 0) {
-                  // 資料庫中已有新聞，直接設置到狀態
-                  setNews(data.news);
-                  console.log('Updated news state:', data.news); // 確認狀態是否更新
-                  setSummary(data.news[0].news_summary || "摘要不可用");
-              } else {
-                  // 若無新聞，生成並儲存
-                  await fetchNewsAndGenerateSummary();
-              }
-          } catch (error) {
-              console.error("Error fetching or generating news:", error);
-          } finally {
-              setLoading(false);
-          }
-      };
-  
-      const fetchNewsAndGenerateSummary = async () => {
-          if (!query) return; // 如果沒有 query，就不執行
-  
-          setLoading(true);
-          try {
-              // Fetch news from API
-              const response = await fetch(`http://127.0.0.1:5000/news?q=${query}`);
-              if (!response.ok) {
-                  throw new Error("Network response was not ok " + response.statusText);
-              }
-              const data = await response.json();
-  
-              // 篩選符合條件的文章
-              const filteredArticles = data.articles.filter((article) => {
-                  const isYahooWithValidExtension =
-                      !(article.url.includes("yahoo") && !/\.(png|html)$/.test(article.url));
-                  const hasKeywordInTitle = article.title.includes(query);
-                  const isTitleLengthValid = article.title.length <= 30; // 新增篩選條件：標題長度小於等於 30 字元
-                  return isYahooWithValidExtension && hasKeywordInTitle && isTitleLengthValid;
-              });
-  
-              setNews(filteredArticles);
-  
-              // Generate summary if filtered articles are available
-              let summaryResult = "目前沒有可用的新聞標題供摘要。";
-              if (filteredArticles.length > 0) {
-                  const filteredTitles = filteredArticles.map((article) => article.title);
-                  summaryResult = await generateSummary(filteredTitles);
-                  setSummary(summaryResult);
-              } else {
-                  setSummary(summaryResult);
-              }
-  
-              // Save filtered articles to database
-              filteredArticles.forEach((article) => {
-                  saveNewsToDatabase({
-                      news_title: article.title,
-                      news_url: article.url,
-                      news_summary: summaryResult, // 針對每條新聞保存摘要
-                      news_date: article.publishedAt || new Date().toISOString().split('T')[0], // 改用正確屬性//article.news_date || new Date().toISOString().split('T')[0], // 使用新聞發布日期
-                  });
-              });
-          } catch (error) {
-              console.error("Fetch error: ", error);
-          } finally {
-              setLoading(false);
-          }
-      };
-  
-      fetchOrGenerateNews();
-  }, [query]); // 只有當 query 改變時才會觸發
-  
-  const generateSummary = async (titles) => {
-      if (titles.length === 0) return "目前沒有可用的新聞標題供摘要。";
-      try {
-          const response = await fetch("http://127.0.0.1:8000/langchaingpt", {
-              method: "POST",
-              headers: {
-                  "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                  message: `請根據以下標題生成摘要：${titles.join(", ")}`,
-              }),
-          });
-  
-          if (!response.ok) {
-              throw new Error("Failed to generate summary from API: " + response.statusText);
-          }
-  
-          const data = await response.json();
-          return data.response; // 返回從 OpenAI API 獲得的摘要
-      } catch (error) {
-          console.error("Error generating summary: ", error);
-          return "摘要生成失敗，請稍後再試。";
-      }
-  };
-  
-  const saveNewsToDatabase = async (newsData) => {
-    try {
-        // 格式化日期為 'YYYY-MM-DD' 格式
-        const formattedDate = new Date(newsData.news_date).toISOString().split('T')[0]; // 這樣會得到 '2024-12-31' 格式的日期
+                    // Save filtered articles to database
+                    filteredArticles.forEach((article) => {
+                        saveNewsToDatabase({
+                            news_title: article.title,
+                            news_url: article.url,
+                            news_summary: summaryResult, // 針對每條新聞保存摘要
+                            news_date: article.publishedAt || new Date().toISOString().split('T')[0], // 改用正確屬性//article.news_date || new Date().toISOString().split('T')[0], // 使用新聞發布日期
+                        });
+                    });
+                } catch (error) {
+                    console.error("Fetch error: ", error);
+                } finally {
+                    setLoading(false);
+                }
+            };
 
-        // 更新 newsData 以包含格式化後的日期
-        const updatedNewsData = { ...newsData, news_date: formattedDate };
+            fetchOrGenerateNews();
+            }, [query]); // 只有當 query 改變時才會觸發
 
-        // 儲存到資料庫
-        const response = await fetch("http://127.0.0.1:8000/news", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(updatedNewsData),
-        });
-
-        if (!response.ok) {
-            throw new Error("Failed to save news to the database: " + response.statusText);
-        }
-
-        console.log("News saved successfully.", updatedNewsData);
-    } catch (error) {
-        console.error("Error saving news:", error);
-    }
-};
+        const generateSummary = async (titles) => {
+            if (titles.length === 0) return "目前沒有可用的新聞標題供摘要。";
+            try {
+                const response = await fetch("http://127.0.0.1:8000/langchaingpt", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        message: `請根據以下標題生成摘要：${titles.join(", ")}`,
+                    }),
+                });
+    
+                if (!response.ok) {
+                    throw new Error("Failed to generate summary from API: " + response.statusText);
+                }
+    
+                const data = await response.json();
+                return data.response;
+            } catch (error) {
+                console.error("Error generating summary: ", error);
+                return "摘要生成失敗，請稍後再試。";
+            }
+        };
+    
+        const saveNewsToDatabase = async (newsData) => {
+            try {
+                // 格式化日期為 'YYYY-MM-DD' 格式
+                const formattedDate = new Date(newsData.news_date).toISOString().split('T')[0]; // 這樣會得到 '2024-12-31' 格式的日期
+        
+                // 更新 newsData 以包含格式化後的日期
+                const updatedNewsData = { ...newsData, news_date: formattedDate };
+        
+                // 儲存到資料庫
+                const response = await fetch("http://127.0.0.1:8000/news", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(updatedNewsData),
+                });
+        
+                if (!response.ok) {
+                    throw new Error("Failed to save news to the database: " + response.statusText);
+                }
+        
+                console.log("News saved successfully.", updatedNewsData);
+            } catch (error) {
+                console.error("Error saving news:", error);
+            }
+        };
 
   return (
     <>
