@@ -39,6 +39,8 @@ export const Refrigerant = () => {
   const [isEditFillModalVisible, setEditFillModalVisible] = useState(false)
 
   const[selectedRefId, setSelectedRefId] = useState(null)
+  const[selectedFillId, setSelectedFillId] = useState(null)
+  const[selectedRef, setSelectedRef] = useState(null)
 
   const device_type_Map = {
     1: '冷氣機', // Replace with actual device_type names
@@ -138,7 +140,10 @@ export const Refrigerant = () => {
                   <FontAwesomeIcon
                     icon={faPenToSquare}
                     className={styles.iconPen}
-                    onClick={() => setEditModalVisible(true)}
+                    onClick={() => 
+                      {setEditModalVisible(true)
+                      setSelectedRef(refrigerant.refrigerant_id)
+                      }}
                   />
                   <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
                 </td>
@@ -174,7 +179,7 @@ export const Refrigerant = () => {
                               <td>{fill.Doc_date}</td>
                               <td>{fill.Doc_number}</td>
                               <td>{fill.usage}</td>
-                              <td>{fill.usage}</td>
+                              <td>{fill.escape_rate}</td>
                               <td>{fill.fillrec_remark}</td>
                               <td>
                                 <Zoom>
@@ -194,7 +199,10 @@ export const Refrigerant = () => {
                                 <FontAwesomeIcon
                                   icon={faPenToSquare}
                                   className={styles.iconPen}
-                                  onClick={() => setEditFillModalVisible(true)}
+                                  onClick={() => 
+                                    {setEditFillModalVisible(true)
+                                    setSelectedFillId(fill.fillrec_id)
+                                    }}
                                 />
                                 <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
                               </td>
@@ -214,6 +222,7 @@ export const Refrigerant = () => {
         isEditModalVisible={isEditModalVisible}
         setEditModalVisible={setEditModalVisible}
         currentFunction={currentFunction}
+        selectedRef={selectedRef}
       />
 
       {/* 填充新增編輯modal */}
@@ -226,6 +235,7 @@ export const Refrigerant = () => {
       <EditFillModal
         isEditFillModalVisible={isEditFillModalVisible}
         setEditFillModalVisible={setEditFillModalVisible}
+        selectedFillId={selectedFillId}
       />
     </div>
   )

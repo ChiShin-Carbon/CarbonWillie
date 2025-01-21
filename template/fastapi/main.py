@@ -99,6 +99,10 @@ from edit.edit_extinguisher import edit_extinguisher
 from findone.extinguisher_Fill import ExtinguisherFill_findone
 from edit.edit_extinguisherFill import edit_ExtinguisherFill
 from insert.insert_RefFill import insert_RefFill
+from findone.Ref import Ref_findone
+from edit.edit_Ref import edit_Ref
+from edit.edit_RefFill import edit_RefFill
+from findone.RefFill import RefFill_findone
 
 app = FastAPI()
 load_dotenv()
@@ -210,3 +214,7 @@ app.include_router(edit_extinguisher)
 app.include_router(ExtinguisherFill_findone)
 app.include_router(edit_ExtinguisherFill)
 app.include_router(insert_RefFill)
+app.include_router(Ref_findone)
+app.include_router(edit_Ref)
+app.include_router(edit_RefFill)
+app.include_router(RefFill_findone)

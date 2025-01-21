@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     CModal, CModalHeader, CModalBody, CModalFooter, CButton, CFormLabel, CFormInput, CFormTextarea, CRow, CCol, CFormSelect, CForm, CCollapse, CCard, CCardBody
 } from '@coreui/react';
@@ -8,7 +8,7 @@ import Zoom from 'react-medium-image-zoom'
 import 'react-medium-image-zoom/dist/styles.css'
 
 
-const EditModal = ({ isEditModalVisible, setEditModalVisible }) => {
+const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedRef }) => {
     const handleClose = () => setEditModalVisible(false);
     const [visible, setVisible] = useState(false)
 
@@ -20,6 +20,93 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible }) => {
             setPreviewImage(previewUrl); // 保存 URL 到狀態
         }
     };
+
+    const [FormValues, setFormValues] = useState({
+        device_type: '',
+        device_location: '',
+        refrigerant_type: '',
+        remark: '',
+        img_path: '',
+    });
+
+
+    const handleInputChange = (e) => {
+        const { id, value } = e.target;
+        setFormValues((prevValues) => ({ ...prevValues, [id]: value }));
+    };
+
+    const handleEditSubmit = async (e) => {
+        e.preventDefault();
+
+        const form = new FormData();
+        form.append('refrigerant_id', selectedRef);
+        form.append('user_id', window.sessionStorage.getItem('user_id'));
+        form.append('device_type', FormValues.device_type);
+        form.append('device_location', FormValues.device_location);
+        form.append('refrigerant_type', FormValues.refrigerant_type);
+        form.append('remark', FormValues.remark);
+        form.append("image", e.target.image.files[0]); // Assuming the image is selected
+        
+
+        for (let [key, value] of form.entries()) {
+            console.log(`${key}:`, value); // Debugging output
+        }
+
+        try {
+            const response = await fetch('http://localhost:8000/edit_Ref', {
+                method: 'POST',
+                body: form, // Send FormData directly
+            });
+
+            const data = await response.json();
+            if (response.ok && data.status === "success") {
+                alert("Employee record updated successfully!");
+                handleClose();
+            } else {
+                alert(data.message || "Failed to update employee record.");
+            }
+        } catch (error) {
+            console.error("Error updating employee record:", error);
+            alert("An error occurred while updating the employee record.");
+        }
+    };
+
+
+
+    useEffect(() => {
+        const fetchRefData = async () => {
+            if (!selectedRef) return;
+
+            try {
+                const response = await fetch('http://localhost:8000/Ref_findone', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ Ref_id: selectedRef }),
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const RefData = data.Ref[0];
+                    setFormValues({
+                        device_type: RefData?.device_type || '',
+                        device_location: RefData?.device_location || '',
+                        refrigerant_type: RefData?.refrigerant_type || '',
+                        remark: RefData?.remark || '',
+                        img_path: RefData?.img_path || '',
+                    });
+                    setPreviewImage(ExtinguisherData?.img_path || null);
+                } else {
+                    console.error('Error fetching Ref data:', await response.text());
+                }
+            } catch (error) {
+                console.error('Error fetching Ref data:', error);
+            }
+        };
+
+        fetchRefData();
+    }, [selectedRef]);
 
     return (
         <CModal
@@ -33,25 +120,21 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible }) => {
             <CModalHeader>
                 <h5><b>編輯數據-冷媒</b></h5>
             </CModalHeader>
-            <CForm>
+            <CForm onSubmit={handleEditSubmit}>
                 <CModalBody>
                     <div className={styles.addmodal}>
                         <div className={styles.modalLeft}>
-                            <CRow className="mb-3">
-                                <CFormLabel htmlFor="month" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票/收據日期*</CFormLabel>
-                                <CCol><CFormInput className={styles.addinput} type="date" id="date" required />
-                                </CCol>
-                            </CRow>
-                            <CRow className="mb-3">
-                                <CFormLabel htmlFor="num" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票號碼/收據編號*</CFormLabel>
-                                <CCol>
-                                    <CFormInput className={styles.addinput} type="text" id="num" required />
-                                </CCol>
-                            </CRow>
+        
                             <CRow className="mb-3">
                                 <CFormLabel htmlFor="type" className={`col-sm-2 col-form-label ${styles.addlabel}`} >設備類型*</CFormLabel>
                                 <CCol>
-                                    <CFormSelect aria-label="Default select example" id="type" className={styles.addinput} >
+                                    <CFormSelect 
+                                    aria-label="Default select example" 
+                                    id="device_type" 
+                                    className={styles.addinput}
+                                    value={FormValues.device_type}
+                                    onChange={handleInputChange}
+                                     >
                                         <option value="1">冰箱</option>
                                         <option value="2">冷氣機</option>
                                         <option value="3">飲水機</option>
@@ -69,14 +152,26 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible }) => {
                             <CRow className="mb-3">
                                 <CFormLabel htmlFor="site" className={`col-sm-2 col-form-label ${styles.addlabel}`} >設備位置*</CFormLabel>
                                 <CCol>
-                                    <CFormInput className={styles.addinput} type="text" id="site" required />
+                                    <CFormInput 
+                                    className={styles.addinput} 
+                                    type="text" 
+                                    id="device_location" 
+                                    value={FormValues.device_location}
+                                    onChange={handleInputChange}
+                                    required />
                                 </CCol>
                             </CRow>
 
                             <CRow className="mb-3">
                                 <CFormLabel htmlFor="type2" className={`col-sm-2 col-form-label ${styles.addlabel}`} >冷媒類型*</CFormLabel>
                                 <CCol>
-                                    <CFormSelect aria-label="Default select example" id="type2" className={styles.addinput} >
+                                    <CFormSelect 
+                                    aria-label="Default select example" 
+                                    id="refrigerant_type" 
+                                    className={styles.addinput} 
+                                    value={FormValues.refrigerant_type}
+                                    onChange={handleInputChange}
+                                    >
                                         <option value="1">R11</option>
                                         <option value="2">R12</option>
                                         <option value="3">R22</option>
@@ -97,13 +192,13 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible }) => {
                                     </CFormSelect>
                                 </CCol>
                             </CRow>
-                            <CRow className="mb-3">
+                            {/* <CRow className="mb-3">
                                 <CFormLabel htmlFor="quantity" className={`col-sm-2 col-form-label ${styles.addlabel}`} >填充料(公克)*</CFormLabel>
                                 <CCol>
                                     <CFormInput className={styles.addinput} type="number" min='0' id="quantity" required />
                                 </CCol>
-                            </CRow>
-                            <CRow className="mb-3">
+                            </CRow> */}
+                            {/* <CRow className="mb-3">
                                 <CFormLabel htmlFor="num" className={`col-sm-2 col-form-label ${styles.addlabel}`} >數量*</CFormLabel>
                                 <CCol>
                                     <CFormInput className={styles.addinput} type="number" min='0' id="num" required />
@@ -122,12 +217,19 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible }) => {
                                         </CCardBody>
                                     </CCard>
                                 </CCollapse>
-                            </CRow>
+                            </CRow> */}
 
                             <CRow className="mb-3">
                                 <CFormLabel htmlFor="explain" className={`col-sm-2 col-form-label ${styles.addlabel}`} >備註</CFormLabel>
                                 <CCol>
-                                    <CFormTextarea className={styles.addinput} type="text" id="explain" rows={3} />
+                                    <CFormTextarea 
+                                    className={styles.addinput} 
+                                    type="text" 
+                                    id="remark" 
+                                    rows={3} 
+                                    value={FormValues.remark}
+                                    onChange={handleInputChange}
+                                    />
 
                                 </CCol>
                             </CRow>
