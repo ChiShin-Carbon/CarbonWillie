@@ -28,6 +28,48 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedCommute })
         remark: '',
     });
 
+    const handleEditSubmit = async (e) => {
+        e.preventDefault();
+
+        const form = new FormData();
+        form.append('commute_id', selectedCommute);
+        form.append('user_id', window.sessionStorage.getItem('user_id'));
+        form.append('transportation', parseInt(formValues.transportation, 10)); 
+        form.append('oil_species', parseInt(formValues.oil_species, 10));
+        form.append('kilometers', parseFloat(formValues.kilometer)); 
+        form.append('remark', formValues.remark);
+        
+        const imageFile = document.getElementById('C1image')?.files[0];
+        if (imageFile) {
+            form.append('image', imageFile);
+        }
+        
+        
+
+        for (let [key, value] of form.entries()) {
+            console.log(`${key}:`, value); // Debugging output
+        }
+
+        try {
+            const response = await fetch('http://localhost:8000/edit_commute', {
+                method: 'POST',
+                body: form, // Send FormData directly
+            });
+
+            const data = await response.json();
+            if (response.ok && data.status === "success") {
+                alert("Employee record updated successfully!");
+                handleClose();
+            } else {
+                alert(data.message || "Failed to update employee record.");
+            }
+        } catch (error) {
+            console.error("Error updating employee record:", error);
+            alert("An error occurred while updating the employee record.");
+        }
+    };
+
+
     useEffect(() => {
         const fetchCommuteData = async () => {
             if (!selectedCommute) return;
@@ -80,14 +122,14 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedCommute })
             <CModalHeader>
                 <h5><b>編輯數據-員工通勤</b></h5>
             </CModalHeader>
-            <CForm>
+            <CForm onSubmit={handleEditSubmit}>
                 <CModalBody>
                     <div className={styles.addmodal}>
                         <div className={styles.modalLeft}>
                             <CRow className="mb-3">
                                 <CFormLabel htmlFor="type" className={`col-sm-2 col-form-label ${styles.addlabel}`} >交通方式*</CFormLabel>
                                 <CCol>
-                                    <CFormSelect aria-label="Default select example" id="type" className={styles.addinput}
+                                    <CFormSelect aria-label="Default select example" id="transportation" className={styles.addinput}
                                         value={formValues.transportation}
                                         onChange={(e) => {
                                             setTransportType(e.target.value)
@@ -107,7 +149,7 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedCommute })
                                 <CFormLabel htmlFor="oil" className={`col-sm-2 col-form-label ${styles.addlabel}`} >油種*<span className={styles.Note}>僅汽/機車須填寫</span></CFormLabel>
                                 <CCol>
                                     <CFormSelect aria-label="Default select example"
-                                        id="type"
+                                        id="oil_species"
                                         className={styles.addinput}
                                         value={formValues.oil_species}
                                         onChange={handleChange}
@@ -124,7 +166,7 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedCommute })
                                     <CFormInput
                                         className={styles.addinput}
                                         type="number"
-                                        id="km"
+                                        id="kilometer"
                                         value={formValues.kilometer}
                                         onChange={handleChange}
                                         required />
@@ -137,7 +179,7 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedCommute })
                                     <CFormTextarea
                                         className={styles.addinput}
                                         type="text"
-                                        id="explain"
+                                        id="remark"
                                         rows={3}
                                         value={formValues.remark}
                                         onChange={handleChange}
@@ -153,7 +195,7 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedCommute })
                                     圖片*
                                 </CFormLabel>
                                 <CCol>
-                                    <CFormInput type="file" id="C1image" onChange={(e) => (handleImageChange(e), handleC1image(e))} required />
+                                    <CFormInput type="file" id="C1image" onChange={(e) => (handleImageChange(e))} required />
                                 </CCol>
                             </CRow>
                             <br />

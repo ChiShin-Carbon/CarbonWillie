@@ -38,6 +38,10 @@ export const Refrigerant = () => {
   const [isAddFillModalVisible, setAddFillModalVisible] = useState(false)
   const [isEditFillModalVisible, setEditFillModalVisible] = useState(false)
 
+  const[selectedRefId, setSelectedRefId] = useState(null)
+  const[selectedFillId, setSelectedFillId] = useState(null)
+  const[selectedRef, setSelectedRef] = useState(null)
+
   const device_type_Map = {
     1: '冷氣機', // Replace with actual device_type names
     2: '飲水機',
@@ -136,7 +140,10 @@ export const Refrigerant = () => {
                   <FontAwesomeIcon
                     icon={faPenToSquare}
                     className={styles.iconPen}
-                    onClick={() => setEditModalVisible(true)}
+                    onClick={() => 
+                      {setEditModalVisible(true)
+                      setSelectedRef(refrigerant.refrigerant_id)
+                      }}
                   />
                   <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
                 </td>
@@ -147,7 +154,12 @@ export const Refrigerant = () => {
                     {/* 在展開的區塊中放置你需要的內容 */}
                     <div className={styles.fill}>
                       <div>填充紀錄</div>
-                      <button onClick={() => setAddFillModalVisible(true)}>新增</button>
+                      <button onClick={() => {
+                        setAddFillModalVisible(true)
+                        const selectedRefId = refrigerant.refrigerant_id
+                        setSelectedRefId(selectedRefId)
+                        console.log(selectedRefId)
+                        }}>新增</button>
                     </div>
                     <table>
                       {refrigerant.fillrec && refrigerant.fillrec.length > 0 && (
@@ -167,7 +179,7 @@ export const Refrigerant = () => {
                               <td>{fill.Doc_date}</td>
                               <td>{fill.Doc_number}</td>
                               <td>{fill.usage}</td>
-                              <td>{fill.usage}</td>
+                              <td>{fill.escape_rate}</td>
                               <td>{fill.fillrec_remark}</td>
                               <td>
                                 <Zoom>
@@ -187,7 +199,10 @@ export const Refrigerant = () => {
                                 <FontAwesomeIcon
                                   icon={faPenToSquare}
                                   className={styles.iconPen}
-                                  onClick={() => setEditFillModalVisible(true)}
+                                  onClick={() => 
+                                    {setEditFillModalVisible(true)
+                                    setSelectedFillId(fill.fillrec_id)
+                                    }}
                                 />
                                 <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
                               </td>
@@ -207,17 +222,20 @@ export const Refrigerant = () => {
         isEditModalVisible={isEditModalVisible}
         setEditModalVisible={setEditModalVisible}
         currentFunction={currentFunction}
+        selectedRef={selectedRef}
       />
 
       {/* 填充新增編輯modal */}
       <AddFillModal
         isAddFillModalVisible={isAddFillModalVisible}
         setAddFillModalVisible={setAddFillModalVisible}
+        selectedRefId={selectedRefId}
       />
 
       <EditFillModal
         isEditFillModalVisible={isEditFillModalVisible}
         setEditFillModalVisible={setEditFillModalVisible}
+        selectedFillId={selectedFillId}
       />
     </div>
   )

@@ -28,6 +28,49 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedbusiness }
         remark: '',
     });
 
+    const handleEditSubmit = async (e) => {
+        e.preventDefault();
+
+        const form = new FormData();
+        form.append('businesstrip_id', selectedbusiness);
+        form.append('user_id', window.sessionStorage.getItem('user_id'));
+        form.append('transportation', formValues.transportation);
+        form.append('oil_species', formValues.oil_species);
+        form.append('kilometers', formValues.kilometer);
+        form.append('remark', formValues.remark);
+
+        
+        const imageFile = document.getElementById('C1image')?.files[0];
+        if (imageFile) {
+            form.append('image', imageFile);
+        }
+        
+        
+
+        for (let [key, value] of form.entries()) {
+            console.log(`${key}:`, value); // Debugging output
+        }
+
+        try {
+            const response = await fetch('http://localhost:8000/edit_BusinessTrip', {
+                method: 'POST',
+                body: form, // Send FormData directly
+            });
+
+            const data = await response.json();
+            if (response.ok && data.status === "success") {
+                alert("Employee record updated successfully!");
+                handleClose();
+            } else {
+                alert(data.message || "Failed to update employee record.");
+            }
+        } catch (error) {
+            console.error("Error updating employee record:", error);
+            alert("An error occurred while updating the employee record.");
+        }
+    };
+
+
     useEffect(() => {
         const fetchBusinessData = async () => {
             if (!selectedbusiness) return;
@@ -79,14 +122,14 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedbusiness }
             <CModalHeader>
                 <h5><b>編輯數據-商務旅行</b></h5>
             </CModalHeader>
-            <CForm>
+            <CForm onSubmit={handleEditSubmit}>
                 <CModalBody>
                     <div className={styles.addmodal}>
                         <div className={styles.modalLeft}>
                             <CRow className="mb-3">
                                 <CFormLabel htmlFor="type" className={`col-sm-2 col-form-label ${styles.addlabel}`} >交通方式*</CFormLabel>
                                 <CCol>
-                                    <CFormSelect aria-label="Default select example" id="type" className={styles.addinput}
+                                    <CFormSelect aria-label="Default select example" id="transportation" className={styles.addinput}
                                         value={formValues.transportation}
                                         onChange={(e) => {
                                             handleChange(e);
@@ -108,7 +151,7 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedbusiness }
                                 <CFormLabel htmlFor="oil" className={`col-sm-2 col-form-label ${styles.addlabel}`} >油種*<span className={styles.Note}>僅汽/機車須填寫</span></CFormLabel>
                                 <CCol>
                                     <CFormSelect aria-label="Default select example"
-                                        id="type"
+                                        id="oil_species"
                                         value={formValues.oil_species}
                                         onChange={handleChange}
                                         className={styles.addinput}
@@ -125,7 +168,7 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedbusiness }
                                     <CFormInput
                                         className={styles.addinput}
                                         type="number"
-                                        id="km"
+                                        id="kilometer"
                                         value={formValues.kilometer}
                                         onChange={handleChange}
                                         required />
@@ -138,7 +181,7 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedbusiness }
                                     <CFormTextarea
                                         className={styles.addinput}
                                         type="text"
-                                        id="explain"
+                                        id="remark"
                                         rows={3}
                                         value={formValues.remark}
                                         onChange={handleChange}

@@ -6,15 +6,15 @@ from pathlib import Path
 uploads_dir = Path("uploads")
 uploads_dir.mkdir(exist_ok=True)
 
-edit_commute = APIRouter()
+edit_RefFill = APIRouter()
 
-@edit_commute.post("/edit_commute")
+@edit_RefFill.post("/edit_RefFill")
 async def update_emergency_record(
-    commute_id: int = Form(...),
     user_id: int = Form(...),
-    transportation: int = Form(...),
-    oil_species: int = Form(...),
-    kilometers: float = Form(...),
+    fillrec_id: int = Form(...),
+    Doc_date: str = Form(...),
+    Doc_number: str = Form(...),
+    usage: int = Form(...),
     remark: str = Form(...),
     image: UploadFile = None
 ):
@@ -35,20 +35,20 @@ async def update_emergency_record(
         try:
             # Update the Emergency_Generator record
             update_query = """
-                UPDATE Commute
-                SET user_id = ?, transportation = ?, oil_species = ?, kilometers = ?, remark = ?, 
+                UPDATE Refrigerant_FillRec 
+                SET user_id = ?, Doc_date = ?, Doc_number = ?, usage = ?, remark = ?, 
                     img_path = ?, edit_time = ?
-                WHERE commute_id = ?
+                WHERE fillrec_id = ?
             """
             values = (
                 user_id,
-                transportation,
-                oil_species,
-                kilometers,
+                Doc_date,
+                Doc_number,
+                usage,
                 remark,
                 str(image_path) if image_path else None,
                 datetime.now(),
-                commute_id,
+                fillrec_id,
             )
 
             print("Executing query:", update_query)  # Debug print
@@ -56,7 +56,7 @@ async def update_emergency_record(
 
             cursor.execute(update_query, values)
             conn.commit()
-            return {"status": "success", "updated_commute_id": commute_id}
+            return {"status": "success", "updated_fillrec_id": fillrec_id}
         except Exception as e:
             print("Database error:", e)  # Log specific error
             raise HTTPException(status_code=500, detail=f"Database update error: {e}")

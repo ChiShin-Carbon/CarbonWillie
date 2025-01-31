@@ -11,10 +11,17 @@ import 'react-medium-image-zoom/dist/styles.css'
 
 
 export const RefrigerantAdd = ({ isAddModalVisible, setAddModalVisible }) => {
-    const [date, setC1date] = useState("");
-    const [num, setC1num] = useState("");
+
     const handleClose = () => setAddModalVisible(false);
     const [visible, setVisible] = useState(false)
+    const [C1date, setC1date] = useState('')
+    const [C1num, setC1num] = useState('')
+    const [isdatecorrect, setIsdatecorrect] = useState(true)
+    const [dateincorrectmessage, setDateincorrectmessage] = useState('')
+    const [isnumcorrect, setIsnumcorrect] = useState(true)
+    const [numincorrectmessage, setNumincorrectmessage] = useState('')
+
+
 
     const [recognizedText, setRecognizedText] = useState("");
 
@@ -35,23 +42,25 @@ export const RefrigerantAdd = ({ isAddModalVisible, setAddModalVisible }) => {
         formData.append("image", document.getElementById("C5image").files[0]);
 
         try {
+            // Send form data to the backend
             const res = await fetch("http://localhost:8000/insert_ref", {
                 method: "POST",
                 body: formData,
             });
-            const data = await res.json();
+
             if (res.ok) {
-                console.log("Form submitted successfully", data);
-                setAddModalVisible(false);
+                const data = await res.json();
+                console.log("Form submitted successfully:", data);
+                alert("Form submitted successfully");
             } else {
-                console.error("Failed to submit form data", data.detail);
+                console.error("Failed to submit form data");
+                alert("Failed to submit form data");
             }
         } catch (error) {
-
             console.error("Error submitting form data", error);
+            alert("Error submitting form data");
         }
     };
-
 
     const handleC5image = async (e) => {
         e.preventDefault();
@@ -112,13 +121,13 @@ export const RefrigerantAdd = ({ isAddModalVisible, setAddModalVisible }) => {
                         <div className={styles.modalLeft}>
                             <CRow className="mb-3">
                                 <CFormLabel htmlFor="month" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票/收據日期*</CFormLabel>
-                                <CCol><CFormInput className={styles.addinput} type="date" id="C5date" value={date} required />
+                                <CCol><CFormInput className={styles.addinput} type="date" id="C5date" required />
                                 </CCol>
                             </CRow>
                             <CRow className="mb-3">
                                 <CFormLabel htmlFor="num" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票號碼/收據編號*</CFormLabel>
                                 <CCol>
-                                    <CFormInput className={styles.addinput} type="text" id="C5num" value={num} required />
+                                    <CFormInput className={styles.addinput} type="text" id="C5num" required />
                                 </CCol>
                             </CRow>
                             <CRow className="mb-3">
@@ -212,7 +221,7 @@ export const RefrigerantAdd = ({ isAddModalVisible, setAddModalVisible }) => {
                                     圖片*
                                 </CFormLabel>
                                 <CCol>
-                                    <CFormInput type="file" id="C1image" onChange={(e) => (handleImageChange(e), handleC1image(e))} required />
+                                    <CFormInput type="file" id="C5image" onChange={(e) => (handleImageChange(e), handleC5image(e))} required />
                                 </CCol>
                             </CRow>
                             <br />
@@ -232,8 +241,8 @@ export const RefrigerantAdd = ({ isAddModalVisible, setAddModalVisible }) => {
                                 偵測錯誤提醒
                             </CFormLabel>
                             <div className={styles.errorMSG}>
-                                {/* 偵測日期:{C1date}  <span>{dateincorrectmessage}</span><br />
-                                偵測號碼:{C1num}  <span>{numincorrectmessage}</span> */}
+                                偵測日期:{C1date}  <span>{dateincorrectmessage}</span><br />
+                                偵測號碼:{C1num}  <span>{numincorrectmessage}</span>
                             </div>
 
                         </div>

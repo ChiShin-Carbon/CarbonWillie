@@ -8,16 +8,18 @@ uploads_dir.mkdir(exist_ok=True)
 
 edit_BusinessTrip = APIRouter()
 
-@edit_BusinessTrip.put("/edit_BusinessTrip")
-async def update_BusinessTrip_record(
-    business_trip_id: int = Form(...),
-    transportation: int = Form(None),
-    oil_species: int = Form(None),
-    kilometers: float = Form(None),
-    remark: str = Form(None),
-    image: UploadFile = File(None)
+@edit_BusinessTrip.post("/edit_BusinessTrip")
+async def update_emergency_record(
+    businesstrip_id: int = Form(...),
+    user_id: int = Form(...),
+    transportation: int = Form(...),
+    oil_species: int = Form(...),
+    kilometers: float = Form(...),
+    remark: str = Form(...),
+    image: UploadFile = None
 ):
-    # Save the uploaded image if provided
+    
+    # Handle image upload
     image_path = None
     if image:
         image_path = uploads_dir / image.filename
@@ -27,62 +29,34 @@ async def update_BusinessTrip_record(
         except Exception as e:
             raise HTTPException(status_code=500, detail="Could not save image file")
 
-    # Connect to the database
     conn = connectDB()
     if conn:
         cursor = conn.cursor()
         try:
-            # Create dynamic SQL query for updating fields
-            update_fields = []
-            values = []
-
-            if transportation is not None:
-                update_fields.append("transportation = ?")
-                values.append(transportation)
-
-            if oil_species is not None:
-                update_fields.append("oil_species = ?")
-                values.append(oil_species)
-
-            if kilometers is not None:
-                update_fields.append("kilometers = ?")
-                values.append(kilometers)
-
-            if remark is not None:
-                update_fields.append("remark = ?")
-                values.append(remark)
-
-            if image_path:
-                update_fields.append("img_path = ?")
-                values.append(str(image_path))
-
-            # Always update the edit_time
-            update_fields.append("edit_time = ?")
-            values.append(datetime.now())
-
-            if not update_fields:
-                raise HTTPException(status_code=400, detail="No fields to update")
-
-            # Add the condition for business_trip_id
-            values.append(business_trip_id)
-            query = f"""
+            # Update the Emergency_Generator record
+            update_query = """
                 UPDATE Business_Trip
-                SET {', '.join(update_fields)}
-                WHERE id = ?
+                SET user_id = ?, transportation = ?, oil_species = ?, kilometers = ?, remark = ?, 
+                    img_path = ?, edit_time = ?
+                WHERE businesstrip_id = ?
             """
+            values = (
+                user_id,
+                transportation,
+                oil_species,
+                kilometers,
+                remark,
+                str(image_path) if image_path else None,
+                datetime.now(),
+                businesstrip_id,
+            )
 
-            print("Executing query:", query)  # Debug print
-            print("With values:", values)     # Debug print
+            print("Executing query:", update_query)  # Debug print
+            print("With values:", values)           # Debug print
 
-            cursor.execute(query, values)
+            cursor.execute(update_query, values)
             conn.commit()
-
-            # Check if any row was updated
-            if cursor.rowcount == 0:
-                raise HTTPException(status_code=404, detail="Business trip record not found")
-
-            return {"status": "success", "message": "Business trip record updated successfully"}
-
+            return {"status": "success", "updated_businesstrip_id": businesstrip_id}
         except Exception as e:
             print("Database error:", e)  # Log specific error
             raise HTTPException(status_code=500, detail=f"Database update error: {e}")

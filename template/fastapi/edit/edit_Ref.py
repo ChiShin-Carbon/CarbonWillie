@@ -6,15 +6,15 @@ from pathlib import Path
 uploads_dir = Path("uploads")
 uploads_dir.mkdir(exist_ok=True)
 
-edit_commute = APIRouter()
+edit_Ref = APIRouter()
 
-@edit_commute.post("/edit_commute")
+@edit_Ref.post("/edit_Ref")
 async def update_emergency_record(
-    commute_id: int = Form(...),
+    refrigerant_id: int = Form(...),
     user_id: int = Form(...),
-    transportation: int = Form(...),
-    oil_species: int = Form(...),
-    kilometers: float = Form(...),
+    device_type: int = Form(...),
+    device_location: str = Form(...),
+    refrigerant_type: str = Form(...),
     remark: str = Form(...),
     image: UploadFile = None
 ):
@@ -35,20 +35,20 @@ async def update_emergency_record(
         try:
             # Update the Emergency_Generator record
             update_query = """
-                UPDATE Commute
-                SET user_id = ?, transportation = ?, oil_species = ?, kilometers = ?, remark = ?, 
+                UPDATE Refrigerant 
+                SET user_id = ?, device_type = ?, device_location = ?, refrigerant_type = ?, remark = ?, 
                     img_path = ?, edit_time = ?
-                WHERE commute_id = ?
+                WHERE refrigerant_id = ?
             """
             values = (
                 user_id,
-                transportation,
-                oil_species,
-                kilometers,
+                device_type,
+                device_location,
+                refrigerant_type,
                 remark,
                 str(image_path) if image_path else None,
                 datetime.now(),
-                commute_id,
+                refrigerant_id,
             )
 
             print("Executing query:", update_query)  # Debug print
@@ -56,7 +56,7 @@ async def update_emergency_record(
 
             cursor.execute(update_query, values)
             conn.commit()
-            return {"status": "success", "updated_commute_id": commute_id}
+            return {"status": "success", "updated_refrigerant_id": refrigerant_id}
         except Exception as e:
             print("Database error:", e)  # Log specific error
             raise HTTPException(status_code=500, detail=f"Database update error: {e}")
