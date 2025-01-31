@@ -30,7 +30,45 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedWaste }) =
         setFormValues((prevValues) => ({ ...prevValues, [id]: value }));
     };
 
+    const handleEditSubmit = async (e) => {
+        e.preventDefault();
 
+        const form = new FormData();
+        form.append('waste_id', selectedWaste);
+        form.append('user_id', window.sessionStorage.getItem('user_id'));
+        form.append('waste_item', FormValues.waste_item);
+        form.append('remark', FormValues.remark);
+
+        
+        const imageFile = document.getElementById('C1image')?.files[0];
+        if (imageFile) {
+            form.append('image', imageFile);
+        }
+        
+        
+
+        for (let [key, value] of form.entries()) {
+            console.log(`${key}:`, value); // Debugging output
+        }
+
+        try {
+            const response = await fetch('http://localhost:8000/edit_OperationWaste', {
+                method: 'POST',
+                body: form, // Send FormData directly
+            });
+
+            const data = await response.json();
+            if (response.ok && data.status === "success") {
+                alert("Employee record updated successfully!");
+                handleClose();
+            } else {
+                alert(data.message || "Failed to update employee record.");
+            }
+        } catch (error) {
+            console.error("Error updating employee record:", error);
+            alert("An error occurred while updating the employee record.");
+        }
+    };
 
     useEffect(() => {
         const fetchOperationalData = async () => {
@@ -70,7 +108,7 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedWaste }) =
             <CModalHeader>
                 <h5><b>編輯數據-營運產生廢棄物</b></h5>
             </CModalHeader>
-            <CForm>
+            <CForm onSubmit={handleEditSubmit}>
                 <CModalBody>
                     <div className={styles.addmodal}>
                         <div className={styles.modalLeft}>
@@ -80,7 +118,7 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedWaste }) =
                                     <CFormInput
                                         className={styles.addinput}
                                         type="text"
-                                        id="item"
+                                        id="waste_item"
                                         value={FormValues.waste_item}
                                         onChange={handleInputChange}
                                         required />
@@ -93,7 +131,7 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedWaste }) =
                                     <CFormTextarea
                                         className={styles.addinput}
                                         type="text"
-                                        id="explain"
+                                        id="remark"
                                         value={FormValues.remark}
                                         onChange={handleInputChange}
                                         rows={3} />

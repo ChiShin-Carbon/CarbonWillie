@@ -6,16 +6,18 @@ from pathlib import Path
 uploads_dir = Path("uploads")
 uploads_dir.mkdir(exist_ok=True)
 
-edit_waste = APIRouter()
+edit_OperationWaste = APIRouter()
 
-@edit_waste.put("/edit_waste")
-async def update_waste_record(
+@edit_OperationWaste.post("/edit_OperationWaste")
+async def update_emergency_record(
     waste_id: int = Form(...),
-    waste_item: str = Form(None),
-    remark: str = Form(None),
-    image: UploadFile = File(None)
+    user_id: int = Form(...),
+    waste_item: str = Form(...),
+    remark: str = Form(...),
+    image: UploadFile = None
 ):
-    # Save the uploaded image if provided
+    
+    # Handle image upload
     image_path = None
     if image:
         image_path = uploads_dir / image.filename
@@ -25,54 +27,33 @@ async def update_waste_record(
         except Exception as e:
             raise HTTPException(status_code=500, detail="Could not save image file")
 
-    # Connect to the database
     conn = connectDB()
     if conn:
         cursor = conn.cursor()
         try:
-            # Create dynamic SQL query for updating fields
-            update_fields = []
-            values = []
-
-            if waste_item is not None:
-                update_fields.append("waste_item = ?")
-                values.append(waste_item)
-
-            if remark is not None:
-                update_fields.append("remark = ?")
-                values.append(remark)
-
-            if image_path:
-                update_fields.append("img_path = ?")
-                values.append(str(image_path))
-
-            # Always update the edit_time
-            update_fields.append("edit_time = ?")
-            values.append(datetime.now())
-
-            if not update_fields:
-                raise HTTPException(status_code=400, detail="No fields to update")
-
-            # Add the condition for waste_id
-            values.append(waste_id)
-            query = f"""
+            # Update the Emergency_Generator record
+            update_query = """
                 UPDATE Operational_Waste
-                SET {', '.join(update_fields)}
-                WHERE id = ?
+                SET user_id = ?, waste_item = ?, remark = ?, 
+                    img_path = ?, edit_time = ?
+                WHERE waste_id = ?
             """
 
-            print("Executing query:", query)  # Debug print
-            print("With values:", values)     # Debug print
+            values = (
+                user_id,
+                waste_item,
+                remark,
+                str(image_path) if image_path else None,
+                datetime.now(),
+                waste_id,
+            )
 
-            cursor.execute(query, values)
+            print("Executing query:", update_query)  # Debug print
+            print("With values:", values)           # Debug print
+
+            cursor.execute(update_query, values)
             conn.commit()
-
-            # Check if any row was updated
-            if cursor.rowcount == 0:
-                raise HTTPException(status_code=404, detail="Operational waste record not found")
-
-            return {"status": "success", "message": "Operational waste record updated successfully"}
-
+            return {"status": "success", "updated_waste_id": waste_id}
         except Exception as e:
             print("Database error:", e)  # Log specific error
             raise HTTPException(status_code=500, detail=f"Database update error: {e}")
