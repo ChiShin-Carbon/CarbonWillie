@@ -47,8 +47,8 @@ import { NonEmployee } from './工作時數(非員工)/工作時數(非員工).j
 import { Refrigerant } from './冷媒/冷媒.js'
 import { Machinery } from './廠內機具/廠內機具.js'
 import { EmergencyGenerator } from './緊急發電機/緊急發電機.js'
-import { ElectricityUsage } from './電力使用量/電力使用量.js'
-import { Electricity } from './電力使用/電力使用量.js'
+// import { ElectricityUsage } from './電力使用/電力使用量.js'
+import { Electricity } from './電力使用量/電力使用量.js'
 import { Commuting } from './員工通勤/員工通勤.js'
 import { BusinessTrip } from './商務旅行/商務旅行.js'
 import { OperationalWaste } from './營運產生廢棄物/營運產生廢棄物.js'
@@ -61,8 +61,8 @@ import { NonEmployeeAdd } from './工作時數(非員工)/新增Modal.js'
 import { RefrigerantAdd } from './冷媒/新增Modal.js'
 import { MachineryAdd } from './廠內機具/新增Modal.js'
 import { EmergencyGeneratorAdd } from './緊急發電機/新增Modal.js'
-import { ElectricityUsageAdd } from './電力使用量/新增Modal.js'
-import { ElectricityAdd } from './電力使用/新增Modal.js'
+// import { ElectricityUsageAdd } from './電力使用/新增Modal.js'
+import { ElectricityAdd } from './電力使用量/新增Modal.js'
 import { CommutingAdd } from './員工通勤/新增Modal.js'
 import { BusinessTripAdd } from './商務旅行/新增Modal.js'
 import { OperationalWasteAdd } from './營運產生廢棄物/新增Modal.js'
@@ -139,13 +139,13 @@ const Tabs = () => {
             setAddModalVisible={setAddModalVisible}
           />
         )
-      case 'ElectricityUsage':
-        return (
-          <ElectricityUsageAdd
-            isAddModalVisible={isAddModalVisible}
-            setAddModalVisible={setAddModalVisible}
-          />
-        )
+      // case 'ElectricityUsage':
+      //   return (
+      //     <ElectricityUsageAdd
+      //       isAddModalVisible={isAddModalVisible}
+      //       setAddModalVisible={setAddModalVisible}
+      //     />
+      //   )
       case 'Electricity':
         return (
           <ElectricityAdd
@@ -249,7 +249,7 @@ const Tabs = () => {
                 {currentFunction === 'Refrigerant' && <Refrigerant />}
                 {currentFunction === 'Machinery' && <Machinery />}
                 {currentFunction === 'EmergencyGenerator' && <EmergencyGenerator />}
-                {currentFunction === 'ElectricityUsage' && <ElectricityUsage />}
+                {/* {currentFunction === 'ElectricityUsage' && <ElectricityUsage />} */}
                 {currentFunction === 'Electricity' && <Electricity />}
                 {currentFunction === 'Commuting' && <Commuting />}
                 {currentFunction === 'BusinessTrip' && <BusinessTrip />}
@@ -311,17 +311,17 @@ const Tabs = () => {
               緊急發電機
             </div>
             <h6>範疇二</h6>
-            <div
+            {/* <div
               className={`${styles.navContent} ${currentFunction === 'ElectricityUsage' ? styles.navContentChoose : ''}`}
-              onClick={() => handleFunctionChange('ElectricityUsage', '電力使用量')}
-            >
-              電力使用量
-            </div>
-            <div
-              className={`${styles.navContent} ${currentFunction === 'Electricity' ? styles.navContentChoose : ''}`}
-              onClick={() => handleFunctionChange('Electricity', '電力使用')}
+              onClick={() => handleFunctionChange('ElectricityUsage', '電力使用')}
             >
               電力使用
+            </div> */}
+            <div
+              className={`${styles.navContent} ${currentFunction === 'Electricity' ? styles.navContentChoose : ''}`}
+              onClick={() => handleFunctionChange('Electricity', '電力使用量')}
+            >
+              電力使用量
             </div>
             <h6>範疇三</h6>
             <div
