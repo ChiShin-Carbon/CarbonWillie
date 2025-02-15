@@ -83,7 +83,7 @@ export const Electricity = () => {
         </CTableHead>
         <CTableBody className={styles.activityTableBody}>
           {electricities.map((electricity, electricity_id) => (
-            <React.Fragment key={extinguisher.electricity_id}>
+            <React.Fragment key={electricity.electricity_id}>
               <tr onClick={() => toggleRow(electricity_id)} className={styles.trChoose}>
                 <td>{electricity.customer_number}</td>
                 <td>{electricity.remark}</td>
