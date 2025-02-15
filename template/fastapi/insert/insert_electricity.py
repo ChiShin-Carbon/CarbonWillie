@@ -13,7 +13,7 @@ insert_electricity = APIRouter()
 async def read_user_credentials(
     user_id: int = Form(...),
     customer_number: str = Form(...),
-    remark: str = Form(...)
+    explain: str = Form(...)
 ):
     conn = connectDB()
     if conn:
@@ -23,7 +23,7 @@ async def read_user_credentials(
             query = """
                 INSERT INTO Electricity (user_id, customer_number, remark, edit_time)
                 VALUES (?, ?, ?, ?)"""
-            values = (user_id, customer_number, remark, datetime.now())
+            values = (user_id, customer_number, explain, datetime.now())
 
             print("Executing query:", query)  # Debug print
             print("With values:", values)     # Debug print
