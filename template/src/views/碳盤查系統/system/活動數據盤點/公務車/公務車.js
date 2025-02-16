@@ -51,6 +51,23 @@ export const Vehicle = () => {
     }
   }
 
+  const deleteVehicle = async (vehicle_id) => {
+    try {
+      const response = await fetch(`http://localhost:8000/delete_vehicle`, {
+        method: 'DELETE',
+        body: JSON.stringify({ vehicle_id: vehicle_id }),
+      })
+
+      if (response.ok) {
+        getVehicleData() // Fetch vehicle data again to update the table
+      } else {
+        console.error(`Error ${response.status}: ${response.statusText}`)
+      }
+    } catch (error) {
+      console.error('Error deleting vehicle:', error)
+    }
+  }
+
   // Fetch vehicle data on component mount
   useEffect(() => {
     getVehicleData()
@@ -104,7 +121,12 @@ export const Vehicle = () => {
                     setEditModalVisible(true) // Open the modal
                   }}
                 />
-                <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
+                <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} 
+                  onClick={() => {
+                    deleteVehicle(vehicle.vehicle_id)
+                  }
+                }
+                />
               </td>
             </tr>
           ))}

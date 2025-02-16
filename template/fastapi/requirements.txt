@@ -5,3 +5,9 @@ python-dotenv
 sqlalchemy
 pydantic
 pyodbc
+Pillow
+openai
+pytesseract
+python-multipart
+langchain
+langchain_community

@@ -109,6 +109,8 @@ from edit.edit_BusinessTrip import edit_BusinessTrip
 from edit.edit_OperationWaste import edit_OperationWaste
 from edit.edit_SellingWaste import edit_SellingWaste
 
+from delete.delete_vehicle import delete_vehicle
+
 app = FastAPI()
 load_dotenv()
 connectDB()
@@ -228,3 +230,4 @@ app.include_router(edit_commute)
 app.include_router(edit_BusinessTrip)
 app.include_router(edit_OperationWaste)
 app.include_router(edit_SellingWaste)
+app.include_router(delete_vehicle)
