@@ -43,6 +43,18 @@ const AddFillModal = ({ isAddFillModalVisible, setAddFillModalVisible, selectedE
     }
   }
 
+  const handleElectricityTypeChange = (e) => {
+    const value = e.target.value
+    setElectricityType(value)
+
+    // 重置相應的輸入框
+    if (value === '1') {
+      setAmount(0)
+    } else if (value === '2') {
+      setUsage(0)
+    }
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault() // Prevent default form submission behavior.
 
@@ -204,7 +216,7 @@ const AddFillModal = ({ isAddFillModalVisible, setAddFillModalVisible, selectedE
                     id="electricityType"
                     className={styles.addinput}
                     value={electricityType}
-                    onChange={(e) => setElectricityType(e.target.value)}
+                    onChange={handleElectricityTypeChange}
                   >
                     <option value="1">用電度數</option>
                     <option value="2">用電金額</option>
