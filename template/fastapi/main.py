@@ -30,6 +30,7 @@ from insert.insert_machine import insert_machine
 
 from insert.insert_emergency import insert_emergency
 from insert.insert_electricity import insert_electricity
+from insert.insert_electricity_usage import insert_electricity_usage
 from insert.insert_ref import insert_ref
 from insert.insert_commute import insert_commute
 from insert.insert_BusinessTrip import insert_BusinessTrip
@@ -43,7 +44,7 @@ from Selling_waste import Selling_waste
 from Operational_Waste import Operational_Waste
 from Business_trip import Business_Trip
 from commute import Commute
-from Electricity_Usage import Electricity_Usage
+# from Electricity_Usage import Electricity_Usage
 from Emergency_Generator import Emergency_Generator
 
 from Electricity import Electricity
@@ -109,6 +110,8 @@ from edit.edit_BusinessTrip import edit_BusinessTrip
 from edit.edit_OperationWaste import edit_OperationWaste
 from edit.edit_SellingWaste import edit_SellingWaste
 
+from delete.delete_vehicle import delete_vehicle
+
 app = FastAPI()
 load_dotenv()
 connectDB()
@@ -155,6 +158,7 @@ app.include_router(edit_authorized)
 app.include_router(insert_machine)
 app.include_router(insert_emergency)
 app.include_router(insert_electricity)
+app.include_router(insert_electricity_usage)
 app.include_router(insert_ref)
 app.include_router(insert_commute)
 app.include_router(insert_BusinessTrip)
@@ -167,7 +171,7 @@ app.include_router(Selling_waste)
 app.include_router(Operational_Waste)
 app.include_router(Business_Trip)
 app.include_router(Commute)
-app.include_router(Electricity_Usage)
+# app.include_router(Electricity_Usage)
 app.include_router(Emergency_Generator)
 app.include_router(Electricity)
 app.include_router(extinguisher)
@@ -228,3 +232,4 @@ app.include_router(edit_commute)
 app.include_router(edit_BusinessTrip)
 app.include_router(edit_OperationWaste)
 app.include_router(edit_SellingWaste)
+app.include_router(delete_vehicle)

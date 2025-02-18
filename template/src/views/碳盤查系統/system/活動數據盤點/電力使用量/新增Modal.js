@@ -27,7 +27,6 @@ import {
 
 import styles from '../../../../../scss/活動數據盤點.module.css'
 
-import Zoom from 'react-medium-image-zoom'
 import 'react-medium-image-zoom/dist/styles.css'
 
 export const ElectricityAdd = ({ isAddModalVisible, setAddModalVisible }) => {
@@ -35,20 +34,22 @@ export const ElectricityAdd = ({ isAddModalVisible, setAddModalVisible }) => {
 
   const [recognizedText, setRecognizedText] = useState('')
 
-  const handleC2Submit = async (e) => {
+  const handleC8Submit = async (e) => {
     e.preventDefault()
 
     // Get form elements by their IDs
     const customer_number = document.getElementById('customer_number').value
+    const explain = document.getElementById('explain').value
 
     // Prepare form data
     const formData = new FormData()
     formData.append('user_id', window.sessionStorage.getItem('user_id'))
     formData.append('customer_number', customer_number)
+    formData.append('explain', explain)
 
     try {
       // Send form data to the backend
-      const res = await fetch('http://localhost:8000/insert_Electricity', {
+      const res = await fetch('http://localhost:8000/insert_electricity', {
         method: 'POST',
         body: formData,
       })
@@ -85,11 +86,19 @@ export const ElectricityAdd = ({ isAddModalVisible, setAddModalVisible }) => {
           <div className={styles.addmodal}>
             <div className={styles.modalLeft}>
               <CRow className="mb-3">
-                <CFormLabel htmlFor="name" className={`col-sm-2 col-form-label ${styles.addlabel}`}>
+                <CFormLabel
+                  htmlFor="customer_number"
+                  className={`col-sm-2 col-form-label ${styles.addlabel}`}
+                >
                   電號*
                 </CFormLabel>
                 <CCol>
-                  <CFormInput className={styles.addinput} type="text" id="name" required />
+                  <CFormInput
+                    className={styles.addinput}
+                    type="text"
+                    id="customer_number"
+                    required
+                  />
                 </CCol>
               </CRow>
               <CRow className="mb-3">
@@ -112,7 +121,7 @@ export const ElectricityAdd = ({ isAddModalVisible, setAddModalVisible }) => {
           <CButton className="modalbutton1" onClick={handleClose}>
             取消
           </CButton>
-          <CButton type="submit" className="modalbutton2" onClick={handleC2Submit}>
+          <CButton type="submit" className="modalbutton2" onClick={handleC8Submit}>
             新增
           </CButton>
         </CModalFooter>

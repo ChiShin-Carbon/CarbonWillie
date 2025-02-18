@@ -90,12 +90,27 @@ const Tabs = () => {
     }
   }
 
+  // 定義部門轉換函數
+  const getReview = (reviewID) => {
+    switch (reviewID) {
+      case 1:
+        return '尚未審核'
+      case 2:
+        return '待補件'
+      case 3:
+        return '已審核'
+      default:
+        return '其他'
+    }
+  }
+
   // 過濾後的表格資料，排除 status 欄位的搜尋
   const filteredData = tableData.filter(
     (row) =>
       (row.table_name.includes(searchValue) ||
         row.username.includes(searchValue) ||
-        getDepartmentName(row.department).includes(searchValue) //|| // 使用轉換後的部門名稱
+        getDepartmentName(row.department).includes(searchValue) || // 使用轉換後的部門名稱
+        getReview(row.review).includes(searchValue) //|| // 使用轉換後的部門名稱
         //row.completed_at.includes(searchValue)  先註解因為只要table裡面有completed_at==null時就會失敗
       )&&
       (selectedFeedback === '' || (row.is_done ? '已審核' : '尚未審核') === selectedFeedback),
@@ -205,6 +220,7 @@ const Tabs = () => {
               <option value="">資料回報狀態</option>
               <option value="已審核">已審核</option>
               <option value="尚未審核">尚未審核</option>
+              <option value="待補件">待補件</option>
             </CFormSelect>
           </CCol>
         </div>
@@ -250,7 +266,7 @@ const Tabs = () => {
                             </div>
                           )}
                         </CTableDataCell>
-                        <CTableDataCell>{row.is_done ? '已審核' : '尚未審核'}</CTableDataCell>
+                        <CTableDataCell>{getReview(row.review)}</CTableDataCell>
                       </CTableRow>
                     ))
                   ) : (

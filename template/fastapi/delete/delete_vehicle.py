@@ -13,7 +13,7 @@ async def delete_vehicle_record(vehicle_id: int):
             # SQL query to delete the record based on vehicle_id
             query = """
                 DELETE FROM Vehicle
-                WHERE id = ?
+                WHERE vehicle_id = ?
             """
             print("Executing query:", query)  # Debug print
             print("With vehicle_id:", vehicle_id)  # Debug print
