@@ -23,6 +23,11 @@ import {
   CTableHeaderCell,
   CTableDataCell,
   CTableRow,
+  CModal,
+  CModalBody,
+  CModalFooter,
+  CModalHeader,
+  CModalTitle,
 } from '@coreui/react'
 import {
   CChartBar,
@@ -41,7 +46,7 @@ import { cilDataTransferDown, cilDataTransferUp, cilMenu, cilChartPie,cilLoopCir
 // import { getIconsView } from '../brands/Brands.js'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faTableList, faChartPie } from '@fortawesome/free-solid-svg-icons'
+import { faTableList, faChartPie, faCircleInfo, } from '@fortawesome/free-solid-svg-icons'
 
 import styles from '../../../scss/盤查結果查詢.module.css'
 
@@ -54,6 +59,8 @@ const Tabs = () => {
     verticalAlign: 'middle',
     height: '40px',
   } // table_th設定
+
+  const [visible1, setVisible1] = useState(false) // 電力排放係數計算公式model
 
   return (
     <CRow>
@@ -141,7 +148,7 @@ const Tabs = () => {
                   </button>
                 </div>
               </div>
-              {/* 溫室氣體排放係數 */}
+              {/* 固定燃燒排放源 */}
               <CCard style={{ width: '100%' }}>
                 <CCardTitle>
                   <div style={{ display: 'flex', flexDireaction: 'row' }}>
@@ -158,13 +165,12 @@ const Tabs = () => {
                         padding: '10px 30px 10px 30px',
                       }}
                     >
-                      溫室氣體排放係數
+                      固定燃燒排放源
                     </div>
                   </div>
                 </CCardTitle>
                 <CCardBody>
-                  {/* CO2排放係數 */}
-                  <table style={{ width: '100%', fontSize: '1.2rem' }}>
+                <table style={{ width: '100%', fontSize: '1.2rem' }}>
                     <thead
                       style={{
                         border: '1px solid white',
@@ -173,122 +179,155 @@ const Tabs = () => {
                       }}
                     >
                       <tr>
-                        <th scope="col" style={cellStyle} rowSpan={2}></th>
-                        <th scope="col" style={cellStyle} rowSpan={2}>
-                          排放形式
+                        <th scope="col" style={cellStyle} rowSpan={2} style={{width:'150px'}}></th>
+                        <th scope="col" style={cellStyle} rowSpan={1} colSpan={3}>
+                          燃料單位熱值之排放係數(kg/TJ)
                         </th>
-                        <th scope="col" style={cellStyle} rowSpan={2}>
-                          排放源類別
+                        <th scope="col" style={cellStyle} rowSpan={1} colSpan={3}>
+                          燃料單位熱值之排放係數(Kg/Kcal)
                         </th>
-                        <th scope="col" style={cellStyle} rowSpan={2}>
-                          燃料別
+                        <th scope="col" style={cellStyle} rowSpan={1} colSpan={2}>
+                          低位熱值
                         </th>
-                        <th scope="col" style={cellStyle} rowSpan={2}>
-                          IPCC 2006年CO2排放係數
-                        </th>
-                        <th scope="col" style={cellStyle} rowSpan={2}>
-                          單位
-                        </th>
-                        <th scope="col" style={cellStyle} colSpan={2}>
-                          IPCC 2006年CO2排放係數之不確定性
+                        <th scope="col" style={cellStyle} rowSpan={1} colSpan={3}>
+                          燃料單位重量/體積之排放係數(KgCO2/Kg)
                         </th>
                       </tr>
                       <tr>
                         <th scope="col" style={cellStyle}>
-                          95%信賴區間下限
+                          CO2
                         </th>
                         <th scope="col" style={cellStyle}>
-                          95%信賴區間上限
+                          CH4
+                        </th>
+                        <th scope="col" style={cellStyle}>
+                          N2O
+                        </th>
+                        <th scope="col" style={cellStyle}>
+                          CO2
+                        </th>
+                        <th scope="col" style={cellStyle}>
+                          CH4
+                        </th>
+                        <th scope="col" style={cellStyle}>
+                          N2O
+                        </th>
+                        <th scope="col" style={cellStyle}>
+                          單位
+                        </th>
+                        <th scope="col" style={cellStyle}>
+                          數值
+                        </th>
+                        <th scope="col" style={cellStyle}>
+                          CO2
+                        </th>
+                        <th scope="col" style={cellStyle}>
+                          CH4
+                        </th>
+                        <th scope="col" style={cellStyle}>
+                          N2O
                         </th>
                       </tr>
                     </thead>
                     <tbody style={{ border: '1px solid white', backgroundColor: '#FFE4CA' }}>
                       <tr>
-                        <td
-                          style={{
-                            border: '1px solid white',
-                            textAlign: 'center',
-                            verticalAlign: 'middle',
-                            height: '40px',
-                            width: '70px',
-                          }}
-                          rowSpan={9}
-                        >
-                          <b>CO2</b>
-                        </td>
-                        <td style={cellStyle} rowSpan={7}><b>固定源</b></td>
-                        <td style={cellStyle} rowSpan={2}>燃料油</td>
-                        <td style={cellStyle}>柴油</td>
-                        <td style={cellStyle}>74,100</td>
-                        <td style={cellStyle}>kgCO2/TJ</td>
-                        <td style={cellStyle}>-2.0%</td>
-                        <td style={cellStyle}>+0.9%</td>
-                      </tr>
-                      <tr>
-                        <td style={cellStyle}>車用汽油</td>
+                        <td style={cellStyle}><b>車用汽油</b></td>
                         <td style={cellStyle}>69,300</td>
-                        <td style={cellStyle}>kgCO2/TJ</td>
-                        <td style={cellStyle}>-2.6%</td>
-                        <td style={cellStyle}>+5.3%</td>
+                        <td style={cellStyle}>3</td>
+                        <td style={cellStyle}>0.6</td>
+                        <td style={cellStyle}>2.90E-04</td>
+                        <td style={cellStyle}>1.26E-08</td>
+                        <td style={cellStyle}>2.51E-09</td>
+                        <td style={cellStyle}>Kcal/l</td>
+                        <td style={cellStyle}>7800</td>
+                        <td style={cellStyle}>2.26E+00</td>
+                        <td style={cellStyle}>9.80E-05</td>
+                        <td style={cellStyle}>1.96E-05</td>
                       </tr>
                       <tr>
-                        <td style={cellStyle} rowSpan={2}>燃料氣</td>
-                        <td style={cellStyle}>乙烷</td>
+                        <td style={cellStyle}><b>柴油</b></td>
+                        <td style={cellStyle}>74100</td>
+                        <td style={cellStyle}>3</td>
+                        <td style={cellStyle}>0.6</td>
+                        <td style={cellStyle}>3.10E-04</td>
+                        <td style={cellStyle}>1.26E-08</td>
+                        <td style={cellStyle}>2.51E-09</td>
+                        <td style={cellStyle}>Kcal/l</td>
+                        <td style={cellStyle}>8400</td>
+                        <td style={cellStyle}>2.61E+00</td>
+                        <td style={cellStyle}>1.06E-04</td>
+                        <td style={cellStyle}>2.11E-05</td>
+                      </tr>
+                      <tr>
+                        <td style={cellStyle}><b>乙烷</b></td>
                         <td style={cellStyle}>61,600</td>
-                        <td style={cellStyle}>kgCO2/TJ</td>
-                        <td style={cellStyle}>-8.3%</td>
-                        <td style={cellStyle}>+11.4%</td>
+                        <td style={cellStyle}>1</td>
+                        <td style={cellStyle}>0.1</td>
+                        <td style={cellStyle}>2.58E-04</td>
+                        <td style={cellStyle}>4.19E-09</td>
+                        <td style={cellStyle}>4.19E-10</td>
+                        <td style={cellStyle}>--</td>
+                        <td style={cellStyle}>--</td>
+                        <td style={cellStyle}>--</td>
+                        <td style={cellStyle}>--</td>
+                        <td style={cellStyle}>--</td>
                       </tr>
                       <tr>
-                        <td style={cellStyle}>天然氣</td>
+                        <td style={cellStyle}><b>天然氣</b></td>
                         <td style={cellStyle}>56,100</td>
-                        <td style={cellStyle}>kgCO2/TJ</td>
-                        <td style={cellStyle}>-3.2%</td>
-                        <td style={cellStyle}>+3.9%</td>
+                        <td style={cellStyle}>1</td>
+                        <td style={cellStyle}>0.1</td>
+                        <td style={cellStyle}>7.62E-04</td>
+                        <td style={cellStyle}>4.19E-09</td>
+                        <td style={cellStyle}>4.19E-10</td>
+                        <td style={cellStyle}>--</td>
+                        <td style={cellStyle}>--</td>
+                        <td style={cellStyle}>--</td>
+                        <td style={cellStyle}>--</td>
+                        <td style={cellStyle}>--</td>
                       </tr>
                       <tr>
-                        <td style={cellStyle} rowSpan={2}>其他燃料</td>
-                        <td style={cellStyle}>一般廢棄物</td>
-                        <td style={cellStyle}>91,700</td>
-                        <td style={cellStyle}>kgCO2/TJ</td>
-                        <td style={cellStyle}>-20.1%</td>
-                        <td style={cellStyle}>+32.0%</td>
-                      </tr>
-                      <tr>
-                        <td style={cellStyle}>事業廢棄物</td>
+                        <td style={cellStyle}><b>事業廢棄物</b></td>
                         <td style={cellStyle}>143,000</td>
-                        <td style={cellStyle}>kgCO2/TJ</td>
-                        <td style={cellStyle}>-23.1%</td>
-                        <td style={cellStyle}>+28.0%</td>
-                      </tr>
-                      <tr>
-                        <td style={cellStyle}>生質燃料</td>
-                        <td style={cellStyle}>汙泥沼氣</td>
-                        <td style={cellStyle}>54,600</td>
-                        <td style={cellStyle}>kgCO2/TJ</td>
-                        <td style={cellStyle}>-15.4%</td>
-                        <td style={cellStyle}>+20.9%</td>
-                      </tr>
-                      <tr>
-                        <td style={cellStyle} rowSpan={2}><b>移動源</b></td>
-                        <td style={cellStyle} rowSpan={2}>燃料源</td>
-                        <td style={cellStyle}>車用汽油</td>
-                        <td style={cellStyle}>69,300</td>
-                        <td style={cellStyle}>kgCO2/TJ</td>
-                        <td style={cellStyle}>-2.6%</td>
-                        <td style={cellStyle}>+5.3%</td>
-                      </tr>
-                      <tr>
-                        <td style={cellStyle}>柴油</td>
-                        <td style={cellStyle}>74,100</td>
-                        <td style={cellStyle}>kgCO2/TJ</td>
-                        <td style={cellStyle}>-2.0%</td>
-                        <td style={cellStyle}>+0.9%</td>
+                        <td style={cellStyle}>30</td>
+                        <td style={cellStyle}>4</td>
+                        <td style={cellStyle}>5.99E-04</td>
+                        <td style={cellStyle}>1.26E-07</td>
+                        <td style={cellStyle}>1.67E-08</td>
+                        <td style={cellStyle}>--</td>
+                        <td style={cellStyle}>--</td>
+                        <td style={cellStyle}>--</td>
+                        <td style={cellStyle}>--</td>
+                        <td style={cellStyle}>--</td>
                       </tr>
                     </tbody>
                   </table>
                   <br />
-                  {/* CH4排放係數 */}
+                  </CCardBody>
+                  </CCard>
+                  <br></br>
+                  {/* 移動燃燒排放源 */}
+                  <CCard style={{ width: '100%' }}>
+                  <CCardTitle>
+                    <div style={{ display: 'flex', flexDireaction: 'row' }}>
+                      <div
+                        style={{
+                          fontWeight: 'bold',
+                          fontSize: '1.4rem',
+                          color: 'white',
+                          backgroundColor: '#9D6B6B',
+                          borderTopLeftRadius: '5px',
+                          borderBottomRightRadius: '20px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          padding: '10px 30px 10px 30px',
+                        }}
+                      >
+                        移動燃燒排放源
+                      </div>
+                    </div>
+                  </CCardTitle>
+                  <CCardBody>
                   <table style={{ width: '100%', fontSize: '1.2rem' }}>
                     <thead
                       style={{
@@ -299,121 +338,200 @@ const Tabs = () => {
                     >
                       <tr>
                         <th scope="col" style={cellStyle} rowSpan={2}></th>
-                        <th scope="col" style={cellStyle} rowSpan={2}>
-                          排放形式
+                        <th scope="col" style={cellStyle} rowSpan={1} colSpan={3}>
+                          燃料單位熱值之排放係數(kg/TJ)
                         </th>
-                        <th scope="col" style={cellStyle} rowSpan={2}>
-                          排放源類別
+                        <th scope="col" style={cellStyle} rowSpan={1} colSpan={3}>
+                          燃料單位熱值之排放係數(Kg/Kcal)
                         </th>
-                        <th scope="col" style={cellStyle} rowSpan={2}>
-                          燃料別
+                        <th scope="col" style={cellStyle} rowSpan={1} colSpan={2}>
+                          低位熱值
                         </th>
-                        <th scope="col" style={cellStyle} rowSpan={2}>
-                          IPCC 2006年CO2排放係數
-                        </th>
-                        <th scope="col" style={cellStyle} rowSpan={2}>
-                          單位
-                        </th>
-                        <th scope="col" style={cellStyle} colSpan={2}>
-                          IPCC 2006年CO2排放係數之不確定性
+                        <th scope="col" style={cellStyle} rowSpan={1} colSpan={3}>
+                          燃料單位重量/體積之排放係數(KgCO2/Kg)
                         </th>
                       </tr>
                       <tr>
                         <th scope="col" style={cellStyle}>
-                          95%信賴區間下限
+                          CO2
                         </th>
                         <th scope="col" style={cellStyle}>
-                          95%信賴區間上限
+                          CH4
+                        </th>
+                        <th scope="col" style={cellStyle}>
+                          N2O
+                        </th>
+                        <th scope="col" style={cellStyle}>
+                          CO2
+                        </th>
+                        <th scope="col" style={cellStyle}>
+                          CH4
+                        </th>
+                        <th scope="col" style={cellStyle}>
+                          N2O
+                        </th>
+                        <th scope="col" style={cellStyle}>
+                          單位
+                        </th>
+                        <th scope="col" style={cellStyle}>
+                          數值
+                        </th>
+                        <th scope="col" style={cellStyle}>
+                          CO2
+                        </th>
+                        <th scope="col" style={cellStyle}>
+                          CH4
+                        </th>
+                        <th scope="col" style={cellStyle}>
+                          N2O
                         </th>
                       </tr>
                     </thead>
                     <tbody style={{ border: '1px solid white', backgroundColor: '#FFE4CA' }}>
                       <tr>
-                        <td
-                          style={{
-                            border: '1px solid white',
-                            textAlign: 'center',
-                            verticalAlign: 'middle',
-                            height: '40px',
-                            width: '70px',
-                          }}
-                          rowSpan={9}
-                        >
-                          <b>CH4</b>
-                        </td>
-                        <td style={cellStyle} rowSpan={7}><b>固定源</b></td>
-                        <td style={cellStyle} rowSpan={2}>燃料油</td>
-                        <td style={cellStyle}>柴油</td>
-                        <td style={cellStyle}>3</td>
-                        <td style={cellStyle}>kgCH4/TJ</td>
-                        <td style={cellStyle}>-66.7%</td>
-                        <td style={cellStyle}>+233.3%</td>
+                        <td style={cellStyle}><b>車用汽油</b></td>
+                        <td style={cellStyle}>69300</td>
+                        <td style={cellStyle}>--</td>
+                        <td style={cellStyle}>--</td>
+                        <td style={cellStyle}>2.90E-04</td>
+                        <td style={cellStyle}>--</td>
+                        <td style={cellStyle}>--</td>
+                        <td style={cellStyle}>Kcal/l</td>
+                        <td style={cellStyle}>7800</td>
+                        <td style={cellStyle}>2.26E+00</td>
+                        <td style={cellStyle}>--</td>
+                        <td style={cellStyle}>--</td>
                       </tr>
                       <tr>
-                        <td style={cellStyle}>車用汽油</td>
-                        <td style={cellStyle}>3</td>
-                        <td style={cellStyle}>kgCH4/TJ</td>
-                        <td style={cellStyle}>-66.7%</td>
-                        <td style={cellStyle}>+233.3%</td>
+                        <td style={cellStyle}><b>柴油</b></td>
+                        <td style={cellStyle}>74100</td>
+                        <td style={cellStyle}>3.9</td>
+                        <td style={cellStyle}>3.9</td>
+                        <td style={cellStyle}>3.10E-04</td>
+                        <td style={cellStyle}>1.63E-08</td>
+                        <td style={cellStyle}>1.63E-08</td>
+                        <td style={cellStyle}>Kcal/l</td>
+                        <td style={cellStyle}>8400</td>
+                        <td style={cellStyle}>2.61E+00</td>
+                        <td style={cellStyle}>1.37E-04</td>
+                        <td style={cellStyle}>1.37E-04</td>
                       </tr>
                       <tr>
-                        <td style={cellStyle} rowSpan={2}>燃料氣</td>
-                        <td style={cellStyle}>乙烷</td>
-                        <td style={cellStyle}>1</td>
-                        <td style={cellStyle}>kgCH4/TJ</td>
-                        <td style={cellStyle}>-70%</td>
-                        <td style={cellStyle}>+200%</td>
+                        <td style={cellStyle}><b>車用汽油-未控制</b></td>
+                        <td style={cellStyle}>--</td>
+                        <td style={cellStyle}>33</td>
+                        <td style={cellStyle}>3.2</td>
+                        <td style={cellStyle}>--</td>
+                        <td style={cellStyle}>1.38E-07</td>
+                        <td style={cellStyle}>1.34E-08</td>
+                        <td style={cellStyle}>Kcal/l</td>
+                        <td style={cellStyle}>7400</td>
+                        <td style={cellStyle}>--</td>
+                        <td style={cellStyle}>1.02E-03</td>
+                        <td style={cellStyle}>9.91E-05</td>
                       </tr>
                       <tr>
-                        <td style={cellStyle}>天然氣</td>
-                        <td style={cellStyle}>1</td>
-                        <td style={cellStyle}>kgCH4/TJ</td>
-                        <td style={cellStyle}>-70%</td>
-                        <td style={cellStyle}>+200%</td>
-                      </tr>
-                      <tr>
-                        <td style={cellStyle} rowSpan={2}>其他燃料</td>
-                        <td style={cellStyle}>一般廢棄物</td>
-                        <td style={cellStyle}>30</td>
-                        <td style={cellStyle}>kgCH4/TJ</td>
-                        <td style={cellStyle}>-66.7%</td>
-                        <td style={cellStyle}>+233.3%</td>
-                      </tr>
-                      <tr>
-                        <td style={cellStyle}>事業廢棄物</td>
-                        <td style={cellStyle}>30</td>
-                        <td style={cellStyle}>kgCH4/TJ</td>
-                        <td style={cellStyle}>-66.7%</td>
-                        <td style={cellStyle}>+233.3%</td>
-                      </tr>
-                      <tr>
-                        <td style={cellStyle}>生質燃料</td>
-                        <td style={cellStyle}>汙泥沼氣</td>
-                        <td style={cellStyle}>1</td>
-                        <td style={cellStyle}>kgCH4/TJ</td>
-                        <td style={cellStyle}>-70%</td>
-                        <td style={cellStyle}>+200%</td>
-                      </tr>
-                      <tr>
-                        <td style={cellStyle} rowSpan={2}><b>移動源</b></td>
-                        <td style={cellStyle} rowSpan={2}>燃料源</td>
-                        <td style={cellStyle}>車用汽油</td>
+                        <td style={cellStyle}><b>車用汽油-氧化觸媒</b></td>
+                        <td style={cellStyle}>--</td>
                         <td style={cellStyle}>25</td>
-                        <td style={cellStyle}>kgCH4/TJ</td>
-                        <td style={cellStyle}>-69.6%</td>
-                        <td style={cellStyle}>+244.0%</td>
+                        <td style={cellStyle}>8</td>
+                        <td style={cellStyle}>--</td>
+                        <td style={cellStyle}>1.05E-07</td>
+                        <td style={cellStyle}>3.35E-08</td>
+                        <td style={cellStyle}>Kcal/l</td>
+                        <td style={cellStyle}>7400</td>
+                        <td style={cellStyle}>--</td>
+                        <td style={cellStyle}>7.75E-04</td>
+                        <td style={cellStyle}>2.48E-04</td>
                       </tr>
                       <tr>
-                        <td style={cellStyle}>柴油</td>
+                        <td style={cellStyle}><b>車用汽油-1995年後之低里程輕型車輛</b></td>
+                        <td style={cellStyle}>--</td>
+                        <td style={cellStyle}>3.8</td>
+                        <td style={cellStyle}>5.7</td>
+                        <td style={cellStyle}>--</td>
+                        <td style={cellStyle}>1.59E-08</td>
+                        <td style={cellStyle}>2.39E-08</td>
+                        <td style={cellStyle}>Kcal/l</td>
+                        <td style={cellStyle}>7400</td>
+                        <td style={cellStyle}>--</td>
+                        <td style={cellStyle}>1.18E-04</td>
+                        <td style={cellStyle}>1.77E-04</td>
+                      </tr>
+                      <tr>
+                        <td style={cellStyle}><b>柴油</b></td>
+                        <td style={cellStyle}>--</td>
                         <td style={cellStyle}>3.9</td>
-                        <td style={cellStyle}>kgCH4/TJ</td>
-                        <td style={cellStyle}>-59.0%</td>
-                        <td style={cellStyle}>+143.6%</td>
+                        <td style={cellStyle}>3.9</td>
+                        <td style={cellStyle}>--</td>
+                        <td style={cellStyle}>1.63E-08</td>
+                        <td style={cellStyle}>1.63E-08</td>
+                        <td style={cellStyle}>Kcal/l</td>
+                        <td style={cellStyle}>8400</td>
+                        <td style={cellStyle}>--</td>
+                        <td style={cellStyle}>1.37E-04</td>
+                        <td style={cellStyle}>1.37E-04</td>
                       </tr>
                     </tbody>
                   </table>
                   <br/>
-                  {/* N2O排放係數 */}
+                  </CCardBody>
+                  </CCard>
+                  <br></br>
+                  {/* 電力排放係數 */}
+                  <CCard style={{ width: '100%' }}>
+                  <CCardTitle>
+                  <div style={{ display: 'flex', flexDireaction: 'row' }}>
+                    <div style={{ display: 'flex', flexDireaction: 'row' }}>
+                      <div
+                        style={{
+                          fontWeight: 'bold',
+                          fontSize: '1.4rem',
+                          color: 'white',
+                          backgroundColor: '#9D6B6B',
+                          borderTopLeftRadius: '5px',
+                          borderBottomRightRadius: '20px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          padding: '10px 30px 10px 30px',
+                        }}
+                      >
+                        電力排放係數
+                      </div>
+                    </div>
+                    <CButton
+                      style={{
+                        height: '18px',
+                        width: '18px',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        marginTop: '28px',
+                      }}
+                      onClick={() => setVisible1(!visible1)}
+                    >
+                      <FontAwesomeIcon
+                        icon={faCircleInfo}
+                        style={{ width: '20px', height: '20px' }}
+                      />
+                    </CButton>
+                    <CModal visible={visible1} onClose={() => setVisible1(false)}>
+                      <CModalHeader>
+                        <CModalTitle><b>電力排放係數</b></CModalTitle>
+                      </CModalHeader>
+                      <CModalBody><ul>
+                                  <li><b>電力排放係數(CO2e/度) = [(發電業及自用發電設備設置者促售公用售電業電量之電力排碳量 - 線損承擔之電力排碳量) / 公用售電業總銷售電量]</b><br/>
+                                  </li></ul>
+                      </CModalBody>
+                      <CModalFooter>
+                        <CButton color="secondary" onClick={() => setVisible1(false)}>
+                          關閉
+                        </CButton>
+                      </CModalFooter>
+                    </CModal>
+                    </div>
+                  </CCardTitle>
+                  <CCardBody>
                   <table style={{ width: '100%', fontSize: '1.2rem' }}>
                     <thead
                       style={{
@@ -423,181 +541,28 @@ const Tabs = () => {
                       }}
                     >
                       <tr>
-                        <th scope="col" style={cellStyle} rowSpan={2}></th>
-                        <th scope="col" style={cellStyle} rowSpan={2}>
-                          排放形式
+                        <th scope="col" style={cellStyle} style={{width:'200px'}}></th>
+                        <th scope="col" style={cellStyle} style={{width:'400px', textAlign: 'center',}}>
+                          發電業及自用發電設備設置者促售<br/>公用售電業電量之電力排碳量
                         </th>
-                        <th scope="col" style={cellStyle} rowSpan={2}>
-                          排放源類別
+                        <th scope="col" style={cellStyle}  style={cellStyle} style={{width:'300px', textAlign: 'center',}}>
+                          線損承擔之電力排碳量
                         </th>
-                        <th scope="col" style={cellStyle} rowSpan={2}>
-                          燃料別
+                        <th scope="col" style={cellStyle}  style={cellStyle} style={{width:'300px', textAlign: 'center',}}>
+                          公用售電業總銷售電量
                         </th>
-                        <th scope="col" style={cellStyle} rowSpan={2}>
-                          IPCC 2006年CO2排放係數
-                        </th>
-                        <th scope="col" style={cellStyle} rowSpan={2}>
-                          單位
-                        </th>
-                        <th scope="col" style={cellStyle} colSpan={2}>
-                          IPCC 2006年CO2排放係數之不確定性
-                        </th>
-                      </tr>
-                      <tr>
-                        <th scope="col" style={cellStyle}>
-                          95%信賴區間下限
-                        </th>
-                        <th scope="col" style={cellStyle}>
-                          95%信賴區間上限
+                        <th scope="col" style={cellStyle}  style={cellStyle} style={{width:'300px', textAlign: 'center',}}>
+                          電力排碳係數(CO2e/度)
                         </th>
                       </tr>
                     </thead>
                     <tbody style={{ border: '1px solid white', backgroundColor: '#FFE4CA' }}>
                       <tr>
-                        <td
-                          style={{
-                            border: '1px solid white',
-                            textAlign: 'center',
-                            verticalAlign: 'middle',
-                            height: '40px',
-                            width: '70px',
-                          }}
-                          rowSpan={9}
-                        >
-                          <b>N2O</b>
-                        </td>
-                        <td style={cellStyle} rowSpan={7}><b>固定源</b></td>
-                        <td style={cellStyle} rowSpan={2}>燃料油</td>
-                        <td style={cellStyle}>柴油</td>
-                        <td style={cellStyle}>0.6</td>
-                        <td style={cellStyle}>kgN2O/TJ</td>
-                        <td style={cellStyle}>-66.7%</td>
-                        <td style={cellStyle}>+233.3%</td>
-                      </tr>
-                      <tr>
-                        <td style={cellStyle}>車用汽油</td>
-                        <td style={cellStyle}>0.6</td>
-                        <td style={cellStyle}>kgN2O/TJ</td>
-                        <td style={cellStyle}>-66.7%</td>
-                        <td style={cellStyle}>+233.3%</td>
-                      </tr>
-                      <tr>
-                        <td style={cellStyle} rowSpan={2}>燃料氣</td>
-                        <td style={cellStyle}>乙烷</td>
-                        <td style={cellStyle}>0.1</td>
-                        <td style={cellStyle}>kgN2O/TJ</td>
-                        <td style={cellStyle}>-70.0%</td>
-                        <td style={cellStyle}>+200.0%</td>
-                      </tr>
-                      <tr>
-                        <td style={cellStyle}>天然氣</td>
-                        <td style={cellStyle}>0.1</td>
-                        <td style={cellStyle}>kgN2O/TJ</td>
-                        <td style={cellStyle}>-70.0%</td>
-                        <td style={cellStyle}>+200.0%</td>
-                      </tr>
-                      <tr>
-                        <td style={cellStyle} rowSpan={2}>其他燃料</td>
-                        <td style={cellStyle}>一般廢棄物</td>
-                        <td style={cellStyle}>4.0</td>
-                        <td style={cellStyle}>kgN2O/TJ</td>
-                        <td style={cellStyle}>-62.5%</td>
-                        <td style={cellStyle}>+275.0%</td>
-                      </tr>
-                      <tr>
-                        <td style={cellStyle}>事業廢棄物</td>
-                        <td style={cellStyle}>4.0</td>
-                        <td style={cellStyle}>kgN2O/TJ</td>
-                        <td style={cellStyle}>-62.5%</td>
-                        <td style={cellStyle}>+275.0%</td>
-                      </tr>
-                      <tr>
-                        <td style={cellStyle}>生質燃料</td>
-                        <td style={cellStyle}>汙泥沼氣</td>
-                        <td style={cellStyle}>0.1</td>
-                        <td style={cellStyle}>kgN2O/TJ</td>
-                        <td style={cellStyle}>-70.0%</td>
-                        <td style={cellStyle}>+200.0%</td>
-                      </tr>
-                      <tr>
-                        <td style={cellStyle} rowSpan={2}><b>移動源</b></td>
-                        <td style={cellStyle} rowSpan={2}>燃料源</td>
-                        <td style={cellStyle}>車用汽油</td>
-                        <td style={cellStyle}>8.0</td>
-                        <td style={cellStyle}>kgN2O/TJ</td>
-                        <td style={cellStyle}>-67.5%</td>
-                        <td style={cellStyle}>+200.0%</td>
-                      </tr>
-                      <tr>
-                        <td style={cellStyle}>柴油</td>
-                        <td style={cellStyle}>3.9</td>
-                        <td style={cellStyle}>kgN2O/TJ</td>
-                        <td style={cellStyle}>-66.7%</td>
-                        <td style={cellStyle}>+207.7%</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                  <br/>
-                  {/* 外購電力排放係數 */}
-                  <table style={{ width: '100%', fontSize: '1.2rem' }}>
-                    <thead
-                      style={{
-                        border: '1px solid white',
-                        backgroundColor: 'orange',
-                        color: 'white',
-                      }}
-                    >
-                      <tr>
-                        <th scope="col" style={cellStyle} rowSpan={2}></th>
-                        <th scope="col" style={cellStyle} rowSpan={2}>
-                          排放形式
-                        </th>
-                        <th scope="col" style={cellStyle} rowSpan={2}>
-                          排放源類別
-                        </th>
-                        <th scope="col" style={cellStyle} rowSpan={2}>
-                          燃料別
-                        </th>
-                        <th scope="col" style={cellStyle} rowSpan={2}>
-                          IPCC 2006年CO2排放係數
-                        </th>
-                        <th scope="col" style={cellStyle} rowSpan={2}>
-                          單位
-                        </th>
-                        <th scope="col" style={cellStyle} colSpan={2}>
-                          IPCC 2006年CO2排放係數之不確定性
-                        </th>
-                      </tr>
-                      <tr>
-                        <th scope="col" style={cellStyle}>
-                          95%信賴區間下限
-                        </th>
-                        <th scope="col" style={cellStyle}>
-                          95%信賴區間上限
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody style={{ border: '1px solid white', backgroundColor: '#FFE4CA' }}>
-                      <tr>
-                        <td
-                          style={{
-                            border: '1px solid white',
-                            textAlign: 'center',
-                            verticalAlign: 'middle',
-                            height: '40px',
-                            width: '70px',
-                          }}
-                          rowSpan={9}
-                        >
-                          <b>外購電力</b>
-                        </td>
-                        <td style={cellStyle} rowSpan={7}><b>--</b></td>
-                        <td style={cellStyle} rowSpan={2}>--</td>
-                        <td style={cellStyle}>--</td>
-                        <td style={cellStyle}>0.495</td>
-                        <td style={cellStyle}>公斤/度</td>
-                        <td style={cellStyle}>--</td>
-                        <td style={cellStyle}>--</td>
+                        <td style={cellStyle}><b>112年電力</b></td>
+                        <td style={cellStyle}>?</td>
+                        <td style={cellStyle}>?</td>
+                        <td style={cellStyle}>?</td>
+                        <td style={cellStyle}>0.494</td>
                       </tr>
                     </tbody>
                   </table>
