@@ -7,10 +7,11 @@ from decimal import Decimal
 uploads_dir = Path("uploads")
 uploads_dir.mkdir(exist_ok=True)
 
-insert_electricity = APIRouter()
+insert_electricity_usage = APIRouter()
 
-@insert_electricity.post("/insert_electricity")
+@insert_electricity_usage.post("/insert_electricity_usage")
 async def read_user_credentials(
+    electricity_id: int = Form(...),
     user_id: int = Form(...),
     date: str = Form(...),
     number: str = Form(...),
@@ -36,9 +37,9 @@ async def read_user_credentials(
         try:
             # Adjust placeholder syntax based on the database library you're using
             query = """
-                INSERT INTO Electricity_Usage (user_id, Doc_date, Doc_number, period_start, period_end, electricity_type, usage, amount, carbon_emission, remark, img_path, edit_time)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
-            values = (user_id, date, number, start, end, electricity_type, usage, amount, carbon_emission, remark, str(image_path), datetime.now())
+                INSERT INTO Electricity_Usage (electricity_id, user_id, Doc_date, Doc_number, period_start, period_end, electricity_type, usage, amount, carbon_emission, remark, img_path, edit_time)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
+            values = (electricity_id, user_id, date, number, start, end, electricity_type, usage, amount, carbon_emission, remark, str(image_path), datetime.now())
 
             print("Executing query:", query)  # Debug print
             print("With values:", values)     # Debug print
