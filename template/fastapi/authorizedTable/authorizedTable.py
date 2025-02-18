@@ -14,6 +14,7 @@ class AuthorizedRecord(BaseModel):
     table_name: str
     is_done: bool
     completed_at: Optional[datetime]  # Allows datetime or None for NULL
+    review: int
     username: str
     department: int
     
@@ -32,6 +33,7 @@ def get_authorized_records():
                     a.table_name,
                     a.is_done,
                     a.completed_at,
+                    a.review ,
                     u.username,
                     u.department 
                 FROM Authorized_Table a
@@ -50,8 +52,9 @@ def get_authorized_records():
                         table_name=record[2],
                         is_done=record[3],
                         completed_at=record[4].strftime("%Y-%m-%d %H:%M:%S") if isinstance(record[4], datetime) else record[4],
-                        username=record[5],
-                        department=record[6]
+                        review=record[5],
+                        username=record[6],
+                        department=record[7]
                     )
                     for record in records
                 ]
