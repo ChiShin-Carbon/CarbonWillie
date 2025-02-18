@@ -51,6 +51,9 @@ const AddFillModal = ({ isAddFillModalVisible, setAddFillModalVisible, selectedE
     formData.append('electricity_id', selectedElectricityId)
     formData.append('Doc_date', document.getElementById('date').value)
     formData.append('Doc_number', document.getElementById('num').value)
+    formData.append('period_start', document.getElementById('start').value)
+    formData.append('period_end', document.getElementById('end').value)
+    formData.append('electricity_type', document.getElementById('electricityType').value)
     formData.append('usage', document.getElementById('usage').value)
     formData.append('amount', document.getElementById('amount').value)
     formData.append('carbon_emission', document.getElementById('carbon_emission').value)
@@ -58,7 +61,7 @@ const AddFillModal = ({ isAddFillModalVisible, setAddFillModalVisible, selectedE
     formData.append('image', document.getElementById('C8image').files[0])
 
     try {
-      const res = await fetch('http://localhost:8000/insert_ElectricityUsage', {
+      const res = await fetch('http://localhost:8000/insert_electricity_usage', {
         method: 'POST',
         body: formData,
       })
@@ -157,13 +160,7 @@ const AddFillModal = ({ isAddFillModalVisible, setAddFillModalVisible, selectedE
                   發票/收據日期*
                 </CFormLabel>
                 <CCol>
-                  <CFormInput
-                    className={styles.addinput}
-                    type="date"
-                    id="date"
-                    required
-                    onChange={datecorrect}
-                  />
+                  <CFormInput className={styles.addinput} type="date" id="date" required />
                 </CCol>
               </CRow>
               <CRow className="mb-3">
@@ -171,13 +168,7 @@ const AddFillModal = ({ isAddFillModalVisible, setAddFillModalVisible, selectedE
                   發票號碼/收據編號*
                 </CFormLabel>
                 <CCol>
-                  <CFormInput
-                    className={styles.addinput}
-                    type="text"
-                    id="num"
-                    required
-                    onChange={numcorrect}
-                  />
+                  <CFormInput className={styles.addinput} type="text" id="num" required />
                 </CCol>
               </CRow>
               <CRow className="mb-3">
@@ -188,7 +179,7 @@ const AddFillModal = ({ isAddFillModalVisible, setAddFillModalVisible, selectedE
                   用電期間(起)*
                 </CFormLabel>
                 <CCol>
-                  <CFormInput className={styles.addinput} type="date" id="C8datestart" required />
+                  <CFormInput className={styles.addinput} type="date" id="start" required />
                 </CCol>
               </CRow>
               <CRow className="mb-3">
@@ -199,7 +190,7 @@ const AddFillModal = ({ isAddFillModalVisible, setAddFillModalVisible, selectedE
                   用電期間(迄)*
                 </CFormLabel>
                 <CCol>
-                  <CFormInput className={styles.addinput} type="date" id="C8dateend" required />
+                  <CFormInput className={styles.addinput} type="date" id="end" required />
                 </CCol>
               </CRow>
               <CRow className="mb-3">
@@ -210,7 +201,7 @@ const AddFillModal = ({ isAddFillModalVisible, setAddFillModalVisible, selectedE
                 <CCol>
                   <CFormSelect
                     aria-label="Default select example"
-                    id="C8type"
+                    id="electricityType"
                     className={styles.addinput}
                     value={electricityType}
                     onChange={(e) => setElectricityType(e.target.value)}
@@ -233,7 +224,7 @@ const AddFillModal = ({ isAddFillModalVisible, setAddFillModalVisible, selectedE
                     <CFormInput
                       className={styles.addinput}
                       type="number"
-                      id="C8usage"
+                      id="usage"
                       value={usage}
                       onChange={(e) => setUsage(e.target.value)}
                       min="0"
@@ -253,7 +244,7 @@ const AddFillModal = ({ isAddFillModalVisible, setAddFillModalVisible, selectedE
                     <CFormInput
                       className={styles.addinput}
                       type="number"
-                      id="C8amount"
+                      id="amount"
                       value={amount}
                       onChange={(e) => setAmount(e.target.value)}
                       min="0"
@@ -272,7 +263,7 @@ const AddFillModal = ({ isAddFillModalVisible, setAddFillModalVisible, selectedE
                   <CFormInput
                     className={styles.addinput}
                     type="number"
-                    id="C8emission"
+                    id="carbon_emission"
                     value={carbon_emission}
                     onChange={(e) => setCarbonEmission(e.target.value)}
                     min="0"
@@ -287,7 +278,7 @@ const AddFillModal = ({ isAddFillModalVisible, setAddFillModalVisible, selectedE
                   備註
                 </CFormLabel>
                 <CCol>
-                  <CFormTextarea className={styles.addinput} type="text" id="C8explain" rows={3} />
+                  <CFormTextarea className={styles.addinput} type="text" id="remark" rows={3} />
                 </CCol>
               </CRow>
               <CRow className="mb-3">

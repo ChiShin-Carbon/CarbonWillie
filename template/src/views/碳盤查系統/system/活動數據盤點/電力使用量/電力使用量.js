@@ -122,7 +122,7 @@ export const Electricity = () => {
                       </button>
                     </div>
                     <table>
-                      {electricity.usage && electricity.usage.length > 0 && (
+                      {electricity.fillrec && electricity.fillrec.length > 0 && (
                         <>
                           <tr>
                             <th>收據月份</th>
@@ -137,7 +137,7 @@ export const Electricity = () => {
                             <th>最近編輯</th>
                             <th>操作</th>
                           </tr>
-                          {electricity.usage.map((fill, index) => (
+                          {electricity.fillrec.map((fill, index) => (
                             <tr key={fill.usage_id}>
                               <td>{fill.Doc_date}</td>
                               <td>{fill.Doc_number}</td>
