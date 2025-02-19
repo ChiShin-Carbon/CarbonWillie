@@ -361,7 +361,7 @@ const Tabs = () => {
                     </thead>
                     <tbody style={{ border: '1px solid white', backgroundColor: '#FFE4CA' }}>
                       <tr>
-                        <td style={cellStyle} rowSpan={3} style={{width:'100px'}}><b>車用汽油</b></td>
+                        <td style={cellStyle} rowSpan={3} style={{width:'100px', textAlign:'center'}}><b>車用汽油</b></td>
                         <td style={cellStyle}><b>未控制</b></td>
                         <td style={cellStyle}>2.90E-04</td>
                         <td style={cellStyle}>1.38E-07</td>
@@ -480,25 +480,29 @@ const Tabs = () => {
                       <tr>
                         <th scope="col" style={cellStyle} style={{width:'200px'}}></th>
                         <th scope="col" style={cellStyle} style={{width:'400px', textAlign: 'center',}}>
-                          發電業及自用發電設備設置者促售<br/>公用售電業電量之電力排碳量
+                          110年
                         </th>
                         <th scope="col" style={cellStyle}  style={cellStyle} style={{width:'300px', textAlign: 'center',}}>
-                          線損承擔之電力排碳量
+                          111年
                         </th>
                         <th scope="col" style={cellStyle}  style={cellStyle} style={{width:'300px', textAlign: 'center',}}>
-                          公用售電業總銷售電量
+                          112年
                         </th>
                         <th scope="col" style={cellStyle}  style={cellStyle} style={{width:'300px', textAlign: 'center',}}>
-                          電力排碳係數(CO2e/度)
+                          113年
+                        </th>
+                        <th scope="col" style={cellStyle}  style={cellStyle} style={{width:'300px', textAlign: 'center',}}>
+                          114年
                         </th>
                       </tr>
                     </thead>
                     <tbody style={{ border: '1px solid white', backgroundColor: '#FFE4CA' }}>
                       <tr>
-                        <td style={cellStyle}><b>112年電力</b></td>
-                        <td style={cellStyle}>?</td>
-                        <td style={cellStyle}>?</td>
-                        <td style={cellStyle}>?</td>
+                        <td style={cellStyle}><b>電力排放係數(CO2e/度)</b></td>
+                        <td style={cellStyle}>0.494</td>
+                        <td style={cellStyle}>0.494</td>
+                        <td style={cellStyle}>0.494</td>
+                        <td style={cellStyle}>0.494</td>
                         <td style={cellStyle}>0.494</td>
                       </tr>
                     </tbody>
