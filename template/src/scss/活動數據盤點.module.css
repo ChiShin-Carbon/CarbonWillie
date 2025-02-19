@@ -463,6 +463,39 @@
   
   }
 
+  .aza1{
+    background-color:#62c886;
+    color:white;
+    font-weight: bold;
+    border:none;
+    box-shadow: 0 2px 5px rgb(67, 67, 67);
+    border-radius: 30px;
+    padding:7px 15px;
+    transition:0.5s;
+  }
+  
+  .aza1:hover{
+    background-color:#55b075;
+  
+  }
+
+  .aza2{
+    background-color:#e76b6b;
+    color:white;
+    font-weight: bold;
+    border:none;
+    box-shadow: 0 2px 5px rgb(67, 67, 67);
+    border-radius: 30px;
+    padding:7px 15px;
+    transition:0.5s;
+  }
+  
+  .aza2:hover{
+    background-color:#c75959;
+  
+  }
+
+
   .modalLeft{
     width:50%;
     height:500px;

@@ -32,6 +32,8 @@ import { cilCheckAlt, cilX } from '@coreui/icons'
 
 const Tabs = () => {
   const [visible, setVisible] = useState(false)
+  const [checkedItems, setCheckedItems] = useState([]); // 存放已勾選的項目
+
   const [searchInput, setSearchInput] = useState('') // 存放輸入框的臨時搜尋值
   const [searchValue, setSearchValue] = useState('') // 觸發搜尋的值
   const [selectedFeedback, setSelectedFeedback] = useState('') // 資料回報狀態
@@ -142,6 +144,15 @@ const Tabs = () => {
     setSelectedFeedback(e.target.value)
   }
 
+  // 處理勾選框變化
+  const handleCheckboxChange = (rowId) => {
+    setCheckedItems((prevChecked) =>
+      prevChecked.includes(rowId)
+        ? prevChecked.filter((id) => id !== rowId) // 取消勾選
+        : [...prevChecked, rowId] // 新增勾選
+    );
+  };
+
   return (
     <CRow>
       <CTabs activeItemKey={1}>
@@ -237,7 +248,7 @@ const Tabs = () => {
               <CTable>
                 <CTableHead color="light">
                   <CTableRow>
-                    <CTableHeaderCell scope="col">勾選</CTableHeaderCell>
+                    {/* <CTableHeaderCell scope="col">勾選</CTableHeaderCell> */}
                     <CTableHeaderCell scope="col">排放源項目</CTableHeaderCell>
                     <CTableHeaderCell scope="col">填寫單位</CTableHeaderCell>
                     <CTableHeaderCell scope="col">負責人</CTableHeaderCell>
@@ -250,10 +261,10 @@ const Tabs = () => {
                   {filteredData.length > 0 ? (
                     filteredData.map((row, index) => (
                       <CTableRow key={index}>
-                        {/* 勾選 */}
+                        {/* 勾選 
                         <CTableDataCell>
                           <CFormCheck style={{ borderColor: 'black' }} />
-                        </CTableDataCell>
+                        </CTableDataCell>*/}
                         {/* 排放源項目 */}
                         <CTableDataCell>{row.table_name}</CTableDataCell>
                         {/* 顯示部門名稱 */}
@@ -275,7 +286,22 @@ const Tabs = () => {
                           )}
                         </CTableDataCell>
                         {/* 回報狀態 */}
-                        <CTableDataCell>{getReview(row.review)}</CTableDataCell>
+                        <CTableDataCell>
+                          {/* {getReview(row.review)} 
+                          onClick={() => setVisible(!visible)}
+                          */}
+                          
+                          {row.completed_at ? (
+                            <>
+                              <button className={styles.aza1} style={{ marginRight: '10px' }}>
+                                審核成功
+                              </button>
+                              <button className={styles.aza2}>審核失敗</button>
+                            </>
+                          ) : (
+                            '尚未完成'
+                          )}
+                        </CTableDataCell>
                       </CTableRow>
                     ))
                   ) : (
@@ -287,10 +313,11 @@ const Tabs = () => {
                   )}
                 </CTableBody>
               </CTable>
-              <div style={{ textAlign: 'center' }}>
               {/* onClick={() => setVisible(!visible)} */}
+              {/* <div style={{ textAlign: 'center' }}>
+              
                 <button className={styles.complete} onClick={() => setVisible(!visible)}>盤點完成</button>
-              </div>
+              </div> */}
               <CModal
                 visible={visible}
                 onClose={() => setVisible(false)}
