@@ -181,13 +181,10 @@ const Tabs = () => {
                       <tr>
                         <th scope="col" style={cellStyle} rowSpan={2} style={{width:'150px'}}></th>
                         <th scope="col" style={cellStyle} rowSpan={1} colSpan={3}>
-                          燃料單位熱值之排放係數(kg/TJ)
-                        </th>
-                        <th scope="col" style={cellStyle} rowSpan={1} colSpan={3}>
                           燃料單位熱值之排放係數(Kg/Kcal)
                         </th>
-                        <th scope="col" style={cellStyle} rowSpan={1} colSpan={2}>
-                          低位熱值
+                        <th scope="col" style={cellStyle} rowSpan={1} colSpan={3}>
+                          低位熱值(Kcal/l)
                         </th>
                         <th scope="col" style={cellStyle} rowSpan={1} colSpan={3}>
                           燃料單位重量/體積之排放係數(KgCO2/Kg)
@@ -213,12 +210,6 @@ const Tabs = () => {
                           N2O
                         </th>
                         <th scope="col" style={cellStyle}>
-                          單位
-                        </th>
-                        <th scope="col" style={cellStyle}>
-                          數值
-                        </th>
-                        <th scope="col" style={cellStyle}>
                           CO2
                         </th>
                         <th scope="col" style={cellStyle}>
@@ -232,13 +223,11 @@ const Tabs = () => {
                     <tbody style={{ border: '1px solid white', backgroundColor: '#FFE4CA' }}>
                       <tr>
                         <td style={cellStyle}><b>車用汽油</b></td>
-                        <td style={cellStyle}>69,300</td>
-                        <td style={cellStyle}>3</td>
-                        <td style={cellStyle}>0.6</td>
                         <td style={cellStyle}>2.90E-04</td>
                         <td style={cellStyle}>1.26E-08</td>
                         <td style={cellStyle}>2.51E-09</td>
-                        <td style={cellStyle}>Kcal/l</td>
+                        <td style={cellStyle}>7800</td>
+                        <td style={cellStyle}>7800</td>
                         <td style={cellStyle}>7800</td>
                         <td style={cellStyle}>2.26E+00</td>
                         <td style={cellStyle}>9.80E-05</td>
@@ -246,13 +235,11 @@ const Tabs = () => {
                       </tr>
                       <tr>
                         <td style={cellStyle}><b>柴油</b></td>
-                        <td style={cellStyle}>74100</td>
-                        <td style={cellStyle}>3</td>
-                        <td style={cellStyle}>0.6</td>
                         <td style={cellStyle}>3.10E-04</td>
                         <td style={cellStyle}>1.26E-08</td>
                         <td style={cellStyle}>2.51E-09</td>
-                        <td style={cellStyle}>Kcal/l</td>
+                        <td style={cellStyle}>8400</td>
+                        <td style={cellStyle}>8400</td>
                         <td style={cellStyle}>8400</td>
                         <td style={cellStyle}>2.61E+00</td>
                         <td style={cellStyle}>1.06E-04</td>
@@ -260,9 +247,6 @@ const Tabs = () => {
                       </tr>
                       <tr>
                         <td style={cellStyle}><b>乙烷</b></td>
-                        <td style={cellStyle}>61,600</td>
-                        <td style={cellStyle}>1</td>
-                        <td style={cellStyle}>0.1</td>
                         <td style={cellStyle}>2.58E-04</td>
                         <td style={cellStyle}>4.19E-09</td>
                         <td style={cellStyle}>4.19E-10</td>
@@ -271,12 +255,10 @@ const Tabs = () => {
                         <td style={cellStyle}>--</td>
                         <td style={cellStyle}>--</td>
                         <td style={cellStyle}>--</td>
+                        <td style={cellStyle}>--</td>
                       </tr>
                       <tr>
                         <td style={cellStyle}><b>天然氣</b></td>
-                        <td style={cellStyle}>56,100</td>
-                        <td style={cellStyle}>1</td>
-                        <td style={cellStyle}>0.1</td>
                         <td style={cellStyle}>7.62E-04</td>
                         <td style={cellStyle}>4.19E-09</td>
                         <td style={cellStyle}>4.19E-10</td>
@@ -285,15 +267,14 @@ const Tabs = () => {
                         <td style={cellStyle}>--</td>
                         <td style={cellStyle}>--</td>
                         <td style={cellStyle}>--</td>
+                        <td style={cellStyle}>--</td>
                       </tr>
                       <tr>
                         <td style={cellStyle}><b>事業廢棄物</b></td>
-                        <td style={cellStyle}>143,000</td>
-                        <td style={cellStyle}>30</td>
-                        <td style={cellStyle}>4</td>
                         <td style={cellStyle}>5.99E-04</td>
                         <td style={cellStyle}>1.26E-07</td>
                         <td style={cellStyle}>1.67E-08</td>
+                        <td style={cellStyle}>--</td>
                         <td style={cellStyle}>--</td>
                         <td style={cellStyle}>--</td>
                         <td style={cellStyle}>--</td>
@@ -337,15 +318,12 @@ const Tabs = () => {
                       }}
                     >
                       <tr>
-                        <th scope="col" style={cellStyle} rowSpan={2}></th>
-                        <th scope="col" style={cellStyle} rowSpan={1} colSpan={3}>
-                          燃料單位熱值之排放係數(kg/TJ)
-                        </th>
+                        <th scope="col" style={cellStyle} rowSpan={2} colSpan={2}></th>
                         <th scope="col" style={cellStyle} rowSpan={1} colSpan={3}>
                           燃料單位熱值之排放係數(Kg/Kcal)
                         </th>
-                        <th scope="col" style={cellStyle} rowSpan={1} colSpan={2}>
-                          低位熱值
+                        <th scope="col" style={cellStyle} rowSpan={1} colSpan={3}>
+                          低位熱值(Kcal/l)
                         </th>
                         <th scope="col" style={cellStyle} rowSpan={1} colSpan={3}>
                           燃料單位重量/體積之排放係數(KgCO2/Kg)
@@ -371,12 +349,6 @@ const Tabs = () => {
                           N2O
                         </th>
                         <th scope="col" style={cellStyle}>
-                          單位
-                        </th>
-                        <th scope="col" style={cellStyle}>
-                          數值
-                        </th>
-                        <th scope="col" style={cellStyle}>
                           CO2
                         </th>
                         <th scope="col" style={cellStyle}>
@@ -389,86 +361,51 @@ const Tabs = () => {
                     </thead>
                     <tbody style={{ border: '1px solid white', backgroundColor: '#FFE4CA' }}>
                       <tr>
-                        <td style={cellStyle}><b>車用汽油</b></td>
-                        <td style={cellStyle}>69300</td>
-                        <td style={cellStyle}>--</td>
-                        <td style={cellStyle}>--</td>
+                        <td style={cellStyle} rowSpan={3} style={{width:'100px'}}><b>車用汽油</b></td>
+                        <td style={cellStyle}><b>未控制</b></td>
                         <td style={cellStyle}>2.90E-04</td>
-                        <td style={cellStyle}>--</td>
-                        <td style={cellStyle}>--</td>
-                        <td style={cellStyle}>Kcal/l</td>
-                        <td style={cellStyle}>7800</td>
-                        <td style={cellStyle}>2.26E+00</td>
-                        <td style={cellStyle}>--</td>
-                        <td style={cellStyle}>--</td>
-                      </tr>
-                      <tr>
-                        <td style={cellStyle}><b>柴油</b></td>
-                        <td style={cellStyle}>74100</td>
-                        <td style={cellStyle}>3.9</td>
-                        <td style={cellStyle}>3.9</td>
-                        <td style={cellStyle}>3.10E-04</td>
-                        <td style={cellStyle}>1.63E-08</td>
-                        <td style={cellStyle}>1.63E-08</td>
-                        <td style={cellStyle}>Kcal/l</td>
-                        <td style={cellStyle}>8400</td>
-                        <td style={cellStyle}>2.61E+00</td>
-                        <td style={cellStyle}>1.37E-04</td>
-                        <td style={cellStyle}>1.37E-04</td>
-                      </tr>
-                      <tr>
-                        <td style={cellStyle}><b>車用汽油-未控制</b></td>
-                        <td style={cellStyle}>--</td>
-                        <td style={cellStyle}>33</td>
-                        <td style={cellStyle}>3.2</td>
-                        <td style={cellStyle}>--</td>
                         <td style={cellStyle}>1.38E-07</td>
                         <td style={cellStyle}>1.34E-08</td>
-                        <td style={cellStyle}>Kcal/l</td>
+                        <td style={cellStyle}>7800</td>
                         <td style={cellStyle}>7400</td>
-                        <td style={cellStyle}>--</td>
+                        <td style={cellStyle}>7400</td>
+                        <td style={cellStyle}>2.26E+00</td>
                         <td style={cellStyle}>1.02E-03</td>
                         <td style={cellStyle}>9.91E-05</td>
                       </tr>
                       <tr>
-                        <td style={cellStyle}><b>車用汽油-氧化觸媒</b></td>
-                        <td style={cellStyle}>--</td>
-                        <td style={cellStyle}>25</td>
-                        <td style={cellStyle}>8</td>
-                        <td style={cellStyle}>--</td>
+                        <td style={cellStyle}><b>氧化觸媒</b></td>
+                        <td style={cellStyle}>2.90E-04</td>
                         <td style={cellStyle}>1.05E-07</td>
                         <td style={cellStyle}>3.35E-08</td>
-                        <td style={cellStyle}>Kcal/l</td>
+                        <td style={cellStyle}>7800</td>
                         <td style={cellStyle}>7400</td>
-                        <td style={cellStyle}>--</td>
+                        <td style={cellStyle}>7400</td>
+                        <td style={cellStyle}>2.26E+00</td>
                         <td style={cellStyle}>7.75E-04</td>
                         <td style={cellStyle}>2.48E-04</td>
                       </tr>
                       <tr>
-                        <td style={cellStyle}><b>車用汽油-1995年後之低里程輕型車輛</b></td>
-                        <td style={cellStyle}>--</td>
-                        <td style={cellStyle}>3.8</td>
-                        <td style={cellStyle}>5.7</td>
-                        <td style={cellStyle}>--</td>
+                        <td style={cellStyle}><b>1995年後之低里程<br/>輕型車輛</b></td>
+                        <td style={cellStyle}>2.90E-04</td>
                         <td style={cellStyle}>1.59E-08</td>
                         <td style={cellStyle}>2.39E-08</td>
-                        <td style={cellStyle}>Kcal/l</td>
+                        <td style={cellStyle}>7800</td>
                         <td style={cellStyle}>7400</td>
-                        <td style={cellStyle}>--</td>
+                        <td style={cellStyle}>7400</td>
+                        <td style={cellStyle}>2.26E+00</td>
                         <td style={cellStyle}>1.18E-04</td>
                         <td style={cellStyle}>1.77E-04</td>
                       </tr>
                       <tr>
-                        <td style={cellStyle}><b>柴油</b></td>
-                        <td style={cellStyle}>--</td>
-                        <td style={cellStyle}>3.9</td>
-                        <td style={cellStyle}>3.9</td>
-                        <td style={cellStyle}>--</td>
+                        <td style={cellStyle} colSpan={2}><b>柴油</b></td>
+                        <td style={cellStyle}>3.10E-04</td>
                         <td style={cellStyle}>1.63E-08</td>
                         <td style={cellStyle}>1.63E-08</td>
-                        <td style={cellStyle}>Kcal/l</td>
                         <td style={cellStyle}>8400</td>
-                        <td style={cellStyle}>--</td>
+                        <td style={cellStyle}>8400</td>
+                        <td style={cellStyle}>8400</td>
+                        <td style={cellStyle}>2.61E+00</td>
                         <td style={cellStyle}>1.37E-04</td>
                         <td style={cellStyle}>1.37E-04</td>
                       </tr>
@@ -652,85 +589,8 @@ const Tabs = () => {
                           }}>
                           <b>--</b>
                         </td>
-                        <td style={cellStyle}>CH4石化甲烷</td>
-                        <td style={cellStyle}>30</td>
-                      </tr>
-                      <tr>
-                        <td style={{
-                            border: '1px solid white',
-                            textAlign: 'center',
-                            verticalAlign: 'middle',
-                            height: '40px',
-                            width: '350px',
-                          }}>
-                          <b>--</b>
-                        </td>
                         <td style={cellStyle}>N2O氧化亞氮</td>
                         <td style={cellStyle}>265</td>
-                      </tr>
-                      <tr>
-                        <td
-                          style={{
-                            border: '1px solid white',
-                            textAlign: 'center',
-                            verticalAlign: 'middle',
-                            height: '40px',
-                            width: '350px',
-                          }}
-                          rowSpan={3}
-                        >
-                          <b>HFCs<br/>氫氟碳化物</b>
-                        </td>
-                        <td style={cellStyle}>CHF3三氟甲烷</td>
-                        <td style={cellStyle}>12,400</td>
-                      </tr>
-                      <tr>
-                        <td style={cellStyle}>CH2F2二氟甲烷</td>
-                        <td style={cellStyle}>677</td>
-                      </tr>
-                      <tr>
-                        <td style={cellStyle}>CH3F一氟甲烷</td>
-                        <td style={cellStyle}>116</td>
-                      </tr>
-                      <tr>
-                        <td
-                          style={{
-                            border: '1px solid white',
-                            textAlign: 'center',
-                            verticalAlign: 'middle',
-                            height: '40px',
-                            width: '350px',
-                          }}
-                          rowSpan={2}
-                        >
-                          <b>Fully Fluorinated Species<br/>全氟碳化物</b>
-                        </td>
-                        <td style={cellStyle}>NF3三氟化氮</td>
-                        <td style={cellStyle}>16,100</td>
-                      </tr>
-                      <tr>
-                        <td style={cellStyle}>SF6六氟化硫</td>
-                        <td style={cellStyle}>23,500</td>
-                      </tr>
-                      <tr>
-                        <td
-                          style={{
-                            border: '1px solid white',
-                            textAlign: 'center',
-                            verticalAlign: 'middle',
-                            height: '40px',
-                            width: '350px',
-                          }}
-                          rowSpan={2}
-                        >
-                          <b>混合冷媒</b>
-                        </td>
-                        <td style={cellStyle}>R-401A,HCFC-22/HFC-152a/HCFC-124</td>
-                        <td style={cellStyle}>1,130</td>
-                      </tr>
-                      <tr>
-                        <td style={cellStyle}>R-401B,HCFC-22/HFC-152a/HCFC-124</td>
-                        <td style={cellStyle}>1,236</td>
                       </tr>
                     </tbody>
                   </table>
