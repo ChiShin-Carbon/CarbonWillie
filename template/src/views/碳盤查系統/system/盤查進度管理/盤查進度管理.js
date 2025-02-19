@@ -20,6 +20,7 @@ import {
   CTabList,
   CTab,
   CButton,
+  CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle
 } from '@coreui/react'
 import { Link } from 'react-router-dom'
 import CIcon from '@coreui/icons-react'
@@ -30,6 +31,7 @@ import styles from '../../../../scss/活動數據盤點.module.css'
 import { cilCheckAlt, cilX } from '@coreui/icons'
 
 const Tabs = () => {
+  const [visible, setVisible] = useState(false)
   const [searchInput, setSearchInput] = useState('') // 存放輸入框的臨時搜尋值
   const [searchValue, setSearchValue] = useState('') // 觸發搜尋的值
   const [selectedFeedback, setSelectedFeedback] = useState('') // 資料回報狀態
@@ -90,7 +92,7 @@ const Tabs = () => {
     }
   }
 
-  // 定義部門轉換函數
+  // 定義審核轉換函數
   const getReview = (reviewID) => {
     switch (reviewID) {
       case 1:
@@ -248,13 +250,19 @@ const Tabs = () => {
                   {filteredData.length > 0 ? (
                     filteredData.map((row, index) => (
                       <CTableRow key={index}>
+                        {/* 勾選 */}
                         <CTableDataCell>
                           <CFormCheck style={{ borderColor: 'black' }} />
                         </CTableDataCell>
+                        {/* 排放源項目 */}
                         <CTableDataCell>{row.table_name}</CTableDataCell>
-                        <CTableDataCell>{getDepartmentName(row.department)}</CTableDataCell> {/* 顯示部門名稱 */}
+                        {/* 顯示部門名稱 */}
+                        <CTableDataCell>{getDepartmentName(row.department)}</CTableDataCell>
+                        {/* 負責人 */}
                         <CTableDataCell>{row.username}</CTableDataCell>
+                        {/* 資料蒐集完成日 */}
                         <CTableDataCell>{formatDate(row.completed_at)}</CTableDataCell>
+                        {/* 狀態 */}
                         <CTableDataCell>
                           {row.is_done ? (
                             <div className="check_icon">
@@ -266,6 +274,7 @@ const Tabs = () => {
                             </div>
                           )}
                         </CTableDataCell>
+                        {/* 回報狀態 */}
                         <CTableDataCell>{getReview(row.review)}</CTableDataCell>
                       </CTableRow>
                     ))
@@ -279,8 +288,31 @@ const Tabs = () => {
                 </CTableBody>
               </CTable>
               <div style={{ textAlign: 'center' }}>
-                <button className={styles.complete}>盤點完成</button>
+              {/* onClick={() => setVisible(!visible)} */}
+                <button className={styles.complete} onClick={() => setVisible(!visible)}>盤點完成</button>
               </div>
+              <CModal
+                visible={visible}
+                onClose={() => setVisible(false)}
+                aria-labelledby="LiveDemoExampleLabel"
+              >
+                <CModalHeader>
+                  <CModalTitle id="LiveDemoExampleLabel">資料回報</CModalTitle>
+                </CModalHeader>
+                <CModalBody>
+                  
+                  <div className="d-flex flex-column align-items-center">
+                    <CFormCheck type="radio" name="exampleRadios" id="exampleRadios1" value="option1" label="已審核" defaultChecked/>
+                    <CFormCheck type="radio" name="exampleRadios" id="exampleRadios2" value="option2" label="待補件"/>
+                  </div>
+                </CModalBody>
+                <CModalFooter>
+                  <CButton color="secondary" onClick={() => setVisible(false)}>
+                    關閉
+                  </CButton>
+                  <CButton color="primary">確定</CButton>
+                </CModalFooter>
+              </CModal>
             </CForm>
           </CCardBody>
         </CCard>
@@ -288,5 +320,84 @@ const Tabs = () => {
     </CRow>
   )
 }
+// import { useState } from "react";
+// import { CButton, CTable, CTableHead, CTableRow, CTableHeaderCell, CTableBody, CTableDataCell, CModal, CModalBody, CModalHeader, CModalTitle } from "@coreui/react";
 
+// const Tabs = () => {
+//   const [selectedItems, setSelectedItems] = useState([]);
+//   const [showModal, setShowModal] = useState(false);
+//   const [showAlert, setShowAlert] = useState(false);
+
+//   // 模擬表格數據
+//   const data = [
+//     { id: "1", name: "產品A" },
+//     { id: "2", name: "產品B" },
+//     { id: "3", name: "產品C" },
+//   ];
+
+//   // 處理勾選
+//   const handleCheckboxChange = (id) => {
+//     setSelectedItems((prev) =>
+//       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+//     );
+//   };
+  
+
+//   // 點擊「盤點完成」按鈕
+//   const handleComplete = () => {
+//     if (selectedItems.length === 0) {
+//       setShowAlert(true);
+//       return;
+//     }
+//     setShowModal(true);
+//   };
+
+//   return (
+//     <div>
+//       {/* 表格 */}
+//       <CTable>
+//         <CTableHead>
+//           <CTableRow>
+//             <CTableHeaderCell>選取</CTableHeaderCell>
+//             <CTableHeaderCell>產品名稱</CTableHeaderCell>
+//           </CTableRow>
+//         </CTableHead>
+//         <CTableBody>
+//           {data.map((item) => (
+//             <CTableRow key={item.id}>
+//               <CTableDataCell>
+//                 <input
+//                   type="checkbox"
+//                   checked={selectedItems.includes(item.id)}
+//                   onChange={() => handleCheckboxChange(item.id)}
+//                 />
+//               </CTableDataCell>
+//               <CTableDataCell>{item.name}</CTableDataCell>
+//             </CTableRow>
+//           ))}
+//         </CTableBody>
+//       </CTable>
+
+//       {/* 按鈕 */}
+//       <CButton color="primary" onClick={handleComplete}>
+//         盤點完成
+//       </CButton>
+
+//       {/* 提示 Modal */}
+//       <CModal visible={showModal} onClose={() => setShowModal(false)}>
+//         <CModalHeader>
+//           <CModalTitle>盤點結果</CModalTitle>
+//         </CModalHeader>
+//         <CModalBody>您已選擇 {selectedItems.length} 個項目</CModalBody>
+//       </CModal>
+
+//       {/* Alert 提示 */}
+//       {showAlert && (
+//         <div style={{ color: "red", marginTop: "10px" }}>請至少選擇一個項目！</div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default Tabs; 
 export default Tabs
