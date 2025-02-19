@@ -11,3 +11,9 @@ pytesseract
 python-multipart
 langchain
 langchain_community
+flask
+newsapi-python
+flask-cors
+mistralai
+serpapi
+python-docx
