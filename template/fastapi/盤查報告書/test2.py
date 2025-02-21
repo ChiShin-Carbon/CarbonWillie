@@ -101,10 +101,25 @@ def set_explain(paragraph):
     font.size = Pt(10)
     
     paragraph_format = paragraph.paragraph_format
-    paragraph_format.space_before = Pt(6)
+    paragraph_format.space_before = Pt(12)
     paragraph_format.space_after = Pt(0)
     paragraph_format.line_spacing_rule = WD_LINE_SPACING.SINGLE
     paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER  # 設定標題置中
+
+def set_pointlist(paragraph):
+    run = paragraph.runs[0] if paragraph.runs else paragraph.add_run()
+    font = run.font
+    font.name = "Times New Roman"
+    run._element.rPr.rFonts.set(qn('w:eastAsia'), "標楷體")
+    font.size = Pt(12)
+    
+    paragraph_format = paragraph.paragraph_format
+    paragraph_format.space_before = Pt(0)
+    paragraph_format.space_after = Pt(6)
+
+    paragraph_format.line_spacing_rule = WD_LINE_SPACING.MULTIPLE
+    paragraph_format.line_spacing = 1.15
+
 
 
 def create_document():
@@ -115,7 +130,7 @@ def create_document():
     title = doc.add_heading("第一章、本校簡介與政策聲明",level=1)
     set_heading(title)
     
-    # 前言
+    #1.1前言
     preface = doc.add_heading("1.1 前言",level=2)
     set_heading2(preface)
     
@@ -126,7 +141,7 @@ def create_document():
     set_paragraph(content2)
     set_paragraph(content3)
 
-    # 簡介
+    #1.2簡介
     preface = doc.add_heading("1.2 簡介",level=2)
     set_heading2(preface)
     
@@ -148,7 +163,48 @@ def create_document():
     table.cell(3, 1).text = "新北市板橋區四川路二段58號"
     set_table1(table)
 
+    #1.3組織及架構
+    preface = doc.add_heading("1.3 組織及架構",level=2)
+    set_heading2(preface)
+    content = doc.add_paragraph("【請放置組織架構圖】")
+    set_paragraph(content)
+
+    photo_explain = doc.add_paragraph("圖一、亞東科技大學組織架構圖")
+    set_explain(photo_explain)
+
     
+    #1.4	報告書涵蓋期間與責任/有效期間
+    preface = doc.add_heading("1.4 報告書涵蓋期間與責任/有效期間",level=2)
+    set_heading2(preface)
+    content1_4_1 = doc.add_paragraph("1.4.1 報告書涵蓋期間與責任")
+    content1_4_1_1=doc.add_paragraph("本報告書之盤查內容是以2024年度於板橋校區（以下均稱本校）組織邊界範圍內產生之所有溫室氣體為盤查範圍，並供作下年度新報告書完成前引用。")
+    
+    content1_4_2 = doc.add_paragraph("1.4.2 本報告書為隔年1月時開始進行前一年度之溫室氣體排放量之各項盤查工作，並於2月開始報告書之內容製作，其涵蓋前一年本校之溫室氣體排放總結，供作本年度及下年度新報告書完成前引用。")
+    content1_4_3=doc.add_paragraph("1.4.3 報告書完成後，經過年度內部諮詢之程序，並修正缺失後，完成本報告書。")
+    content1_4_4=doc.add_paragraph("1.4.4 本報告書盤查範圍只限於本校區營運範圍之總溫室氣體之排放量，本校之組織營運範圍，若有變動時，本報告書將一併進行修正並重新發行。")
+
+    set_pointlist(content1_4_1)
+    set_pointlist(content1_4_1_1)
+    set_pointlist(content1_4_2)
+    set_pointlist(content1_4_3)
+    set_pointlist(content1_4_4)
+    
+    #1.5 宣告本盤查報告書製作之依據
+    preface = doc.add_heading("1.5 宣告本盤查報告書製作之依據",level=2)
+    set_heading2(preface)
+    content1_5 = doc.add_paragraph("本報告書乃根據 ISO 14064-1：2018（CNS 14064-1：2022）進行盤查與計算。")
+    set_paragraph(content1_5)
+
+
+    #1.6 本盤查報告書製作目的
+    preface = doc.add_heading("1.6 本盤查報告書製作目的",level=2)
+    set_heading2(preface)
+    content1_6_1 = doc.add_paragraph("1.6.1 展現本校溫室氣體盤查結果。")
+    content1_6_2=doc.add_paragraph("1.6.2 妥當紀錄本校溫室氣體排放清冊，以利社會責任標準查證之需求。")
+
+    set_pointlist(content1_6_1)
+    set_pointlist(content1_6_2)
+
 
     doc.save("output.docx")
     print("文件已生成：output.docx")
