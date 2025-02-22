@@ -71,7 +71,7 @@ def set_table1(table):
 
     for row in table.rows:
         cell = row.cells[0]  # 選取第一列的單元格
-        shading = parse_xml(r'<w:shd {} w:fill="C6E2FF"/>'.format(nsdecls('w')))
+        shading = parse_xml(r'<w:shd {} w:fill="E2EFD9"/>'.format(nsdecls('w')))
         cell._tc.get_or_add_tcPr().append(shading)
 
     for row in table.rows:
@@ -122,7 +122,7 @@ def set_pointlist(paragraph):
 
 
 
-def create_document():
+def create_chapter1():
     doc = Document()
     
     ################第一章######################
@@ -163,6 +163,10 @@ def create_document():
     table.cell(3, 1).text = "新北市板橋區四川路二段58號"
     set_table1(table)
 
+
+    # 插入分頁符號
+    doc.add_page_break()
+
     #1.3組織及架構
     preface = doc.add_heading("1.3 組織及架構",level=2)
     set_heading2(preface)
@@ -171,6 +175,9 @@ def create_document():
 
     photo_explain = doc.add_paragraph("圖一、亞東科技大學組織架構圖")
     set_explain(photo_explain)
+
+    # 插入分頁符號
+    doc.add_page_break()
 
     
     #1.4	報告書涵蓋期間與責任/有效期間
@@ -206,7 +213,9 @@ def create_document():
     set_pointlist(content1_6_2)
 
 
-    doc.save("output.docx")
-    print("文件已生成：output.docx")
+    # 插入分頁符號
+    doc.add_page_break()
 
-create_document()
+
+
+    return doc
