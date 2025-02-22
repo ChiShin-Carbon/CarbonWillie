@@ -27,11 +27,12 @@ import CIcon from '@coreui/icons-react'
 import '../../../../scss/盤查進度管理.css'
 import '../../../../scss/碳盤查系統.css'
 import styles from '../../../../scss/活動數據盤點.module.css'
-
+import EditSuccessModal from './審核成功Modal.js'
 import { cilCheckAlt, cilX } from '@coreui/icons'
 
 const Tabs = () => {
   const [successbutton, setsuccessVisible] = useState(false)
+  const [isModalOpen, setIsModalOpen] = useState(false)
   const [falsebutton, setfalseVisible] = useState(false)
   const [visible, setVisible] = useState(false)
 
@@ -39,6 +40,7 @@ const Tabs = () => {
   const [searchValue, setSearchValue] = useState('') // 觸發搜尋的值
   const [selectedFeedback, setSelectedFeedback] = useState('') // 資料回報狀態
   const [tableData, setTableData] = useState([]) // 新增狀態來存放從後端獲取的資料
+  const [authorizedID, setAuthorizedID] = useState([]) // 新增來存放從後端獲取的資料
 
   const formatDate = (isoDate) => {
     if (!isoDate) {
@@ -101,8 +103,6 @@ const Tabs = () => {
       case 1:
         return '尚未審核'
       case 2:
-        return '待補件'
-      case 3:
         return '已審核'
       default:
         return '其他'
@@ -234,7 +234,6 @@ const Tabs = () => {
               <option value="">資料回報狀態</option>
               <option value="已審核">已審核</option>
               <option value="尚未審核">尚未審核</option>
-              <option value="待補件">待補件</option>
             </CFormSelect>
           </CCol>
         </div>
@@ -293,26 +292,37 @@ const Tabs = () => {
                           */}
                           
                           {/* {row.completed_at ? ( */}
-                            
+                            {/* 測試的 */}
                             {row.review ? (<>
-                              <button className={styles.aza1} style={{ marginRight: '10px' }} onClick={() => setsuccessVisible(!visible)}>
+                              <button className={styles.aza1} style={{ marginRight: '10px' }} onClick={() => setIsModalOpen(true)}>
                                 審核成功
                               </button>
+                              <EditSuccessModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+                              
                               <button className={styles.aza2} onClick={() => setfalseVisible(!visible)}>審核失敗</button>
                             </>
                           ) : (
                             '尚未完成'
                           )}
-                          {row.completed_at ? (
-                            <>
-                              <button className={styles.aza1} style={{ marginRight: '10px' }} onClick={() => setVisible(!visible)}>
+
+                          {/* 正式的 */}
+                         {row.completed_at ? (
+                          row.review ? (
+                            getReview(row.review)
+                          ) : (
+                             <>
+                              <button className={styles.aza1} style={{ marginRight: '10px' }} onClick={() => setsuccessVisible(!visible)}>
                                 審核成功
                               </button>
-                              <button className={styles.aza2}>審核失敗</button>
+                              <button className={styles.aza2} onClick={() => setfalseVisible(!visible)}>
+                                審核失敗
+                              </button>
                             </>
-                          ) : (
-                            '尚未完成'
-                          )}
+                          )
+                        ) : (
+                          '尚未完成'
+                        )}
+
                         </CTableDataCell>
                       </CTableRow>
                     ))
