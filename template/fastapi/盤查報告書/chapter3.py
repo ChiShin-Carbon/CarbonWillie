@@ -69,7 +69,7 @@ def set_explain(paragraph):
     paragraph_format.line_spacing_rule = WD_LINE_SPACING.SINGLE
     paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER  # 設定標題置中
 
-def set_table(table):
+def set_table1(table):
 
     # 合併第1, 2, 15, 16列的最上面兩行
     table.cell(0, 0).merge(table.cell(1, 0))  # 合併第1列
@@ -176,34 +176,76 @@ def create_chapter3():
     table_explain = doc.add_paragraph("表3-1、亞東科技大學直接溫室氣體排放源")
     set_explain(table_explain)
     # 新增表格
-    table = doc.add_table(rows=15, cols=16)
+    table1 = doc.add_table(rows=15, cols=16)
      # 設定表頭
-    table.cell(0, 0).text = "製程名稱"
-    table.cell(0, 1).text = "設備名稱"
-    table.cell(0, 2).text = "原燃物料或產品"
-    table.cell(0, 5).text = "排放源資料"
-    table.cell(0, 7).text = "可能產生溫室氣體種類"
-    table.cell(0, 14).text ="是否屬汽電共生設備"
-    table.cell(0, 15).text = "備註*"
+    table1.cell(0, 0).text = "製程名稱"
+    table1.cell(0, 1).text = "設備名稱"
+    table1.cell(0, 2).text = "原燃物料或產品"
+    table1.cell(0, 5).text = "排放源資料"
+    table1.cell(0, 7).text = "可能產生溫室氣體種類"
+    table1.cell(0, 14).text ="是否屬汽電共生設備"
+    table1.cell(0, 15).text = "備註*"
 
-    table.cell(1, 2).text = "類別"
-    table.cell(1, 3).text = "名稱"
-    table.cell(1, 4).text = "是否屬生質能源"
-    table.cell(1, 5).text = "範疇別"
-    table.cell(1, 6).text = "製程/逸散/外購電力類別"
-    table.cell(1, 7).text = "CO2"
-    table.cell(1, 8).text = "CH4"
-    table.cell(1, 9).text = "N2O"
-    table.cell(1, 10).text = "HFCS"
-    table.cell(1, 11).text = "PFCS"
-    table.cell(1, 12).text = "SF6"
-    table.cell(1, 13).text = "NF3"
+    table1.cell(1, 2).text = "類別"
+    table1.cell(1, 3).text = "名稱"
+    table1.cell(1, 4).text = "是否屬生質能源"
+    table1.cell(1, 5).text = "範疇別"
+    table1.cell(1, 6).text = "製程/逸散/外購電力類別"
+    table1.cell(1, 7).text = "CO2"
+    table1.cell(1, 8).text = "CH4"
+    table1.cell(1, 9).text = "N2O"
+    table1.cell(1, 10).text = "HFCS"
+    table1.cell(1, 11).text = "PFCS"
+    table1.cell(1, 12).text = "SF6"
+    table1.cell(1, 13).text = "NF3"
 
-
-
-   
+    set_table1(table1)
 
 
-    set_table(table)
+    #3.3 能源間接溫室氣體排放（類別2排放）
+    preface = doc.add_heading("3.3 能源間接溫室氣體排放（類別2排放）",level=2)
+    set_heading2(preface)
+    
+    content = doc.add_paragraph("本校能源間接溫室氣體排放源，如表3-2所示。")
+    set_paragraph(content)
+
+    table_explain = doc.add_paragraph("表3-2、亞東科技大學能源間接溫室氣體排放源")
+    set_explain(table_explain)
+    
+    table2 = doc.add_table(rows=3, cols=16)
+     # 設定表頭
+    table2.cell(0, 0).text = "製程名稱"
+    table2.cell(0, 1).text = "設備名稱"
+    table2.cell(0, 2).text = "原燃物料或產品"
+    table2.cell(0, 5).text = "排放源資料"
+    table2.cell(0, 7).text = "可能產生溫室氣體種類"
+    table2.cell(0, 14).text ="是否屬汽電共生設備"
+    table2.cell(0, 15).text = "備註*"
+
+    table2.cell(1, 2).text = "類別"
+    table2.cell(1, 3).text = "名稱"
+    table2.cell(1, 4).text = "是否屬生質能源"
+    table2.cell(1, 5).text = "範疇別"
+    table2.cell(1, 6).text = "製程/逸散/外購電力類別"
+    table2.cell(1, 7).text = "CO2"
+    table2.cell(1, 8).text = "CH4"
+    table2.cell(1, 9).text = "N2O"
+    table2.cell(1, 10).text = "HFCS"
+    table2.cell(1, 11).text = "PFCS"
+    table2.cell(1, 12).text = "SF6"
+    table2.cell(1, 13).text = "NF3"
+
+    set_table1(table2)
+
+
+
+    
+    #3.4 溫室氣體總排放量
+    preface = doc.add_heading("3.4 溫室氣體總排放量",level=2)
+    set_heading2(preface)
+    
+    content = doc.add_paragraph("經盤查，本校113年度溫室氣體總排放量為244.774公噸CO2e。")
+    set_paragraph(content)
+
 
     return doc
