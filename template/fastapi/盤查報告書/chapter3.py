@@ -6,6 +6,7 @@ from docx.enum.text import WD_PARAGRAPH_ALIGNMENT, WD_LINE_SPACING
 from docx.oxml import parse_xml
 from docx.oxml.ns import nsdecls
 from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.enum.table import WD_ALIGN_VERTICAL
 from docx.shared import Inches
 from docx.shared import Cm
 
@@ -69,6 +70,18 @@ def set_explain(paragraph):
     paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER  # 設定標題置中
 
 def set_table(table):
+
+    # 合併第1, 2, 15, 16列的最上面兩行
+    table.cell(0, 0).merge(table.cell(1, 0))  # 合併第1列
+    table.cell(0, 1).merge(table.cell(1, 1))  # 合併第2列
+    table.cell(0, 14).merge(table.cell(1, 14))  # 合併第15列
+    table.cell(0, 15).merge(table.cell(1, 15))  # 合併第16列
+
+    # 合併第3, 4, 5列的第一行為一個大格
+    table.cell(0, 2).merge(table.cell(0, 4))  # 合併第3, 4, 5列
+    table.cell(0, 5).merge(table.cell(0, 6))  # 合併第3, 4, 5列
+    table.cell(0, 7).merge(table.cell(0, 13))  # 合併第3, 4, 5列
+
     for row in table.rows:
         for cell in row.cells:
             tc_pr = cell._element.get_or_add_tcPr()
@@ -84,28 +97,31 @@ def set_table(table):
 
             tc_pr.append(tc_borders)
     
-    # 設置第一列（Header Row）的背景色、粗體與置中
-    for cell in table.rows[0].cells:  # 只針對第一列
-        shading = parse_xml(r'<w:shd {} w:fill="E2EFD9"/>'.format(nsdecls('w')))
-        cell._tc.get_or_add_tcPr().append(shading)  # 設置背景顏色
+    # 設置第一列和第二列（Header Row）的背景色、置中
+    for row_index in range(2):  # 迭代第一行和第二行
+        for cell in table.rows[row_index].cells:  # 針對每一行的儲存格
+            shading = parse_xml(r'<w:shd {} w:fill="CCFFFF"/>'.format(nsdecls('w')))
+            cell._tc.get_or_add_tcPr().append(shading)  # 設置背景顏色
 
-        paragraph = cell.paragraphs[0]
-        run = paragraph.runs[0] if paragraph.runs else paragraph.add_run()
-        run.font.bold = True  # 設置為粗體
-        paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER  # 讓標題置中
+            paragraph = cell.paragraphs[0]
+            paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER  # 讓標題水平置中
+            cell.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER  # 這句是為了強制將文字置中
 
-    # 設置第一欄（Column 1）內容置中，第二欄（Column 2）內容靠左
-    for row in table.rows[1:]:  # 跳過第一列，從第二列開始
-        first_col = row.cells[0]  # 第一欄
-        second_col = row.cells[1]  # 第二欄
+            # 垂直置中
+            cell.vertical_alignment = WD_ALIGN_VERTICAL.CENTER  # 垂直置中
+            
+    # 設置從第3行開始的顏色
+    for row_index in range(2, len(table.rows)):  # 從第3行開始
+        # 設置第1, 2, 4列顏色為DBDBDB
+        for col_index in [0, 1, 3]:
+            shading = parse_xml(r'<w:shd {} w:fill="DBDBDB"/>'.format(nsdecls('w')))
+            table.cell(row_index, col_index)._tc.get_or_add_tcPr().append(shading)
 
-        # 第一欄置中
-        first_paragraph = first_col.paragraphs[0]
-        first_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        # 設置第3, 5-15列顏色為F8CBAD
+        for col_index in [2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]:
+            shading = parse_xml(r'<w:shd {} w:fill="F8CBAD"/>'.format(nsdecls('w')))
+            table.cell(row_index, col_index)._tc.get_or_add_tcPr().append(shading)
 
-        # 第二欄靠左
-        second_paragraph = second_col.paragraphs[0]
-        second_paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
 
     # 設置表格內字體
     for row in table.rows:
@@ -122,16 +138,11 @@ def set_table(table):
             font = run.font
             font.name = "Times New Roman"
             run._element.rPr.rFonts.set(qn('w:eastAsia'), "標楷體")
-            font.size = Pt(12)
+            font.size = Pt(6)
     
-     # 設定欄位寬度（第一欄30%，第二欄70%）
-    table.autofit = False  # 取消自動調整大小，手動設定寬度
-    for row in table.rows:
-        row.cells[0].width = Inches(2)  # 第一欄 30%
-        row.cells[1].width = Inches(5)  # 第二欄 70%
 
 
-def create_chapter2():
+def create_chapter3():
     doc = Document()
 
         # 獲取文檔的第一個 section（默認只有一個）
@@ -142,53 +153,55 @@ def create_chapter2():
     section.bottom_margin = Cm(2)  # 下邊距
     section.left_margin = Cm(2)  # 左邊距
     section.right_margin = Cm(2)  # 右邊距
-    
-    ################第二章######################
+        
+    ################第三章######################
     #標題
-    title = doc.add_heading("第二章、盤查邊界設定",level=1)
+    title = doc.add_heading("第三章、報告溫室氣體排放量",level=1)
     set_heading(title)
     
-    #2.1 組織邊界設定
-    preface = doc.add_heading("2.1 組織邊界設定",level=2)
+    #3.1 溫室氣體排放類型與排放量說明
+    preface = doc.add_heading("3.1 溫室氣體排放類型與排放量說明",level=2)
     set_heading2(preface)
     
-    content = doc.add_paragraph("本次溫室氣體盤查專案，其組織邊界設定乃是參考ISO/CNS 14064-1:2018年版與環境部113年溫室氣體盤查指引之建議，規劃並執行符合相關設定，包括(1)控制權、(2)持有股權比例、(3)財務邊界、(4)生產配股，以及(5)在法律合約定義的特定安排下，可使用不同的整合方法論等各項規定。設定上，以亞東科技大學位於新北市板橋區四川路二段58號的五棟校園大樓（有痒科技大樓、誠勤大樓、元智大樓、樸慎大樓預定地、實習大樓），以及亞東第一停車場為組織邊界，統一編號為33503910。")
+    content = doc.add_paragraph("經盤查，本校排放之溫室氣體種類主要有二氧化碳(CO2)、氧化亞氮(N2O)、甲烷(CH4)及氫氟碳化物(HFCs)四類。其中，二氧化碳(CO2)排放主要來自消防設施（滅火器）、清潔設備（洗地機）、其他發電引擎（緊急發電機）及外購電力，甲烷(CH4)的排放來自化糞池、清潔設備（洗地機）及其他發電引擎(緊急發電機)，氧化亞氮(N2O) 排放來自清潔設備（洗地機）和其他發電引擎（緊急發電機），氫氟碳化物(HFCs)的排放來自廠區內消防設施（滅火器）、各式冰水機（冰水主機）、飲水機及冷氣機的冷媒逸散。")
     set_paragraph(content)
 
-    content = doc.add_paragraph("【請放置組織邊界圖】")
-    set_paragraph(content)
-
-    photo_explain = doc.add_paragraph("圖二、亞東科技大學板橋校區 組織邊界")
-    set_explain(photo_explain)
-
-
-    #2.2 報告邊界
-    preface = doc.add_heading("2.2 報告邊界",level=2)
+    #3.2 直接溫室氣體排放（類別1排放）
+    preface = doc.add_heading("3.2 直接溫室氣體排放（類別1排放）",level=2)
     set_heading2(preface)
     
-    content = doc.add_paragraph("本公司報告邊界包含組織邊界的五棟校園大樓與停車場，盤查內容包含直接排放（類別1）與能源間接排放（類別2），表2為報告邊界與排放源彙整表。")
+    content = doc.add_paragraph("本校直接溫室氣體排放源，如表3-1所示。")
     set_paragraph(content)
 
-    table_explain = doc.add_paragraph("表2、亞東科技大學板橋校區 報告邊界與活動源彙整表")
+    table_explain = doc.add_paragraph("表3-1、亞東科技大學直接溫室氣體排放源")
     set_explain(table_explain)
     # 新增表格
-    table = doc.add_table(rows=3, cols=2)
+    table = doc.add_table(rows=15, cols=16)
+     # 設定表頭
+    table.cell(0, 0).text = "製程名稱"
+    table.cell(0, 1).text = "設備名稱"
+    table.cell(0, 2).text = "原燃物料或產品"
+    table.cell(0, 5).text = "排放源資料"
+    table.cell(0, 7).text = "可能產生溫室氣體種類"
+    table.cell(0, 14).text ="是否屬汽電共生設備"
+    table.cell(0, 15).text = "備註*"
 
-    # 設定表頭
-    table.cell(0, 0).text = "報告邊界"
-    table.cell(0, 1).text = "排放源"
+    table.cell(1, 2).text = "類別"
+    table.cell(1, 3).text = "名稱"
+    table.cell(1, 4).text = "是否屬生質能源"
+    table.cell(1, 5).text = "範疇別"
+    table.cell(1, 6).text = "製程/逸散/外購電力類別"
+    table.cell(1, 7).text = "CO2"
+    table.cell(1, 8).text = "CH4"
+    table.cell(1, 9).text = "N2O"
+    table.cell(1, 10).text = "HFCS"
+    table.cell(1, 11).text = "PFCS"
+    table.cell(1, 12).text = "SF6"
+    table.cell(1, 13).text = "NF3"
 
-    # 設定表頭
-    table.cell(0, 0).text = "報告邊界"
-    table.cell(0, 1).text = "排放源"
 
-    # 第一列 (類別1)
-    table.cell(1, 0).text = "直接排放源\n（類別1）"
-    table.cell(1, 1).text = "1. 固定：洗地機-汽油\n2. 人為逸散：化糞池(CH4)\n3. 人為逸散：消防設施(滅火器)、冰水主機、飲水機、冷氣機"
 
-    # 第二列 (類別2)
-    table.cell(2, 0).text = "能源間接排放源\n（類別2）"
-    table.cell(2, 1).text = "1. 亞東校園大樓台電電力\n(電號：01-18-2933-11-6、01-18-2931-11-4、01-18-2931-01-2)"
+   
 
 
     set_table(table)
