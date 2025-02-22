@@ -6,6 +6,7 @@ from docx.enum.text import WD_PARAGRAPH_ALIGNMENT, WD_LINE_SPACING
 from docx.oxml import parse_xml
 from docx.oxml.ns import nsdecls
 from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.shared import Cm
 
 def set_heading(paragraph):
     run = paragraph.runs[0] if paragraph.runs else paragraph.add_run()
@@ -124,6 +125,15 @@ def set_pointlist(paragraph):
 
 def create_chapter1():
     doc = Document()
+
+        # 獲取文檔的第一個 section（默認只有一個）
+    section = doc.sections[0]
+
+    # 設置自訂邊界，單位是厘米 (cm)
+    section.top_margin = Cm(2)  # 上邊距
+    section.bottom_margin = Cm(2)  # 下邊距
+    section.left_margin = Cm(2)  # 左邊距
+    section.right_margin = Cm(2)  # 右邊距
     
     ################第一章######################
     #標題
