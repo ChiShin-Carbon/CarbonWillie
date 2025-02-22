@@ -31,8 +31,9 @@ import styles from '../../../../scss/活動數據盤點.module.css'
 import { cilCheckAlt, cilX } from '@coreui/icons'
 
 const Tabs = () => {
+  const [successbutton, setsuccessVisible] = useState(false)
+  const [falsebutton, setfalseVisible] = useState(false)
   const [visible, setVisible] = useState(false)
-  const [checkedItems, setCheckedItems] = useState([]); // 存放已勾選的項目
 
   const [searchInput, setSearchInput] = useState('') // 存放輸入框的臨時搜尋值
   const [searchValue, setSearchValue] = useState('') // 觸發搜尋的值
@@ -144,14 +145,14 @@ const Tabs = () => {
     setSelectedFeedback(e.target.value)
   }
 
-  // 處理勾選框變化
-  const handleCheckboxChange = (rowId) => {
-    setCheckedItems((prevChecked) =>
-      prevChecked.includes(rowId)
-        ? prevChecked.filter((id) => id !== rowId) // 取消勾選
-        : [...prevChecked, rowId] // 新增勾選
-    );
+  const handleComplete = () => {
+    if (selectedItems.length === 0) {
+      setShowAlert(true);
+      return;
+    }
+    setShowModal(true);
   };
+
 
   return (
     <CRow>
@@ -291,9 +292,20 @@ const Tabs = () => {
                           onClick={() => setVisible(!visible)}
                           */}
                           
+                          {/* {row.completed_at ? ( */}
+                            
+                            {row.review ? (<>
+                              <button className={styles.aza1} style={{ marginRight: '10px' }} onClick={() => setsuccessVisible(!visible)}>
+                                審核成功
+                              </button>
+                              <button className={styles.aza2} onClick={() => setfalseVisible(!visible)}>審核失敗</button>
+                            </>
+                          ) : (
+                            '尚未完成'
+                          )}
                           {row.completed_at ? (
                             <>
-                              <button className={styles.aza1} style={{ marginRight: '10px' }}>
+                              <button className={styles.aza1} style={{ marginRight: '10px' }} onClick={() => setVisible(!visible)}>
                                 審核成功
                               </button>
                               <button className={styles.aza2}>審核失敗</button>
@@ -318,28 +330,46 @@ const Tabs = () => {
               
                 <button className={styles.complete} onClick={() => setVisible(!visible)}>盤點完成</button>
               </div> */}
+
+              {/* 審核成功model */}
               <CModal
-                visible={visible}
-                onClose={() => setVisible(false)}
+                visible={successbutton}
+                onClose={() => setsuccessVisible(false)}
                 aria-labelledby="LiveDemoExampleLabel"
               >
                 <CModalHeader>
-                  <CModalTitle id="LiveDemoExampleLabel">資料回報</CModalTitle>
+                  <CModalTitle id="LiveDemoExampleLabel"></CModalTitle>
                 </CModalHeader>
                 <CModalBody>
-                  
-                  <div className="d-flex flex-column align-items-center">
-                    <CFormCheck type="radio" name="exampleRadios" id="exampleRadios1" value="option1" label="已審核" defaultChecked/>
-                    <CFormCheck type="radio" name="exampleRadios" id="exampleRadios2" value="option2" label="待補件"/>
-                  </div>
+                  <div className="d-flex flex-column align-items-center"><center>確定為審核成功嗎?</center></div>
                 </CModalBody>
                 <CModalFooter>
-                  <CButton color="secondary" onClick={() => setVisible(false)}>
+                  <CButton className="modalbutton1" onClick={() => setsuccessVisible(false)}>
                     關閉
                   </CButton>
-                  <CButton color="primary">確定</CButton>
+                  <CButton className="modalbutton2">確定</CButton>
                 </CModalFooter>
               </CModal>
+                {/* 審核失敗model */}
+              <CModal
+                visible={falsebutton}
+                onClose={() => setfalseVisible(false)}
+                aria-labelledby="LiveDemoExampleLabel"
+              >
+                <CModalHeader>
+                  <CModalTitle id="LiveDemoExampleLabel"></CModalTitle>
+                </CModalHeader>
+                <CModalBody>
+                  <div className="d-flex flex-column align-items-center"><center>確定為審核失敗嗎?</center></div>
+                </CModalBody>
+                <CModalFooter>
+                  <CButton className="modalbutton1" onClick={() => setfalseVisible(false)}>
+                    關閉
+                  </CButton>
+                  <CButton className="modalbutton2">確定</CButton>
+                </CModalFooter>
+              </CModal>
+
             </CForm>
           </CCardBody>
         </CCard>
@@ -347,84 +377,4 @@ const Tabs = () => {
     </CRow>
   )
 }
-// import { useState } from "react";
-// import { CButton, CTable, CTableHead, CTableRow, CTableHeaderCell, CTableBody, CTableDataCell, CModal, CModalBody, CModalHeader, CModalTitle } from "@coreui/react";
-
-// const Tabs = () => {
-//   const [selectedItems, setSelectedItems] = useState([]);
-//   const [showModal, setShowModal] = useState(false);
-//   const [showAlert, setShowAlert] = useState(false);
-
-//   // 模擬表格數據
-//   const data = [
-//     { id: "1", name: "產品A" },
-//     { id: "2", name: "產品B" },
-//     { id: "3", name: "產品C" },
-//   ];
-
-//   // 處理勾選
-//   const handleCheckboxChange = (id) => {
-//     setSelectedItems((prev) =>
-//       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
-//     );
-//   };
-  
-
-//   // 點擊「盤點完成」按鈕
-//   const handleComplete = () => {
-//     if (selectedItems.length === 0) {
-//       setShowAlert(true);
-//       return;
-//     }
-//     setShowModal(true);
-//   };
-
-//   return (
-//     <div>
-//       {/* 表格 */}
-//       <CTable>
-//         <CTableHead>
-//           <CTableRow>
-//             <CTableHeaderCell>選取</CTableHeaderCell>
-//             <CTableHeaderCell>產品名稱</CTableHeaderCell>
-//           </CTableRow>
-//         </CTableHead>
-//         <CTableBody>
-//           {data.map((item) => (
-//             <CTableRow key={item.id}>
-//               <CTableDataCell>
-//                 <input
-//                   type="checkbox"
-//                   checked={selectedItems.includes(item.id)}
-//                   onChange={() => handleCheckboxChange(item.id)}
-//                 />
-//               </CTableDataCell>
-//               <CTableDataCell>{item.name}</CTableDataCell>
-//             </CTableRow>
-//           ))}
-//         </CTableBody>
-//       </CTable>
-
-//       {/* 按鈕 */}
-//       <CButton color="primary" onClick={handleComplete}>
-//         盤點完成
-//       </CButton>
-
-//       {/* 提示 Modal */}
-//       <CModal visible={showModal} onClose={() => setShowModal(false)}>
-//         <CModalHeader>
-//           <CModalTitle>盤點結果</CModalTitle>
-//         </CModalHeader>
-//         <CModalBody>您已選擇 {selectedItems.length} 個項目</CModalBody>
-//       </CModal>
-
-//       {/* Alert 提示 */}
-//       {showAlert && (
-//         <div style={{ color: "red", marginTop: "10px" }}>請至少選擇一個項目！</div>
-//       )}
-//     </div>
-//   );
-// };
-
-// export default Tabs; 
 export default Tabs
