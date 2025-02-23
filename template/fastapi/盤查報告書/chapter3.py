@@ -39,28 +39,7 @@ def create_chapter3():
     set_explain(table_explain)
     # 新增表格
     table1 = doc.add_table(rows=15, cols=16)
-     # 設定表頭
-    table1.cell(0, 0).text = "製程名稱"
-    table1.cell(0, 1).text = "設備名稱"
-    table1.cell(0, 2).text = "原燃物料或產品"
-    table1.cell(0, 5).text = "排放源資料"
-    table1.cell(0, 7).text = "可能產生溫室氣體種類"
-    table1.cell(0, 14).text ="是否屬汽電共生設備"
-    table1.cell(0, 15).text = "備註*"
-
-    table1.cell(1, 2).text = "類別"
-    table1.cell(1, 3).text = "名稱"
-    table1.cell(1, 4).text = "是否屬生質能源"
-    table1.cell(1, 5).text = "範疇別"
-    table1.cell(1, 6).text = "製程/逸散/外購電力類別"
-    table1.cell(1, 7).text = "CO2"
-    table1.cell(1, 8).text = "CH4"
-    table1.cell(1, 9).text = "N2O"
-    table1.cell(1, 10).text = "HFCS"
-    table1.cell(1, 11).text = "PFCS"
-    table1.cell(1, 12).text = "SF6"
-    table1.cell(1, 13).text = "NF3"
-
+    
     set_ch3_table1(table1)
 
 
@@ -75,28 +54,6 @@ def create_chapter3():
     set_explain(table_explain)
     
     table2 = doc.add_table(rows=3, cols=16)
-     # 設定表頭
-    table2.cell(0, 0).text = "製程名稱"
-    table2.cell(0, 1).text = "設備名稱"
-    table2.cell(0, 2).text = "原燃物料或產品"
-    table2.cell(0, 5).text = "排放源資料"
-    table2.cell(0, 7).text = "可能產生溫室氣體種類"
-    table2.cell(0, 14).text ="是否屬汽電共生設備"
-    table2.cell(0, 15).text = "備註*"
-
-    table2.cell(1, 2).text = "類別"
-    table2.cell(1, 3).text = "名稱"
-    table2.cell(1, 4).text = "是否屬生質能源"
-    table2.cell(1, 5).text = "範疇別"
-    table2.cell(1, 6).text = "製程/逸散/外購電力類別"
-    table2.cell(1, 7).text = "CO2"
-    table2.cell(1, 8).text = "CH4"
-    table2.cell(1, 9).text = "N2O"
-    table2.cell(1, 10).text = "HFCS"
-    table2.cell(1, 11).text = "PFCS"
-    table2.cell(1, 12).text = "SF6"
-    table2.cell(1, 13).text = "NF3"
-
     set_ch3_table1(table2)
 
 
