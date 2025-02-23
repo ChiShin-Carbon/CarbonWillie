@@ -1,6 +1,8 @@
 from chapter1 import create_chapter1
 from chapter2 import create_chapter2
 from chapter3 import create_chapter3
+from chapter4 import create_chapter4
+
 
 from docx import Document
 from docx.shared import Cm
@@ -11,6 +13,8 @@ def merge_documents():
     doc1 = create_chapter1()
     doc2 = create_chapter2()
     doc3 = create_chapter3()
+    doc4 = create_chapter4()
+
 
     combined_doc = Document()
 
@@ -25,6 +29,10 @@ def merge_documents():
 
     # 合併 chapter3 的內容
     for element in doc3.element.body:
+        combined_doc.element.body.append(element)
+
+     #合併 chapter4 的內容
+    for element in doc4.element.body:
         combined_doc.element.body.append(element)
 
     combined_doc.save("combined.docx")

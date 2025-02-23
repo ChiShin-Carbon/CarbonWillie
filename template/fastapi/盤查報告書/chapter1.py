@@ -1,132 +1,12 @@
 from docx import Document
-from docx.shared import Pt, RGBColor
-from docx.oxml import OxmlElement
-from docx.oxml.ns import qn
-from docx.enum.text import WD_PARAGRAPH_ALIGNMENT, WD_LINE_SPACING
-from docx.oxml import parse_xml
-from docx.oxml.ns import nsdecls
-from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.shared import Cm
 
-def set_heading(paragraph):
-    run = paragraph.runs[0] if paragraph.runs else paragraph.add_run()
-    font = run.font
-    font.name = "Times New Roman"
-    run._element.rPr.rFonts.set(qn('w:eastAsia'), "標楷體")
-    font.size = Pt(18)
-    font.color.rgb = RGBColor(0, 0, 0)  # 設置字體為黑色
-    
-    paragraph_format = paragraph.paragraph_format
-    paragraph_format.space_before = Pt(18)
-    paragraph_format.space_after = Pt(12)
-
-    paragraph_format.line_spacing_rule = WD_LINE_SPACING.SINGLE
-    paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER  # 設定標題置中
-
-def set_heading2(paragraph):
-    run = paragraph.runs[0] if paragraph.runs else paragraph.add_run()
-    font = run.font
-    font.name = "Times New Roman"
-    run._element.rPr.rFonts.set(qn('w:eastAsia'), "標楷體")
-    font.size = Pt(16)
-    font.color.rgb = RGBColor(0, 0, 0)  # 設置字體為黑色
-    
-    paragraph_format = paragraph.paragraph_format
-    paragraph_format.space_before = Pt(12)
-    paragraph_format.space_after = Pt(12)
-
-    paragraph_format.line_spacing_rule = WD_LINE_SPACING.SINGLE
-
-def set_paragraph(paragraph):
-    run = paragraph.runs[0] if paragraph.runs else paragraph.add_run()
-    font = run.font
-    font.name = "Times New Roman"
-    run._element.rPr.rFonts.set(qn('w:eastAsia'), "標楷體")
-    font.size = Pt(12)
-    
-    paragraph_format = paragraph.paragraph_format
-    paragraph_format.space_before = Pt(0)
-    paragraph_format.space_after = Pt(6)
-
-    paragraph_format.line_spacing_rule = WD_LINE_SPACING.MULTIPLE
-    paragraph_format.line_spacing = 1.15
-
-    # **設定首行縮排 (2 個中文字元寬度)**
-    paragraph_format.first_line_indent = Pt(24)  # 一般中文字大小是 12pt，2 個字就是 24pt
-
-def set_table1(table):
-    for row in table.rows:
-        for cell in row.cells:
-            tc_pr = cell._element.get_or_add_tcPr()
-            tc_borders = OxmlElement('w:tcBorders')
-            
-            for border_name in ['w:top', 'w:left', 'w:bottom', 'w:right', 'w:insideH', 'w:insideV']:
-                border = OxmlElement(border_name)
-                border.set(qn('w:val'), 'single')  # 單線
-                border.set(qn('w:sz'), '4')       # 線條大小（1/8 pt）
-                border.set(qn('w:space'), '0')    # 無間距
-                border.set(qn('w:color'), '000000')  # 黑色
-                tc_borders.append(border)
-            
-            tc_pr.append(tc_borders)
-
-    for row in table.rows:
-        cell = row.cells[0]  # 選取第一列的單元格
-        shading = parse_xml(r'<w:shd {} w:fill="E2EFD9"/>'.format(nsdecls('w')))
-        cell._tc.get_or_add_tcPr().append(shading)
-
-    for row in table.rows:
-            for cell in row.cells:
-                paragraph = cell.paragraphs[0]
-                run = paragraph.runs[0] if paragraph.runs else paragraph.add_run()
-
-                paragraph_format = paragraph.paragraph_format
-                paragraph_format.space_before = Pt(0)
-                paragraph_format.space_after = Pt(0)
-                paragraph_format.line_spacing_rule = WD_LINE_SPACING.SINGLE
-                        
-                # 設定字型
-                font = run.font
-                font.name = "Times New Roman"
-                run._element.rPr.rFonts.set(qn('w:eastAsia'), "標楷體")
-                font.size = Pt(11)
-                
-                # 設定對齊方式
-                paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    
-def set_explain(paragraph):
-    run = paragraph.runs[0] if paragraph.runs else paragraph.add_run()
-    font = run.font
-    font.name = "Times New Roman"
-    run._element.rPr.rFonts.set(qn('w:eastAsia'), "標楷體")
-    font.size = Pt(10)
-    
-    paragraph_format = paragraph.paragraph_format
-    paragraph_format.space_before = Pt(12)
-    paragraph_format.space_after = Pt(0)
-    paragraph_format.line_spacing_rule = WD_LINE_SPACING.SINGLE
-    paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER  # 設定標題置中
-
-def set_pointlist(paragraph):
-    run = paragraph.runs[0] if paragraph.runs else paragraph.add_run()
-    font = run.font
-    font.name = "Times New Roman"
-    run._element.rPr.rFonts.set(qn('w:eastAsia'), "標楷體")
-    font.size = Pt(12)
-    
-    paragraph_format = paragraph.paragraph_format
-    paragraph_format.space_before = Pt(0)
-    paragraph_format.space_after = Pt(6)
-
-    paragraph_format.line_spacing_rule = WD_LINE_SPACING.MULTIPLE
-    paragraph_format.line_spacing = 1.15
-
-
+from storeDef import set_heading, set_heading2, set_paragraph, set_explain,set_ch1_table1,set_ch1_pointlist
 
 def create_chapter1():
     doc = Document()
 
-        # 獲取文檔的第一個 section（默認只有一個）
+    # 獲取文檔的第一個 section（默認只有一個）
     section = doc.sections[0]
 
     # 設置自訂邊界，單位是厘米 (cm)
@@ -171,7 +51,7 @@ def create_chapter1():
     table.cell(2, 1).text = "4,397人"
     table.cell(3, 0).text = "學校地址"
     table.cell(3, 1).text = "新北市板橋區四川路二段58號"
-    set_table1(table)
+    set_ch1_table1(table)
 
 
     # 插入分頁符號
@@ -200,11 +80,11 @@ def create_chapter1():
     content1_4_3=doc.add_paragraph("1.4.3 報告書完成後，經過年度內部諮詢之程序，並修正缺失後，完成本報告書。")
     content1_4_4=doc.add_paragraph("1.4.4 本報告書盤查範圍只限於本校區營運範圍之總溫室氣體之排放量，本校之組織營運範圍，若有變動時，本報告書將一併進行修正並重新發行。")
 
-    set_pointlist(content1_4_1)
-    set_pointlist(content1_4_1_1)
-    set_pointlist(content1_4_2)
-    set_pointlist(content1_4_3)
-    set_pointlist(content1_4_4)
+    set_ch1_pointlist(content1_4_1)
+    set_ch1_pointlist(content1_4_1_1)
+    set_ch1_pointlist(content1_4_2)
+    set_ch1_pointlist(content1_4_3)
+    set_ch1_pointlist(content1_4_4)
     
     #1.5 宣告本盤查報告書製作之依據
     preface = doc.add_heading("1.5 宣告本盤查報告書製作之依據",level=2)
@@ -219,8 +99,8 @@ def create_chapter1():
     content1_6_1 = doc.add_paragraph("1.6.1 展現本校溫室氣體盤查結果。")
     content1_6_2=doc.add_paragraph("1.6.2 妥當紀錄本校溫室氣體排放清冊，以利社會責任標準查證之需求。")
 
-    set_pointlist(content1_6_1)
-    set_pointlist(content1_6_2)
+    set_ch1_pointlist(content1_6_1)
+    set_ch1_pointlist(content1_6_2)
 
 
     # 插入分頁符號
