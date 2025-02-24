@@ -3,6 +3,8 @@ from chapter2 import create_chapter2
 from chapter3 import create_chapter3
 from chapter4_1 import create_chapter4_1
 from chapter4_2 import create_chapter4_2
+from chapter4_3 import create_chapter4_3
+
 
 
 from docx import Document
@@ -14,6 +16,8 @@ def merge_documents():
     doc3 = create_chapter3()
     doc4_1 = create_chapter4_1()
     doc4_2 = create_chapter4_2()
+    doc4_3 = create_chapter4_3()
+
 
     combined_doc = Document()
 
@@ -35,6 +39,9 @@ def merge_documents():
         combined_doc.element.body.append(element)
     
     for element in doc4_2.element.body:
+        combined_doc.element.body.append(element)
+
+    for element in doc4_3.element.body:
         combined_doc.element.body.append(element)
 
     combined_doc.save("combined.docx")

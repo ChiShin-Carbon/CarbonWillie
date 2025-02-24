@@ -199,17 +199,6 @@ def set_ch3_table1(table):
         paragraph = cell.paragraphs[0] if cell.paragraphs else cell.add_paragraph()
         run = paragraph.add_run(text)
 
-    # 合併第1, 2, 15, 16列的最上面兩行
-    table.cell(0, 0).merge(table.cell(1, 0))  # 合併第1列
-    table.cell(0, 1).merge(table.cell(1, 1))  # 合併第2列
-    table.cell(0, 14).merge(table.cell(1, 14))  # 合併第15列
-    table.cell(0, 15).merge(table.cell(1, 15))  # 合併第16列
-
-    # 合併第3, 4, 5列的第一行為一個大格
-    table.cell(0, 2).merge(table.cell(0, 4))  # 合併第3, 4, 5列
-    table.cell(0, 5).merge(table.cell(0, 6))  # 合併第3, 4, 5列
-    table.cell(0, 7).merge(table.cell(0, 13))  # 合併第3, 4, 5列
-
     for row in table.rows:
         for cell in row.cells:
             tc_pr = cell._element.get_or_add_tcPr()
@@ -224,6 +213,19 @@ def set_ch3_table1(table):
                 tc_borders.append(border)
 
             tc_pr.append(tc_borders)
+
+    # 合併第1, 2, 15, 16列的最上面兩行
+    table.cell(0, 0).merge(table.cell(1, 0))  # 合併第1列
+    table.cell(0, 1).merge(table.cell(1, 1))  # 合併第2列
+    table.cell(0, 14).merge(table.cell(1, 14))  # 合併第15列
+    table.cell(0, 15).merge(table.cell(1, 15))  # 合併第16列
+
+    # 合併第3, 4, 5列的第一行為一個大格
+    table.cell(0, 2).merge(table.cell(0, 4))  # 合併第3, 4, 5列
+    table.cell(0, 5).merge(table.cell(0, 6))  # 合併第3, 4, 5列
+    table.cell(0, 7).merge(table.cell(0, 13))  # 合併第3, 4, 5列
+
+    
     
     # 設置第一列和第二列（Header Row）的背景色、置中
     for row_index in range(2):  # 迭代第一行和第二行
@@ -284,6 +286,21 @@ def set_ch4_table1(table):
         paragraph = cell.paragraphs[0] if cell.paragraphs else cell.add_paragraph()
         run = paragraph.add_run(text)
 
+    for row in table.rows:
+            for cell in row.cells:
+                tc_pr = cell._element.get_or_add_tcPr()
+                tc_borders = OxmlElement('w:tcBorders')
+
+                for border_name in ['w:top', 'w:left', 'w:bottom', 'w:right', 'w:insideH', 'w:insideV']:
+                    border = OxmlElement(border_name)
+                    border.set(qn('w:val'), 'single')  # 單線
+                    border.set(qn('w:sz'), '4')       # 線條大小（1/8 pt）
+                    border.set(qn('w:space'), '0')    # 無間距
+                    border.set(qn('w:color'), '000000')  # 黑色
+                    tc_borders.append(border)
+
+                tc_pr.append(tc_borders)
+
     # 合併第1, 2, 15, 16列的最上面兩行
     table.cell(0, 0).merge(table.cell(1, 0))  # 合併第1列
     table.cell(0, 1).merge(table.cell(1, 1))  # 合併第2列
@@ -292,21 +309,7 @@ def set_ch4_table1(table):
     table.cell(0, 3).merge(table.cell(0, 4))  
     table.cell(0, 5).merge(table.cell(0, 6))  
     table.cell(0, 7).merge(table.cell(0, 15))
-
-    for row in table.rows:
-        for cell in row.cells:
-            tc_pr = cell._element.get_or_add_tcPr()
-            tc_borders = OxmlElement('w:tcBorders')
-
-            for border_name in ['w:top', 'w:left', 'w:bottom', 'w:right', 'w:insideH', 'w:insideV']:
-                border = OxmlElement(border_name)
-                border.set(qn('w:val'), 'single')  # 單線
-                border.set(qn('w:sz'), '4')       # 線條大小（1/8 pt）
-                border.set(qn('w:space'), '0')    # 無間距
-                border.set(qn('w:color'), '000000')  # 黑色
-                tc_borders.append(border)
-
-            tc_pr.append(tc_borders)
+    
     
     # 設置第一列和第二列（Header Row）的背景色、置中
     for row_index in range(2):  # 迭代第一行和第二行
@@ -395,6 +398,67 @@ def set_ch4_table2(table):
                 # 設定對齊方式
                 paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
+def set_ch4_table3(table):
+
+    for row in table.rows:
+        for cell in row.cells:
+            tc_pr = cell._element.get_or_add_tcPr()
+            tc_borders = OxmlElement('w:tcBorders')
+            
+            for border_name in ['w:top', 'w:left', 'w:bottom', 'w:right', 'w:insideH', 'w:insideV']:
+                border = OxmlElement(border_name)
+                border.set(qn('w:val'), 'single')  # 單線
+                border.set(qn('w:sz'), '4')       # 線條大小（1/8 pt）
+                border.set(qn('w:space'), '0')    # 無間距
+                border.set(qn('w:color'), '000000')  # 黑色
+                tc_borders.append(border)
+            
+            tc_pr.append(tc_borders)
+
+            # 設定垂直置中
+            cell.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
+
+    table.cell(1, 0).merge(table.cell(4, 0))  # 合併第2列
+
+    for cell in table.rows[0].cells:  # 只針對第一列
+        shading = parse_xml(r'<w:shd {} w:fill="E2EFD9"/>'.format(nsdecls('w')))
+        cell._tc.get_or_add_tcPr().append(shading)  # 設置背景顏色
+
+    for row_idx, row in enumerate(table.rows):
+        for col_idx, cell in enumerate(row.cells):
+            paragraph = cell.paragraphs[0]
+            run = paragraph.runs[0] if paragraph.runs else paragraph.add_run()
+
+            paragraph_format = paragraph.paragraph_format
+            paragraph_format.space_before = Pt(0)
+            paragraph_format.space_after = Pt(0)
+            paragraph_format.line_spacing_rule = WD_LINE_SPACING.SINGLE
+
+            # 設定字型
+            font = run.font
+            font.name = "Times New Roman"
+            run._element.rPr.rFonts.set(qn('w:eastAsia'), "標楷體")
+            font.size = Pt(10)
+
+            # 設定對齊方式
+            if row_idx == 0:
+                paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER  # 第一列維持置中
+            else:
+                if col_idx in [0, 1]:  # 第一、二欄
+                    paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                else:  # 其他欄
+                    paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
+                
+
+    # 設定欄位寬度
+    table.autofit = False  # 取消自動調整大小，手動設定寬度
+    total_width = Inches(7)  # 表格總寬度，可根據頁面大小調整
+    column_widths = [0.12, 0.16, 0.30, 0.12, 0.30]  # 各欄比例
+    for row in table.rows:
+        for col_idx, width_ratio in enumerate(column_widths):
+            row.cells[col_idx].width = total_width * width_ratio
+
+
 def set_ch4_stairs1(paragraph):
     run = paragraph.runs[0] if paragraph.runs else paragraph.add_run()
     font = run.font
@@ -458,3 +522,52 @@ def set_ch4_stairs4(paragraph):
     paragraph_format.line_spacing = 1.15
 
     paragraph_format.left_indent = Cm(3)  # 縮排 1 公分
+
+def set_ch4_stairs5(paragraph):
+    run = paragraph.runs[0] if paragraph.runs else paragraph.add_run()
+    font = run.font
+    font.name = "Times New Roman"
+    run._element.rPr.rFonts.set(qn('w:eastAsia'), "標楷體")
+    font.size = Pt(12)
+    
+    paragraph_format = paragraph.paragraph_format
+    paragraph_format.space_before = Pt(12)
+    paragraph_format.space_after = Pt(6)
+
+    paragraph_format.line_spacing_rule = WD_LINE_SPACING.MULTIPLE
+    paragraph_format.line_spacing = 1.15
+
+    paragraph_format.left_indent = Cm(0.75)  # 縮排 1 公分
+
+def set_ch4_stairs6(paragraph):
+    run = paragraph.runs[0] if paragraph.runs else paragraph.add_run()
+    font = run.font
+    font.name = "Times New Roman"
+    run._element.rPr.rFonts.set(qn('w:eastAsia'), "標楷體")
+    font.size = Pt(12)
+    
+    paragraph_format = paragraph.paragraph_format
+    paragraph_format.space_before = Pt(0)
+    paragraph_format.space_after = Pt(6)
+
+    paragraph_format.line_spacing_rule = WD_LINE_SPACING.MULTIPLE
+    paragraph_format.line_spacing = 1.15
+
+    paragraph_format.left_indent = Cm(2.25)  # 縮排 1 公分
+
+
+def set_ch4_stairs7(paragraph):
+    run = paragraph.runs[0] if paragraph.runs else paragraph.add_run()
+    font = run.font
+    font.name = "Times New Roman"
+    run._element.rPr.rFonts.set(qn('w:eastAsia'), "標楷體")
+    font.size = Pt(12)
+    
+    paragraph_format = paragraph.paragraph_format
+    paragraph_format.space_before = Pt(0)
+    paragraph_format.space_after = Pt(6)
+
+    paragraph_format.line_spacing_rule = WD_LINE_SPACING.MULTIPLE
+    paragraph_format.line_spacing = 1.15
+
+    paragraph_format.left_indent = Cm(0.31)  # 縮排 1 公分

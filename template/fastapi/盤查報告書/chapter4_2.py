@@ -1,7 +1,7 @@
 from docx import Document
 from docx.shared import Cm
 
-from storeDef import set_heading, set_heading2, set_paragraph, set_explain,set_ch4_table1,set_ch4_table2,set_ch4_stairs1,set_ch4_stairs2,set_ch4_stairs3,set_ch4_stairs4
+from storeDef import set_heading, set_heading2, set_paragraph, set_explain,set_ch4_table1,set_ch4_table2,set_ch4_table3,set_ch4_stairs1,set_ch4_stairs2,set_ch4_stairs3,set_ch4_stairs4,set_ch4_stairs5,set_ch4_stairs6
 
 def add_stairs_paragraphs(doc, texts, format_func):
     for text in texts:
@@ -87,5 +87,81 @@ def create_chapter4_2():
 
     doc.add_paragraph("")  # 插入一個空白行
     ############################################################################
+
+    stairs1 = doc.add_paragraph("(2) 類別2 – 能源間接排放")
+    set_ch4_stairs1(stairs1)
+
+    stairs2 = doc.add_paragraph("A.	間接排放源（外購電力）:")
+    set_ch4_stairs2(stairs2)
+
+    stairs3 = doc.add_paragraph("(A) 溫室氣體排放量計算公式如下：\n溫室氣體排放量 = 活動數據 × 排放係數 × 全球暖化潛勢值(GWP)")
+    set_ch4_stairs3(stairs3)
+
+    stairs3 = doc.add_paragraph("(B) 活動數據：全年用電量（千度）")
+    set_ch4_stairs3(stairs3)
+
+    stairs3 = doc.add_paragraph("(C) 排放係數：113年度之電力排碳係數為0.495公斤CO2e/度")
+    set_ch4_stairs3(stairs3)
+
+    table_explain = doc.add_paragraph("表4-9、間接排放源（外購電力）排放源")
+    set_explain(table_explain)
+    table4 = doc.add_table(rows=3, cols=16)
+    set_ch4_table1(table4)
+
+
+
+
+    stairs5 = doc.add_paragraph("4.1.1 活動數據蒐集與轉換方式")
+    set_ch4_stairs5(stairs5)
+    stairs6 = doc.add_paragraph("(1) 本公司各排放源之量化公式與活動數據蒐集方式彙整如表4-10所示。")
+    set_ch4_stairs5(stairs6)
+    stairs6 = doc.add_paragraph("(2) 各種溫室氣體之排放依來源不同，將活動數據單位化為公噸、公秉、千度等單位。")
+    set_ch4_stairs5(stairs6)
+
+    table_explain = doc.add_paragraph("表4-10、活動數據蒐集彙整表")
+    set_explain(table_explain)
+    table4 = doc.add_table(rows=6, cols=5)
+    table4.cell(0, 0).text = "營運邊界"
+    table4.cell(0, 1).text = "量化方式"
+    table4.cell(0, 2).text = "排放源"
+    table4.cell(0, 3).text = "負責部門"
+    table4.cell(0, 4).text = "活動數據收集說明"
+
+    table4.cell(1, 0).text = "直接排放源"
+    table4.cell(1, 1).text = "排放係數法"
+    table4.cell(2, 1).text = "排放係數法"
+    table4.cell(3, 1).text = "估算溫室氣體\n逸散量"
+    table4.cell(4, 1).text = "估算溫室氣體\n逸散量"
+    table4.cell(5, 0).text = "能源間接\n排放源"
+    table4.cell(5, 1).text = "排放係數法"
+
+    table4.cell(1, 2).text = "化糞池"
+    table4.cell(2, 2).text = "消防活動（滅火器）"
+    table4.cell(3, 2).text = "冷媒補充－各式冰水機、飲水機、冷氣機"
+    table4.cell(4, 2).text = "緊急發電機（柴油）"
+    table4.cell(5, 2).text = "外購電力"
+
+    table4.cell(1, 4).text = "人事考勤系統"
+    table4.cell(2, 4).text = "消防設備調查表（滅火器）"
+    table4.cell(3, 4).text = "冷媒銘牌填充量"
+    table4.cell(4, 4).text = "採購單據"
+    table4.cell(5, 4).text = "亞東科技大學板橋校區台電電費單\n(電號：01-18-2933-11-6、01-18-2931-11-4、01-18-2931-01-2)"
+
+    set_ch4_table3(table4)
+
+
+
+    stairs5 = doc.add_paragraph("4.1.2 排放係數來源")
+    set_ch4_stairs5(stairs5)
+    content = doc.add_paragraph("針對各種不同的溫室氣體排放源，本次盤查採用之排放係數來源主要為「溫室氣體排放係數管理表6.0.4版」，部分排放係數參考IPCC AR6；本次盤查採用溫室氣體盤查登錄表3.0.0文件，請詳見附件二。")
+    set_paragraph(content)
+    
+    stairs5 = doc.add_paragraph("4.1.3 全球暖化潛勢值(GWP)")
+    set_ch4_stairs5(stairs5)
+    content = doc.add_paragraph("計算出各類溫室氣體排放量後，應乘上各種溫室氣體所屬之全球暖化潛勢值(GWP)，並將其計算結果轉化為CO2e，單位為公噸/年。")
+    set_paragraph(content)
+
+
+
 
     return doc

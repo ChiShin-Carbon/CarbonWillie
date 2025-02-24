@@ -51,9 +51,6 @@ def create_chapter2():
     table.cell(0, 0).text = "報告邊界"
     table.cell(0, 1).text = "排放源"
 
-    # 設定表頭
-    table.cell(0, 0).text = "報告邊界"
-    table.cell(0, 1).text = "排放源"
 
     # 第一列 (類別1)
     table.cell(1, 0).text = "直接排放源\n（類別1）"
