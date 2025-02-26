@@ -1,25 +1,20 @@
-import os
-from fastapi import APIRouter, BackgroundTasks
-from fastapi.responses import FileResponse
-from 盤查報告書.word import create_word_file
+from docx import Document
+from docx.shared import Cm
 
-word_api = APIRouter(tags=["盤查報告書"])
+# 創建一個 Word 文件
+doc = Document()
 
-def remove_file(filename: str):
-    """ 刪除伺服器上的檔案 """
-    if os.path.exists(filename):
-        os.remove(filename)
+# 獲取文檔的第一個 section（默認只有一個）
+section = doc.sections[0]
 
-@word_api.get("/download-docx/")
-async def download_word(background_tasks: BackgroundTasks):
-    filename = "test.docx"
-    create_word_file(filename)  # 產生 Word 文件
-    
-    # **下載完成後，在背景刪除 Word 檔案**
-    background_tasks.add_task(remove_file, filename)
+# 設置自訂邊界，單位是厘米 (cm)
+section.top_margin = Cm(2)  # 上邊距
+section.bottom_margin = Cm(2)  # 下邊距
+section.left_margin = Cm(2)  # 左邊距
+section.right_margin = Cm(2)  # 右邊距
 
-    return FileResponse(
-        filename, 
-        media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document", 
-        filename=filename
-    )
+# 添加內容到文檔
+doc.add_paragraph("這是一個測試文檔，邊界已設置為 2 公分。")
+
+# 保存文檔
+doc.save("output_with_custom_margins.docx")

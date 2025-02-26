@@ -27,15 +27,20 @@ import CIcon from '@coreui/icons-react'
 import '../../../../scss/盤查進度管理.css'
 import '../../../../scss/碳盤查系統.css'
 import styles from '../../../../scss/活動數據盤點.module.css'
-
+import EditSuccessModal from './審核成功Modal.js'
 import { cilCheckAlt, cilX } from '@coreui/icons'
 
 const Tabs = () => {
+  const [successbutton, setsuccessVisible] = useState(false)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [falsebutton, setfalseVisible] = useState(false)
   const [visible, setVisible] = useState(false)
+
   const [searchInput, setSearchInput] = useState('') // 存放輸入框的臨時搜尋值
   const [searchValue, setSearchValue] = useState('') // 觸發搜尋的值
   const [selectedFeedback, setSelectedFeedback] = useState('') // 資料回報狀態
   const [tableData, setTableData] = useState([]) // 新增狀態來存放從後端獲取的資料
+  const [authorizedID, setAuthorizedID] = useState([]) // 新增來存放從後端獲取的資料
 
   const formatDate = (isoDate) => {
     if (!isoDate) {
@@ -98,8 +103,6 @@ const Tabs = () => {
       case 1:
         return '尚未審核'
       case 2:
-        return '待補件'
-      case 3:
         return '已審核'
       default:
         return '其他'
@@ -141,6 +144,15 @@ const Tabs = () => {
   const handleFeedbackChange = (e) => {
     setSelectedFeedback(e.target.value)
   }
+
+  const handleComplete = () => {
+    if (selectedItems.length === 0) {
+      setShowAlert(true);
+      return;
+    }
+    setShowModal(true);
+  };
+
 
   return (
     <CRow>
@@ -222,7 +234,6 @@ const Tabs = () => {
               <option value="">資料回報狀態</option>
               <option value="已審核">已審核</option>
               <option value="尚未審核">尚未審核</option>
-              <option value="待補件">待補件</option>
             </CFormSelect>
           </CCol>
         </div>
@@ -237,7 +248,7 @@ const Tabs = () => {
               <CTable>
                 <CTableHead color="light">
                   <CTableRow>
-                    <CTableHeaderCell scope="col">勾選</CTableHeaderCell>
+                    {/* <CTableHeaderCell scope="col">勾選</CTableHeaderCell> */}
                     <CTableHeaderCell scope="col">排放源項目</CTableHeaderCell>
                     <CTableHeaderCell scope="col">填寫單位</CTableHeaderCell>
                     <CTableHeaderCell scope="col">負責人</CTableHeaderCell>
@@ -250,10 +261,10 @@ const Tabs = () => {
                   {filteredData.length > 0 ? (
                     filteredData.map((row, index) => (
                       <CTableRow key={index}>
-                        {/* 勾選 */}
+                        {/* 勾選 
                         <CTableDataCell>
                           <CFormCheck style={{ borderColor: 'black' }} />
-                        </CTableDataCell>
+                        </CTableDataCell>*/}
                         {/* 排放源項目 */}
                         <CTableDataCell>{row.table_name}</CTableDataCell>
                         {/* 顯示部門名稱 */}
@@ -275,7 +286,44 @@ const Tabs = () => {
                           )}
                         </CTableDataCell>
                         {/* 回報狀態 */}
-                        <CTableDataCell>{getReview(row.review)}</CTableDataCell>
+                        <CTableDataCell>
+                          {/* {getReview(row.review)} 
+                          onClick={() => setVisible(!visible)}
+                          */}
+                          
+                          {/* {row.completed_at ? ( */}
+                            {/* 測試的 */}
+                            {row.review ? (<>
+                              <button className={styles.aza1} style={{ marginRight: '10px' }} onClick={() => setIsModalOpen(true)}>
+                                審核成功
+                              </button>
+                              <EditSuccessModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+                              
+                              <button className={styles.aza2} onClick={() => setfalseVisible(!visible)}>審核失敗</button>
+                            </>
+                          ) : (
+                            '尚未完成'
+                          )}
+
+                          {/* 正式的 */}
+                         {row.completed_at ? (
+                          row.review ? (
+                            getReview(row.review)
+                          ) : (
+                             <>
+                              <button className={styles.aza1} style={{ marginRight: '10px' }} onClick={() => setsuccessVisible(!visible)}>
+                                審核成功
+                              </button>
+                              <button className={styles.aza2} onClick={() => setfalseVisible(!visible)}>
+                                審核失敗
+                              </button>
+                            </>
+                          )
+                        ) : (
+                          '尚未完成'
+                        )}
+
+                        </CTableDataCell>
                       </CTableRow>
                     ))
                   ) : (
@@ -287,32 +335,51 @@ const Tabs = () => {
                   )}
                 </CTableBody>
               </CTable>
-              <div style={{ textAlign: 'center' }}>
               {/* onClick={() => setVisible(!visible)} */}
+              {/* <div style={{ textAlign: 'center' }}>
+              
                 <button className={styles.complete} onClick={() => setVisible(!visible)}>盤點完成</button>
-              </div>
+              </div> */}
+
+              {/* 審核成功model */}
               <CModal
-                visible={visible}
-                onClose={() => setVisible(false)}
+                visible={successbutton}
+                onClose={() => setsuccessVisible(false)}
                 aria-labelledby="LiveDemoExampleLabel"
               >
                 <CModalHeader>
-                  <CModalTitle id="LiveDemoExampleLabel">資料回報</CModalTitle>
+                  <CModalTitle id="LiveDemoExampleLabel"></CModalTitle>
                 </CModalHeader>
                 <CModalBody>
-                  
-                  <div className="d-flex flex-column align-items-center">
-                    <CFormCheck type="radio" name="exampleRadios" id="exampleRadios1" value="option1" label="已審核" defaultChecked/>
-                    <CFormCheck type="radio" name="exampleRadios" id="exampleRadios2" value="option2" label="待補件"/>
-                  </div>
+                  <div className="d-flex flex-column align-items-center"><center>確定為審核成功嗎?</center></div>
                 </CModalBody>
                 <CModalFooter>
-                  <CButton color="secondary" onClick={() => setVisible(false)}>
+                  <CButton className="modalbutton1" onClick={() => setsuccessVisible(false)}>
                     關閉
                   </CButton>
-                  <CButton color="primary">確定</CButton>
+                  <CButton className="modalbutton2">確定</CButton>
                 </CModalFooter>
               </CModal>
+                {/* 審核失敗model */}
+              <CModal
+                visible={falsebutton}
+                onClose={() => setfalseVisible(false)}
+                aria-labelledby="LiveDemoExampleLabel"
+              >
+                <CModalHeader>
+                  <CModalTitle id="LiveDemoExampleLabel"></CModalTitle>
+                </CModalHeader>
+                <CModalBody>
+                  <div className="d-flex flex-column align-items-center"><center>確定為審核失敗嗎?</center></div>
+                </CModalBody>
+                <CModalFooter>
+                  <CButton className="modalbutton1" onClick={() => setfalseVisible(false)}>
+                    關閉
+                  </CButton>
+                  <CButton className="modalbutton2">確定</CButton>
+                </CModalFooter>
+              </CModal>
+
             </CForm>
           </CCardBody>
         </CCard>
@@ -320,84 +387,4 @@ const Tabs = () => {
     </CRow>
   )
 }
-// import { useState } from "react";
-// import { CButton, CTable, CTableHead, CTableRow, CTableHeaderCell, CTableBody, CTableDataCell, CModal, CModalBody, CModalHeader, CModalTitle } from "@coreui/react";
-
-// const Tabs = () => {
-//   const [selectedItems, setSelectedItems] = useState([]);
-//   const [showModal, setShowModal] = useState(false);
-//   const [showAlert, setShowAlert] = useState(false);
-
-//   // 模擬表格數據
-//   const data = [
-//     { id: "1", name: "產品A" },
-//     { id: "2", name: "產品B" },
-//     { id: "3", name: "產品C" },
-//   ];
-
-//   // 處理勾選
-//   const handleCheckboxChange = (id) => {
-//     setSelectedItems((prev) =>
-//       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
-//     );
-//   };
-  
-
-//   // 點擊「盤點完成」按鈕
-//   const handleComplete = () => {
-//     if (selectedItems.length === 0) {
-//       setShowAlert(true);
-//       return;
-//     }
-//     setShowModal(true);
-//   };
-
-//   return (
-//     <div>
-//       {/* 表格 */}
-//       <CTable>
-//         <CTableHead>
-//           <CTableRow>
-//             <CTableHeaderCell>選取</CTableHeaderCell>
-//             <CTableHeaderCell>產品名稱</CTableHeaderCell>
-//           </CTableRow>
-//         </CTableHead>
-//         <CTableBody>
-//           {data.map((item) => (
-//             <CTableRow key={item.id}>
-//               <CTableDataCell>
-//                 <input
-//                   type="checkbox"
-//                   checked={selectedItems.includes(item.id)}
-//                   onChange={() => handleCheckboxChange(item.id)}
-//                 />
-//               </CTableDataCell>
-//               <CTableDataCell>{item.name}</CTableDataCell>
-//             </CTableRow>
-//           ))}
-//         </CTableBody>
-//       </CTable>
-
-//       {/* 按鈕 */}
-//       <CButton color="primary" onClick={handleComplete}>
-//         盤點完成
-//       </CButton>
-
-//       {/* 提示 Modal */}
-//       <CModal visible={showModal} onClose={() => setShowModal(false)}>
-//         <CModalHeader>
-//           <CModalTitle>盤點結果</CModalTitle>
-//         </CModalHeader>
-//         <CModalBody>您已選擇 {selectedItems.length} 個項目</CModalBody>
-//       </CModal>
-
-//       {/* Alert 提示 */}
-//       {showAlert && (
-//         <div style={{ color: "red", marginTop: "10px" }}>請至少選擇一個項目！</div>
-//       )}
-//     </div>
-//   );
-// };
-
-// export default Tabs; 
 export default Tabs

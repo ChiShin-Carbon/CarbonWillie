@@ -17,3 +17,6 @@ flask-cors
 mistralai
 serpapi
 python-docx
+PyPDF2
+pdfminer.six
+ast
