@@ -38,5 +38,8 @@ def create_chapter6():
     # 插入分頁符號
     doc.add_page_break()
 
+    title = doc.add_heading("附件",level=1)
+    set_heading(title)
+
 
     return doc

@@ -3,7 +3,6 @@ from urllib.parse import urlencode
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 from openai import OpenAI
-from pdfminer.high_level import extract_text
 from PyPDF2 import PdfReader
 import os
 import re

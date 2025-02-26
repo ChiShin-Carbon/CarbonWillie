@@ -684,10 +684,10 @@ def set_ch5_table2(table):
         run.font.bold = True  # 設置為粗體
            
             
-    # 設置表格內字體
-    for row in table.rows:
-        for cell in row.cells:
-            paragraph = cell.paragraphs[0]
+    # 設置表格內字體 & 文字對齊
+    for row_idx, row in enumerate(table.rows):  # 修改這裡
+        for col_idx, cell in enumerate(row.cells):  
+            paragraph = cell.paragraphs[0] if cell.paragraphs else cell.add_paragraph()
             run = paragraph.runs[0] if paragraph.runs else paragraph.add_run()
 
             paragraph_format = paragraph.paragraph_format
@@ -708,6 +708,7 @@ def set_ch5_table2(table):
                 paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER  # 其他部分保持置中
 
             cell.vertical_alignment = WD_ALIGN_VERTICAL.CENTER  # 上下置中
+
 
 def set_ch5_table3(table):
     header_cells = [
