@@ -190,7 +190,7 @@ for row in TJ_to_kcal_Array:
     print(formatted_row)
 
 # LHV values corresponding to each fuel type
-LHV = [7800, 8400, 6156, 8000, 1, 7800, 7800, 7800, 8400]
+LHV = [7800, 8400, 15.40, 8000, 1, 7800, 7800, 7800, 8400]
 
 # Perform calculations using float values
 for i in range(n):
