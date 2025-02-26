@@ -18,7 +18,7 @@ def create_title():
     ###################################################
  
     heading = doc.add_heading("目錄")
-    set_heading(heading)
+    set_heading()
     
 
 

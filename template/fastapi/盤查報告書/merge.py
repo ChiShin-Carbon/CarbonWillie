@@ -27,9 +27,6 @@ def merge_documents():
     title = create_title()
 
 
-
-
-
     combined_doc = Document()
 
     for element in title.element.body:
