@@ -1,0 +1,461 @@
+這些資料庫中包含的tables:
+
+員工table:
+CREATE TABLE users (
+    user_id BIGINT PRIMARY KEY IDENTITY(1,1),  --      Auto-incrementing primary key
+    business_id CHAR(8),
+    username VARCHAR(10),
+    email VARCHAR(30),
+    telephone VARCHAR(20),
+    phone CHAR(10),
+    department TINYINT,
+    position TINYINT,
+    address VARCHAR(10),
+    password VARCHAR(100),
+    role BIT,
+    FOREIGN KEY (business_id) REFERENCES               Company_Info(business_id) 
+);
+
+職位 (1：總經理, 2：副總經理, 3：主管, 4：副主管, 5：組長, 6：其他) 
+所屬部門 (1：管理部門, 2：資訊部門, 3：業務部門, 4：門診部們, 5：健檢部門, 6：檢驗部門, 7：其他)
+
+公司資訊:
+CREATE TABLE Company_Info (
+    business_id CHAR(8) PRIMARY KEY,
+    registration_number char(8),
+    org_name VARCHAR(50),
+    factory_number CHAR(8),
+    county VARCHAR(10),
+    town VARCHAR(10),
+    postal_code CHAR(3),
+    org_address TEXT,
+    charge_person VARCHAR(10),
+    org_email VARCHAR(30),
+    industry_code CHAR(4),
+    industry_name VARCHAR(10)
+);
+
+聯絡人資訊:
+CREATE TABLE Contact_Info (
+    contact_id BIGINT PRIMARY KEY IDENTITY(1,1),  -- Auto-incrementing primary key
+    business_id CHAR(8),
+    contact_person VARCHAR(10),
+    telephone VARCHAR(20),
+    email VARCHAR(30),
+    phone CHAR(10),
+    FOREIGN KEY (business_id) REFERENCES Company_Info(business_id) 
+);
+
+CFV_Info 盤查資訊:
+CREATE TABLE CFV_Info (
+    cfv_id BIGINT PRIMARY KEY IDENTITY(1,1),  -- Auto-incrementing primary key
+    business_id CHAR(8),
+    reason TINYINT,
+    GHG_Reg_Guide BIT,
+    ISO_CNS_14064_1 BIT,
+    GHG_Protocol BIT,
+    verification BIT,
+    inspection_agency TINYINT,
+    significance VARCHAR(10),
+    materiality VARCHAR(10),
+    exclusion VARCHAR(10),
+    GWP_version VARCHAR(10),
+    FOREIGN KEY (business_id) REFERENCES Company_Info(business_id) 
+);
+
+授權(哪些職位能編輯table):
+CREATE TABLE Authorized_Table (
+    authorized_record_id BIGINT PRIMARY KEY IDENTITY(1,1),  -- Auto-incrementing primary key
+    user_id BIGINT,
+    table_name VARCHAR(30),
+    is_done BIT,
+    completed_at DATETIME,
+    review TINYINT,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+INSERT INTO Authorized_Table(user_id, table_name, is_done, completed_at, review)
+VALUES(2, '公務車', 0, NULL, 1);
+INSERT INTO Authorized_Table(user_id, table_name, is_done, completed_at, review)
+VALUES(2, '冷媒', 0, NULL, 1);
+INSERT INTO Authorized_Table(user_id, table_name, is_done, completed_at, review)
+VALUES(1, '電力使用量', 0, NULL, 1);
+INSERT INTO Authorized_Table(user_id, table_name, is_done, completed_at, review)
+VALUES(2, '滅火器', 0, NULL, 1);
+
+公務車:
+CREATE TABLE Vehicle (
+    vehicle_id BIGINT PRIMARY KEY IDENTITY(1,1),  -- Auto-incrementing primary key
+    user_id BIGINT,
+    Doc_date DATE,
+    Doc_number VARCHAR(15),
+    oil_species BIT,
+    liters DECIMAL(10,5),
+    remark TEXT,
+    img_path VARCHAR(100),
+    edit_time SMALLDATETIME,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+滅火器:
+CREATE TABLE Extinguisher (
+    extinguisher_id BIGINT PRIMARY KEY IDENTITY(1,1),  -- Auto-incrementing primary key
+    user_id BIGINT,
+    item_name VARCHAR(30),
+    ingredient TINYINT,
+    specification DECIMAL(7,2),
+    remark TEXT,
+    img_path VARCHAR(255),
+    edit_time SMALLDATETIME,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+滅火器填充紀錄:
+CREATE TABLE Extinguisher_FillRec (
+    fillrec_id BIGINT PRIMARY KEY IDENTITY(1,1),  -- Auto-incrementing primary key
+    extinguisher_id BIGINT,
+    user_id BIGINT,
+    Doc_date DATE,
+    Doc_number VARCHAR(30),
+    usage DECIMAL(7,2),
+    remark TEXT,
+    img_path VARCHAR(255),
+    edit_time SMALLDATETIME,
+    FOREIGN KEY (extinguisher_id) REFERENCES Extinguisher(extinguisher_id),
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+員工資訊:
+CREATE TABLE Employee (
+    employee_id BIGINT PRIMARY KEY IDENTITY(1,1),  -- Auto-incrementing primary key
+    user_id BIGINT,
+    period_date DATE,
+    employee_number INT,
+    daily_hours INT,
+    workday INT,
+    overtime DECIMAL(7,2),
+    sick_leave DECIMAL(7,2),
+    personal_leave DECIMAL(7,2),
+    business_trip DECIMAL(7,2),
+    wedding_and_funeral DECIMAL(7,2),
+    special_leave DECIMAL(7,2),
+    remark TEXT,
+    img_path VARCHAR(255),
+    edit_time SMALLDATETIME,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+非員工資訊:
+CREATE TABLE NonEmployee (
+    nonemployee_id BIGINT PRIMARY KEY IDENTITY(1,1),  -- Auto-incrementing primary key
+    user_id BIGINT,
+    period_date DATE,
+    nonemployee_number INT,
+    total_hours INT,
+    total_days INT,
+    remark TEXT,
+    img_path VARCHAR(255),
+    edit_time SMALLDATETIME,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+冷媒:
+CREATE TABLE Refrigerant (
+    refrigerant_id BIGINT PRIMARY KEY IDENTITY(1,1),  -- Auto-incrementing primary key
+    user_id BIGINT,
+    device_type TINYINT,
+    device_location VARCHAR(50),
+    refrigerant_type TINYINT,
+    remark TEXT,
+    img_path VARCHAR(255),
+    edit_time SMALLDATETIME,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+冷媒填充紀錄:
+CREATE TABLE Refrigerant_FillRec (
+    fillrec_id BIGINT PRIMARY KEY IDENTITY(1,1),  -- Auto-incrementing primary key
+    refrigerant_id BIGINT,
+    user_id BIGINT,
+    Doc_date DATE,
+    Doc_number VARCHAR(30),
+    usage DECIMAL(7,2),
+    escape_rate  DECIMAL(7,2),
+    remark TEXT,
+    img_path VARCHAR(255),
+    edit_time SMALLDATETIME,
+    FOREIGN KEY (refrigerant_id) REFERENCES Refrigerant(refrigerant_id),
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+場內機具:
+CREATE TABLE Machinery (
+    machinery_id BIGINT PRIMARY KEY IDENTITY(1,1),  -- Auto-incrementing primary key
+    user_id BIGINT,
+    Doc_date DATE,
+    Doc_number VARCHAR(15),
+    machinery_location VARCHAR(50),
+    energy_type TINYINT,
+    usage DECIMAL(7,2),
+    remark TEXT,
+    img_path VARCHAR(255),
+    edit_time SMALLDATETIME,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+緊急發電機:
+CREATE TABLE Emergency_Generator (
+    generator_id BIGINT PRIMARY KEY IDENTITY(1,1),  -- Auto-incrementing primary key
+    user_id BIGINT,
+    Doc_date DATE,
+    Doc_number VARCHAR(15),
+    usage DECIMAL(7,2),
+    remark TEXT,
+    img_path VARCHAR(255),
+    edit_time SMALLDATETIME,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+電力使用量:
+CREATE TABLE Electricity (
+    electricity_id BIGINT PRIMARY KEY IDENTITY(1,1),  -- Auto-incrementing primary key
+    user_id BIGINT,
+    customer_number VARCHAR(50),
+    remark TEXT,
+    edit_time SMALLDATETIME,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+CREATE TABLE Electricity_Usage (
+    usage_id BIGINT PRIMARY KEY IDENTITY(1,1),  -- Auto-incrementing primary key
+    electricity_id BIGINT,
+    user_id BIGINT,
+    Doc_date DATE,
+    Doc_number VARCHAR(15),
+    period_start DATE,
+    period_end DATE,
+    electricity_type TINYINT,
+    usage DECIMAL(7,2),
+    amount DECIMAL(7,2),
+    carbon_emission DECIMAL(7,2),
+    remark TEXT,
+    img_path VARCHAR(255),
+    edit_time SMALLDATETIME,
+    FOREIGN KEY (electricity_id) REFERENCES Electricity(electricity_id),
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+基準年:
+CREATE TABLE Baseline (
+    baseline_id BIGINT PRIMARY KEY IDENTITY(1,1),  -- Auto-incrementing primary key
+    user_id BIGINT,
+    cfv_start_date DATE,
+    cfv_end_date DATE,
+    edit_time SMALLDATETIME,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+邊界設定:
+CREATE TABLE Boundary (
+    boundary_id BIGINT PRIMARY KEY IDENTITY(1,1),  -- Auto-incrementing primary key
+    baseline_id BIGINT,
+    user_id BIGINT,
+    field_name VARCHAR(50),
+    field_address TEXT,
+    is_inclusion BIT,
+    remark TEXT,
+    method TINYINT,
+    FOREIGN KEY (baseline_id) REFERENCES Baseline(baseline_id),
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+員工通勤:
+CREATE TABLE Commute (
+    commute_id BIGINT PRIMARY KEY IDENTITY(1,1),  -- Auto-incrementing primary key
+    user_id BIGINT,
+    transportation TINYINT,
+    oil_species TINYINT,
+    kilometers DECIMAL(7,2),
+    remark TEXT,
+    img_path VARCHAR(100),
+    edit_time SMALLDATETIME,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+商務旅行:
+CREATE TABLE Business_Trip (
+    businesstrip_id BIGINT PRIMARY KEY IDENTITY(1,1),  -- Auto-incrementing primary key
+    user_id BIGINT,
+    transportation TINYINT,
+    oil_species TINYINT,
+    kilometers DECIMAL(7,2),
+    remark TEXT,
+    img_path VARCHAR(100),
+    edit_time SMALLDATETIME,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+營運產生的廢棄物:
+CREATE TABLE Operational_Waste (
+    waste_id BIGINT PRIMARY KEY IDENTITY(1,1),  -- Auto-incrementing primary key
+    user_id BIGINT,
+    waste_item VARCHAR(50),
+    remark TEXT,
+    img_path VARCHAR(100),
+    edit_time SMALLDATETIME,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+銷售產品的廢棄物:
+CREATE TABLE Selling_Waste (
+    waste_id BIGINT PRIMARY KEY IDENTITY(1,1),  -- Auto-incrementing primary key
+    user_id BIGINT,
+    waste_item VARCHAR(50),
+    remark TEXT,
+    img_path VARCHAR(100),
+    edit_time SMALLDATETIME,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+顧問&公司的中介table:
+CREATE TABLE CompanyConsultant (
+    user_id BIGINT,
+    business_id CHAR(8),
+    assigned_date DATE DEFAULT GETDATE(),
+    PRIMARY KEY (user_id, business_id),
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
+    FOREIGN KEY (business_id) REFERENCES Company_Info(business_id)
+);
+
+
+碳費新聞:
+CREATE TABLE news (
+    news_id BIGINT PRIMARY KEY IDENTITY(1,1),
+    news_title TEXT,
+    news_url TEXT,
+    news_summary TEXT,
+    news_date DATE
+    today_news_date DATE
+);
+
+排放源鑑別:
+CREATE TABLE Emission_Source (
+    source_id BIGINT PRIMARY KEY IDENTITY(1,1),  -- Auto-incrementing primary key
+    baseline_id BIGINT,
+    source_table VARCHAR(30),
+    process_code CHAR(6),
+    device_code CHAR(4),
+    fuel_category BIT,
+    fuel_code CHAR(6),
+    trust_category TINYINT,
+    credibility_info TEXT,
+    is_bioenergy BIT DEFAULT 0,
+    emission_category TINYINT,
+    emission_pattern TINYINT DEFAULT 0,
+    process_category TINYINT DEFAULT 0, 
+    escape_category TINYINT DEFAULT 0, 
+    power_category TINYINT DEFAULT 0,
+    supplier VARCHAR(50),
+    is_CHP BIT,
+    remark TEXT,
+    FOREIGN KEY (baseline_id) REFERENCES Baseline(baseline_id)
+);
+
+
+排放係數:
+CREATE TABLE Emission_Factor (
+    factor_id BIGINT PRIMARY KEY IDENTITY(1,1),  -- Auto-incrementing primary key
+    fuel_code CHAR(6),
+    gas_type TINYINT,
+    factor_type BIT,
+    factor DECIMAL(7,6),
+    factor_source VARCHAR(50),
+    confidence_interval_L DECIMAL(7,2),
+    confidence_interval_U DECIMAL(7,2), 
+    GWP INT, 
+    update_time DATE,
+);
+
+INSERT INTO Emission_Factor (
+fuel_code, gas_type, factor_type, factor, factor_source, confidence_interval_L,
+confidence_interval_U, GWP, update_time
+)
+VALUES ('360006', 2, 0, 0.003825, '環保署溫室氣體排放係數管理表6.0.4版', 70.0, 200.0, 28, '2024-02-05')
+
+INSERT INTO Emission_Factor (
+fuel_code, gas_type, factor_type, factor, factor_source, confidence_interval_L,
+confidence_interval_U, GWP, update_time
+)
+VALUES ('170006', 1, 0, 2.2631, '環保署溫室氣體排放係數管理表6.0.4版', 2.6, 5.3, 1, '2024-02-05')
+
+INSERT INTO Emission_Factor (
+fuel_code, gas_type, factor_type, factor, factor_source, confidence_interval_L,
+confidence_interval_U, GWP, update_time
+)
+VALUES ('170006', 2, 0, 0.000816, '環保署溫室氣體排放係數管理表6.0.4版', 66.7, 244.0, 28, '2024-02-05')
+
+INSERT INTO Emission_Factor (
+fuel_code, gas_type, factor_type, factor, factor_source, confidence_interval_L,
+confidence_interval_U, GWP, update_time
+)
+VALUES ('170006', 3, 0, 0.000261, '環保署溫室氣體排放係數管理表6.0.4版', 66.7, 233.3, 265, '2024-02-05')
+
+INSERT INTO Emission_Factor (
+fuel_code, gas_type, factor_type, factor, factor_source, confidence_interval_L,
+confidence_interval_U, GWP, update_time
+)
+VALUES ('350099', 1, 0, 0.494, '能源局公告係數', 7.0, 7.0, 1, '2024-10-04')
+
+INSERT INTO Emission_Factor (
+fuel_code, gas_type, factor_type, factor, factor_source, confidence_interval_L,
+confidence_interval_U, GWP, update_time
+)
+VALUES ('170001', 1, 0, 2.6060, '環保署溫室氣體排放係數管理表6.0.4版', 2.0, 0.9, 1, '2024-02-05')
+
+INSERT INTO Emission_Factor (
+fuel_code, gas_type, factor_type, factor, factor_source, confidence_interval_L,
+confidence_interval_U, GWP, update_time
+)
+VALUES ('170001', 2, 0, 0.000137, '環保署溫室氣體排放係數管理表6.0.4版', 59.0, 143.6, 28, '2024-02-05')
+
+INSERT INTO Emission_Factor (
+fuel_code, gas_type, factor_type, factor, factor_source, confidence_interval_L,
+confidence_interval_U, GWP, update_time
+)
+VALUES ('170001', 3, 0, 0.000137, '環保署溫室氣體排放係數管理表6.0.4版', 66.7, 207.7, 265, '2024-02-05')
+
+活動數據:
+CREATE TABLE Activity_Data (
+    activity_data_id BIGINT PRIMARY KEY IDENTITY(1,1),  -- Auto-incrementing primary key
+    source_id BIGINT,
+    activity_data DECIMAL(10,5),
+    distribution_ratio DECIMAL(5,2),
+    activity_data_unit TINYINT DEFAULT 0,
+    custom_unit_name VARCHAR(30),
+    data_source TEXT,
+    save_unit VARCHAR(30),
+    data_type TINYINT,
+    calorific_value DECIMAL(7,2), 
+    moisture_content DECIMAL(5,2), 
+    carbon_content DECIMAL(5,2),
+);
+
+定量盤查:
+CREATE TABLE Quantitative_Inventory (
+    quatitative_id BIGINT PRIMARY KEY IDENTITY(1,1),  -- Auto-incrementing primary key
+    source_id BIGINT,
+    emissions DECIMAL(10,5),
+    emission_equivalent DECIMAL(10,5)
+);
+
+
+排放係數table:
+CREATE TABLE Fuel_Factors (
+    fuel_factor_id BIGINT PRIMARY KEY IDENTITY(1,1),
+    FuelType VARCHAR(100) , 
+    CO2_Emission VARCHAR(30),
+    CH4_Emission VARCHAR(30),
+    N2O_Emission VARCHAR(30),
+    LowerHeatingValue VARCHAR(30),
+    update_time SMALLDATETIME
+);

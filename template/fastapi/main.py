@@ -72,7 +72,6 @@ from 管理者.insert_adminConsultant import insert_adminConsultant
 from 管理者.edit_adminConsultant import edit_adminConsultant
 
 
-from 盤查報告書.word_api import word_api  # 匯入 Word 產生函式
 
 
 from findone.vehicle import vehicle_findone
@@ -196,7 +195,6 @@ app.include_router(edit_adminConsultant)
 
 
 
-app.include_router(word_api)
 
 
 

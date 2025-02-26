@@ -28,11 +28,13 @@ import '../../../../scss/盤查進度管理.css'
 import '../../../../scss/碳盤查系統.css'
 import styles from '../../../../scss/活動數據盤點.module.css'
 import EditSuccessModal from './審核成功Modal.js'
+import EditFalseModal from './審核失敗Modal.js'
 import { cilCheckAlt, cilX } from '@coreui/icons'
 
 const Tabs = () => {
   const [successbutton, setsuccessVisible] = useState(false)
-  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isTrueModalOpen, setTrueIsModalOpen] = useState(false)
+  const [isFalseModalOpen, setFalseIsModalOpen] = useState(false)
   const [falsebutton, setfalseVisible] = useState(false)
   const [visible, setVisible] = useState(false)
 
@@ -293,17 +295,17 @@ const Tabs = () => {
                           
                           {/* {row.completed_at ? ( */}
                             {/* 測試的 */}
-                            {row.review ? (<>
-                              <button className={styles.aza1} style={{ marginRight: '10px' }} onClick={() => setIsModalOpen(true)}>
-                                審核成功
-                              </button>
-                              <EditSuccessModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+                              {row.review ? (<>
+                                <button className={styles.aza1} style={{ marginRight: '10px' }} onClick={() => setTrueIsModalOpen(true)}>審核成功</button>
+                                <button className={styles.aza2} style={{ marginRight: '10px' }} onClick={() => setFalseIsModalOpen(true)}>審核失敗</button>
+
+                                <EditSuccessModal isOpen={isTrueModalOpen} onClose={() => setTrueIsModalOpen(false)} />
+                                <EditFalseModal isOpen={isFalseModalOpen} onClose={() => setFalseIsModalOpen(false)} />
+                              </>
+                            ) : (
+                              <button className={styles.aza1} disabled>'尚未完成'</button>
                               
-                              <button className={styles.aza2} onClick={() => setfalseVisible(!visible)}>審核失敗</button>
-                            </>
-                          ) : (
-                            '尚未完成'
-                          )}
+                            )}
 
                           {/* 正式的 */}
                          {row.completed_at ? (
@@ -311,16 +313,16 @@ const Tabs = () => {
                             getReview(row.review)
                           ) : (
                              <>
-                              <button className={styles.aza1} style={{ marginRight: '10px' }} onClick={() => setsuccessVisible(!visible)}>
+                              <button className={styles.aza1} style={{ marginRight: '10px' }} onClick={() => setTrueIsModalOpen(true)}>
                                 審核成功
                               </button>
-                              <button className={styles.aza2} onClick={() => setfalseVisible(!visible)}>
+                              <button className={styles.aza2} onClick={() => setFalseIsModalOpen(true)}>
                                 審核失敗
                               </button>
                             </>
                           )
                         ) : (
-                          '尚未完成'
+                          <button className={styles.aza3}>尚未完成</button>
                         )}
 
                         </CTableDataCell>
@@ -340,46 +342,6 @@ const Tabs = () => {
               
                 <button className={styles.complete} onClick={() => setVisible(!visible)}>盤點完成</button>
               </div> */}
-
-              {/* 審核成功model */}
-              <CModal
-                visible={successbutton}
-                onClose={() => setsuccessVisible(false)}
-                aria-labelledby="LiveDemoExampleLabel"
-              >
-                <CModalHeader>
-                  <CModalTitle id="LiveDemoExampleLabel"></CModalTitle>
-                </CModalHeader>
-                <CModalBody>
-                  <div className="d-flex flex-column align-items-center"><center>確定為審核成功嗎?</center></div>
-                </CModalBody>
-                <CModalFooter>
-                  <CButton className="modalbutton1" onClick={() => setsuccessVisible(false)}>
-                    關閉
-                  </CButton>
-                  <CButton className="modalbutton2">確定</CButton>
-                </CModalFooter>
-              </CModal>
-                {/* 審核失敗model */}
-              <CModal
-                visible={falsebutton}
-                onClose={() => setfalseVisible(false)}
-                aria-labelledby="LiveDemoExampleLabel"
-              >
-                <CModalHeader>
-                  <CModalTitle id="LiveDemoExampleLabel"></CModalTitle>
-                </CModalHeader>
-                <CModalBody>
-                  <div className="d-flex flex-column align-items-center"><center>確定為審核失敗嗎?</center></div>
-                </CModalBody>
-                <CModalFooter>
-                  <CButton className="modalbutton1" onClick={() => setfalseVisible(false)}>
-                    關閉
-                  </CButton>
-                  <CButton className="modalbutton2">確定</CButton>
-                </CModalFooter>
-              </CModal>
-
             </CForm>
           </CCardBody>
         </CCard>
