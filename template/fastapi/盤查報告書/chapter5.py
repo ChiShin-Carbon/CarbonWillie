@@ -25,10 +25,10 @@ def create_chapter5():
     preface = doc.add_heading("5.1 基準年設定",level=2)
     set_heading2(preface)
     
-    content = doc.add_paragraph("本校於114年1月規劃並導入溫室氣體盤查，以113年度(最近一個完整會計年度)為本校溫室氣體盤查之基準年。基準年排放清冊如表5.1所示，基準年排放量為244.774噸CO2e。")
+    content = doc.add_paragraph("本機構於【ooo年OO月】規劃並導入溫室氣體盤查，以【ooo年度】(最近一個完整會計年度)為本機構溫室氣體盤查之基準年。基準年排放清冊如表5.1所示，基準年排放量為【xxxx.xxxx】噸CO2e。")
     set_paragraph(content)
 
-    explain = doc.add_paragraph("表5.1、亞東科技大學板橋校區基準年溫室氣體排放清冊")
+    explain = doc.add_paragraph("表5.1、【機構名稱】基準年溫室氣體排放清冊")
     set_explain(explain)
 
     table1 = doc.add_table(rows=3, cols=12)

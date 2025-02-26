@@ -3,6 +3,8 @@ from docx.shared import Cm
 
 from storeDef import set_title
 
+from datetime import datetime
+
 def create_title():
     doc = Document()
 
@@ -19,7 +21,7 @@ def create_title():
     doc.add_paragraph("")  # 插入一個空白行
     doc.add_paragraph("")  # 插入一個空白行
     doc.add_paragraph("")  # 插入一個空白行
-    title=doc.add_paragraph("2024年【請輸入組織名稱】\n溫室氣體盤查報告書")
+    title=doc.add_paragraph("OOOO年【請輸入機構名稱】\n溫室氣體盤查報告書")
     set_title(title)
     doc.add_paragraph("")  # 插入一個空白行
     doc.add_paragraph("")  # 插入一個空白行
@@ -40,7 +42,10 @@ def create_title():
     doc.add_paragraph("")  # 插入一個空白行
     doc.add_paragraph("")  # 插入一個空白行
     doc.add_paragraph("")  # 插入一個空白行
-    title=doc.add_paragraph("2025 年 01 月 14 日")
+
+    # 取得當前日期
+    current_date = datetime.now().strftime("%Y 年 %m 月 %d 日")
+    title = doc.add_paragraph(current_date)
     set_title(title)
 
     # 插入分頁符號

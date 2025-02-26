@@ -25,7 +25,7 @@ def create_chapter4_1():
     preface = doc.add_heading("4.1 量化方法",level=2)
     set_heading2(preface)
     
-    content = doc.add_paragraph("本公司各種溫室氣體排放量計算方式主要採用「排放係數法」計算。")
+    content = doc.add_paragraph("本機構各種溫室氣體排放量計算方式主要採用「排放係數法」計算。")
     set_paragraph(content)
 
     stairs1 = doc.add_paragraph("(1) 類別1 – 直接排放")

@@ -17,7 +17,7 @@ def create_chapter1():
     
     ################第一章######################
     #標題
-    title = doc.add_heading("第一章、本校簡介與政策聲明",level=1)
+    title = doc.add_heading("第一章、機構簡介與政策聲明",level=1)
     set_heading(title)
     
     #1.1前言
@@ -40,17 +40,17 @@ def create_chapter1():
     set_paragraph(content)
     set_paragraph(content2)
 
-    table_explain = doc.add_paragraph("表1、學校場所資料表")
+    table_explain = doc.add_paragraph("表1、機構場所資料表")
     set_explain(table_explain)
     table = doc.add_table(rows=4, cols=2)
-    table.cell(0, 0).text = "學校名稱"
-    table.cell(0, 1).text = "亞東科技大學"
-    table.cell(1, 0).text = "校長"
-    table.cell(1, 1).text = "黃茂全"
-    table.cell(2, 0).text = "教職員生總人數"
-    table.cell(2, 1).text = "4,397人"
-    table.cell(3, 0).text = "學校地址"
-    table.cell(3, 1).text = "新北市板橋區四川路二段58號"
+    table.cell(0, 0).text = "機構名稱"
+    table.cell(0, 1).text = ""
+    table.cell(1, 0).text = "負責人"
+    table.cell(1, 1).text = ""
+    table.cell(2, 0).text = "員工總人數"
+    table.cell(2, 1).text = "n人"
+    table.cell(3, 0).text = "機構地址"
+    table.cell(3, 1).text = ""
     set_ch1_table1(table)
 
 
@@ -60,10 +60,10 @@ def create_chapter1():
     #1.3組織及架構
     preface = doc.add_heading("1.3 組織及架構",level=2)
     set_heading2(preface)
-    content = doc.add_paragraph("【請放置組織架構圖】")
+    content = doc.add_paragraph("【請插入組織架構圖】")
     set_paragraph(content)
 
-    photo_explain = doc.add_paragraph("圖一、亞東科技大學組織架構圖")
+    photo_explain = doc.add_paragraph("圖一、【機構名稱】組織架構圖")
     set_explain(photo_explain)
 
     # 插入分頁符號
@@ -74,11 +74,11 @@ def create_chapter1():
     preface = doc.add_heading("1.4 報告書涵蓋期間與責任/有效期間",level=2)
     set_heading2(preface)
     content1_4_1 = doc.add_paragraph("1.4.1 報告書涵蓋期間與責任")
-    content1_4_1_1=doc.add_paragraph("本報告書之盤查內容是以2024年度於板橋校區（以下均稱本校）組織邊界範圍內產生之所有溫室氣體為盤查範圍，並供作下年度新報告書完成前引用。")
+    content1_4_1_1=doc.add_paragraph("本報告書之盤查內容是以【OOOO年度】於【地址】（以下均稱本機構）組織邊界範圍內產生之所有溫室氣體為盤查範圍，並供作下年度新報告書完成前引用。")
     
     content1_4_2 = doc.add_paragraph("1.4.2 本報告書為隔年1月時開始進行前一年度之溫室氣體排放量之各項盤查工作，並於2月開始報告書之內容製作，其涵蓋前一年本校之溫室氣體排放總結，供作本年度及下年度新報告書完成前引用。")
     content1_4_3=doc.add_paragraph("1.4.3 報告書完成後，經過年度內部諮詢之程序，並修正缺失後，完成本報告書。")
-    content1_4_4=doc.add_paragraph("1.4.4 本報告書盤查範圍只限於本校區營運範圍之總溫室氣體之排放量，本校之組織營運範圍，若有變動時，本報告書將一併進行修正並重新發行。")
+    content1_4_4=doc.add_paragraph("1.4.4 本報告書盤查範圍只限於本機構營運範圍之總溫室氣體之排放量，本機構之組織營運範圍，若有變動時，本報告書將一併進行修正並重新發行。")
 
     set_ch1_pointlist(content1_4_1)
     set_ch1_pointlist(content1_4_1_1)
@@ -96,8 +96,8 @@ def create_chapter1():
     #1.6 本盤查報告書製作目的
     preface = doc.add_heading("1.6 本盤查報告書製作目的",level=2)
     set_heading2(preface)
-    content1_6_1 = doc.add_paragraph("1.6.1 展現本校溫室氣體盤查結果。")
-    content1_6_2=doc.add_paragraph("1.6.2 妥當紀錄本校溫室氣體排放清冊，以利社會責任標準查證之需求。")
+    content1_6_1 = doc.add_paragraph("1.6.1 展現本機構溫室氣體盤查結果。")
+    content1_6_2=doc.add_paragraph("1.6.2 妥當紀錄本機構溫室氣體排放清冊，以利社會責任標準查證之需求。")
 
     set_ch1_pointlist(content1_6_1)
     set_ch1_pointlist(content1_6_2)
