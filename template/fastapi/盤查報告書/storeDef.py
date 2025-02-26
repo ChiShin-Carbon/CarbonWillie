@@ -777,7 +777,6 @@ def set_ch5_table3(table):
             # 設定垂直置中
             cell.vertical_alignment = WD_ALIGN_VERTICAL.CENTER 
 
-
 def set_ch5_table4(table):
     header_cells = [
         (0, 0, "全廠溫室氣體範疇別及類別一與二排放型式排放量統計表"),
@@ -861,3 +860,35 @@ def set_ch5_table4(table):
                 # 設定特定儲存格 (1,1) 和 (1,5) 為粗體
             if (row_idx == 1 and col_idx in [1, 5]):
                 run.font.bold = True  # 設置為粗體
+
+def set_ch6_stairs1(paragraph):
+    run = paragraph.runs[0] if paragraph.runs else paragraph.add_run()
+    font = run.font
+    font.name = "Times New Roman"
+    run._element.rPr.rFonts.set(qn('w:eastAsia'), "標楷體")
+    font.size = Pt(12)
+    
+    paragraph_format = paragraph.paragraph_format
+    paragraph_format.space_before = Pt(0)
+    paragraph_format.space_after = Pt(6)
+
+    paragraph_format.line_spacing_rule = WD_LINE_SPACING.MULTIPLE
+    paragraph_format.line_spacing = 1.15
+
+    paragraph_format.left_indent = Cm(0)  # 縮排 1 公分
+
+def set_title(paragraph):
+    run = paragraph.runs[0] if paragraph.runs else paragraph.add_run()
+    font = run.font
+    font.name = "Times New Roman"
+    run._element.rPr.rFonts.set(qn('w:eastAsia'), "標楷體")
+    font.size = Pt(28)
+    
+    paragraph_format = paragraph.paragraph_format
+    paragraph_format.space_before = Pt(0)
+    paragraph_format.space_after = Pt(0)
+
+    paragraph_format.line_spacing_rule = WD_LINE_SPACING.SINGLE
+
+    # **讓文字水平置中**
+    paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER  
