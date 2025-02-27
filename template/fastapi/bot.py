@@ -5,6 +5,15 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from fastapi.concurrency import run_in_threadpool  # For running synchronous code
 from connect.connect import connectDB  # Import the custom connect function
+from PyPDF2 import PdfReader
+from langchain.retrievers import ParentDocumentRetriever
+from langchain.storage import InMemoryStore
+from langchain_chroma import Chroma
+from langchain_community.document_loaders import TextLoader
+from langchain_openai import OpenAIEmbeddings
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain.schema import Document  # Import Document class
+
 
 # Load environment variables
 load_dotenv()
@@ -28,7 +37,6 @@ async def botmessage(request: MessageRequest):
     tables_path = "./CreateTables.txt"
     with open(tables_path, 'r', encoding='utf-8') as file:
         tables_content = file.read()
-
 
     user_message = request.message
 
@@ -69,7 +77,10 @@ Your task is to:
             model="gpt-4o",
             messages=[
                 {"role": "system", "content": f"""
-                我們的資料庫有以下table，請判斷使用者的問題屬於哪個table，並給出query的指令(注意：只要給出SQL指令即可，不需markdown格式)
+                我們的資料庫有以下table，請判斷使用者的問題屬於哪個table，並給出query的指令
+                (注意：
+                1.只要給出SQL指令即可，不需markdown格式
+                2.每次都select * from table_name即可)
                 {tables_content}
                 """},
                 {"role": "user", "content": user_message},
@@ -89,7 +100,7 @@ Your task is to:
                 model="gpt-4o",
                 messages=[
                     {"role": "system", "content": f"""
-                    依據{user_message}在{records}中尋找使用者要的資料並回覆
+                    依據{user_message}在{records}中尋找使用者要的資料並回覆，如果沒特別要求就回覆所有資料
                     """},
                 ]
             )
@@ -102,18 +113,83 @@ Your task is to:
             return {"response": "Could not connect to the database."}
 
     elif intent == "answer":
-        answer_intent = client.chat.completions.create(
+        folder_path = './RAG資訊'
+        all_pdfname = []
+
+        # Loop through each file in the folder
+        for filename in os.listdir(folder_path):
+            if filename.endswith(".pdf"):
+                pdf_path = os.path.join(folder_path, filename)
+                all_pdfname.append(pdf_path)
+        
+        selectpdf = client.chat.completions.create(
             model="gpt-4o",
             messages=[
                 {"role": "system", "content": f"""
-                請以#zh-TW回覆使用者的問題
-                
+                請在以下陣列中找出使用者問題可能在哪一些PDF檔案中
+                注意：只需回答PDF檔案名稱，不需回答完整路徑和markdown格式
+                例如：file_1.pdf
+                note:緒論.pdf 可提供碳盤查起源、回答有哪些溫室氣體、什麼是盤查、為什麼要盤查、誰需要盤查
+                {all_pdfname}
                 """},
-                {"role": "user", "content": request.message},
+                {"role": "user", "content": user_message},
             ]
         )
-        print("Intent is to answer about Carbon Footprint Verification.")
-    
+
+        pdf_name = selectpdf.choices[0].message.content.strip().strip("[]").replace("'", "")
+        file_path = os.path.join(folder_path, pdf_name)
+        
+        # Extract text from the selected PDF
+        def extract_text_from_pdf(pdf_path):
+            reader = PdfReader(pdf_path)
+            text = ""
+            for page in reader.pages:
+                text += page.extract_text()
+            return text
+        
+        # Extract text
+        pdf_text = extract_text_from_pdf(file_path)
+
+        # Split text into smaller chunks
+        child_splitter = RecursiveCharacterTextSplitter(chunk_size=5000)
+        text_chunks = child_splitter.split_text(pdf_text)
+
+        # Convert text chunks into Document objects
+        documents = [Document(page_content=chunk) for chunk in text_chunks]
+
+        # Index the chunks using Chroma Vector Store
+        vectorstore = Chroma(
+            collection_name="full_documents", 
+            embedding_function=OpenAIEmbeddings()
+        )
+
+        # Use InMemoryStore for document storage
+        store = InMemoryStore()
+        retriever = ParentDocumentRetriever(
+            vectorstore=vectorstore,
+            docstore=store,
+            child_splitter=child_splitter,
+        )
+
+        # Add the chunks to the retriever
+        retriever.add_documents(documents)
+
+        # Perform similarity search
+        sub_docs = vectorstore.similarity_search(user_message)
+        print(sub_docs[0].page_content)
+
+        summarize_response = client.chat.completions.create(
+            model="gpt-4o",
+            messages=[
+                {"role": "system", "content": f"""
+                根據您的問題({user_message})，以下是從{pdf_name}中提取的相關內容：
+                """},
+                {"role": "user", "content": sub_docs[0].page_content},
+            ]
+        )
+        return {"response": summarize_response.choices[0].message.content}
+
+
     else:
         # Handle other intents here
         print("Intent is others.")
