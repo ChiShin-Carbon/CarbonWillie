@@ -20,3 +20,6 @@ python-docx
 PyPDF2
 pdfminer.six
 openpyxl
+beautifulsoup4
+langchain_chroma
+langchain_openai
