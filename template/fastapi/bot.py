@@ -13,6 +13,8 @@ from langchain_community.document_loaders import TextLoader
 from langchain_openai import OpenAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain.schema import Document  # Import Document class
+from collections import Counter
+import concurrent.futures
 
 
 # Load environment variables
@@ -113,80 +115,94 @@ Your task is to:
             return {"response": "Could not connect to the database."}
 
     elif intent == "answer":
+
+        def extract_text_from_pdf(file_path):
+            """Extracts text from a PDF file."""
+            reader = PdfReader(file_path)
+            text = ""
+            for page in reader.pages:
+                page_text = page.extract_text()
+                if page_text:
+                    text += page_text
+            return text
+            
+
+        persist_directory = "./RAG資訊/vectorstore_db"
+        populated_flag = os.path.join(persist_directory, ".populated")
+
         folder_path = './RAG資訊'
         all_pdfname = []
 
-        # Loop through each file in the folder
+
+        # Ensure the directory for ChromaDB exists
+        os.makedirs(persist_directory, exist_ok=True)
+
+        # 1. Initialize Vector Store (Always Initialize Here)
+        # 如果要重新建立向量資料庫，把RAG資訊中的vectorstrore_db資料夾刪除
+        vectorstore = Chroma(
+            collection_name="full_documents", 
+            embedding_function=OpenAIEmbeddings(),
+            persist_directory=persist_directory
+        )
+
+
         for filename in os.listdir(folder_path):
             if filename.endswith(".pdf"):
                 pdf_path = os.path.join(folder_path, filename)
                 all_pdfname.append(pdf_path)
-        
-        selectpdf = client.chat.completions.create(
-            model="gpt-4o",
-            messages=[
-                {"role": "system", "content": f"""
-                請在以下陣列中找出使用者問題可能在哪一些PDF檔案中
-                注意：只需回答PDF檔案名稱，不需回答完整路徑和markdown格式
-                例如：file_1.pdf
-                note:緒論.pdf 可提供碳盤查起源、回答有哪些溫室氣體、什麼是盤查、為什麼要盤查、誰需要盤查
-                {all_pdfname}
-                """},
-                {"role": "user", "content": user_message},
-            ]
-        )
+        # 3. 加入 PDF 文本到向量資料庫
+        if not os.path.exists(populated_flag):
+            for pdf_name in all_pdfname:
+                file_path = os.path.join(pdf_name)
+                pdf_text = extract_text_from_pdf(file_path)
 
-        pdf_name = selectpdf.choices[0].message.content.strip().strip("[]").replace("'", "")
-        file_path = os.path.join(folder_path, pdf_name)
-        
-        # Extract text from the selected PDF
-        def extract_text_from_pdf(pdf_path):
-            reader = PdfReader(pdf_path)
-            text = ""
-            for page in reader.pages:
-                text += page.extract_text()
-            return text
-        
-        # Extract text
-        pdf_text = extract_text_from_pdf(file_path)
+                if not pdf_text.strip():
+                    print(f"⚠️ PDF '{pdf_name}' 沒有提取到任何文字。跳過此檔案。")
+                    continue
 
-        # Split text into smaller chunks
-        child_splitter = RecursiveCharacterTextSplitter(chunk_size=5000)
-        text_chunks = child_splitter.split_text(pdf_text)
+                child_splitter = RecursiveCharacterTextSplitter(chunk_size=2000)
+                text_chunks = child_splitter.split_text(pdf_text)
 
-        # Convert text chunks into Document objects
-        documents = [Document(page_content=chunk) for chunk in text_chunks]
+                if not text_chunks:
+                    print(f"⚠️ PDF '{pdf_name}' 的文字切割結果為空。跳過此檔案。")
+                    continue
 
-        # Index the chunks using Chroma Vector Store
-        vectorstore = Chroma(
-            collection_name="full_documents", 
-            embedding_function=OpenAIEmbeddings()
-        )
 
-        # Use InMemoryStore for document storage
-        store = InMemoryStore()
-        retriever = ParentDocumentRetriever(
-            vectorstore=vectorstore,
-            docstore=store,
-            child_splitter=child_splitter,
-        )
+                documents = [Document(page_content=chunk) for chunk in text_chunks if chunk.strip()]
 
-        # Add the chunks to the retriever
-        retriever.add_documents(documents)
+                if not documents:
+                    print(f"⚠️ PDF '{pdf_name}' 的 documents 列表为空。跳过此檔案。")
+                    continue
 
-        # Perform similarity search
-        sub_docs = vectorstore.similarity_search(user_message)
-        print(sub_docs[0].page_content)
+                # 加入向量数据库
+                vectorstore.add_documents(documents)
+    
+            with open(populated_flag, "w") as f:
+                f.write("populated")
+            print("✅ 所有 PDF 的内容已加入向量資料庫。")
+        else:
+            print("🔄 向量資料庫已有資料")
+        # 3. 使用向量資料庫進行相似度檢索
+        query = user_message  
+        sub_docs = vectorstore.similarity_search(query, k=5)  # 搜尋top5相似的chunks
 
+        # 4. 提取chunks
+        relevant_chunks = [doc.page_content for doc in sub_docs]
+
+    
+
+        # 6. 總結top5 chunk
         summarize_response = client.chat.completions.create(
             model="gpt-4o",
+            temperature=0, #讓模型回覆盡可能一致 
             messages=[
                 {"role": "system", "content": f"""
-                根據您的問題({user_message})，以下是從{pdf_name}中提取的相關內容：
+                根據您的問題({query})，以下是從相關內容中提取的最頻繁片段的總結(回覆資料來源)：
                 """},
-                {"role": "user", "content": sub_docs[0].page_content},
+                {"role": "user", "content": "\n\n".join(relevant_chunks)},
             ]
         )
+
         return {"response": summarize_response.choices[0].message.content}
 
 
