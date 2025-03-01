@@ -28,12 +28,13 @@ async def update_vehicle_record(
     oil_species: int = Form(...),
     liters: float = Form(...),
     remark: str = Form(...),
-    image: UploadFile = File(None)  # Use File() for file uploads
+    image: UploadFile = File(None),  # For new image uploads
+    existing_image: str = Form(None)  # Add this parameter for existing images
 ):
-    print(f"Received data: vehicle_id={vehicle_id}, user_id={user_id}, date={date}, number={number}, oil_species={oil_species}, liters={liters}, remark={remark}, image={image.filename if image else None}")
-
-    
+    print(f"Received data: vehicle_id={vehicle_id}, user_id={user_id}, date={date}, number={number}, oil_species={oil_species}, liters={liters}, remark={remark}, image={image.filename if image else None}, existing_image={existing_image}")
+      
     image_path = None
+    # Handle new image upload
     if image:
         image_path = edit_dir / image.filename
         try:
@@ -41,6 +42,10 @@ async def update_vehicle_record(
                 file.write(await image.read())
         except Exception as e:
             raise HTTPException(status_code=500, detail="Could not save image file")
+    # Use existing image if no new image uploaded
+    elif existing_image:
+        image_path = existing_image
+        
 
     conn = connectDB()
     if conn:
