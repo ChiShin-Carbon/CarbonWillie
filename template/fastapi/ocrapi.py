@@ -10,6 +10,7 @@ import torch
 
 # Load environment variables from a .env file
 load_dotenv()
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 ocrapi = APIRouter()
 
@@ -20,11 +21,11 @@ try:
     # Initialize the processor and model with multilingual support
     processor = DonutProcessor.from_pretrained(
         MODEL_NAME,
-        use_auth_token=os.getenv("HUGGINGFACE_TOKEN")
+        token=os.getenv("HUGGINGFACE_TOKEN")  # Instead of use_auth_token
     )
     model = VisionEncoderDecoderModel.from_pretrained(
         MODEL_NAME,
-        use_auth_token=os.getenv("HUGGINGFACE_TOKEN")
+        token=os.getenv("HUGGINGFACE_TOKEN")  # Instead of use_auth_token
     )
     
     # Move to GPU if available
@@ -64,6 +65,7 @@ async def ocr_image(image: UploadFile = File(...)):
             max_length=512,
             early_stopping=True,
             num_beams=5,
+            do_sample=True,
             num_return_sequences=1,
             temperature=0.7,  # Slightly increase diversity for complex characters
             length_penalty=1.0,  # Balanced length penalty
@@ -90,6 +92,7 @@ async def ocr_image(image: UploadFile = File(...)):
                     2. Any ID strings in format XX-12345678
                     Only return these two items separated by a space, nothing else.
                     If you can't find both items, extract whatever you can find.
+                    e.g.: ['2025/02/28', 'AB-12345678']
                     """},
                     {"role": "user", "content": f"Process this OCR text from a Chinese document: {output}"}
                 ]
@@ -104,3 +107,10 @@ async def ocr_image(image: UploadFile = File(...)):
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+#@inproceedings{kim2022donut,
+#  title     = {OCR-Free Document Understanding Transformer},
+#  author    = {Kim, Geewook and Hong, Teakgyu and Yim, Moonbin and Nam, JeongYeon and Park, Jinyoung and Yim, Jinyeong and Hwang, Wonseok and Yun, Sangdoo and Han, Dongyoon and Park, Seunghyun},
+#  booktitle = {European Conference on Computer Vision (ECCV)},
+#  year      = {2022}
+#}
