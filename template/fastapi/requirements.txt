@@ -23,3 +23,7 @@ openpyxl
 beautifulsoup4
 langchain_chroma
 langchain_openai
+chromadb
+donut-python
+huggingface_hub
+transformers

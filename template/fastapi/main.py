@@ -39,6 +39,7 @@ from insert.insert_Selling_waste import insert_Selling_waste
 from authorizedTable.authorizedTable import authorizedTable
 from authorizedTable.insert_authorized import insert_authorized
 from authorizedTable.edit_authorized import edit_authorized
+from authorizedTable.authorized_review import authorized_review
 from vehicle import vehicle
 from Selling_waste import Selling_waste
 from Operational_Waste import Operational_Waste
@@ -150,6 +151,7 @@ app.include_router(insert_employee)
 app.include_router(authorizedTable)
 app.include_router(insert_authorized)
 app.include_router(edit_authorized)
+app.include_router(authorized_review)
 
 app.include_router(insert_machine)
 app.include_router(insert_emergency)
@@ -192,8 +194,6 @@ app.include_router(adminConsultant)
 app.include_router(delete_adminConsultant)
 app.include_router(insert_adminConsultant)
 app.include_router(edit_adminConsultant)
-
-
 
 
 

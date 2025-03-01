@@ -13,7 +13,7 @@ from langchain_community.document_loaders import TextLoader
 from langchain_openai import OpenAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain.schema import Document  # Import Document class
-
+import json
 
 # Load environment variables
 load_dotenv()
@@ -113,83 +113,172 @@ Your task is to:
             return {"response": "Could not connect to the database."}
 
     elif intent == "answer":
+
+        def extract_text_from_pdf(file_path):
+            """Extracts text from a PDF file."""
+            reader = PdfReader(file_path)
+            text = ""
+            for page in reader.pages:
+                page_text = page.extract_text()
+                if page_text:
+                    text += page_text
+            return text
+
+        persist_directory = "./RAG資訊/vectorstore_db"
+        populated_flag = os.path.join(persist_directory, ".populated")
+
         folder_path = './RAG資訊'
         all_pdfname = []
 
-        # Loop through each file in the folder
+        # Ensure the directory for ChromaDB exists
+        os.makedirs(persist_directory, exist_ok=True)
+
+        # 1. Initialize Vector Store
+        vectorstore = Chroma(
+            collection_name="full_documents", 
+            embedding_function=OpenAIEmbeddings(),
+            persist_directory=persist_directory
+        )
+
+        # 2. 準備所有 PDF 檔名
         for filename in os.listdir(folder_path):
             if filename.endswith(".pdf"):
                 pdf_path = os.path.join(folder_path, filename)
                 all_pdfname.append(pdf_path)
-        
-        selectpdf = client.chat.completions.create(
-            model="gpt-4o",
-            messages=[
-                {"role": "system", "content": f"""
-                請在以下陣列中找出使用者問題可能在哪一些PDF檔案中
-                注意：只需回答PDF檔案名稱，不需回答完整路徑和markdown格式
-                例如：file_1.pdf
-                note:緒論.pdf 可提供碳盤查起源、回答有哪些溫室氣體、什麼是盤查、為什麼要盤查、誰需要盤查
-                {all_pdfname}
-                """},
-                {"role": "user", "content": user_message},
-            ]
-        )
 
-        pdf_name = selectpdf.choices[0].message.content.strip().strip("[]").replace("'", "")
-        file_path = os.path.join(folder_path, pdf_name)
-        
-        # Extract text from the selected PDF
-        def extract_text_from_pdf(pdf_path):
-            reader = PdfReader(pdf_path)
-            text = ""
-            for page in reader.pages:
-                text += page.extract_text()
-            return text
-        
-        # Extract text
-        pdf_text = extract_text_from_pdf(file_path)
+        # 3. 如果向量資料庫還沒建置，則將 PDF 加入向量資料庫
+        if not os.path.exists(populated_flag):
+            for pdf_name in all_pdfname:
+                file_path = os.path.join(pdf_name)
+                pdf_text = extract_text_from_pdf(file_path)
 
-        # Split text into smaller chunks
-        child_splitter = RecursiveCharacterTextSplitter(chunk_size=5000)
-        text_chunks = child_splitter.split_text(pdf_text)
+                if not pdf_text.strip():
+                    print(f"⚠️ PDF '{pdf_name}' 沒有提取到任何文字。跳過此檔案。")
+                    continue
 
-        # Convert text chunks into Document objects
-        documents = [Document(page_content=chunk) for chunk in text_chunks]
+                child_splitter = RecursiveCharacterTextSplitter(chunk_size=2000)
+                text_chunks = child_splitter.split_text(pdf_text)
 
-        # Index the chunks using Chroma Vector Store
-        vectorstore = Chroma(
-            collection_name="full_documents", 
-            embedding_function=OpenAIEmbeddings()
-        )
+                if not text_chunks:
+                    print(f"⚠️ PDF '{pdf_name}' 的文字切割結果為空。跳過此檔案。")
+                    continue
 
-        # Use InMemoryStore for document storage
-        store = InMemoryStore()
-        retriever = ParentDocumentRetriever(
-            vectorstore=vectorstore,
-            docstore=store,
-            child_splitter=child_splitter,
-        )
+                documents = [Document(page_content=chunk) for chunk in text_chunks if chunk.strip()]
 
-        # Add the chunks to the retriever
-        retriever.add_documents(documents)
+                if not documents:
+                    print(f"⚠️ PDF '{pdf_name}' 的 documents 列表為空。跳過此檔案。")
+                    continue
 
-        # Perform similarity search
-        sub_docs = vectorstore.similarity_search(user_message)
-        print(sub_docs[0].page_content)
+                # 加入向量資料庫
+                vectorstore.add_documents(documents)
 
-        summarize_response = client.chat.completions.create(
-            model="gpt-4o",
-            messages=[
-                {"role": "system", "content": f"""
-                根據您的問題({user_message})，以下是從{pdf_name}中提取的相關內容：
-                """},
-                {"role": "user", "content": sub_docs[0].page_content},
-            ]
-        )
-        return {"response": summarize_response.choices[0].message.content}
+            with open(populated_flag, "w") as f:
+                f.write("populated")
+            print("✅ 所有 PDF 的內容已加入向量資料庫。")
+        else:
+            print("🔄 向量資料庫已有資料")
 
+        # ---- 函數封裝：檢索 top-k chunks ----
+        def retrieve_top_k_chunks(user_query, k=5):
+            """
+            從 vectorstore 中檢索最相關的 top-k chunks。
+            """
+            sub_docs = vectorstore.similarity_search(user_query, k=k)
+            return [doc.page_content for doc in sub_docs]
 
+        # ---- 函數封裝：Pairwise 比較 ----
+        def pairwise_compare(query, chunk1, chunk2):
+            """
+            使用 GPT 對兩個 chunk 進行 Pairwise 比較，判斷哪個更相關。
+            回傳更相關的 chunk。
+            """
+            compare_prompt = f"""
+    你是一個審核員，負責比較以下兩個內容片段，判斷哪個更適合回答使用者問題。
+    請你輸出以下JSON格式，無其他文字：
+    {{
+      "more_relevant_chunk": "更相關的內容片段"
+    }}
+
+    使用者問題: {query}
+
+    內容片段 1:
+    {chunk1}
+
+    內容片段 2:
+    {chunk2}
+            """
+
+            compare_response = client.chat.completions.create(
+                model="gpt-4o",
+                temperature=0,  # 確保結果確定性
+                messages=[
+                    {"role": "system", "content": "請專注於比較，不要輸出多餘解釋。"},
+                    {"role": "user", "content": compare_prompt}
+                ]
+            )
+
+            content = compare_response.choices[0].message.content.strip()
+
+            try:
+                result = json.loads(content)
+                return result.get("more_relevant_chunk", chunk1)  # 預設回傳 chunk1
+            except Exception:
+                return chunk1  # 若解析失敗，回傳 chunk1
+
+        # ---- 函數封裝：淘汰機制 ----
+        def eliminate_chunks(query, chunks):
+            """
+            對 chunks 進行 Pairwise 比較，淘汰掉較不相關的 chunk。
+            最終留下 2 個最相關的 chunk。
+            """
+            while len(chunks) > 2:
+                # 每次比較前兩個 chunk，淘汰較不相關的
+                more_relevant = pairwise_compare(query, chunks[0], chunks[1])
+                if more_relevant == chunks[0]:
+                    chunks.pop(1)  # 淘汰 chunks[1]
+                    print("eliminate 1 chunk")
+                else:
+                    chunks.pop(0)  # 淘汰 chunks[0]
+                    print("eliminate 1 chunk")
+
+            return chunks
+
+        # ---- 函數封裝：總結 ----
+        def summarize_chunks(query, chunks):
+            """
+            對留下的 chunks 進行總結，生成最終回答。
+            """
+            summarize_response = client.chat.completions.create(
+                model="gpt-4o",
+                temperature=0,  # 讓模型回覆盡可能一致
+                messages=[
+                    {
+                        "role": "system",
+                        "content": f"根據您的問題({query})，以下是從相關內容中提取的總結："
+                    },
+                    {
+                        "role": "user",
+                        "content": "\n\n".join(chunks)
+                    },
+                ]
+            )
+            return summarize_response.choices[0].message.content
+
+        # ---- main process ----
+        query = user_message
+
+        # 1. 檢索 top-5 chunks
+        top_chunks = retrieve_top_k_chunks(query, k=5)
+        print(f"Step1:retrieve top 5 chunks, numbers of chunks:{len(top_chunks)}")
+
+        # 2. Pairwise 比較，淘汰掉 3 個 chunk，留下 2 個
+        final_chunks = eliminate_chunks(query, top_chunks)
+        print(f"final chunks number:{len(final_chunks)}")
+
+        # 3. 對留下的 2 個 chunk 進行總結
+        final_answer = summarize_chunks(query, final_chunks)
+
+        return {"response": final_answer}
     else:
         # Handle other intents here
         print("Intent is others.")
