@@ -10,22 +10,23 @@ async def insert_authorized_user(
     user_ids: List[int] = Form(...),
     table_names: List[str] = Form(...),
     is_done_list: List[int] = Form(0),  # 預設值為 0
-    completed_at_list: List[datetime] = None  # 預設值為 None
+    completed_at_list: List[datetime] = None , # 預設值為 None
+    review: List[int] = Form(1),  # 預設值為 1
 ):
     conn = connectDB()
     if conn:
         cursor = conn.cursor()
         try:
             query = """
-                INSERT INTO Authorized_Table (user_id, table_name, is_done, completed_at)
-                VALUES (?, ?, ?, ?)
+                INSERT INTO Authorized_Table (user_id, table_name, is_done, completed_at,review)
+                VALUES (?, ?, ?, ?,1)
             """
             for i in range(len(user_ids)):
                 values = (
                     user_ids[i],
                     table_names[i],
                     is_done_list[i] if is_done_list else 0,
-                    completed_at_list[i] if completed_at_list else None
+                    completed_at_list[i] if completed_at_list else None,
                 )
                 cursor.execute(query, values)
             conn.commit()
