@@ -1,11 +1,12 @@
 import { useState, useCallback } from 'react';
-import { getExtinguisherData, getEmployeeData, getNonEmployeeData, getRefrigerantData } from './fetchdata.js';
+import { getExtinguisherData, getEmployeeData, getNonEmployeeData, getRefrigerantData, getMachineryData } from './fetchdata.js';
 
 export const useRefreshData = () => {
     const [extinguishers, setExtinguishers] = useState([]);
     const [employees, setEmployees] = useState([]);
     const [nonemployees, setNonEmployees] = useState([]);
     const [refrigerants, setRefrigerants] = useState([]);
+    const [machinery, setMachinery] = useState([]);
 
 
 
@@ -51,5 +52,27 @@ export const useRefreshData = () => {
         }
     }, []);
 
-    return { extinguishers, employees,nonemployees, refrigerants,refreshFireExtinguisherData, refreshEmployeeData,refreshNonEmployeeData, refreshRefrigerantData };
+    const refreshMachineryData = useCallback(async () => {
+        console.log("🔄 Refreshing machinary data...");
+        try {
+            const data = await getMachineryData();
+            console.log("✅ Retrieved data:", data);
+            setMachinery(Array.isArray(data) ? data : data.refrigerants || []);
+        } catch (error) {
+            console.error("Error refreshing machinary data:", error);
+        }
+    }, []);
+
+    return { 
+        extinguishers, 
+        employees,
+        nonemployees, 
+        refrigerants,
+        machinery,
+        refreshFireExtinguisherData, 
+        refreshEmployeeData,
+        refreshNonEmployeeData, 
+        refreshRefrigerantData,
+        refreshMachineryData
+    };
 };

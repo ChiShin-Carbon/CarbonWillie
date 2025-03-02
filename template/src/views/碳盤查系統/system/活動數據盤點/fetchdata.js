@@ -62,7 +62,7 @@ export const getNonEmployeeData = async () => {
             return data.Nonemployees;
         }
         else if (response.status === 404) {
-            console.warn('No employee data found.');
+            console.warn('No nonemployee data found.');
             return [];
         } else {
             console.error(`Error ${response.status}: ${data.detail}`);
@@ -87,7 +87,7 @@ export const getRefrigerantData = async () => {
             return data.refrigerants;
         }
         else if (response.status === 404) {
-            console.warn('No employee data found.');
+            console.warn('No refrigerant data found.');
             return [];
         }
         else {
@@ -95,5 +95,29 @@ export const getRefrigerantData = async () => {
         }
     } catch (error) {
         console.error('Error fetching refrigerant data:', error)
+    }
+};
+
+// Function to fetch Machinery data
+export const getMachineryData = async () => {
+    try {
+        const response = await fetch('http://localhost:8000/Machinery', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        const data = await response.json();
+
+        if (response.ok) {
+            return data.Machinery // Set data to state
+        } else if (response.status === 404) {
+            console.warn('No machinary data found.');
+            return [];
+        }else {
+            console.error(`Error ${response.status}: ${data.detail}`);
+        }
+    } catch (error) {
+        console.error('Error fetching Machinery data:', error);
     }
 };

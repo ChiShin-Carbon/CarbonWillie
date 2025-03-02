@@ -81,14 +81,17 @@ const Tabs = () => {
   const [currentFunction, setCurrentFunction] = useState('')
   const [currentTitle, setCurrentTitle] = useState('')
   const {
-    extinguishers,
+    extinguishers, 
     employees,
-    nonemployees,
+    nonemployees, 
     refrigerants,
-    refreshFireExtinguisherData,
+    machinery,
+    refreshFireExtinguisherData, 
     refreshEmployeeData,
-    refreshNonEmployeeData,
-    refreshRefrigerantData } = useRefreshData();
+    refreshNonEmployeeData, 
+    refreshRefrigerantData,
+    refreshMachineryData
+  } = useRefreshData();
 
 
   // 點擊處理函數
@@ -107,7 +110,8 @@ const Tabs = () => {
     refreshEmployeeData();
     refreshNonEmployeeData();
     refreshRefrigerantData();
-  }, [refreshFireExtinguisherData, refreshEmployeeData, refreshNonEmployeeData, refreshRefrigerantData]);
+    refreshMachineryData();
+  }, [refreshFireExtinguisherData, refreshEmployeeData, refreshNonEmployeeData, refreshRefrigerantData,refreshMachineryData]);
 
   // Update key when extinguishers data changes
   useEffect(() => {
@@ -179,6 +183,9 @@ const Tabs = () => {
           <MachineryAdd
             isAddModalVisible={isAddModalVisible}
             setAddModalVisible={setAddModalVisible}
+            refreshMachineryData={refreshMachineryData}  // Make sure this is passed correctly
+            setCurrentFunction={setCurrentFunction}
+            setCurrentTitle={setCurrentTitle}
           />
         )
       case 'EmergencyGenerator':
@@ -319,7 +326,12 @@ const Tabs = () => {
                     refreshRefrigerantData={refreshRefrigerantData}
                   />
                 }
-                {currentFunction === 'Machinery' && <Machinery />}
+                {currentFunction === 'Machinery' && 
+                <Machinery 
+                key={JSON.stringify(machinery)} // Force re-render when data changes
+                machinery={machinery}
+                refreshMachineryData={refreshMachineryData}
+                />}
                 {currentFunction === 'EmergencyGenerator' && <EmergencyGenerator />}
                 {/* {currentFunction === 'ElectricityUsage' && <ElectricityUsage />} */}
                 {currentFunction === 'Electricity' && <Electricity />}
