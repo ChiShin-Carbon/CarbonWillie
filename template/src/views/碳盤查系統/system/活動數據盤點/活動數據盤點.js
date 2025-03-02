@@ -67,7 +67,8 @@ import { BusinessTripAdd } from './商務旅行/新增Modal.js'
 import { OperationalWasteAdd } from './營運產生廢棄物/新增Modal.js'
 import { SellingWasteAdd } from './銷售產品的廢棄物/新增Modal.js'
 
-import { getExtinguisherData } from './fetchdata.js'
+import { getExtinguisherData,getEmployeeData } from './fetchdata.js'
+import {useRefreshData} from './refreshdata.js'
 
 import 'primereact/resources/themes/saga-blue/theme.css' // 主题样式
 import 'primereact/resources/primereact.min.css' // 核心 CSS
@@ -80,9 +81,7 @@ import styles from '../../../../scss/活動數據盤點.module.css'
 const Tabs = () => {
   const [currentFunction, setCurrentFunction] = useState('')
   const [currentTitle, setCurrentTitle] = useState('')
-  const [extinguishers, setExtinguishers] = useState([])
-  const [shouldRefreshFireExtinguisher, setShouldRefreshFireExtinguisher] = useState(false);
-
+  const { extinguishers, employees, refreshFireExtinguisherData, refreshEmployeeData } = useRefreshData();
 
 
   // 點擊處理函數
@@ -91,30 +90,10 @@ const Tabs = () => {
     setCurrentTitle(title)
   }
 
-  // Use useCallback to prevent unnecessary recreations of this function
-  const refreshData = useCallback(async () => {
-    console.log("Refreshing data...");
-    try {
-      const data = await getExtinguisherData();
-      console.log("Raw extinguisher data:", JSON.stringify(data));
-
-      // Ensure data is in the expected format (array)
-      const formattedData = Array.isArray(data) ? data :
-        (data.extinguishers ? data.extinguishers : []);
-
-      console.log("Formatted data for state:", formattedData);
-      setExtinguishers(formattedData);
-
-      return formattedData;
-    } catch (error) {
-      console.error("Error refreshing data:", error);
-      throw error;
-    }
-  }, []);
-  // Effect for initial data load
   useEffect(() => {
-    refreshData();
-  }, [refreshData]);
+    refreshFireExtinguisherData();
+    refreshEmployeeData();
+  }, [refreshFireExtinguisherData, refreshEmployeeData]);
 
 
   const [isAddModalVisible, setAddModalVisible] = useState(false)
@@ -133,10 +112,9 @@ const Tabs = () => {
           <FireExtinguisherAdd
             isAddModalVisible={isAddModalVisible}
             setAddModalVisible={setAddModalVisible}
-            refreshData={refreshData}
+            refreshFireExtinguisherData={refreshFireExtinguisherData}
             setCurrentFunction={setCurrentFunction}
             setCurrentTitle={setCurrentTitle}
-            triggerRefresh={() => setShouldRefreshFireExtinguisher(prev => !prev)}
           />
         )
       case 'Employee':
@@ -144,6 +122,9 @@ const Tabs = () => {
           <EmployeeAdd
             isAddModalVisible={isAddModalVisible}
             setAddModalVisible={setAddModalVisible}
+            refreshEmployeeData={refreshEmployeeData}
+            setCurrentFunction={setCurrentFunction}
+            setCurrentTitle={setCurrentTitle}
           />
         )
       case 'NonEmployee':
@@ -282,9 +263,15 @@ const Tabs = () => {
                   <FireExtinguisher
                     key={JSON.stringify(extinguishers)} // Force re-render when data changes
                     extinguishers={extinguishers}
-                    refreshData={refreshData}
+                    refreshFireExtinguisherData={refreshFireExtinguisherData}
                   />}
-                {currentFunction === 'Employee' && <Employee />}
+                {currentFunction === 'Employee' && (
+                  <Employee 
+                  key={JSON.stringify(employees)} // Force re-render when data changes
+                  employees={employees} 
+                  refreshEmployeeData={refreshEmployeeData} 
+                  />
+                )}
                 {currentFunction === 'NonEmployee' && <NonEmployee />}
                 {currentFunction === 'Refrigerant' && <Refrigerant />}
                 {currentFunction === 'Machinery' && <Machinery />}

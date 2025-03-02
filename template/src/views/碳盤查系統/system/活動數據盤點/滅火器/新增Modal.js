@@ -10,10 +10,12 @@ import styles from '../../../../../scss/活動數據盤點.module.css'
 import Zoom from 'react-medium-image-zoom'
 import 'react-medium-image-zoom/dist/styles.css'
 
+import { useRefreshData } from '../refreshdata';
+
 export const FireExtinguisherAdd = ({
     isAddModalVisible,
     setAddModalVisible,
-    refreshData,
+    refreshFireExtinguisherData,
     setCurrentFunction,
     setCurrentTitle // Added missing prop
 }) => {
@@ -27,6 +29,7 @@ export const FireExtinguisherAdd = ({
 
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [previewImage, setPreviewImage] = useState(null);
+
 
     const handleClose = () => setAddModalVisible(false);
 
@@ -101,8 +104,7 @@ export const FireExtinguisherAdd = ({
                 // Wait a moment before refreshing data
                 setTimeout(async () => {
                     try {
-                        await refreshData();
-                        // Change function after data is refreshed
+                        await refreshFireExtinguisherData();
                         setCurrentFunction("FireExtinguisher");
                         if (setCurrentTitle) {
                             setCurrentTitle("滅火器");

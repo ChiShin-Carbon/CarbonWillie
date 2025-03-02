@@ -12,12 +12,38 @@ export const getExtinguisherData = async () => {
         const errorData = await response.json();
         throw new Error(`Error ${response.status}: ${errorData?.detail}`);
       }
-  
+      else if (response.status === 404) {
+        console.warn('No extinguisher data found.');
+        return [];
+      }
       const data = await response.json();
       // Assuming backend returns JSON with a key called "extinguishers"
-      return data.extinguishers || data; // Fallback to full data if "extinguishers" key doesn't exist
+      return data.extinguishers
     } catch (error) {
       console.error('Error fetching extinguisher data:', error);
       throw error;
     }
   };
+
+export const getEmployeeData = async () => {
+    try {
+        const response = await fetch('http://localhost:8000/employee', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        const data = await response.json();
+
+        if (response.ok) {
+            return data.employees; 
+        } else if (response.status === 404) {
+            console.warn('No employee data found.');
+            return [];  
+        } else {
+            console.error(`Error ${response.status}: ${data.detail}`);
+        }
+    } catch (error) {
+        console.error('Error fetching employee data:', error);
+    }
+};

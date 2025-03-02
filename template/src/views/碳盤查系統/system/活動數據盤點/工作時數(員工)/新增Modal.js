@@ -10,69 +10,143 @@ import styles from '../../../../../scss/活動數據盤點.module.css'
 import Zoom from 'react-medium-image-zoom'
 import 'react-medium-image-zoom/dist/styles.css'
 
-export const EmployeeAdd = ({ isAddModalVisible, setAddModalVisible }) => {
-    const handleClose = () => setAddModalVisible(false);
+import { useRefreshData } from '../refreshdata';
 
-    const [recognizedText, setRecognizedText] = useState("");
+export const EmployeeAdd = ({
+    isAddModalVisible,
+    setAddModalVisible,
+    refreshEmployeeData,
+    setCurrentFunction,
+    setCurrentTitle // Added missing prop
+}) => {
+
+    const [formData, setFormData] = useState({
+        name: '',
+        employee: '',
+        daily_hours: '',
+        workday: '',
+        overtime: '',
+        sick:'',
+        personal:'',
+        business:'',
+        funeral:'',
+        special:'',
+        explain:'',
+        image: null
+    });
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+
+    const handleClose = () => setAddModalVisible(false);
 
     const handleC3Submit = async (e) => {
         e.preventDefault();
-
-        // Gather form values
-        const month = document.getElementById("C3month").value;
-        const employee = document.getElementById("C3employee").value;
-        const daily_hours = document.getElementById("C3daily_hours").value;
-        const workday = document.getElementById("C3workday").value;
-        const overtime = document.getElementById("C3overtime").value;
-        const sick = document.getElementById("C3sick").value;
-        const personal = document.getElementById("C3personal").value;
-        const business = document.getElementById("C3business").value;
-        const funeral = document.getElementById("C3funeral").value;
-        const special = document.getElementById("C3special").value;
-        const explain = document.getElementById("C3explain").value;
-        const image = document.getElementById("C3image").files[0];
-
-        // Prepare FormData for submission
-        const formData = new FormData();
-        formData.append("user_id", 1); // Set user_id as required
-        formData.append("month", month);
-        formData.append("employee", employee);
-        formData.append("daily_hours", daily_hours);
-        formData.append("workday", workday);
-        formData.append("overtime", overtime);
-        formData.append("sick", sick);
-        formData.append("personal", personal);
-        formData.append("business", business);
-        formData.append("funeral", funeral);
-        formData.append("special", special);
-        formData.append("explain", explain);
-        formData.append("image", image);
-
+    
+        // Prevent double submissions
+        if (isSubmitting) return;
+        setIsSubmitting(true);
+    
         try {
+            // Prepare form data using state values instead of directly accessing DOM
+            const formDataToSend = new FormData();
+            formDataToSend.append("user_id", window.sessionStorage.getItem("user_id"));
+            formDataToSend.append("month", formData.month);
+            formDataToSend.append("employee", formData.employee);
+            formDataToSend.append("daily_hours", formData.daily_hours);
+            formDataToSend.append("workday", formData.workday);
+            formDataToSend.append("overtime", formData.overtime);
+            formDataToSend.append("sick", formData.sick);
+            formDataToSend.append("personal", formData.personal);
+            formDataToSend.append("business", formData.business);
+            formDataToSend.append("funeral", formData.funeral);
+            formDataToSend.append("special", formData.special);
+            formDataToSend.append("explain", formData.explain);
+    
+            // Ensure image is selected
+            if (!formData.image) {
+                console.error("Image file not found");
+                alert("Please select an image file");
+                setIsSubmitting(false);
+                return;
+            }
+    
+            formDataToSend.append("image", formData.image);
+    
             // Send form data to the backend
-            const response = await fetch("http://localhost:8000/insert_employee", {
+            const res = await fetch("http://localhost:8000/insert_employee", {
                 method: "POST",
-                body: formData,
+                body: formDataToSend,
             });
-
-            if (response.ok) {
-                const result = await response.json();
-                console.log("Employee data submitted successfully:", result);
+    
+            if (res.ok) {
+                // Close modal first
+                setAddModalVisible(false);
+    
+                // Clear form data
+                setFormData({
+                    month: '',
+                    employee: '',
+                    daily_hours: '',
+                    workday: '',
+                    overtime: '',
+                    sick: '',
+                    personal: '',
+                    business: '',
+                    funeral: '',
+                    special: '',
+                    explain: '',
+                    image: null,
+                });
+                setPreviewImage(null);
+    
+                // Wait a moment before refreshing data
+                setTimeout(async () => {
+                    try {
+                        await refreshEmployeeData();
+                        // Change function after data is refreshed
+                        setCurrentFunction("Employee");
+                        if (setCurrentTitle) {
+                            setCurrentTitle("員工工時");
+                        }
+                        alert("Form submitted successfully");
+                    } catch (refreshError) {
+                        console.error("Error refreshing data:", refreshError);
+                        alert("Data submitted but there was an error refreshing the display");
+                    }
+                }, 500); // Short delay to allow backend to process
+    
             } else {
                 console.error("Failed to submit employee data");
+                console.log(formData)
+                alert("Failed to submit employee data");
             }
         } catch (error) {
             console.error("Error submitting employee data:", error);
+            alert("An error occurred while submitting the form");
+        } finally {
+            setIsSubmitting(false);
         }
     };
-
     const [previewImage, setPreviewImage] = useState(null); // 用來存儲圖片的 
+    // Handle image changes
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            const previewUrl = URL.createObjectURL(file); // 創建圖片預覽 URL
-            setPreviewImage(previewUrl); // 保存 URL 到狀態
+            setFormData(prev => ({
+                ...prev,
+                image: file
+            }));
+            const previewUrl = URL.createObjectURL(file);
+            setPreviewImage(previewUrl);
         }
+    };
+
+    const handleInputChange = (e) => {
+        const { id, value } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [id]: value
+        }));
     };
 
 
@@ -94,66 +168,131 @@ export const EmployeeAdd = ({ isAddModalVisible, setAddModalVisible }) => {
                             <form onSubmit={handleC3Submit}>
                                 <CRow className="mb-3">
                                     <CFormLabel htmlFor="month" className={`col-sm-2 col-form-label ${styles.addlabel}`} >月份*</CFormLabel>
-                                    <CCol><CFormInput className={styles.addinput} type="month" id="C3month" required /></CCol>
+                                    <CCol><CFormInput 
+                                    className={styles.addinput} 
+                                    type="month" 
+                                    id="month" 
+                                    onChange={handleInputChange}
+                                    required /></CCol>
                                 </CRow>
                                 <CRow className="mb-3">
                                     <CFormLabel htmlFor="people" className={`col-sm-2 col-form-label ${styles.addlabel}`} >員工數*</CFormLabel>
                                     <CCol>
-                                        <CFormInput className={styles.addinput} type="number" min='0' id="C3employee" required />
+                                        <CFormInput 
+                                        className={styles.addinput} 
+                                        type="number" 
+                                        min='0' 
+                                        id="employee"
+                                        onChange={handleInputChange} 
+                                        required />
                                     </CCol>
                                 </CRow>
                                 <CRow className="mb-3">
                                     <CFormLabel htmlFor="workhour" className={`col-sm-2 col-form-label ${styles.addlabel}`} >每日工時*<br /><span className={styles.Note}> 不含休息時間</span></CFormLabel>
                                     <CCol>
-                                        <CFormInput className={styles.addinput} type="number" min='0' id="C3daily_hours" required />
+                                        <CFormInput 
+                                        className={styles.addinput} 
+                                        type="number" 
+                                        min='0' 
+                                        id="daily_hours" 
+                                        onChange={handleInputChange}
+                                        required />
                                     </CCol>
                                 </CRow>
                                 <CRow className="mb-3">
                                     <CFormLabel htmlFor="workday" className={`col-sm-2 col-form-label ${styles.addlabel}`} >每月工作日數*</CFormLabel>
                                     <CCol>
-                                        <CFormInput className={styles.addinput} type="number" min='0' id="C3workday" required />
+                                        <CFormInput 
+                                        className={styles.addinput} 
+                                        type="number" 
+                                        min='0' 
+                                        id="workday" 
+                                        onChange={handleInputChange}
+                                        required />
                                     </CCol>
                                 </CRow>
                                 <CRow className="mb-3">
                                     <CFormLabel htmlFor="plushou" className={`col-sm-2 col-form-label ${styles.addlabel}`} >總加班時數</CFormLabel>
                                     <CCol>
-                                        <CFormInput className={styles.addinput} type="number" min='0' id="C3overtime" />
+                                        <CFormInput 
+                                        className={styles.addinput} 
+                                        type="number" 
+                                        min='0' 
+                                        id="overtime" 
+                                        onChange={handleInputChange}
+                                        />
                                     </CCol>
                                 </CRow>
                                 <CRow className="mb-3">
                                     <CFormLabel htmlFor="sickhour" className={`col-sm-2 col-form-label ${styles.addlabel}`} >總病假時數</CFormLabel>
                                     <CCol>
-                                        <CFormInput className={styles.addinput} type="number" min='0' id="C3sick" />
+                                        <CFormInput 
+                                        className={styles.addinput} 
+                                        type="number" 
+                                        min='0' 
+                                        id="sick" 
+                                        onChange={handleInputChange}
+                                        />
                                     </CCol>
                                 </CRow>
                                 <CRow className="mb-3">
                                     <CFormLabel htmlFor="personalhour" className={`col-sm-2 col-form-label ${styles.addlabel}`} >總事假時數</CFormLabel>
                                     <CCol>
-                                        <CFormInput className={styles.addinput} type="number" min='0' id="C3personal" />
+                                        <CFormInput 
+                                        className={styles.addinput} 
+                                        type="number" 
+                                        min='0' 
+                                        id="personal" 
+                                        onChange={handleInputChange}
+                                        />
                                     </CCol>
                                 </CRow>
                                 <CRow className="mb-3">
                                     <CFormLabel htmlFor="businesshour" className={`col-sm-2 col-form-label ${styles.addlabel}`} >總出差時數</CFormLabel>
                                     <CCol>
-                                        <CFormInput className={styles.addinput} type="number" min='0' id="C3business" />
+                                        <CFormInput 
+                                        className={styles.addinput} 
+                                        type="number" 
+                                        min='0' 
+                                        id="business" 
+                                        onChange={handleInputChange}
+                                        />
                                     </CCol>
                                 </CRow>
                                 <CRow className="mb-3">
                                     <CFormLabel htmlFor="deadhour" className={`col-sm-2 col-form-label ${styles.addlabel}`} >總婚喪時數</CFormLabel>
                                     <CCol>
-                                        <CFormInput className={styles.addinput} type="number" min='0' id="C3funeral" />
+                                        <CFormInput 
+                                        className={styles.addinput} 
+                                        type="number" 
+                                        min='0' 
+                                        id="funeral" 
+                                        onChange={handleInputChange}
+                                        />
                                     </CCol>
                                 </CRow>
                                 <CRow className="mb-3">
                                     <CFormLabel htmlFor="resthour" className={`col-sm-2 col-form-label ${styles.addlabel}`} >總特休時數</CFormLabel>
                                     <CCol>
-                                        <CFormInput className={styles.addinput} type="number" min='0' id="C3special" />
+                                        <CFormInput 
+                                        className={styles.addinput} 
+                                        type="number" 
+                                        min='0' 
+                                        id="special" 
+                                        onChange={handleInputChange}
+                                        />
                                     </CCol>
                                 </CRow>
                                 <CRow className="mb-3">
                                     <CFormLabel htmlFor="explain" className={`col-sm-2 col-form-label ${styles.addlabel}`} >備註</CFormLabel>
                                     <CCol>
-                                        <CFormTextarea className={styles.addinput} type="text" id="C3explain" rows={3} />
+                                        <CFormTextarea 
+                                        className={styles.addinput} 
+                                        type="text" 
+                                        id="explain" 
+                                        rows={3} 
+                                        onChange={handleInputChange}
+                                        />
 
                                     </CCol>
                                 </CRow>
@@ -165,7 +304,7 @@ export const EmployeeAdd = ({ isAddModalVisible, setAddModalVisible }) => {
                                         圖片*
                                     </CFormLabel>
                                     <CCol>
-                                        <CFormInput type="file" id="C1image" onChange={(e) => (handleImageChange(e), handleC1image(e))} required />
+                                        <CFormInput type="file" id="image" onChange={(e) => (handleImageChange(e), handleC1image(e))} required />
                                     </CCol>
                                 </CRow>
                                 <br />
