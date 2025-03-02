@@ -1,5 +1,4 @@
-import React, { useRef } from 'react'
-import { useState } from 'react'
+import React, { useState, useEffect, useCallback } from 'react';
 
 import {
   CRow,
@@ -68,6 +67,8 @@ import { BusinessTripAdd } from './商務旅行/新增Modal.js'
 import { OperationalWasteAdd } from './營運產生廢棄物/新增Modal.js'
 import { SellingWasteAdd } from './銷售產品的廢棄物/新增Modal.js'
 
+import { getExtinguisherData } from './fetchdata.js'
+
 import 'primereact/resources/themes/saga-blue/theme.css' // 主题样式
 import 'primereact/resources/primereact.min.css' // 核心 CSS
 import 'primeicons/primeicons.css' // 图标样式
@@ -79,12 +80,42 @@ import styles from '../../../../scss/活動數據盤點.module.css'
 const Tabs = () => {
   const [currentFunction, setCurrentFunction] = useState('')
   const [currentTitle, setCurrentTitle] = useState('')
+  const [extinguishers, setExtinguishers] = useState([])
+  const [shouldRefreshFireExtinguisher, setShouldRefreshFireExtinguisher] = useState(false);
+
+
 
   // 點擊處理函數
   const handleFunctionChange = (func, title) => {
     setCurrentFunction(func)
     setCurrentTitle(title)
   }
+
+  // Use useCallback to prevent unnecessary recreations of this function
+  const refreshData = useCallback(async () => {
+    console.log("Refreshing data...");
+    try {
+      const data = await getExtinguisherData();
+      console.log("Raw extinguisher data:", JSON.stringify(data));
+
+      // Ensure data is in the expected format (array)
+      const formattedData = Array.isArray(data) ? data :
+        (data.extinguishers ? data.extinguishers : []);
+
+      console.log("Formatted data for state:", formattedData);
+      setExtinguishers(formattedData);
+
+      return formattedData;
+    } catch (error) {
+      console.error("Error refreshing data:", error);
+      throw error;
+    }
+  }, []);
+  // Effect for initial data load
+  useEffect(() => {
+    refreshData();
+  }, [refreshData]);
+
 
   const [isAddModalVisible, setAddModalVisible] = useState(false)
 
@@ -102,6 +133,10 @@ const Tabs = () => {
           <FireExtinguisherAdd
             isAddModalVisible={isAddModalVisible}
             setAddModalVisible={setAddModalVisible}
+            refreshData={refreshData}
+            setCurrentFunction={setCurrentFunction}
+            setCurrentTitle={setCurrentTitle}
+            triggerRefresh={() => setShouldRefreshFireExtinguisher(prev => !prev)}
           />
         )
       case 'Employee':
@@ -243,7 +278,12 @@ const Tabs = () => {
               </div>
               <div className={styles.activityCardBody}>
                 {currentFunction === 'Vehicle' && <Vehicle />}
-                {currentFunction === 'FireExtinguisher' && <FireExtinguisher />}
+                {currentFunction === 'FireExtinguisher' &&
+                  <FireExtinguisher
+                    key={JSON.stringify(extinguishers)} // Force re-render when data changes
+                    extinguishers={extinguishers}
+                    refreshData={refreshData}
+                  />}
                 {currentFunction === 'Employee' && <Employee />}
                 {currentFunction === 'NonEmployee' && <NonEmployee />}
                 {currentFunction === 'Refrigerant' && <Refrigerant />}
