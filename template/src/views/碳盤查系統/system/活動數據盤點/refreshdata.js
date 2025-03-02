@@ -1,10 +1,12 @@
 import { useState, useCallback } from 'react';
-import { getExtinguisherData, getEmployeeData, getNonEmployeeData } from './fetchdata.js';
+import { getExtinguisherData, getEmployeeData, getNonEmployeeData, getRefrigerantData } from './fetchdata.js';
 
 export const useRefreshData = () => {
     const [extinguishers, setExtinguishers] = useState([]);
     const [employees, setEmployees] = useState([]);
     const [nonemployees, setNonEmployees] = useState([]);
+    const [refrigerants, setRefrigerants] = useState([]);
+
 
 
     const refreshFireExtinguisherData = useCallback(async () => {
@@ -28,15 +30,26 @@ export const useRefreshData = () => {
     }, []);
 
     const refreshNonEmployeeData = useCallback(async () => {
-        console.log("🔄 Refreshing Employee data...");
+        console.log("🔄 Refreshing NonEmployee data...");
         try {
             const data = await getNonEmployeeData();
             console.log("✅ Retrieved data:", data);
-            setNonEmployees(Array.isArray(data) ? data : data.employees || []);
+            setNonEmployees(Array.isArray(data) ? data : data.Nonemployees || []);
         } catch (error) {
-            console.error("Error refreshing Employee data:", error);
+            console.error("Error refreshing NonEmployee data:", error);
         }
     }, []);
 
-    return { extinguishers, employees,nonemployees, refreshFireExtinguisherData, refreshEmployeeData,refreshNonEmployeeData };
+    const refreshRefrigerantData = useCallback(async () => {
+        console.log("🔄 Refreshing Refrigenrant data...");
+        try {
+            const data = await getRefrigerantData();
+            console.log("✅ Retrieved data:", data);
+            setRefrigerants(Array.isArray(data) ? data : data.refrigerants || []);
+        } catch (error) {
+            console.error("Error refreshing Refrigenrant data:", error);
+        }
+    }, []);
+
+    return { extinguishers, employees,nonemployees, refrigerants,refreshFireExtinguisherData, refreshEmployeeData,refreshNonEmployeeData, refreshRefrigerantData };
 };

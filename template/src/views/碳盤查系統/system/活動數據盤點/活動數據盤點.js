@@ -80,7 +80,15 @@ import styles from '../../../../scss/活動數據盤點.module.css'
 const Tabs = () => {
   const [currentFunction, setCurrentFunction] = useState('')
   const [currentTitle, setCurrentTitle] = useState('')
-  const { extinguishers, employees, nonemployees, refreshFireExtinguisherData, refreshEmployeeData, refreshNonEmployeeData } = useRefreshData();
+  const {
+    extinguishers,
+    employees,
+    nonemployees,
+    refrigerants,
+    refreshFireExtinguisherData,
+    refreshEmployeeData,
+    refreshNonEmployeeData,
+    refreshRefrigerantData } = useRefreshData();
 
 
   // 點擊處理函數
@@ -92,23 +100,14 @@ const Tabs = () => {
   // Add a key state to force component re-renders
   const [refreshKey, setRefreshKey] = useState(0);
 
-  // Create a wrapped refresh function that also updates the key
-  const wrappedRefreshFireExtinguisherData = async () => {
-    try {
-      await refreshFireExtinguisherData();
-      // Increment key to force re-render after data refresh
-      setRefreshKey(prevKey => prevKey + 1);
-    } catch (error) {
-      console.error("Error in wrapped refresh:", error);
-    }
-  };
-
 
   useEffect(() => {
     // Initial data loading
     refreshFireExtinguisherData();
     refreshEmployeeData();
-  }, [refreshFireExtinguisherData, refreshEmployeeData, refreshNonEmployeeData]);
+    refreshNonEmployeeData();
+    refreshRefrigerantData();
+  }, [refreshFireExtinguisherData, refreshEmployeeData, refreshNonEmployeeData, refreshRefrigerantData]);
 
   // Update key when extinguishers data changes
   useEffect(() => {
@@ -116,6 +115,13 @@ const Tabs = () => {
       setRefreshKey(prevKey => prevKey + 1);
     }
   }, [extinguishers]);
+
+  // Update key when refrigerantor data changes
+  useEffect(() => {
+    if (refrigerants && refrigerants.length > 0) {
+      setRefreshKey(prevKey => prevKey + 1);
+    }
+  }, [refrigerants]);
 
   const [isAddModalVisible, setAddModalVisible] = useState(false)
 
@@ -151,11 +157,11 @@ const Tabs = () => {
       case 'NonEmployee':
         return (
           <NonEmployeeAdd
-          isAddModalVisible={isAddModalVisible}
-          setAddModalVisible={setAddModalVisible}
-          refreshNonEmployeeData={refreshNonEmployeeData}
-          setCurrentFunction={setCurrentFunction}
-          setCurrentTitle={setCurrentTitle}
+            isAddModalVisible={isAddModalVisible}
+            setAddModalVisible={setAddModalVisible}
+            refreshNonEmployeeData={refreshNonEmployeeData}
+            setCurrentFunction={setCurrentFunction}
+            setCurrentTitle={setCurrentTitle}
           />
         )
       case 'Refrigerant':
@@ -163,6 +169,9 @@ const Tabs = () => {
           <RefrigerantAdd
             isAddModalVisible={isAddModalVisible}
             setAddModalVisible={setAddModalVisible}
+            refreshRefrigerantData={refreshRefrigerantData}  // Make sure this is passed correctly
+            setCurrentFunction={setCurrentFunction}
+            setCurrentTitle={setCurrentTitle}
           />
         )
       case 'Machinery':
@@ -297,13 +306,19 @@ const Tabs = () => {
                   />
                 )}
                 {currentFunction === 'NonEmployee' && (
-                <NonEmployee
-                  key={JSON.stringify(nonemployees)} // Force re-render when data changes
-                  nonemployees={nonemployees}
-                  refreshNonEmployeeData={refreshNonEmployeeData} 
+                  <NonEmployee
+                    key={JSON.stringify(nonemployees)} // Force re-render when data changes
+                    nonemployees={nonemployees}
+                    refreshNonEmployeeData={refreshNonEmployeeData}
                   />
-                  )}
-                {currentFunction === 'Refrigerant' && <Refrigerant />}
+                )}
+                {currentFunction === 'Refrigerant' &&
+                  <Refrigerant
+                    key={refreshKey} // Make sure this is used the same way as in FireExtinguisher
+                    refrigerants={refrigerants}
+                    refreshRefrigerantData={refreshRefrigerantData}
+                  />
+                }
                 {currentFunction === 'Machinery' && <Machinery />}
                 {currentFunction === 'EmergencyGenerator' && <EmergencyGenerator />}
                 {/* {currentFunction === 'ElectricityUsage' && <ElectricityUsage />} */}
