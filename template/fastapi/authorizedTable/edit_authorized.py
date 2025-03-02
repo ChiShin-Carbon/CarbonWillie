@@ -78,8 +78,8 @@ async def editInsert_authorized_user(
         cursor = conn.cursor()
         try:
             insert_query = """
-                    INSERT INTO Authorized_Table (table_name, user_id, is_done, completed_at)
-                    VALUES (?, ?, ?, ?)
+                    INSERT INTO Authorized_Table (table_name, user_id, is_done, completed_at,review)
+                    VALUES (?, ?, ?, ?,1)
                 """
             cursor.execute(insert_query, (table_name, user_id, is_done, completed_at))
             conn.commit()
