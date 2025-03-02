@@ -146,30 +146,30 @@ export const getEmergency_GeneratorData = async () => {
     }
 };
 
-    // Function to fetch commute data
+// Function to fetch commute data
 export const getCommuteData = async () => {
-        try {
-            const response = await fetch('http://localhost:8000/Commute', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-            const data = await response.json();
+    try {
+        const response = await fetch('http://localhost:8000/Commute', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        const data = await response.json();
 
-            if (response.ok) {
-                return data.Commute;  // Set commute data to state
-            } else if (response.status === 404) {
-                console.warn('No commute data found.');
-                return [];
-            }  
-            else {
-                console.error(`Error ${response.status}: ${data.detail}`);
-            }
-        } catch (error) {
-            console.error('Error fetching commute data:', error);
+        if (response.ok) {
+            return data.Commute;  // Set commute data to state
+        } else if (response.status === 404) {
+            console.warn('No commute data found.');
+            return [];
         }
-    };
+        else {
+            console.error(`Error ${response.status}: ${data.detail}`);
+        }
+    } catch (error) {
+        console.error('Error fetching commute data:', error);
+    }
+};
 
 export const getBusiness_TripData = async () => {
     try {
@@ -186,7 +186,7 @@ export const getBusiness_TripData = async () => {
         } else if (response.status === 404) {
             console.warn('No business_trip data found.');
             return [];
-        }  else {
+        } else {
             console.error(`Error ${response.status}: ${data.detail}`);
         }
     } catch (error) {
@@ -194,26 +194,50 @@ export const getBusiness_TripData = async () => {
     }
 };
 
-    // Function to fetch operational waste data
-export  const getOperationalWasteData = async () => {
-        try {
-            const response = await fetch('http://localhost:8000/Operational_Waste', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-            const data = await response.json();
+// Function to fetch operational waste data
+export const getOperationalWasteData = async () => {
+    try {
+        const response = await fetch('http://localhost:8000/Operational_Waste', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        const data = await response.json();
 
-            if (response.ok) {
-                return data.Operational_Waste;  // Set operational waste data to state
-            } else if (response.status === 404) {
-                console.warn('No Operational Waste data found.');
-                return [];
-            }  else {
-                console.error(`Error ${response.status}: ${data.detail}`);
-            }
-        } catch (error) {
-            console.error('Error fetching operational waste data:', error);
+        if (response.ok) {
+            return data.Operational_Waste;  // Set operational waste data to state
+        } else if (response.status === 404) {
+            console.warn('No Operational Waste data found.');
+            return [];
+        } else {
+            console.error(`Error ${response.status}: ${data.detail}`);
         }
-    };
+    } catch (error) {
+        console.error('Error fetching operational waste data:', error);
+    }
+};
+
+// Function to fetch selling waste data
+export const getSellingWasteData = async () => {
+    try {
+        const response = await fetch('http://localhost:8000/Selling_waste', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        const data = await response.json();
+
+        if (response.ok) {
+            return data.Selling_Waste;  // Set selling waste data to state
+        } else if (response.status === 404) {
+            console.warn('No Selling Waste data found.');
+            return [];
+        } else {
+            console.error(`Error ${response.status}: ${data.detail}`);
+        }
+    } catch (error) {
+        console.error('Error fetching selling waste data:', error);
+    }
+};

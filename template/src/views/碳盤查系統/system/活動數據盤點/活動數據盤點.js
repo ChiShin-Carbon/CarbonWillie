@@ -90,6 +90,7 @@ const Tabs = () => {
     commute,
     business_trip,
     operationalwaste,
+    sellingwaste,
     refreshFireExtinguisherData,
     refreshEmployeeData,
     refreshNonEmployeeData,
@@ -98,7 +99,8 @@ const Tabs = () => {
     refreshEmergency_GeneratorData,
     refreshCommuteData,
     refreshBusinessTripData,
-    refreshWasteData
+    refreshWasteData,
+    refreshSellingWasteData
   } = useRefreshData();
 
 
@@ -121,7 +123,7 @@ const Tabs = () => {
     refreshMachineryData();
     refreshEmergency_GeneratorData();
   }, [refreshFireExtinguisherData, refreshEmployeeData, refreshNonEmployeeData, refreshRefrigerantData,refreshMachineryData,refreshEmergency_GeneratorData,refreshCommuteData, refreshBusinessTripData,
-    refreshWasteData
+    refreshWasteData , refreshSellingWasteData
 
   ]);
 
@@ -260,8 +262,11 @@ const Tabs = () => {
       case 'SellingWaste':
         return (
           <SellingWasteAdd
-            isAddModalVisible={isAddModalVisible}
-            setAddModalVisible={setAddModalVisible}
+          isAddModalVisible={isAddModalVisible}
+          setAddModalVisible={setAddModalVisible}
+          refreshSellingWasteData={refreshSellingWasteData}  // Make sure this is passed correctly
+          setCurrentFunction={setCurrentFunction}
+          setCurrentTitle={setCurrentTitle}
           />
         )
 
@@ -385,7 +390,12 @@ const Tabs = () => {
                 operationalwaste={operationalwaste}
                 refreshWasteData={refreshWasteData}
                 />}
-                {currentFunction === 'SellingWaste' && <SellingWaste />}
+                {currentFunction === 'SellingWaste' && 
+                <SellingWaste 
+                key={JSON.stringify(sellingwaste)} // Force re-render when data changes
+                sellingwaste={sellingwaste}
+                refreshSellingWasteData={refreshSellingWasteData}
+                />}
               </div>
             </>
           ) : (
