@@ -72,6 +72,8 @@ from 管理者.delete_adminConsultant import delete_adminConsultant
 from 管理者.insert_adminConsultant import insert_adminConsultant
 from 管理者.edit_adminConsultant import edit_adminConsultant
 
+from 盤查報告書.getBusiness import word_companyinfo
+
 
 
 
@@ -229,3 +231,7 @@ app.include_router(edit_BusinessTrip)
 app.include_router(edit_OperationWaste)
 app.include_router(edit_SellingWaste)
 app.include_router(delete_vehicle)
+
+
+
+app.include_router(word_companyinfo)

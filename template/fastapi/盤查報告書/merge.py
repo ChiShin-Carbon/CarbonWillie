@@ -1,12 +1,12 @@
-from chapter1 import create_chapter1
-from chapter2 import create_chapter2
-from chapter3 import create_chapter3
-from chapter4_1 import create_chapter4_1
-from chapter4_2 import create_chapter4_2
-from chapter4_3 import create_chapter4_3
-from chapter5 import create_chapter5
-from chapter6 import create_chapter6
-from title import create_title
+from 盤查報告書.chapter1 import create_chapter1
+from 盤查報告書.chapter2 import create_chapter2
+from 盤查報告書.chapter3 import create_chapter3
+from 盤查報告書.chapter4_1 import create_chapter4_1
+from 盤查報告書.chapter4_2 import create_chapter4_2
+from 盤查報告書.chapter4_3 import create_chapter4_3
+from 盤查報告書.chapter5 import create_chapter5
+from 盤查報告書.chapter6 import create_chapter6
+from 盤查報告書.title import create_title
 
 
 
@@ -36,29 +36,29 @@ def merge_documents():
     for element in doc1.element.body:
         combined_doc.element.body.append(element)
 
-    # 合併 chapter2 的內容
-    for element in doc2.element.body:
-        combined_doc.element.body.append(element)
+    # # 合併 chapter2 的內容
+    # for element in doc2.element.body:
+    #     combined_doc.element.body.append(element)
 
-    # 合併 chapter3 的內容
-    for element in doc3.element.body:
-        combined_doc.element.body.append(element)
+    # # 合併 chapter3 的內容
+    # for element in doc3.element.body:
+    #     combined_doc.element.body.append(element)
 
-    #  合併 chapter4 的內容
-    for element in doc4_1.element.body:
-        combined_doc.element.body.append(element)
+    # #  合併 chapter4 的內容
+    # for element in doc4_1.element.body:
+    #     combined_doc.element.body.append(element)
     
-    for element in doc4_2.element.body:
-        combined_doc.element.body.append(element)
+    # for element in doc4_2.element.body:
+    #     combined_doc.element.body.append(element)
 
-    for element in doc4_3.element.body:
-        combined_doc.element.body.append(element)
+    # for element in doc4_3.element.body:
+    #     combined_doc.element.body.append(element)
 
-    for element in doc5.element.body:
-        combined_doc.element.body.append(element)
+    # for element in doc5.element.body:
+    #     combined_doc.element.body.append(element)
 
-    for element in doc6.element.body:
-        combined_doc.element.body.append(element)
+    # for element in doc6.element.body:
+    #     combined_doc.element.body.append(element)
 
     combined_doc.save("combined.docx")
     print("合併完成，生成 combined.docx")
