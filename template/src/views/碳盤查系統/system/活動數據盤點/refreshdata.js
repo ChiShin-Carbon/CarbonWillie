@@ -1,5 +1,14 @@
 import { useState, useCallback } from 'react';
-import { getExtinguisherData, getEmployeeData, getNonEmployeeData, getRefrigerantData, getMachineryData, getEmergency_GeneratorData } from './fetchdata.js';
+import { 
+    getExtinguisherData, 
+    getEmployeeData, 
+    getNonEmployeeData, 
+    getRefrigerantData, 
+    getMachineryData, 
+    getEmergency_GeneratorData,
+    getCommuteData
+
+} from './fetchdata.js';
 
 export const useRefreshData = () => {
     const [extinguishers, setExtinguishers] = useState([]);
@@ -8,6 +17,7 @@ export const useRefreshData = () => {
     const [refrigerants, setRefrigerants] = useState([]);
     const [machinery, setMachinery] = useState([]);
     const [Emergency_Generator, setEmergency_Generator] = useState([]);
+    const [commute, setCommute] = useState([]);
 
 
 
@@ -76,6 +86,18 @@ export const useRefreshData = () => {
         }
     }, []);
 
+    const refreshCommuteData = useCallback(async () => {
+        console.log("🔄 Refreshing Emergency_Generator data...");
+        try {
+            const data = await getCommuteData();
+            console.log("✅ Retrieved data:", data);
+            setCommute(Array.isArray(data) ? data : data.commute || []);
+        } catch (error) {
+            console.error("Error refreshing Emergency_Generator data:", error);
+        }
+    }, []);
+
+
 
     return {
         extinguishers,
@@ -84,11 +106,13 @@ export const useRefreshData = () => {
         refrigerants,
         machinery,
         Emergency_Generator,
+        commute,
         refreshFireExtinguisherData,
         refreshEmployeeData,
         refreshNonEmployeeData,
         refreshRefrigerantData,
         refreshMachineryData,
-        refreshEmergency_GeneratorData
+        refreshEmergency_GeneratorData,
+        refreshCommuteData
     };
 };

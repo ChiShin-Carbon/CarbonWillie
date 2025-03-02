@@ -81,18 +81,20 @@ const Tabs = () => {
   const [currentFunction, setCurrentFunction] = useState('')
   const [currentTitle, setCurrentTitle] = useState('')
   const {
-    extinguishers, 
+    extinguishers,
     employees,
-    nonemployees, 
+    nonemployees,
     refrigerants,
     machinery,
     Emergency_Generator,
-    refreshFireExtinguisherData, 
+    commute,
+    refreshFireExtinguisherData,
     refreshEmployeeData,
-    refreshNonEmployeeData, 
+    refreshNonEmployeeData,
     refreshRefrigerantData,
     refreshMachineryData,
-    refreshEmergency_GeneratorData
+    refreshEmergency_GeneratorData,
+    refreshCommuteData
   } = useRefreshData();
 
 
@@ -114,7 +116,7 @@ const Tabs = () => {
     refreshRefrigerantData();
     refreshMachineryData();
     refreshEmergency_GeneratorData();
-  }, [refreshFireExtinguisherData, refreshEmployeeData, refreshNonEmployeeData, refreshRefrigerantData,refreshMachineryData,refreshEmergency_GeneratorData]);
+  }, [refreshFireExtinguisherData, refreshEmployeeData, refreshNonEmployeeData, refreshRefrigerantData,refreshMachineryData,refreshEmergency_GeneratorData,refreshCommuteData]);
 
   // Update key when extinguishers data changes
   useEffect(() => {
@@ -211,15 +213,21 @@ const Tabs = () => {
       case 'Electricity':
         return (
           <ElectricityAdd
-            isAddModalVisible={isAddModalVisible}
-            setAddModalVisible={setAddModalVisible}
+          isAddModalVisible={isAddModalVisible}
+          setAddModalVisible={setAddModalVisible}
+          refreshCommuteData={refreshCommuteData}  // Make sure this is passed correctly
+          setCurrentFunction={setCurrentFunction}
+          setCurrentTitle={setCurrentTitle}
           />
         )
       case 'Commuting':
         return (
           <CommutingAdd
-            isAddModalVisible={isAddModalVisible}
-            setAddModalVisible={setAddModalVisible}
+          isAddModalVisible={isAddModalVisible}
+          setAddModalVisible={setAddModalVisible}
+          refreshCommuteData={refreshCommuteData}  // Make sure this is passed correctly
+          setCurrentFunction={setCurrentFunction}
+          setCurrentTitle={setCurrentTitle}
           />
         )
       case 'BusinessTrip':
@@ -346,7 +354,12 @@ const Tabs = () => {
                 />}
                 {/* {currentFunction === 'ElectricityUsage' && <ElectricityUsage />} */}
                 {currentFunction === 'Electricity' && <Electricity />}
-                {currentFunction === 'Commuting' && <Commuting />}
+                {currentFunction === 'Commuting' && 
+                <Commuting 
+                key={JSON.stringify(commute)} // Force re-render when data changes
+                commute={commute}
+                refreshCommuteData={refreshCommuteData}
+                />}
                 {currentFunction === 'BusinessTrip' && <BusinessTrip />}
                 {currentFunction === 'OperationalWaste' && <OperationalWaste />}
                 {currentFunction === 'SellingWaste' && <SellingWaste />}

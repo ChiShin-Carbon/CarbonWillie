@@ -145,3 +145,28 @@ export const getEmergency_GeneratorData = async () => {
         console.error('Error fetching generator data:', error);
     }
 };
+
+    // Function to fetch commute data
+export const getCommuteData = async () => {
+        try {
+            const response = await fetch('http://localhost:8000/Commute', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            const data = await response.json();
+
+            if (response.ok) {
+                return data.Commute;  // Set commute data to state
+            } else if (response.status === 404) {
+                console.warn('No Emergency_Generator data found.');
+                return [];
+            }  
+            else {
+                console.error(`Error ${response.status}: ${data.detail}`);
+            }
+        } catch (error) {
+            console.error('Error fetching commute data:', error);
+        }
+    };
