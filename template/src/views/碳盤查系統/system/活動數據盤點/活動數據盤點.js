@@ -67,8 +67,7 @@ import { BusinessTripAdd } from './商務旅行/新增Modal.js'
 import { OperationalWasteAdd } from './營運產生廢棄物/新增Modal.js'
 import { SellingWasteAdd } from './銷售產品的廢棄物/新增Modal.js'
 
-import { getExtinguisherData,getEmployeeData } from './fetchdata.js'
-import {useRefreshData} from './refreshdata.js'
+import { useRefreshData } from './refreshdata.js'
 
 import 'primereact/resources/themes/saga-blue/theme.css' // 主题样式
 import 'primereact/resources/primereact.min.css' // 核心 CSS
@@ -81,7 +80,7 @@ import styles from '../../../../scss/活動數據盤點.module.css'
 const Tabs = () => {
   const [currentFunction, setCurrentFunction] = useState('')
   const [currentTitle, setCurrentTitle] = useState('')
-  const { extinguishers, employees, refreshFireExtinguisherData, refreshEmployeeData } = useRefreshData();
+  const { extinguishers, employees, nonemployees, refreshFireExtinguisherData, refreshEmployeeData, refreshNonEmployeeData } = useRefreshData();
 
 
   // 點擊處理函數
@@ -90,26 +89,26 @@ const Tabs = () => {
     setCurrentTitle(title)
   }
 
-    // Add a key state to force component re-renders
-    const [refreshKey, setRefreshKey] = useState(0);
+  // Add a key state to force component re-renders
+  const [refreshKey, setRefreshKey] = useState(0);
 
-    // Create a wrapped refresh function that also updates the key
-    const wrappedRefreshFireExtinguisherData = async () => {
-      try {
-        await refreshFireExtinguisherData();
-        // Increment key to force re-render after data refresh
-        setRefreshKey(prevKey => prevKey + 1);
-      } catch (error) {
-        console.error("Error in wrapped refresh:", error);
-      }
-    };
-  
+  // Create a wrapped refresh function that also updates the key
+  const wrappedRefreshFireExtinguisherData = async () => {
+    try {
+      await refreshFireExtinguisherData();
+      // Increment key to force re-render after data refresh
+      setRefreshKey(prevKey => prevKey + 1);
+    } catch (error) {
+      console.error("Error in wrapped refresh:", error);
+    }
+  };
+
 
   useEffect(() => {
     // Initial data loading
     refreshFireExtinguisherData();
     refreshEmployeeData();
-  }, [refreshFireExtinguisherData, refreshEmployeeData]);
+  }, [refreshFireExtinguisherData, refreshEmployeeData, refreshNonEmployeeData]);
 
   // Update key when extinguishers data changes
   useEffect(() => {
@@ -152,8 +151,11 @@ const Tabs = () => {
       case 'NonEmployee':
         return (
           <NonEmployeeAdd
-            isAddModalVisible={isAddModalVisible}
-            setAddModalVisible={setAddModalVisible}
+          isAddModalVisible={isAddModalVisible}
+          setAddModalVisible={setAddModalVisible}
+          refreshNonEmployeeData={refreshNonEmployeeData}
+          setCurrentFunction={setCurrentFunction}
+          setCurrentTitle={setCurrentTitle}
           />
         )
       case 'Refrigerant':
@@ -283,18 +285,24 @@ const Tabs = () => {
                 {currentFunction === 'Vehicle' && <Vehicle />}
                 {currentFunction === 'FireExtinguisher' &&
                   <FireExtinguisher
-                  key={refreshKey} // Use refreshKey instead of JSON.stringify
-                  extinguishers={extinguishers}
+                    key={refreshKey} // Use refreshKey instead of JSON.stringify
+                    extinguishers={extinguishers}
                     refreshFireExtinguisherData={refreshFireExtinguisherData}
                   />}
                 {currentFunction === 'Employee' && (
-                  <Employee 
-                  key={JSON.stringify(employees)} // Force re-render when data changes
-                  employees={employees} 
-                  refreshEmployeeData={refreshEmployeeData} 
+                  <Employee
+                    key={JSON.stringify(employees)} // Force re-render when data changes
+                    employees={employees}
+                    refreshEmployeeData={refreshEmployeeData}
                   />
                 )}
-                {currentFunction === 'NonEmployee' && <NonEmployee />}
+                {currentFunction === 'NonEmployee' && (
+                <NonEmployee
+                  key={JSON.stringify(nonemployees)} // Force re-render when data changes
+                  nonemployees={nonemployees}
+                  refreshNonEmployeeData={refreshNonEmployeeData} 
+                  />
+                  )}
                 {currentFunction === 'Refrigerant' && <Refrigerant />}
                 {currentFunction === 'Machinery' && <Machinery />}
                 {currentFunction === 'EmergencyGenerator' && <EmergencyGenerator />}

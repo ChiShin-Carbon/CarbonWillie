@@ -47,3 +47,27 @@ export const getEmployeeData = async () => {
         console.error('Error fetching employee data:', error);
     }
 };
+
+export const getNonEmployeeData = async () => {
+    try {
+        const response = await fetch('http://localhost:8000/NonEmployee', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        const data = await response.json();
+
+        if (response.ok) {
+            return data.Nonemployees;
+        } 
+        else if (response.status === 404) {
+            console.warn('No employee data found.');
+            return [];  
+        }else {
+            console.error(`Error ${response.status}: ${data.detail}`);
+        }
+    } catch (error) {
+        console.error('Error fetching employee data:', error);
+    }
+};

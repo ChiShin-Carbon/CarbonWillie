@@ -1,9 +1,11 @@
 import { useState, useCallback } from 'react';
-import { getExtinguisherData, getEmployeeData } from './fetchdata.js';
+import { getExtinguisherData, getEmployeeData, getNonEmployeeData } from './fetchdata.js';
 
 export const useRefreshData = () => {
     const [extinguishers, setExtinguishers] = useState([]);
     const [employees, setEmployees] = useState([]);
+    const [nonemployees, setNonEmployees] = useState([]);
+
 
     const refreshFireExtinguisherData = useCallback(async () => {
         try {
@@ -25,5 +27,16 @@ export const useRefreshData = () => {
         }
     }, []);
 
-    return { extinguishers, employees, refreshFireExtinguisherData, refreshEmployeeData };
+    const refreshNonEmployeeData = useCallback(async () => {
+        console.log("🔄 Refreshing Employee data...");
+        try {
+            const data = await getNonEmployeeData();
+            console.log("✅ Retrieved data:", data);
+            setNonEmployees(Array.isArray(data) ? data : data.employees || []);
+        } catch (error) {
+            console.error("Error refreshing Employee data:", error);
+        }
+    }, []);
+
+    return { extinguishers, employees,nonemployees, refreshFireExtinguisherData, refreshEmployeeData,refreshNonEmployeeData };
 };
