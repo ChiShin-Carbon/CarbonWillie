@@ -88,13 +88,15 @@ const Tabs = () => {
     machinery,
     Emergency_Generator,
     commute,
+    business_trip,
     refreshFireExtinguisherData,
     refreshEmployeeData,
     refreshNonEmployeeData,
     refreshRefrigerantData,
     refreshMachineryData,
     refreshEmergency_GeneratorData,
-    refreshCommuteData
+    refreshCommuteData,
+    refreshBusinessTripData
   } = useRefreshData();
 
 
@@ -116,7 +118,8 @@ const Tabs = () => {
     refreshRefrigerantData();
     refreshMachineryData();
     refreshEmergency_GeneratorData();
-  }, [refreshFireExtinguisherData, refreshEmployeeData, refreshNonEmployeeData, refreshRefrigerantData,refreshMachineryData,refreshEmergency_GeneratorData,refreshCommuteData]);
+  }, [refreshFireExtinguisherData, refreshEmployeeData, refreshNonEmployeeData, refreshRefrigerantData,refreshMachineryData,refreshEmergency_GeneratorData,refreshCommuteData,    refreshBusinessTripData
+  ]);
 
   // Update key when extinguishers data changes
   useEffect(() => {
@@ -233,8 +236,11 @@ const Tabs = () => {
       case 'BusinessTrip':
         return (
           <BusinessTripAdd
-            isAddModalVisible={isAddModalVisible}
-            setAddModalVisible={setAddModalVisible}
+          isAddModalVisible={isAddModalVisible}
+          setAddModalVisible={setAddModalVisible}
+          refreshBusinessTripData={refreshBusinessTripData}  // Make sure this is passed correctly
+          setCurrentFunction={setCurrentFunction}
+          setCurrentTitle={setCurrentTitle}
           />
         )
       case 'OperationalWaste':
@@ -360,7 +366,12 @@ const Tabs = () => {
                 commute={commute}
                 refreshCommuteData={refreshCommuteData}
                 />}
-                {currentFunction === 'BusinessTrip' && <BusinessTrip />}
+                {currentFunction === 'BusinessTrip' && 
+                <BusinessTrip 
+                key={JSON.stringify(business_trip)} // Force re-render when data changes
+                business_trip={business_trip}
+                refreshBusinessTripData={refreshBusinessTripData}
+                />}
                 {currentFunction === 'OperationalWaste' && <OperationalWaste />}
                 {currentFunction === 'SellingWaste' && <SellingWaste />}
               </div>

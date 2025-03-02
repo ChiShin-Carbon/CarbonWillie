@@ -160,7 +160,7 @@ export const getCommuteData = async () => {
             if (response.ok) {
                 return data.Commute;  // Set commute data to state
             } else if (response.status === 404) {
-                console.warn('No Emergency_Generator data found.');
+                console.warn('No commute data found.');
                 return [];
             }  
             else {
@@ -170,3 +170,26 @@ export const getCommuteData = async () => {
             console.error('Error fetching commute data:', error);
         }
     };
+
+export const getBusiness_TripData = async () => {
+    try {
+        const response = await fetch('http://localhost:8000/Business_Trip', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        const data = await response.json();
+
+        if (response.ok) {
+            return data.Business_Trip;  // Set vehicle data to state
+        } else if (response.status === 404) {
+            console.warn('No business_trip data found.');
+            return [];
+        }  else {
+            console.error(`Error ${response.status}: ${data.detail}`);
+        }
+    } catch (error) {
+        console.error('Error fetching business Trip data:', error);
+    }
+};
