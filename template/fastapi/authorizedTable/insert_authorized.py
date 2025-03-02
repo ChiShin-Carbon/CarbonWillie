@@ -11,7 +11,6 @@ async def insert_authorized_user(
     table_names: List[str] = Form(...),
     is_done_list: List[int] = Form(0),  # 預設值為 0
     completed_at_list: List[datetime] = None , # 預設值為 None
-    review: List[int] = Form(1),  # 預設值為 1
 ):
     conn = connectDB()
     if conn:

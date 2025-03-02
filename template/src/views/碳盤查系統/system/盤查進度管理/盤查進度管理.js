@@ -120,7 +120,7 @@ const Tabs = () => {
         getReview(row.review).includes(searchValue) //|| // 使用轉換後的部門名稱
         //row.completed_at.includes(searchValue)  先註解因為只要table裡面有completed_at==null時就會失敗
       )&&
-      (selectedFeedback === '' || (row.is_done ? '已審核' : '尚未審核') === selectedFeedback),
+      (selectedFeedback === '' || (row.review === 1 ? '尚未審核' : '已審核') === selectedFeedback),
   )
 
   // handleSearchInput 處理輸入框變化
@@ -266,8 +266,8 @@ const Tabs = () => {
                         <CTableDataCell>
                           <CFormCheck style={{ borderColor: 'black' }} />
                         </CTableDataCell>*/}
-                        {/* 排放源項目 */}
-                        <CTableDataCell>{row.table_name}{row.review}</CTableDataCell>
+                        {/* 排放源項目 */}{/*測試用 {row.review} */}
+                        <CTableDataCell>{row.table_name}</CTableDataCell>
                         {/* 顯示部門名稱 */}
                         <CTableDataCell>{getDepartmentName(row.department)}</CTableDataCell>
                         {/* 負責人 */}
@@ -288,39 +288,31 @@ const Tabs = () => {
                         </CTableDataCell>
                         {/* 回報狀態 */}
                         <CTableDataCell>
-                            {/* 測試的 */}
-                              {/* {row.review ? (<>
-                                <button className={styles.aza1} style={{ marginRight: '10px' }} onClick={() => setTrueIsModalOpen(row.authorized_record_id)}>
-                                  審核成功
-                                </button>
-                                <button className={styles.aza2} style={{ marginRight: '10px' }} onClick={() => setFalseIsModalOpen(row.authorized_record_id)}>
-                                  審核失敗
-                                </button>
-                              </>
-                            ) : (
-                              <button className={styles.aza1} disabled>'尚未完成'</button>
-                              
-                            )} */}
 
                           {/* 正式的 */}
-                         {row.completed_at ? (
-                          row.review ? (
-                            getReview(row.review)
-                          ) : (
-                             <>
-                              <button className={styles.aza1} style={{ marginRight: '10px' }} onClick={() => setTrueIsModalOpen(row.authorized_record_id)}>
-                                審核成功
-                              </button>
-                              <button className={styles.aza2} onClick={() => setFalseIsModalOpen(row.authorized_record_id)}>
-                                審核失敗
-                              </button>
-                              <EditSuccessModal isOpen={isTrueModalOpen === row.authorized_record_id} onClose={() => setTrueIsModalOpen(null)} authorizedRecordId={row.authorized_record_id}/>
-                              <EditFalseModal isOpen={isFalseModalOpen === row.authorized_record_id} onClose={() => setFalseIsModalOpen(null)} authorizedRecordId={row.authorized_record_id}/>
-                            </>
-                          )
-                        ) : (
-                          <button className={styles.aza3}>尚未完成</button>
-                        )}
+                          {row.completed_at ? (
+                              row.review === 1 ? (
+                                <>
+                                  <button className={styles.aza1} style={{ marginRight: '10px' }} onClick={() => setTrueIsModalOpen(row.authorized_record_id)}>
+                                    審核成功
+                                  </button>
+                                  <button className={styles.aza2} onClick={() => setFalseIsModalOpen(row.authorized_record_id)}>
+                                    審核失敗
+                                  </button>
+                                  <EditSuccessModal isOpen={isTrueModalOpen === row.authorized_record_id} onClose={() => setTrueIsModalOpen(null)} authorizedRecordId={row.authorized_record_id}/>
+                                  <EditFalseModal isOpen={isFalseModalOpen === row.authorized_record_id} onClose={() => setFalseIsModalOpen(null)} authorizedRecordId={row.authorized_record_id}/>
+                                </>
+                              ) : row.review === 2 ? (
+                                <button className={styles.aza1}>審核成功</button>
+                              ) : row.review === 3 ? (
+                                <button className={styles.aza2}>審核失敗</button>
+                              ) : (
+                                getReview(row.review)
+                              )
+                            ) : (
+                              <button className={styles.aza3}>尚未完成</button>
+                            )
+                          }
 
                         </CTableDataCell>
                       </CTableRow>
