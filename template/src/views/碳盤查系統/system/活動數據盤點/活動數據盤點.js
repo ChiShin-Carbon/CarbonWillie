@@ -89,6 +89,7 @@ const Tabs = () => {
     Emergency_Generator,
     commute,
     business_trip,
+    operationalwaste,
     refreshFireExtinguisherData,
     refreshEmployeeData,
     refreshNonEmployeeData,
@@ -96,7 +97,8 @@ const Tabs = () => {
     refreshMachineryData,
     refreshEmergency_GeneratorData,
     refreshCommuteData,
-    refreshBusinessTripData
+    refreshBusinessTripData,
+    refreshWasteData
   } = useRefreshData();
 
 
@@ -118,7 +120,9 @@ const Tabs = () => {
     refreshRefrigerantData();
     refreshMachineryData();
     refreshEmergency_GeneratorData();
-  }, [refreshFireExtinguisherData, refreshEmployeeData, refreshNonEmployeeData, refreshRefrigerantData,refreshMachineryData,refreshEmergency_GeneratorData,refreshCommuteData,    refreshBusinessTripData
+  }, [refreshFireExtinguisherData, refreshEmployeeData, refreshNonEmployeeData, refreshRefrigerantData,refreshMachineryData,refreshEmergency_GeneratorData,refreshCommuteData, refreshBusinessTripData,
+    refreshWasteData
+
   ]);
 
   // Update key when extinguishers data changes
@@ -246,8 +250,11 @@ const Tabs = () => {
       case 'OperationalWaste':
         return (
           <OperationalWasteAdd
-            isAddModalVisible={isAddModalVisible}
-            setAddModalVisible={setAddModalVisible}
+          isAddModalVisible={isAddModalVisible}
+          setAddModalVisible={setAddModalVisible}
+          refreshWasteData={refreshWasteData}  // Make sure this is passed correctly
+          setCurrentFunction={setCurrentFunction}
+          setCurrentTitle={setCurrentTitle}
           />
         )
       case 'SellingWaste':
@@ -372,7 +379,12 @@ const Tabs = () => {
                 business_trip={business_trip}
                 refreshBusinessTripData={refreshBusinessTripData}
                 />}
-                {currentFunction === 'OperationalWaste' && <OperationalWaste />}
+                {currentFunction === 'OperationalWaste' && 
+                <OperationalWaste 
+                key={JSON.stringify(operationalwaste)} // Force re-render when data changes
+                operationalwaste={operationalwaste}
+                refreshWasteData={refreshWasteData}
+                />}
                 {currentFunction === 'SellingWaste' && <SellingWaste />}
               </div>
             </>

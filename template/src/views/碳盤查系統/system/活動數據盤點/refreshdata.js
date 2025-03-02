@@ -7,7 +7,8 @@ import {
     getMachineryData, 
     getEmergency_GeneratorData,
     getCommuteData,
-    getBusiness_TripData
+    getBusiness_TripData,
+    getOperationalWasteData
 } from './fetchdata.js';
 
 export const useRefreshData = () => {
@@ -19,6 +20,7 @@ export const useRefreshData = () => {
     const [Emergency_Generator, setEmergency_Generator] = useState([]);
     const [commute, setCommute] = useState([]);
     const [business_trip, setbusiness_trip] = useState([]);
+    const [operationalwaste, setOperationalwaste] = useState([]);
 
 
 
@@ -110,6 +112,17 @@ export const useRefreshData = () => {
         }
     }, []);
 
+    const refreshWasteData = useCallback(async () => {
+        console.log("🔄 Refreshing Emergency_Generator data...");
+        try {
+            const data = await getOperationalWasteData();
+            console.log("✅ Retrieved data:", data);
+            setOperationalwaste(Array.isArray(data) ? data : data.Operational_Waste || []);
+        } catch (error) {
+            console.error("Error refreshing Emergency_Generator data:", error);
+        }
+    }, []);
+
 
 
     return {
@@ -121,6 +134,7 @@ export const useRefreshData = () => {
         Emergency_Generator,
         commute,
         business_trip,
+        operationalwaste,
         refreshFireExtinguisherData,
         refreshEmployeeData,
         refreshNonEmployeeData,
@@ -128,6 +142,7 @@ export const useRefreshData = () => {
         refreshMachineryData,
         refreshEmergency_GeneratorData,
         refreshCommuteData,
-        refreshBusinessTripData
+        refreshBusinessTripData,
+        refreshWasteData
     };
 };

@@ -10,36 +10,24 @@ import EditModal from './編輯Modal.js';
 import Zoom from 'react-medium-image-zoom';
 import 'react-medium-image-zoom/dist/styles.css';
 
+import { getOperationalWasteData } from '../fetchdata.js';
+
 export const OperationalWaste = () => {
     const [isEditModalVisible, setEditModalVisible] = useState(false);
     const [operationalWasteData, setOperationalWasteData] = useState([]);  // State to hold fetched operational waste data
     const [selectedWaste, setSelectedWaste] = useState(null); // Store selected waste for edit
 
-    // Function to fetch operational waste data
-    const getOperationalWasteData = async () => {
-        try {
-            const response = await fetch('http://localhost:8000/Operational_Waste', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-            const data = await response.json();
-
-            if (response.ok) {
-                setOperationalWasteData(data.Operational_Waste);  // Set operational waste data to state
-            } else {
-                console.error(`Error ${response.status}: ${data.detail}`);
-            }
-        } catch (error) {
-            console.error('Error fetching operational waste data:', error);
-        }
-    };
-
-    // Fetch operational waste data on component mount
+    // Fetch commute data on component mount
     useEffect(() => {
-        getOperationalWasteData();
+        const fetchData = async () => {
+            const data = await getOperationalWasteData();
+            if (data) {
+                setOperationalWasteData(data);
+            }
+        };
+        fetchData();
     }, []);
+
 
     return (
         <div>
@@ -54,26 +42,39 @@ export const OperationalWaste = () => {
                     </tr>
                 </CTableHead>
                 <CTableBody className={styles.activityTableBody}>
-                    {operationalWasteData.map((waste, index) => (
-                        <tr key={index}>
-                            <td>{waste.waste_item}</td>
-                            <td>{waste.remark}</td>
-                            <td>
-                                <Zoom>
-                                    <img src={waste.img_path} alt="image" />
-                                </Zoom>
-                            </td>
-                            <td>{waste.edit_time}</td>
-                            <td>
-                                <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => {
-                                    setEditModalVisible(true)
-                                    setSelectedWaste(waste.waste_id);
-                                    console.log(waste.waste_id);
-                                }} />
-                                <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
-                            </td>
+                    {operationalWasteData.length > 0 ? (
+                        operationalWasteData.map((waste, index) => (
+                            <tr key={index}>
+                                <td>{waste.waste_item}</td>
+                                <td>{waste.remark}</td>
+                                <td>
+                                    <Zoom>
+                                        <img src={`fastapi/${waste.img_path}`} alt={`${waste.waste_item} image`} />
+                                    </Zoom>
+                                </td>
+                                <td>{waste.edit_time}</td>
+                                <td>
+                                    <FontAwesomeIcon
+                                        icon={faPenToSquare}
+                                        className={styles.iconPen}
+                                        onClick={() => {
+                                            setEditModalVisible(true);
+                                            setSelectedWaste(waste.waste_id);
+                                        }}
+                                    />
+                                    <FontAwesomeIcon
+                                        icon={faTrashCan}
+                                        className={styles.iconTrash}
+                                        onClick={() => handleDeleteWaste(waste.waste_id)}
+                                    />
+                                </td>
+                            </tr>
+                        ))
+                    ) : (
+                        <tr>
+                            <td colSpan="14" className={styles.noDataMessage}>目前沒有營運產生廢棄物資料</td>
                         </tr>
-                    ))}
+                    )}
                 </CTableBody>
             </CTable>
             <EditModal

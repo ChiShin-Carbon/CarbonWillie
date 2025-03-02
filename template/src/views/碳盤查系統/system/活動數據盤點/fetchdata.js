@@ -193,3 +193,27 @@ export const getBusiness_TripData = async () => {
         console.error('Error fetching business Trip data:', error);
     }
 };
+
+    // Function to fetch operational waste data
+export  const getOperationalWasteData = async () => {
+        try {
+            const response = await fetch('http://localhost:8000/Operational_Waste', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            const data = await response.json();
+
+            if (response.ok) {
+                return data.Operational_Waste;  // Set operational waste data to state
+            } else if (response.status === 404) {
+                console.warn('No Operational Waste data found.');
+                return [];
+            }  else {
+                console.error(`Error ${response.status}: ${data.detail}`);
+            }
+        } catch (error) {
+            console.error('Error fetching operational waste data:', error);
+        }
+    };
