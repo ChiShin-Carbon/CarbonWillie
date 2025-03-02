@@ -1,207 +1,488 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-    CModal, CModalHeader, CModalBody, CModalFooter, CButton, CFormLabel, CFormInput, CFormTextarea, CRow, CCol, CFormSelect, CForm
+    CModal, CModalHeader, CModalBody, CModalFooter, CButton, CFormLabel, CFormInput,
+    CFormTextarea, CRow, CCol, CFormSelect, CForm, CAlert
 } from '@coreui/react';
 import styles from '../../../../../scss/活動數據盤點.module.css';
-import Zoom from 'react-medium-image-zoom'
-import 'react-medium-image-zoom/dist/styles.css'
+import Zoom from 'react-medium-image-zoom';
+import 'react-medium-image-zoom/dist/styles.css';
+import { useRefreshData } from '../refreshdata';
 
+const AddFillModal = ({
+    isAddFillModalVisible,
+    setAddFillModalVisible,
+    selectedExtinguisherId,
+    refreshFireExtinguisherData, // This comes from the parent
+    setCurrentFunction,
+    setCurrentTitle
+}) => {
+    // Create our local refresh function as a backup
+    const localRefreshData = useRefreshData();
+    
+    // Single form data state object
+    const [formData, setFormData] = useState({
+        date: '',
+        num: '',
+        usage: '',
+        remark: '',
+        image: null
+    });
 
-const AddFillModal = ({ isAddFillModalVisible, setAddFillModalVisible, selectedExtinguisherId }) => {
-    const addFillClose = () => setAddFillModalVisible(false);
-    const [C1date, setC1date] = useState('')
-    const [C1num, setC1num] = useState('')
-    const [isdatecorrect, setIsdatecorrect] = useState(true)
-    const [dateincorrectmessage, setDateincorrectmessage] = useState('')
-    const [isnumcorrect, setIsnumcorrect] = useState(true)
-    const [numincorrectmessage, setNumincorrectmessage] = useState('')
+    // OCR and validation states
+    const [ocrData, setOcrData] = useState({
+        date: '',
+        num: ''
+    });
 
+    const [validation, setValidation] = useState({
+        isDateCorrect: true,
+        isNumCorrect: true,
+        dateErrorMessage: '',
+        numErrorMessage: '',
+        formErrors: {}
+    });
 
-    const [previewImage, setPreviewImage] = useState(null); // 用來存儲圖片的 
+    // UI states
+    const [previewImage, setPreviewImage] = useState(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [showAlert, setShowAlert] = useState(false);
+    const [alertMessage, setAlertMessage] = useState('');
+    const [alertColor, setAlertColor] = useState('danger');
+
+    // Clean up resources when modal closes
+    useEffect(() => {
+        return () => {
+            if (previewImage) {
+                URL.revokeObjectURL(previewImage);
+            }
+        };
+    }, [previewImage]);
+
+    // Reset form data when modal opens/closes
+    useEffect(() => {
+        if (!isAddFillModalVisible) {
+            resetForm();
+        }
+    }, [isAddFillModalVisible]);
+
+    const resetForm = () => {
+        setFormData({
+            date: '',
+            num: '',
+            usage: '',
+            remark: '',
+            image: null
+        });
+        setOcrData({
+            date: '',
+            num: ''
+        });
+        setValidation({
+            isDateCorrect: true,
+            isNumCorrect: true,
+            dateErrorMessage: '',
+            numErrorMessage: '',
+            formErrors: {}
+        });
+        if (previewImage) {
+            URL.revokeObjectURL(previewImage);
+        }
+        setPreviewImage(null);
+        setShowAlert(false);
+    };
+
+    const handleInputChange = (e) => {
+        const { id, value } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [id]: value
+        }));
+
+        // Clear validation errors for this field
+        setValidation(prev => ({
+            ...prev,
+            formErrors: {
+                ...prev.formErrors,
+                [id]: undefined
+            }
+        }));
+
+        // Check if OCR values match the new input
+        if (id === 'date' && ocrData.date) {
+            const isMatch = value === ocrData.date;
+            setValidation(prev => ({
+                ...prev,
+                isDateCorrect: isMatch,
+                dateErrorMessage: isMatch ? '' : '日期不正確'
+            }));
+        } else if (id === 'num' && ocrData.num) {
+            const isMatch = value === ocrData.num;
+            setValidation(prev => ({
+                ...prev,
+                isNumCorrect: isMatch,
+                numErrorMessage: isMatch ? '' : '發票號碼不正確'
+            }));
+        }
+    };
+
     const handleImageChange = (e) => {
         const file = e.target.files[0];
-        if (file) {
-            const previewUrl = URL.createObjectURL(file);
-            setPreviewImage(previewUrl);
-    
-            // Trigger OCR API call
-            handleC1image(e);
+        if (!file) return;
+
+        // Clear previous preview
+        if (previewImage) {
+            URL.revokeObjectURL(previewImage);
         }
-    };
-    
 
-    const handleSubmit = async (e) => {
-        e.preventDefault(); // Prevent default form submission behavior.
+        // Create new preview and update form data
+        const previewUrl = URL.createObjectURL(file);
+        setPreviewImage(previewUrl);
+        setFormData(prev => ({
+            ...prev,
+            image: file
+        }));
 
-        const formData = new FormData();
-        formData.append('user_id', window.sessionStorage.getItem('user_id'));
-        formData.append('extinguisher_id', selectedExtinguisherId);
-        formData.append('Doc_date', document.getElementById('date').value);
-        formData.append('Doc_number', document.getElementById('num').value);
-        formData.append('usage', document.getElementById('usage').value);
-        formData.append('remark', document.getElementById('remark').value);
-        formData.append('image', document.getElementById('C1image').files[0]);
-
-        try {
-            const res = await fetch('http://localhost:8000/insert_extinguisher_fill', {
-                method: 'POST',
-                body: formData,
-            });
-
-            if (res.ok) {
-                const data = await res.json();
-                console.log('Form submitted successfully', data);
-                setAddFillModalVisible(false); // Close the modal after successful submission.
-            } else {
-                const errorData = await res.json();
-                console.error('Failed to submit form data', errorData.detail);
-            }
-        } catch (error) {
-            console.error('Error submitting form data', error);
-        }
+        // Process image with OCR
+        processImageWithOCR(file);
     };
 
-
-    const handleC1image = async (e) => {
-        e.preventDefault()
-
-        const imageElement = document.getElementById('C1image')
-
-        if (!imageElement || !imageElement.files) {
-            console.error('Form elements or image files not found')
-            return
-        }
-
-        const formData = new FormData()
-        formData.append('image', imageElement.files[0])
+    const processImageWithOCR = async (imageFile) => {
+        const formDataToSend = new FormData();
+        formDataToSend.append('image', imageFile);
 
         try {
             const res = await fetch('http://localhost:8000/ocrapi', {
                 method: 'POST',
-                body: formData,
-            })
+                body: formDataToSend,
+            });
 
             if (res.ok) {
-                const data = await res.json()
-                setC1date(data.response_content[0])
-                setC1num(data.response_content[1])
-                console.log('Data submitted successfully')
+                const data = await res.json();
+                const extractedDate = data.response_content[0];
+                const extractedNum = data.response_content[1];
 
-                if (data.response_content[0] != document.getElementById('date').value) {
-                    setIsdatecorrect(false)
-                    setDateincorrectmessage('日期不正確')
+                // Update OCR data
+                setOcrData({
+                    date: extractedDate,
+                    num: extractedNum
+                });
 
-                }
+                // Check if current form values match OCR results
+                const isDateMatch = formData.date === extractedDate;
+                const isNumMatch = formData.num === extractedNum;
 
-                if (data.response_content[1] != document.getElementById('num').value) {
-                    setIsnumcorrect(false)
-                    setNumincorrectmessage('發票號碼不正確')
-                }
-
+                setValidation(prev => ({
+                    ...prev,
+                    isDateCorrect: isDateMatch,
+                    isNumCorrect: isNumMatch,
+                    dateErrorMessage: isDateMatch ? '' : '日期不正確',
+                    numErrorMessage: isNumMatch ? '' : '發票號碼不正確'
+                }));
             } else {
-                console.error('Failed to submit data')
+                showFormAlert('OCR處理失敗，請手動輸入資料', 'warning');
             }
         } catch (error) {
-            console.error('Error submitting data', error)
+            console.error('Error processing image with OCR:', error);
+            showFormAlert('OCR處理發生錯誤，請手動輸入資料', 'warning');
         }
-    }
+    };
 
-    const datecorrect = () => {
-        if (C1date == document.getElementById('date').value) {
-            setDateincorrectmessage('')
-            setIsnumcorrect(true)
-        }
-    }
+    const validateForm = () => {
+        const errors = {};
 
-    const numcorrect = () => {
-        if (C1num == document.getElementById('num').value) {
-            setNumincorrectmessage('')
-            setIsnumcorrect(true)
+        // Required fields validation
+        if (!formData.date) errors.date = '請輸入日期';
+        if (!formData.num) errors.num = '請輸入發票號碼/收據編號';
+        if (!formData.usage) errors.usage = '請輸入填充量';
+        if (!formData.image) errors.image = '請上傳圖片';
+
+        setValidation(prev => ({
+            ...prev,
+            formErrors: errors
+        }));
+
+        return Object.keys(errors).length === 0;
+    };
+
+    // Safe refresh function that tries multiple approaches
+    const safeRefresh = async () => {
+        console.log("Attempting to refresh data...");
+        try {
+            // First try the prop passed from parent
+            if (typeof refreshFireExtinguisherData === 'function') {
+                console.log("Using refreshFireExtinguisherData from props");
+                await refreshFireExtinguisherData();
+                return true;
+            } 
+            // Then try our local refresh
+            else if (localRefreshData && typeof localRefreshData.refreshFireExtinguisherData === 'function') {
+                console.log("Using localRefreshData.refreshFireExtinguisherData");
+                await localRefreshData.refreshFireExtinguisherData();
+                return true;
+            }
+            console.warn("No valid refresh function found");
+            return false;
+        } catch (error) {
+            console.error("Error refreshing data:", error);
+            return false;
         }
-    }
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        // Prevent multiple submissions
+        if (isSubmitting) return;
+
+        // Validate form
+        if (!validateForm()) {
+            showFormAlert('請填寫所有必填欄位', 'danger');
+            return;
+        }
+
+        setIsSubmitting(true);
+
+        const formDataToSend = new FormData();
+        formDataToSend.append('user_id', window.sessionStorage.getItem('user_id'));
+        formDataToSend.append('extinguisher_id', selectedExtinguisherId);
+        formDataToSend.append('Doc_date', formData.date);
+        formDataToSend.append('Doc_number', formData.num);
+        formDataToSend.append('usage', formData.usage);
+        formDataToSend.append('remark', formData.remark);
+        formDataToSend.append('image', formData.image);
+
+        try {
+            const res = await fetch('http://localhost:8000/insert_extinguisher_fill', {
+                method: 'POST',
+                body: formDataToSend,
+            });
+
+            if (res.ok) {
+                console.log('✅ Form submitted successfully!');
+                
+                // Close modal first to prevent UI issues
+                setAddFillModalVisible(false);
+
+                // Wait a moment before refreshing data
+                setTimeout(async () => {
+                    const refreshed = await safeRefresh();
+                    if (refreshed) {
+                        alert("資料提交成功！");
+                    } else {
+                        alert("資料已提交，但無法自動刷新頁面。請手動刷新。");
+                    }
+                }, 500);
+
+            } else {
+                console.error("❌ Failed to submit form");
+                showFormAlert("提交失敗，請重試。", "danger");
+            }
+        } catch (error) {
+            console.error("❌ Error submitting form:", error);
+            showFormAlert("提交時發生錯誤。", "danger");
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const showFormAlert = (message, color, outsideModal = false) => {
+        if (outsideModal) {
+            // For alerts outside the modal (after closing)
+            alert(message);
+        } else {
+            // For alerts inside the modal
+            setAlertMessage(message);
+            setAlertColor(color);
+            setShowAlert(true);
+
+            // Auto hide after 5 seconds
+            setTimeout(() => {
+                setShowAlert(false);
+            }, 5000);
+        }
+    };
+
+    const closeModal = () => {
+        setAddFillModalVisible(false);
+    };
 
     return (
         <CModal
             backdrop="static"
-            visible={isAddFillModalVisible} onClose={addFillClose}
+            visible={isAddFillModalVisible}
+            onClose={closeModal}
             aria-labelledby="ActivityModalLabel"
             size="xl"
         >
             <CModalHeader>
                 <h5><b>新增填充紀錄</b></h5>
             </CModalHeader>
-            <CForm>
+
+            <CForm onSubmit={handleSubmit}>
                 <CModalBody>
+                    {showAlert && (
+                        <CAlert color={alertColor} dismissible>
+                            {alertMessage}
+                        </CAlert>
+                    )}
+
                     <div className={styles.addmodal}>
                         <div className={styles.modalLeft}>
                             <CRow className="mb-3">
-                                <CFormLabel htmlFor="month" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票/收據日期*</CFormLabel>
-                                <CCol><CFormInput className={styles.addinput} type="date" id="date" required />
+                                <CFormLabel htmlFor="date" className={`col-sm-2 col-form-label ${styles.addlabel}`}>
+                                    發票/收據日期*
+                                </CFormLabel>
+                                <CCol>
+                                    <CFormInput
+                                        className={styles.addinput}
+                                        type="date"
+                                        id="date"
+                                        value={formData.date}
+                                        onChange={handleInputChange}
+                                        invalid={!!validation.formErrors.date || !validation.isDateCorrect}
+                                    />
+                                    {validation.formErrors.date && (
+                                        <div className="invalid-feedback">{validation.formErrors.date}</div>
+                                    )}
                                 </CCol>
                             </CRow>
-                            <CRow className="mb-3">
-                                <CFormLabel htmlFor="num" className={`col-sm-2 col-form-label ${styles.addlabel}`} >發票號碼/收據編號*</CFormLabel>
-                                <CCol>
-                                    <CFormInput className={styles.addinput} type="text" id="num" required />
-                                </CCol>
-                            </CRow>
-                            <CRow className="mb-3">
-                                <CFormLabel htmlFor="num" className={`col-sm-2 col-form-label ${styles.addlabel}`} >填充量*</CFormLabel>
-                                <CCol>
-                                    <CFormInput className={styles.addinput} type="number" id="usage" required />
-                                </CCol>
-                            </CRow>
-                            <CRow className="mb-3">
-                                <CFormLabel htmlFor="explain" className={`col-sm-2 col-form-label ${styles.addlabel}`} >備註</CFormLabel>
-                                <CCol>
-                                    <CFormTextarea className={styles.addinput} type="text" id="remark" rows={3} />
 
+                            <CRow className="mb-3">
+                                <CFormLabel htmlFor="num" className={`col-sm-2 col-form-label ${styles.addlabel}`}>
+                                    發票號碼/收據編號*
+                                </CFormLabel>
+                                <CCol>
+                                    <CFormInput
+                                        className={styles.addinput}
+                                        type="text"
+                                        id="num"
+                                        value={formData.num}
+                                        onChange={handleInputChange}
+                                        invalid={!!validation.formErrors.num || !validation.isNumCorrect}
+                                    />
+                                    {validation.formErrors.num && (
+                                        <div className="invalid-feedback">{validation.formErrors.num}</div>
+                                    )}
                                 </CCol>
                             </CRow>
+
                             <CRow className="mb-3">
-                                <CFormLabel
-                                    htmlFor="photo"
-                                    className={`col-sm-2 col-form-label ${styles.addlabel}`}
-                                >
+                                <CFormLabel htmlFor="usage" className={`col-sm-2 col-form-label ${styles.addlabel}`}>
+                                    填充量*
+                                </CFormLabel>
+                                <CCol>
+                                    <CFormInput
+                                        className={styles.addinput}
+                                        type="number"
+                                        id="usage"
+                                        value={formData.usage}
+                                        onChange={handleInputChange}
+                                        invalid={!!validation.formErrors.usage}
+                                    />
+                                    {validation.formErrors.usage && (
+                                        <div className="invalid-feedback">{validation.formErrors.usage}</div>
+                                    )}
+                                </CCol>
+                            </CRow>
+
+                            <CRow className="mb-3">
+                                <CFormLabel htmlFor="remark" className={`col-sm-2 col-form-label ${styles.addlabel}`}>
+                                    備註
+                                </CFormLabel>
+                                <CCol>
+                                    <CFormTextarea
+                                        className={styles.addinput}
+                                        id="remark"
+                                        value={formData.remark}
+                                        onChange={handleInputChange}
+                                        rows={3}
+                                    />
+                                </CCol>
+                            </CRow>
+
+                            <CRow className="mb-3">
+                                <CFormLabel htmlFor="image" className={`col-sm-2 col-form-label ${styles.addlabel}`}>
                                     圖片*
                                 </CFormLabel>
                                 <CCol>
-                                    <CFormInput type="file" id="C1image" onChange={(e) => (handleImageChange(e), handleC1image(e))} required />
+                                    <CFormInput
+                                        type="file"
+                                        id="image"
+                                        onChange={handleImageChange}
+                                        invalid={!!validation.formErrors.image}
+                                        accept="image/*"
+                                    />
+                                    {validation.formErrors.image && (
+                                        <div className="invalid-feedback">{validation.formErrors.image}</div>
+                                    )}
                                 </CCol>
                             </CRow>
 
-                            <br />
-                            <div style={{ textAlign: 'center' }}>*為必填欄位</div>
+                            <div className="text-center mt-3">
+                                <small>*為必填欄位</small>
+                            </div>
                         </div>
+
                         <div className={styles.modalRight}>
-                            <CFormLabel className={`col-sm-2 col-form-label ${styles.addlabel}`} >
+                            <CFormLabel className={styles.addlabel}>
                                 圖片預覽
                             </CFormLabel>
                             <div className={styles.imgBlock}>
-                                {previewImage && ( // 如果有圖片 URL，則顯示預覽
-                                    <Zoom><img src={previewImage} alt="Uploaded Preview" /></Zoom>
+                                {previewImage ? (
+                                    <Zoom>
+                                        <img
+                                            src={previewImage}
+                                            alt="Uploaded Preview"
+                                            style={{ maxWidth: '100%', maxHeight: '200px' }}
+                                        />
+                                    </Zoom>
+                                ) : (
+                                    <div className="text-center p-4 text-muted border">
+                                        尚未上傳圖片
+                                    </div>
                                 )}
                             </div>
 
-                            <CFormLabel className={`col-sm-2 col-form-label ${styles.addlabel}`}>
-                                偵測錯誤提醒
+                            <CFormLabel className={styles.addlabel}>
+                                偵測結果
                             </CFormLabel>
-                            <div className={styles.errorMSG}>
-                                偵測日期:{C1date}  <span>{dateincorrectmessage}</span><br />
-                                偵測號碼:{C1num}  <span>{numincorrectmessage}</span>
+                            <div className={styles.errorMSG || 'p-3 border'}>
+                                <div>
+                                    偵測日期: {ocrData.date || '尚未偵測'}
+                                    {!validation.isDateCorrect && (
+                                        <span className="text-danger ms-2">{validation.dateErrorMessage}</span>
+                                    )}
+                                </div>
+                                <div>
+                                    偵測號碼: {ocrData.num || '尚未偵測'}
+                                    {!validation.isNumCorrect && (
+                                        <span className="text-danger ms-2">{validation.numErrorMessage}</span>
+                                    )}
+                                </div>
                             </div>
-
                         </div>
                     </div>
                 </CModalBody>
+
                 <CModalFooter>
-                    <CButton className="modalbutton1" onClick={addFillClose}>取消</CButton>
-                    <CButton className="modalbutton2" type="submit" onClick={handleSubmit}>儲存</CButton>
+                    <CButton
+                        className="modalbutton1"
+                        onClick={closeModal}
+                        disabled={isSubmitting}
+                    >
+                        取消
+                    </CButton>
+                    <CButton
+                        className="modalbutton2"
+                        type="submit"
+                        disabled={isSubmitting}
+                    >
+                        {isSubmitting ? '儲存中...' : '儲存'}
+                    </CButton>
                 </CModalFooter>
             </CForm>
         </CModal>
     );
 };
-
 
 export default AddFillModal;

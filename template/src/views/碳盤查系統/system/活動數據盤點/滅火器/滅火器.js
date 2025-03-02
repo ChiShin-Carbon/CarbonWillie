@@ -31,7 +31,7 @@ import { getExtinguisherData } from '../fetchdata.js'
 import Zoom from 'react-medium-image-zoom'
 import 'react-medium-image-zoom/dist/styles.css'
 
-export const FireExtinguisher = () => {
+export const FireExtinguisher = ({refreshFireExtinguisherData}) => {
   const [isEditModalVisible, setEditModalVisible] = useState(false)
   const [isAddFillModalVisible, setAddFillModalVisible] = useState(false)
   const [isEditFillModalVisible, setEditFillModalVisible] = useState(false)
@@ -203,6 +203,7 @@ export const FireExtinguisher = () => {
         isAddFillModalVisible={isAddFillModalVisible}
         setAddFillModalVisible={setAddFillModalVisible}
         selectedExtinguisherId={selectedExtinguisherId}
+        refreshFireExtinguisherData={refreshFireExtinguisherData}
       />
 
       <EditFillModal

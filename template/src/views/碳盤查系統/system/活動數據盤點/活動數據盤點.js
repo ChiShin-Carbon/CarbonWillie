@@ -90,11 +90,33 @@ const Tabs = () => {
     setCurrentTitle(title)
   }
 
+    // Add a key state to force component re-renders
+    const [refreshKey, setRefreshKey] = useState(0);
+
+    // Create a wrapped refresh function that also updates the key
+    const wrappedRefreshFireExtinguisherData = async () => {
+      try {
+        await refreshFireExtinguisherData();
+        // Increment key to force re-render after data refresh
+        setRefreshKey(prevKey => prevKey + 1);
+      } catch (error) {
+        console.error("Error in wrapped refresh:", error);
+      }
+    };
+  
+
   useEffect(() => {
+    // Initial data loading
     refreshFireExtinguisherData();
     refreshEmployeeData();
   }, [refreshFireExtinguisherData, refreshEmployeeData]);
 
+  // Update key when extinguishers data changes
+  useEffect(() => {
+    if (extinguishers && extinguishers.length > 0) {
+      setRefreshKey(prevKey => prevKey + 1);
+    }
+  }, [extinguishers]);
 
   const [isAddModalVisible, setAddModalVisible] = useState(false)
 
@@ -261,8 +283,8 @@ const Tabs = () => {
                 {currentFunction === 'Vehicle' && <Vehicle />}
                 {currentFunction === 'FireExtinguisher' &&
                   <FireExtinguisher
-                    key={JSON.stringify(extinguishers)} // Force re-render when data changes
-                    extinguishers={extinguishers}
+                  key={refreshKey} // Use refreshKey instead of JSON.stringify
+                  extinguishers={extinguishers}
                     refreshFireExtinguisherData={refreshFireExtinguisherData}
                   />}
                 {currentFunction === 'Employee' && (
