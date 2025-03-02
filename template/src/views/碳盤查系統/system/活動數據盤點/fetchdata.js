@@ -114,10 +114,34 @@ export const getMachineryData = async () => {
         } else if (response.status === 404) {
             console.warn('No machinary data found.');
             return [];
-        }else {
+        } else {
             console.error(`Error ${response.status}: ${data.detail}`);
         }
     } catch (error) {
         console.error('Error fetching Machinery data:', error);
+    }
+};
+
+// Function to fetch generator data
+export const getEmergency_GeneratorData = async () => {
+    try {
+        const response = await fetch('http://localhost:8000/Emergency_Generator', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        const data = await response.json();
+
+        if (response.ok) {
+            return data.Emergency_Generator;  // Ensure data is an array
+        } else if (response.status === 404) {
+            console.warn('No Emergency_Generator data found.');
+            return [];
+        } else {
+            console.error(`Error ${response.status}: ${data.detail}`);
+        }
+    } catch (error) {
+        console.error('Error fetching generator data:', error);
     }
 };

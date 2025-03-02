@@ -86,11 +86,13 @@ const Tabs = () => {
     nonemployees, 
     refrigerants,
     machinery,
+    Emergency_Generator,
     refreshFireExtinguisherData, 
     refreshEmployeeData,
     refreshNonEmployeeData, 
     refreshRefrigerantData,
-    refreshMachineryData
+    refreshMachineryData,
+    refreshEmergency_GeneratorData
   } = useRefreshData();
 
 
@@ -111,7 +113,8 @@ const Tabs = () => {
     refreshNonEmployeeData();
     refreshRefrigerantData();
     refreshMachineryData();
-  }, [refreshFireExtinguisherData, refreshEmployeeData, refreshNonEmployeeData, refreshRefrigerantData,refreshMachineryData]);
+    refreshEmergency_GeneratorData();
+  }, [refreshFireExtinguisherData, refreshEmployeeData, refreshNonEmployeeData, refreshRefrigerantData,refreshMachineryData,refreshEmergency_GeneratorData]);
 
   // Update key when extinguishers data changes
   useEffect(() => {
@@ -193,6 +196,9 @@ const Tabs = () => {
           <EmergencyGeneratorAdd
             isAddModalVisible={isAddModalVisible}
             setAddModalVisible={setAddModalVisible}
+            refreshEmergency_GeneratorData={refreshEmergency_GeneratorData}  // Make sure this is passed correctly
+            setCurrentFunction={setCurrentFunction}
+            setCurrentTitle={setCurrentTitle}
           />
         )
       // case 'ElectricityUsage':
@@ -332,7 +338,12 @@ const Tabs = () => {
                 machinery={machinery}
                 refreshMachineryData={refreshMachineryData}
                 />}
-                {currentFunction === 'EmergencyGenerator' && <EmergencyGenerator />}
+                {currentFunction === 'EmergencyGenerator' && 
+                <EmergencyGenerator 
+                key={JSON.stringify(Emergency_Generator)} // Force re-render when data changes
+                Emergency_Generator={Emergency_Generator}
+                refreshEmergency_GeneratorData={refreshEmergency_GeneratorData}
+                />}
                 {/* {currentFunction === 'ElectricityUsage' && <ElectricityUsage />} */}
                 {currentFunction === 'Electricity' && <Electricity />}
                 {currentFunction === 'Commuting' && <Commuting />}

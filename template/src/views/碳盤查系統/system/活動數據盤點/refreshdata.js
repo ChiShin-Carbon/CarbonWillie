@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { getExtinguisherData, getEmployeeData, getNonEmployeeData, getRefrigerantData, getMachineryData } from './fetchdata.js';
+import { getExtinguisherData, getEmployeeData, getNonEmployeeData, getRefrigerantData, getMachineryData, getEmergency_GeneratorData } from './fetchdata.js';
 
 export const useRefreshData = () => {
     const [extinguishers, setExtinguishers] = useState([]);
@@ -7,6 +7,7 @@ export const useRefreshData = () => {
     const [nonemployees, setNonEmployees] = useState([]);
     const [refrigerants, setRefrigerants] = useState([]);
     const [machinery, setMachinery] = useState([]);
+    const [Emergency_Generator, setEmergency_Generator] = useState([]);
 
 
 
@@ -52,27 +53,42 @@ export const useRefreshData = () => {
         }
     }, []);
 
+
     const refreshMachineryData = useCallback(async () => {
-        console.log("🔄 Refreshing machinary data...");
+        console.log("🔄 Refreshing Emergency_Generator data...");
         try {
             const data = await getMachineryData();
             console.log("✅ Retrieved data:", data);
-            setMachinery(Array.isArray(data) ? data : data.refrigerants || []);
+            setMachinery(Array.isArray(data) ? data : data.machinery || []);
         } catch (error) {
-            console.error("Error refreshing machinary data:", error);
+            console.error("Error refreshing Emergency_Generator data:", error);
         }
     }, []);
 
-    return { 
-        extinguishers, 
+    const refreshEmergency_GeneratorData = useCallback(async () => {
+        console.log("🔄 Refreshing Emergency_Generator data...");
+        try {
+            const data = await getEmergency_GeneratorData();
+            console.log("✅ Retrieved data:", data);
+            setEmergency_Generator(Array.isArray(data) ? data : data.extinguishers || []);
+        } catch (error) {
+            console.error("Error refreshing Emergency_Generator data:", error);
+        }
+    }, []);
+
+
+    return {
+        extinguishers,
         employees,
-        nonemployees, 
+        nonemployees,
         refrigerants,
         machinery,
-        refreshFireExtinguisherData, 
+        Emergency_Generator,
+        refreshFireExtinguisherData,
         refreshEmployeeData,
-        refreshNonEmployeeData, 
+        refreshNonEmployeeData,
         refreshRefrigerantData,
-        refreshMachineryData
+        refreshMachineryData,
+        refreshEmergency_GeneratorData
     };
 };
