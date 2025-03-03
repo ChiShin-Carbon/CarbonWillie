@@ -1,10 +1,7 @@
-from fastapi import APIRouter, HTTPException, status
-from fastapi.responses import FileResponse
+from fastapi import APIRouter, HTTPException, status, Depends
 from connect.connect import connectDB
 from pydantic import BaseModel
 from typing import Optional
-from 盤查報告書.merge import merge_documents  # 匯入合併 Word 檔案的函式
-import os
 
 # 建立 APIRouter 實例
 word_companyinfo = APIRouter(tags=["word專用"])
@@ -15,7 +12,7 @@ class OrgInfoResponse(BaseModel):
     business_id: Optional[str]
     org_name: Optional[str]
 
-# 取得 org_name 並下載 Word 檔案
+# 取得 org_name 的 API 端點
 @word_companyinfo.get("/org_info/{user_id}", response_model=OrgInfoResponse)
 def get_org_info(user_id: str):
     conn = connectDB()
@@ -38,23 +35,12 @@ def get_org_info(user_id: str):
         cursor.execute("SELECT org_name FROM Company_Info WHERE business_id = ?", (business_id,))
         org_result = cursor.fetchone()
         
+        conn.close()
+
         if not org_result:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="找不到對應的 org_name")
-        
-        org_name = org_result[0]
 
-        # 產生 Word 文件
-        merge_documents()  
-        file_path = "combined.docx"
-
-        # 檢查檔案是否存在
-        if not os.path.exists(file_path):
-            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="合併文件失敗")
-        
-        return FileResponse(path=file_path, filename="combined.docx", media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+        return OrgInfoResponse(user_id=user_id, business_id=business_id, org_name=org_result[0])
 
     except Exception as e:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"查詢發生錯誤: {e}")
-
-    finally:
-        conn.close()
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"查詢發生錯誤: {e}") 

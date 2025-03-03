@@ -1,9 +1,12 @@
 from docx import Document
 from docx.shared import Cm
 
-from 盤查報告書.storeDef import set_heading, set_heading2, set_paragraph, set_explain,set_ch1_table1,set_ch1_pointlist
+from .storeDef import set_heading, set_heading2, set_paragraph, set_explain,set_ch1_table1,set_ch1_pointlist
+from .storeDef2 import get_org_name
 
-def create_chapter1():
+
+def create_chapter1(user_id):
+    org_name = get_org_name(user_id)
     doc = Document()
 
     # 獲取文檔的第一個 section（默認只有一個）
@@ -44,7 +47,7 @@ def create_chapter1():
     set_explain(table_explain)
     table = doc.add_table(rows=4, cols=2)
     table.cell(0, 0).text = "機構名稱"
-    table.cell(0, 1).text = ""
+    table.cell(0, 1).text = f"{org_name}"
     table.cell(1, 0).text = "負責人"
     table.cell(1, 1).text = ""
     table.cell(2, 0).text = "員工總人數"
@@ -63,7 +66,7 @@ def create_chapter1():
     content = doc.add_paragraph("【請插入組織架構圖】")
     set_paragraph(content)
 
-    photo_explain = doc.add_paragraph("圖一、【機構名稱】組織架構圖")
+    photo_explain = doc.add_paragraph(f"圖一、{org_name}組織架構圖")
     set_explain(photo_explain)
 
     # 插入分頁符號

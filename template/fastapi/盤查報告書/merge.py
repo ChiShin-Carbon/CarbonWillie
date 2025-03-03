@@ -1,22 +1,27 @@
-from 盤查報告書.chapter1 import create_chapter1
-from 盤查報告書.chapter2 import create_chapter2
-from 盤查報告書.chapter3 import create_chapter3
-from 盤查報告書.chapter4_1 import create_chapter4_1
-from 盤查報告書.chapter4_2 import create_chapter4_2
-from 盤查報告書.chapter4_3 import create_chapter4_3
-from 盤查報告書.chapter5 import create_chapter5
-from 盤查報告書.chapter6 import create_chapter6
-from 盤查報告書.title import create_title
-
-
-
-
+from .chapter1 import create_chapter1
+from .chapter2 import create_chapter2
+from .chapter3 import create_chapter3
+from .chapter4_1 import create_chapter4_1
+from .chapter4_2 import create_chapter4_2
+from .chapter4_3 import create_chapter4_3
+from .chapter5 import create_chapter5
+from .chapter6 import create_chapter6
+from .title import create_title
 
 from docx import Document
-from docx.shared import Cm
+from fastapi import FastAPI,APIRouter
+import os
+from fastapi.responses import FileResponse
 
-def merge_documents():
-    doc1 = create_chapter1()
+from fastapi import BackgroundTasks
+
+
+
+# 建立 APIRouter 實例
+get_word = APIRouter(tags=["word專用"])
+
+def merge_documents(user_id):
+    doc1 = create_chapter1(1)
     doc2 = create_chapter2()
     doc3 = create_chapter3()
     doc4_1 = create_chapter4_1()
@@ -65,3 +70,33 @@ def merge_documents():
 
 if __name__ == "__main__":
     merge_documents()
+
+
+
+
+@get_word.get("/generate_word/{user_id}")
+async def generate_word(user_id: int, background_tasks: BackgroundTasks):
+    """API 端點，生成 Word 檔案後提供下載"""
+    file_path = "combined.docx"  # 設定檔案名稱
+
+    # 將生成檔案的操作放入背景任務
+    background_tasks.add_task(merge_documents, user_id)
+
+    return {"message": "文件生成中，請稍後查收下載"}
+
+@get_word.get("/generate_word/{user_id}")
+async def generate_word(user_id:int, background_tasks: BackgroundTasks):
+    """API 端點，生成 Word 檔案後提供下載"""
+    file_path = "combined.docx"  # 設定檔案名稱
+    merge_documents(user_id)   # 先生成 Word 檔案
+
+    background_tasks.add_task(merge_documents, user_id)
+    if os.path.exists(file_path):
+        return FileResponse(
+            path=file_path,
+            filename="碳盤查報告.docx",  # 可修改為你想要的檔名
+            media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            # 將生成檔案的操作放入背景任務
+        )
+    else:
+        return {"error": "檔案生成失敗"}

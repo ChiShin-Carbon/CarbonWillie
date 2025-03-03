@@ -1,7 +1,7 @@
 from docx import Document
 from docx.shared import Cm
 
-from 盤查報告書.storeDef import set_heading, set_heading2, set_paragraph, set_explain,set_ch4_table1,set_ch4_table2,set_ch4_table3,set_ch4_stairs1,set_ch4_stairs2,set_ch4_stairs3,set_ch4_stairs4,set_ch4_stairs5,set_ch4_stairs6
+from .storeDef import set_heading, set_heading2, set_paragraph, set_explain,set_ch4_table1,set_ch4_table2,set_ch4_table3,set_ch4_stairs1,set_ch4_stairs2,set_ch4_stairs3,set_ch4_stairs4,set_ch4_stairs5,set_ch4_stairs6
 
 def add_stairs_paragraphs(doc, texts, format_func):
     for text in texts:

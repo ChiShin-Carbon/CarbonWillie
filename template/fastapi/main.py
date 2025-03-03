@@ -73,6 +73,8 @@ from 管理者.insert_adminConsultant import insert_adminConsultant
 from 管理者.edit_adminConsultant import edit_adminConsultant
 
 from 盤查報告書.getBusiness import word_companyinfo
+from 盤查報告書.merge import get_word
+
 
 
 
@@ -235,3 +237,5 @@ app.include_router(delete_vehicle)
 
 
 app.include_router(word_companyinfo)
+app.include_router(get_word)
+

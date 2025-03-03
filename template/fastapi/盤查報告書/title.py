@@ -1,7 +1,7 @@
 from docx import Document
 from docx.shared import Cm
 
-from 盤查報告書.storeDef import set_title
+from .storeDef import set_title
 
 from datetime import datetime
 
