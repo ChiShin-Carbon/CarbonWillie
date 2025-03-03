@@ -10,36 +10,23 @@ import EditModal from './編輯Modal.js';
 import Zoom from 'react-medium-image-zoom'
 import 'react-medium-image-zoom/dist/styles.css';
 
+import { getNonEmployeeData } from '../fetchdata.js';
+
 export const NonEmployee = () => {
     const [isEditModalVisible, setEditModalVisible] = useState(false);
-    const [employeeData, setEmployeeData] = useState([]); // State to store fetched employee data
     const [selectedNonemployeeId, setSelectedNonemployeeId] = useState(null) // State to store selected vehicle ID
+    const [nonemployeeData, setNonEmployeeData] = useState([]);
 
-
-    const getEmployeeData = async () => {
-        try {
-            const response = await fetch('http://localhost:8000/NonEmployee', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-            const data = await response.json();
-
-            if (response.ok) {
-                setEmployeeData(data.Nonemployees); // Set employee data to state
-            } else {
-                console.error(`Error ${response.status}: ${data.detail}`);
-            }
-        } catch (error) {
-            console.error('Error fetching employee data:', error);
-        }
-    };
 
     // Fetch employee data when the component mounts
     useEffect(() => {
-        getEmployeeData();
-
+        const fetchData = async () => {
+            const data = await getNonEmployeeData();
+            if (data) {
+                setNonEmployeeData(data);
+            }
+        };
+        fetchData();
     }, []);
 
     return (
@@ -58,31 +45,38 @@ export const NonEmployee = () => {
                     </tr>
                 </CTableHead>
                 <CTableBody className={styles.activityTableBody}>
-                    {employeeData.map((item, index) => (
-                        <tr key={index}>
-                            <td>{item.period_date}</td>
-                            <td>{item.nonemployee_number}</td>
-                            <td>{item.total_hours}</td>
-                            <td>{item.total_days}</td>
-                            <td>{item.remark}</td>
-                            <td>
-                                <Zoom>
-                                    <img src={`fastapi/${item.img_path}`} alt="image" width="100" />
-                                </Zoom>
-                            </td>
-
-                            <td>{item.edit_time}</td>
-
-                            <td>
-                                <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen}
-                                    onClick={() => {
-                                        setSelectedNonemployeeId(item.nonemployee_id) // Set the selected vehicle ID
-                                        setEditModalVisible(true) // Open the modal
-                                    }} />
-                                <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
-                            </td>
+                    {nonemployeeData.length > 0 ? (
+                        nonemployeeData.map((item, index) => (
+                            <tr key={index}>
+                                <td>{item.period_date}</td>
+                                <td>{item.nonemployee_number}</td>
+                                <td>{item.total_hours}</td>
+                                <td>{item.total_days}</td>
+                                <td>{item.remark}</td>
+                                <td>
+                                    <Zoom>
+                                        <img src={`fastapi/${item.img_path}`} alt="image" width="100" />
+                                    </Zoom>
+                                </td>
+                                <td>{item.edit_time}</td>
+                                <td>
+                                    <FontAwesomeIcon
+                                        icon={faPenToSquare}
+                                        className={styles.iconPen}
+                                        onClick={() => {
+                                            setSelectedNonemployeeId(item.nonemployee_id) // Set the selected vehicle ID
+                                            setEditModalVisible(true) // Open the modal
+                                        }}
+                                    />
+                                    <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
+                                </td>
+                            </tr>
+                        ))
+                    ) : (
+                        <tr>
+                            <td colSpan="14" className="text-center">目前沒有非員工資料</td>
                         </tr>
-                    ))}
+                    )}
                 </CTableBody>
             </CTable>
             <EditModal

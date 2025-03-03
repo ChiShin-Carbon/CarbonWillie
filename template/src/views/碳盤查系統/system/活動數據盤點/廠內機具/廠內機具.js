@@ -10,38 +10,24 @@ import EditModal from './編輯Modal.js';
 import Zoom from 'react-medium-image-zoom'
 import 'react-medium-image-zoom/dist/styles.css';
 
+import { getMachineryData } from '../fetchdata.js'
+
 export const Machinery = () => {
     const [isEditModalVisible, setEditModalVisible] = useState(false);
     const [machineryData, setMachineryData] = useState([]);  // Updated state name for clarity
     const [selectedMachinery, setSelectedMachinery] = useState(null); // Store selected employee for edit
-    
 
-    // Function to fetch Machinery data
-    const getMachineryData = async () => {
-        try {
-            const response = await fetch('http://localhost:8000/Machinery', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-            const data = await response.json();
-
-            if (response.ok) {
-                setMachineryData(data.Machinery);  // Set data to state
-            } else {
-                console.error(`Error ${response.status}: ${data.detail}`);
-            }
-        } catch (error) {
-            console.error('Error fetching Machinery data:', error);
-        }
-    };
 
     // Fetch data on component mount
     useEffect(() => {
-        getMachineryData();
-    }, []);
-
+        const fetchData = async () => {
+          const data = await getMachineryData();
+          if (data) {
+            setMachineryData(data);
+          }
+        };
+        fetchData();
+      }, []);
     return (
         <div>
             <CTable hover className={styles.activityTable1}>
@@ -59,31 +45,41 @@ export const Machinery = () => {
                     </tr>
                 </CTableHead>
                 <CTableBody className={styles.activityTableBody}>
-                    {machineryData.map((item, index) => (
-                        <tr key={index}>
-                            <td>{item.Doc_date}</td>
-                            <td>{item.Doc_number}</td>
-                            <td>{item.machinery_location}</td>
-                            <td>{item.energy_type}</td>
-                            <td>{item.usage ?? 'N/A'}</td>
-                            <td>{item.remark}</td>
-                            <td>
-                                <Zoom>
-                                    <img src={`fastapi/${item.img_path}`} alt="image" width="100" />
-                                </Zoom>
-                            </td>
-                            <td>{item.edit_time}</td>
-                            <td>
-                                <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() =>{
-                                    setEditModalVisible(true)
-                                    setSelectedMachinery(item.machinery_id)
-                                    console.log(item.machinery_id)    
-                                }}
-                                      />
-                                <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
-                            </td>
-                        </tr>
-                    ))}
+                    {machineryData.length > 0 ?
+                        machineryData.map((item, index) => (
+                            <tr key={index}>
+                                <td>{item.Doc_date}</td>
+                                <td>{item.Doc_number}</td>
+                                <td>{item.machinery_location}</td>
+                                <td>{item.energy_type}</td>
+                                <td>{item.usage ?? 'N/A'}</td>
+                                <td>{item.remark}</td>
+                                <td>
+                                    <Zoom>
+                                        <img src={`fastapi/${item.img_path}`} alt="image" width="100" />
+                                    </Zoom>
+                                </td>
+                                <td>{item.edit_time}</td>
+                                <td>
+                                    <FontAwesomeIcon
+                                        icon={faPenToSquare}
+                                        className={styles.iconPen}
+                                        onClick={() => {
+                                            setEditModalVisible(true);
+                                            setSelectedMachinery(item.machinery_id);
+                                            console.log(item.machinery_id);
+                                        }}
+                                    />
+                                    <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
+                                </td>
+                            </tr>
+                        ))
+                        : (
+                            <tr>
+                              <td colSpan="14" className="text-center">目前沒有場內機具資料</td>
+                            </tr>
+                          )
+                    }
                 </CTableBody>
             </CTable>
             <EditModal

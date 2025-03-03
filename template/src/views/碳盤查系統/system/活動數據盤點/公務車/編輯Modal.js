@@ -7,7 +7,18 @@ import styles from '../../../../../scss/活動數據盤點.module.css';
 import Zoom from 'react-medium-image-zoom';
 import 'react-medium-image-zoom/dist/styles.css';
 
-const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedVehicleId }) => {
+import { useRefreshData } from '../refreshdata';
+
+const EditModal = ({
+    isEditModalVisible,
+    setEditModalVisible,
+    selectedVehicleId,
+    refreshEmergency_GeneratorData,
+    setCurrentFunction,
+    setCurrentTitle
+}) => {
+    // Create a local refresh instance as backup
+    const localRefreshData = useRefreshData();
     const [vehicles, setVehicles] = useState([]); // State to hold fetched vehicle data
     const [previewImage, setPreviewImage] = useState(null); // State for image preview
     const [existingImage, setExistingImage] = useState(null); // State to track if there's an existing image
@@ -19,6 +30,8 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedVehicleId 
         explain: '',
         image: null,
     });
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
 
     const [C1date, setC1date] = useState('');
     const [C1num, setC1num] = useState('');
@@ -53,52 +66,77 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedVehicleId 
         resetStates();
     };
 
+    // Safe refresh function that tries multiple approaches
+    const safeRefresh = async () => {
+        console.log("Attempting to refresh emergency generator data...");
+        try {
+            // First try the prop passed from parent
+            if (typeof refreshEmergency_GeneratorData === 'function') {
+                console.log("Using refreshEmergencyData from props");
+                await refreshEmergency_GeneratorData();
+                return true;
+            }
+            // Then try our local refresh
+            else if (localRefreshData && typeof localRefreshData.refreshEmergency_GeneratorData === 'function') {
+                console.log("Using localRefreshData.refreshEmergencyData");
+                await localRefreshData.refreshEmergency_GeneratorData();
+                return true;
+            }
+            console.warn("No valid refresh function found");
+            return false;
+        } catch (error) {
+            console.error("Error refreshing data:", error);
+            return false;
+        }
+    };
+
+
     const handleC1image = async (e) => {
         e.preventDefault();
-    
+
         const imageElement = document.getElementById('image');
-    
+
         if (!imageElement || !imageElement.files || imageElement.files.length === 0) {
-          console.error('Form elements or image files not found');
-          return;
+            console.error('Form elements or image files not found');
+            return;
         }
-    
+
         const formData = new FormData();
         formData.append('image', imageElement.files[0]);
-    
+
         try {
-          const res = await fetch('http://localhost:8000/ocrapi', {
-            method: 'POST',
-            body: formData,
-          });
-    
-          if (res.ok) {
-            const data = await res.json();
-            setC1date(data.response_content[0]);
-            setC1num(data.response_content[1]);
-            console.log('Data submitted successfully');
-    
-            if (data.response_content[0] !== document.getElementById('date').value) {
-              setIsdatecorrect(false);
-              setDateincorrectmessage('日期不正確');
+            const res = await fetch('http://localhost:8000/ocrapi', {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                setC1date(data.response_content[0]);
+                setC1num(data.response_content[1]);
+                console.log('Data submitted successfully');
+
+                if (data.response_content[0] !== document.getElementById('date').value) {
+                    setIsdatecorrect(false);
+                    setDateincorrectmessage('日期不正確');
+                } else {
+                    setIsdatecorrect(true);
+                    setDateincorrectmessage('');
+                }
+
+                if (data.response_content[1] !== document.getElementById('num').value) {
+                    setIsnumcorrect(false);
+                    setNumincorrectmessage('發票號碼不正確');
+                } else {
+                    setIsnumcorrect(true);
+                    setNumincorrectmessage('');
+                }
+
             } else {
-              setIsdatecorrect(true);
-              setDateincorrectmessage('');
+                console.error('Failed to submit data');
             }
-    
-            if (data.response_content[1] !== document.getElementById('num').value) {
-              setIsnumcorrect(false);
-              setNumincorrectmessage('發票號碼不正確');
-            } else {
-              setIsnumcorrect(true);
-              setNumincorrectmessage('');
-            }
-    
-          } else {
-            console.error('Failed to submit data');
-          }
         } catch (error) {
-          console.error('Error submitting data', error);
+            console.error('Error submitting data', error);
         }
     };
 
@@ -111,7 +149,7 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedVehicleId 
             setPreviewImage(previewUrl);
             setFormValues((prev) => ({ ...prev, image: file }));
             setUseExistingImage(false); // 選擇新圖片時，不使用現有圖片
-            
+
             // Trigger OCR after image is selected
             setTimeout(() => {
                 handleC1image(e);
@@ -127,9 +165,9 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedVehicleId 
     useEffect(() => {
         const fetchVehicleData = async () => {
             if (!selectedVehicleId) return;
-            
+
             resetStates(); // Reset all states before fetching new data
-            
+
             try {
                 const response = await fetch('http://localhost:8000/vehicle_findone', {
                     method: 'POST',
@@ -151,7 +189,7 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedVehicleId 
                         explain: vehicle?.remark || '',
                         image: null, // Don't set file object here, just track path
                     });
-                    
+
                     if (vehicle?.img_path) {
                         // Store existing image path
                         setExistingImage(vehicle.img_path);
@@ -187,7 +225,7 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedVehicleId 
         form.append("oil_species", formValues.type);
         form.append("liters", formValues.quantity);
         form.append("remark", formValues.explain);
-        
+
         // Only append image if a new one was selected
         if (formValues.image) {
             form.append("image", formValues.image);
@@ -219,7 +257,7 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedVehicleId 
     const handleChange = (e) => {
         const { id, value } = e.target;
         setFormValues((prev) => ({ ...prev, [id]: value }));
-        
+
         // Check for date or invoice number mismatches if OCR data exists
         if (id === 'date' && C1date) {
             if (value !== C1date) {
@@ -230,7 +268,7 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedVehicleId 
                 setDateincorrectmessage('');
             }
         }
-        
+
         if (id === 'num' && C1num) {
             if (value !== C1num) {
                 setIsnumcorrect(false);
@@ -341,12 +379,12 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedVehicleId 
                                     圖片*
                                 </CFormLabel>
                                 <CCol>
-                                    <CFormInput 
-                                        type="file" 
-                                        id="image" 
+                                    <CFormInput
+                                        type="file"
+                                        id="image"
                                         onChange={handleImageChange}
                                         // Only require if no existing image
-                                        required={!existingImage} 
+                                        required={!existingImage}
                                     />
                                     {existingImage && (
                                         <div className="mt-2 text-muted">
@@ -365,9 +403,9 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedVehicleId 
                             <div className={styles.imgBlock}>
                                 {previewImage && (
                                     <Zoom>
-                                        <img 
-                                            src={previewImage} 
-                                            alt="預覽圖片" 
+                                        <img
+                                            src={previewImage}
+                                            alt="預覽圖片"
                                             style={{ maxWidth: '100%', maxHeight: '250px', objectFit: 'contain' }}
                                         />
                                     </Zoom>
@@ -380,12 +418,12 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedVehicleId 
                             <div className={styles.errorMSG}>
                                 {C1date && (
                                     <>
-                                        偵測日期: {C1date} <span style={{color: 'red'}}>{dateincorrectmessage}</span><br />
+                                        偵測日期: {C1date} <span style={{ color: 'red' }}>{dateincorrectmessage}</span><br />
                                     </>
                                 )}
                                 {C1num && (
                                     <>
-                                        偵測號碼: {C1num} <span style={{color: 'red'}}>{numincorrectmessage}</span>
+                                        偵測號碼: {C1num} <span style={{ color: 'red' }}>{numincorrectmessage}</span>
                                     </>
                                 )}
                                 {!C1date && !C1num && existingImage && (

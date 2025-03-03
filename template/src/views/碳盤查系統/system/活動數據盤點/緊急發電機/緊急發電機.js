@@ -10,38 +10,24 @@ import EditModal from './編輯Modal.js';
 import Zoom from 'react-medium-image-zoom';
 import 'react-medium-image-zoom/dist/styles.css';
 
+import { getEmergency_GeneratorData } from '../fetchdata.js';
+
 export const EmergencyGenerator = () => {
     const [isEditModalVisible, setEditModalVisible] = useState(false);
     const [Emergency_Generator, setEmergency_Generator] = useState([]);  // Set default as an empty array
     const [selectedGenerator, setSelectedGenerator] = useState(null);
     
 
-    // Function to fetch generator data
-    const getEmergency_GeneratorData = async () => {
-        try {
-            const response = await fetch('http://localhost:8000/Emergency_Generator', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-            const data = await response.json();
-
-            if (response.ok) {
-                setEmergency_Generator(data.Emergency_Generator || []);  // Ensure data is an array
-            } else {
-                console.error(`Error ${response.status}: ${data.detail}`);
-            }
-        } catch (error) {
-            console.error('Error fetching generator data:', error);
-        }
-    };
-
     // Fetch data on component mount
     useEffect(() => {
-        getEmergency_GeneratorData();
-    }, []);
-
+        const fetchData = async () => {
+          const data = await getEmergency_GeneratorData();
+          if (data) {
+            setEmergency_Generator(data);
+          }
+        };
+        fetchData();
+      }, []);
     return (
         <div>
             <CTable hover className={styles.activityTableShort}>
@@ -77,7 +63,7 @@ export const EmergencyGenerator = () => {
                         ))
                     ) : (
                         <tr>
-                            <td colSpan="7" style={{ textAlign: 'center' }}>No data available</td>
+                            <td colSpan="14" style={{ textAlign: 'center' }}>目前沒有緊急發電機資料</td>
                         </tr>
                     )}
                 </CTableBody>
