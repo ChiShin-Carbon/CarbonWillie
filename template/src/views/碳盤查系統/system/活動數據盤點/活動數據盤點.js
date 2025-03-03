@@ -81,6 +81,7 @@ const Tabs = () => {
   const [currentFunction, setCurrentFunction] = useState('')
   const [currentTitle, setCurrentTitle] = useState('')
   const {
+    vehicle,
     extinguishers,
     employees,
     nonemployees,
@@ -91,6 +92,7 @@ const Tabs = () => {
     business_trip,
     operationalwaste,
     sellingwaste,
+    refreshVehicleData,
     refreshFireExtinguisherData,
     refreshEmployeeData,
     refreshNonEmployeeData,
@@ -122,7 +124,7 @@ const Tabs = () => {
     refreshRefrigerantData();
     refreshMachineryData();
     refreshEmergency_GeneratorData();
-  }, [refreshFireExtinguisherData, refreshEmployeeData, refreshNonEmployeeData, refreshRefrigerantData,refreshMachineryData,refreshEmergency_GeneratorData,refreshCommuteData, refreshBusinessTripData,
+  }, [refreshVehicleData, refreshFireExtinguisherData, refreshEmployeeData, refreshNonEmployeeData, refreshRefrigerantData,refreshMachineryData,refreshEmergency_GeneratorData,refreshCommuteData, refreshBusinessTripData,
     refreshWasteData , refreshSellingWasteData
 
   ]);
@@ -148,8 +150,11 @@ const Tabs = () => {
       case 'Vehicle':
         return (
           <VehicleAdd
-            isAddModalVisible={isAddModalVisible}
-            setAddModalVisible={setAddModalVisible}
+          isAddModalVisible={isAddModalVisible}
+          setAddModalVisible={setAddModalVisible}
+          refreshVehicleData={refreshVehicleData}
+          setCurrentFunction={setCurrentFunction}
+          setCurrentTitle={setCurrentTitle}
           />
         )
       case 'FireExtinguisher':
@@ -330,7 +335,12 @@ const Tabs = () => {
                 </button>
               </div>
               <div className={styles.activityCardBody}>
-                {currentFunction === 'Vehicle' && <Vehicle />}
+                {currentFunction === 'Vehicle' && 
+                <Vehicle 
+                key={JSON.stringify(vehicle)} // Force re-render when data changes
+                vehicle={vehicle}
+                refreshVehicleData={refreshVehicleData}
+                />}
                 {currentFunction === 'FireExtinguisher' &&
                   <FireExtinguisher
                     key={refreshKey} // Use refreshKey instead of JSON.stringify

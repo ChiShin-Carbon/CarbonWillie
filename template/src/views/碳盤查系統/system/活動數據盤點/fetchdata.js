@@ -1,4 +1,28 @@
 // fetchdata.js
+  // Function to fetch vehicle data
+ export const getVehicleData = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/vehicle', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      const data = await response.json()
+
+      if (response.ok) {
+        return data.vehicles // Set vehicle data to state
+      } else if (response.status === 404) {
+        console.warn('No vehicle data found.');
+        return [];
+    }else {
+        console.error(`Error ${response.status}: ${data.detail}`)
+      }
+    } catch (error) {
+      console.error('Error fetching vehicle data:', error)
+    }
+  }
+
 export const getExtinguisherData = async () => {
     try {
         const response = await fetch('http://localhost:8000/extinguisher', {

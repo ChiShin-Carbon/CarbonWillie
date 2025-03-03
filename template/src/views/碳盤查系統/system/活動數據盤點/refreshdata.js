@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { 
+    getVehicleData,
     getExtinguisherData, 
     getEmployeeData, 
     getNonEmployeeData, 
@@ -13,6 +14,7 @@ import {
 } from './fetchdata.js';
 
 export const useRefreshData = () => {
+    const [vehicle, setVehicle] = useState([]);
     const [extinguishers, setExtinguishers] = useState([]);
     const [employees, setEmployees] = useState([]);
     const [nonemployees, setNonEmployees] = useState([]);
@@ -24,8 +26,16 @@ export const useRefreshData = () => {
     const [operationalwaste, setOperationalwaste] = useState([]);
     const [sellingwaste, setSellingwaste] = useState([]);
 
-
-
+    const refreshVehicleData = useCallback(async () => {
+        console.log("🔄 Refreshing vehicles data...");
+        try {
+            const data = await getVehicleData();
+            console.log("✅ Retrieved data:", data);
+            setVehicle(Array.isArray(data) ? data : data.vehicles || []);
+        } catch (error) {
+            console.error("Error refreshing vehicles data:", error);
+        }
+    }, []);
 
     const refreshFireExtinguisherData = useCallback(async () => {
         try {
@@ -136,8 +146,10 @@ export const useRefreshData = () => {
         }
     }, []);
 
+    
 
     return {
+        vehicle,
         extinguishers,
         employees,
         nonemployees,
@@ -148,6 +160,7 @@ export const useRefreshData = () => {
         business_trip,
         operationalwaste,
         sellingwaste,
+        refreshVehicleData,
         refreshFireExtinguisherData,
         refreshEmployeeData,
         refreshNonEmployeeData,
