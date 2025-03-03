@@ -231,7 +231,7 @@ Your task is to:
             對 chunks 進行 Pairwise 比較，淘汰掉較不相關的 chunk。
             最終留下 2 個最相關的 chunk。
             """
-            while len(chunks) > 2:
+            while len(chunks) > 1:
                 # 每次比較前兩個 chunk，淘汰較不相關的
                 more_relevant = pairwise_compare(query, chunks[0], chunks[1])
                 if more_relevant == chunks[0]:
@@ -254,7 +254,7 @@ Your task is to:
                 messages=[
                     {
                         "role": "system",
-                        "content": f"根據您的問題({query})，以下是從相關內容中提取的總結："
+                        "content": f"用#zh-tw回答，根據您的問題({query})，以下是從相關內容中提取的總結："
                     },
                     {
                         "role": "user",
@@ -271,11 +271,11 @@ Your task is to:
         top_chunks = retrieve_top_k_chunks(query, k=5)
         print(f"Step1:retrieve top 5 chunks, numbers of chunks:{len(top_chunks)}")
 
-        # 2. Pairwise 比較，淘汰掉 3 個 chunk，留下 2 個
+        # 2. Pairwise 比較，淘汰掉 4 個 chunk，留下 1 個
         final_chunks = eliminate_chunks(query, top_chunks)
         print(f"final chunks number:{len(final_chunks)}")
 
-        # 3. 對留下的 2 個 chunk 進行總結
+        # 3. 對留下的 chunk 進行總結
         final_answer = summarize_chunks(query, final_chunks)
 
         return {"response": final_answer}
