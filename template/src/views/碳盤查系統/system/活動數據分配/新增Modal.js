@@ -160,6 +160,7 @@ const AddModal = forwardRef((props, ref) => {
         table_name: selectedOption.label, // 排放源名稱
         is_done: 0, // 設定預設值
         completed_at: null, // 可選填
+        review: 1,
       }
     })
 
@@ -169,6 +170,7 @@ const AddModal = forwardRef((props, ref) => {
       formData.append(`user_ids`, user.user_id)
       formData.append(`table_names`, user.table_name)
       formData.append(`is_done_list`, user.is_done)
+      formData.append(`review`, user.review)
     })
 
     // 發送 POST 請求到後端插入資料

@@ -10,68 +10,124 @@ import styles from '../../../../../scss/活動數據盤點.module.css'
 import Zoom from 'react-medium-image-zoom'
 import 'react-medium-image-zoom/dist/styles.css'
 
-export const FireExtinguisherAdd = ({ isAddModalVisible, setAddModalVisible }) => {
+export const FireExtinguisherAdd = ({
+    isAddModalVisible,
+    setAddModalVisible,
+    refreshData,
+    setCurrentFunction,
+    setCurrentTitle // Added missing prop
+}) => {
+    const [formData, setFormData] = useState({
+        name: '',
+        element: '1', // Default to first option
+        weight: '',
+        explain: '',
+        image: null,
+    });
+
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [previewImage, setPreviewImage] = useState(null);
+
     const handleClose = () => setAddModalVisible(false);
 
-    const [recognizedText, setRecognizedText] = useState("");
+    // Handle form input changes
+    const handleInputChange = (e) => {
+        const { id, value } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [id]: value
+        }));
+    };
 
-    const handleC2Submit = async (e) => {
-        e.preventDefault();
-
-        // Get form elements by their IDs
-        const name = document.getElementById("name").value;
-        const element = document.getElementById("element").value;
-        const weight = document.getElementById("weight").value;
-        const explain = document.getElementById("explain").value;
-        const image = document.getElementById("C2image");
-
-        // Check if the image file exists
-        if (!image || !image.files || image.files.length === 0) {
-            console.error("Image file not found");
-            return;
+    // Handle image changes
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setFormData(prev => ({
+                ...prev,
+                image: file
+            }));
+            const previewUrl = URL.createObjectURL(file);
+            setPreviewImage(previewUrl);
         }
+    };
 
-        // Prepare form data
-        const formData = new FormData();
-        formData.append("user_id", window.sessionStorage.getItem("user_id"));
-        formData.append("name", name);
-        formData.append("element", element);
-        formData.append("weight", weight);
-        formData.append("explain", explain);
-        formData.append("image", image.files[0]);
-
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        
+        // Prevent double submissions
+        if (isSubmitting) return;
+        setIsSubmitting(true);
+    
         try {
+            // Prepare form data using state values instead of accessing DOM
+            const formDataToSend = new FormData();
+            formDataToSend.append("user_id", window.sessionStorage.getItem("user_id"));
+            formDataToSend.append("name", formData.name);
+            formDataToSend.append("element", formData.element);
+            formDataToSend.append("weight", formData.weight);
+            formDataToSend.append("explain", formData.explain);
+            
+            // Check if image exists
+            if (!formData.image) {
+                console.error("Image file not found");
+                alert("Please select an image file");
+                setIsSubmitting(false);
+                return;
+            }
+            
+            formDataToSend.append("image", formData.image);
+    
             // Send form data to the backend
             const res = await fetch("http://localhost:8000/insert_Extinguisher", {
                 method: "POST",
-                body: formData,
+                body: formDataToSend,
             });
-
+    
             if (res.ok) {
-                const data = await res.json();
-                console.log("Form submitted successfully:", data);
-                alert("Form submitted successfully");
+                // Close modal first
+                setAddModalVisible(false);
+                
+                // Clear the form data
+                setFormData({
+                    name: '',
+                    element: '1',
+                    weight: '',
+                    explain: '',
+                    image: null,
+                });
+                setPreviewImage(null);
+                
+                // Wait a moment before refreshing data
+                setTimeout(async () => {
+                    try {
+                        await refreshData();
+                        // Change function after data is refreshed
+                        setCurrentFunction("FireExtinguisher");
+                        if (setCurrentTitle) {
+                            setCurrentTitle("滅火器");
+                        }
+                        alert("Form submitted successfully");
+                    } catch (refreshError) {
+                        console.error("Error refreshing data:", refreshError);
+                        alert("Data submitted but there was an error refreshing the display");
+                    }
+                }, 500); // Increased timeout to give backend more time to process
+                
             } else {
                 console.error("Failed to submit form data");
                 alert("Failed to submit form data");
             }
         } catch (error) {
-            console.error("Error submitting form data", error);
-            alert("Error submitting form data");
+            console.error("Error submitting form:", error);
+            alert("An error occurred while submitting the form");
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
+    if (!isAddModalVisible) return null;
     
-
-
-    const [previewImage, setPreviewImage] = useState(null); // 用來存儲圖片的 
-    const handleImageChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const previewUrl = URL.createObjectURL(file); // 創建圖片預覽 URL
-            setPreviewImage(previewUrl); // 保存 URL 到狀態
-        }
-    };
 
     return (
         <CModal
@@ -84,20 +140,33 @@ export const FireExtinguisherAdd = ({ isAddModalVisible, setAddModalVisible }) =
             <CModalHeader>
                 <CModalTitle id="ActivityModalLabel"><b>新增數據</b></CModalTitle>
             </CModalHeader>
-            <CForm>
+            <CForm onSubmit={handleSubmit}>
                 <CModalBody>
                     <div className={styles.addmodal}>
                         <div className={styles.modalLeft}>
                             <CRow className="mb-3">
-                                <CFormLabel htmlFor="name" className={`col-sm-2 col-form-label ${styles.addlabel}`} >品名*</CFormLabel>
+                                <CFormLabel htmlFor="name" className={`col-sm-2 col-form-label ${styles.addlabel}`}>品名*</CFormLabel>
                                 <CCol>
-                                    <CFormInput className={styles.addinput} type="text" id="name" required />
+                                    <CFormInput 
+                                        className={styles.addinput} 
+                                        type="text" 
+                                        id="name" 
+                                        value={formData.name}
+                                        onChange={handleInputChange}
+                                        required 
+                                    />
                                 </CCol>
                             </CRow>
                             <CRow className="mb-3">
-                                <CFormLabel htmlFor="element" className={`col-sm-2 col-form-label ${styles.addlabel}`} >成分*</CFormLabel>
+                                <CFormLabel htmlFor="element" className={`col-sm-2 col-form-label ${styles.addlabel}`}>成分*</CFormLabel>
                                 <CCol>
-                                    <CFormSelect aria-label="Default select example" id="element" className={styles.addinput}>
+                                    <CFormSelect 
+                                        aria-label="Default select example" 
+                                        id="element" 
+                                        className={styles.addinput}
+                                        value={formData.element}
+                                        onChange={handleInputChange}
+                                    >
                                         <option value="1">CO2</option>
                                         <option value="2">HFC-236ea</option>
                                         <option value="3">HFC-236fa</option>
@@ -109,27 +178,45 @@ export const FireExtinguisherAdd = ({ isAddModalVisible, setAddModalVisible }) =
                                 </CCol>
                             </CRow>
                             <CRow className="mb-3">
-                                <CFormLabel htmlFor="weight" className={`col-sm-2 col-form-label ${styles.addlabel}`} >規格(重量)*</CFormLabel>
+                                <CFormLabel htmlFor="weight" className={`col-sm-2 col-form-label ${styles.addlabel}`}>規格(重量)*</CFormLabel>
                                 <CCol>
-                                    <CFormInput className={styles.addinput} type="number" min='0' id="weight" required />
+                                    <CFormInput 
+                                        className={styles.addinput} 
+                                        type="number" 
+                                        min='0' 
+                                        id="weight" 
+                                        value={formData.weight}
+                                        onChange={handleInputChange}
+                                        required 
+                                    />
                                 </CCol>
                             </CRow>
                             <CRow className="mb-3">
-                                <CFormLabel htmlFor="explain" className={`col-sm-2 col-form-label ${styles.addlabel}`} >備註</CFormLabel>
+                                <CFormLabel htmlFor="explain" className={`col-sm-2 col-form-label ${styles.addlabel}`}>備註</CFormLabel>
                                 <CCol>
-                                    <CFormTextarea className={styles.addinput} type="text" id="explain" rows={3} />
-
+                                    <CFormTextarea 
+                                        className={styles.addinput} 
+                                        id="explain" 
+                                        rows={3}
+                                        value={formData.explain}
+                                        onChange={handleInputChange}
+                                    />
                                 </CCol>
                             </CRow>
                             <CRow className="mb-3">
                                 <CFormLabel
-                                    htmlFor="photo"
+                                    htmlFor="image"
                                     className={`col-sm-2 col-form-label ${styles.addlabel}`}
                                 >
                                     圖片*
                                 </CFormLabel>
                                 <CCol>
-                                    <CFormInput type="file" id="C2image" onChange={(e) => (handleImageChange(e), handleC1image(e))} required />
+                                    <CFormInput 
+                                        type="file" 
+                                        id="image" 
+                                        onChange={handleImageChange} 
+                                        required 
+                                    />
                                 </CCol>
                             </CRow>
 
@@ -137,11 +224,11 @@ export const FireExtinguisherAdd = ({ isAddModalVisible, setAddModalVisible }) =
                             <div style={{ textAlign: 'center' }}>*為必填欄位</div>
                         </div>
                         <div className={styles.modalRight}>
-                            <CFormLabel className={`col-sm-2 col-form-label ${styles.addlabel}`} >
+                            <CFormLabel className={`col-sm-2 col-form-label ${styles.addlabel}`}>
                                 圖片預覽
                             </CFormLabel>
                             <div className={styles.imgBlock}>
-                                {previewImage && ( // 如果有圖片 URL，則顯示預覽
+                                {previewImage && (
                                     <Zoom><img src={previewImage} alt="Uploaded Preview" /></Zoom>
                                 )}
                             </div>
@@ -150,10 +237,8 @@ export const FireExtinguisherAdd = ({ isAddModalVisible, setAddModalVisible }) =
                                 偵測錯誤提醒
                             </CFormLabel>
                             <div className={styles.errorMSG}>
-                                {/* 偵測日期:{C1date}  <span>{dateincorrectmessage}</span><br />
-                                偵測號碼:{C1num}  <span>{numincorrectmessage}</span> */}
+                                {/* Error messages can be displayed here */}
                             </div>
-
                         </div>
                     </div>
                 </CModalBody>
@@ -161,8 +246,7 @@ export const FireExtinguisherAdd = ({ isAddModalVisible, setAddModalVisible }) =
                     <CButton className="modalbutton1" onClick={handleClose}>
                         取消
                     </CButton>
-                    <CButton type="submit" className="modalbutton2" onClick={handleC2Submit}>新增</CButton>
-
+                    <CButton type="submit" className="modalbutton2">新增</CButton>
                 </CModalFooter>
             </CForm>
         </CModal>

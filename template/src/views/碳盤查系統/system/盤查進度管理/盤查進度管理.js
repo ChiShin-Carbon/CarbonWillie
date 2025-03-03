@@ -32,11 +32,8 @@ import EditFalseModal from './審核失敗Modal.js'
 import { cilCheckAlt, cilX } from '@coreui/icons'
 
 const Tabs = () => {
-  const [successbutton, setsuccessVisible] = useState(false)
-  const [isTrueModalOpen, setTrueIsModalOpen] = useState(false)
-  const [isFalseModalOpen, setFalseIsModalOpen] = useState(false)
-  const [falsebutton, setfalseVisible] = useState(false)
-  const [visible, setVisible] = useState(false)
+  const [isTrueModalOpen, setTrueIsModalOpen] = useState(null)
+  const [isFalseModalOpen, setFalseIsModalOpen] = useState(null)
 
   const [searchInput, setSearchInput] = useState('') // 存放輸入框的臨時搜尋值
   const [searchValue, setSearchValue] = useState('') // 觸發搜尋的值
@@ -105,7 +102,9 @@ const Tabs = () => {
       case 1:
         return '尚未審核'
       case 2:
-        return '已審核'
+        return '已審核-審核成功'
+      case 3:
+        return '已審核-審核失敗'
       default:
         return '其他'
     }
@@ -116,11 +115,12 @@ const Tabs = () => {
     (row) =>
       (row.table_name.includes(searchValue) ||
         row.username.includes(searchValue) ||
+        row.authorized_record_id||
         getDepartmentName(row.department).includes(searchValue) || // 使用轉換後的部門名稱
         getReview(row.review).includes(searchValue) //|| // 使用轉換後的部門名稱
         //row.completed_at.includes(searchValue)  先註解因為只要table裡面有completed_at==null時就會失敗
       )&&
-      (selectedFeedback === '' || (row.is_done ? '已審核' : '尚未審核') === selectedFeedback),
+      (selectedFeedback === '' || (row.review === 1 ? '尚未審核' : '已審核') === selectedFeedback),
   )
 
   // handleSearchInput 處理輸入框變化
@@ -154,7 +154,6 @@ const Tabs = () => {
     }
     setShowModal(true);
   };
-
 
   return (
     <CRow>
@@ -267,7 +266,7 @@ const Tabs = () => {
                         <CTableDataCell>
                           <CFormCheck style={{ borderColor: 'black' }} />
                         </CTableDataCell>*/}
-                        {/* 排放源項目 */}
+                        {/* 排放源項目 */}{/*測試用 {row.review} */}
                         <CTableDataCell>{row.table_name}</CTableDataCell>
                         {/* 顯示部門名稱 */}
                         <CTableDataCell>{getDepartmentName(row.department)}</CTableDataCell>
@@ -289,41 +288,31 @@ const Tabs = () => {
                         </CTableDataCell>
                         {/* 回報狀態 */}
                         <CTableDataCell>
-                          {/* {getReview(row.review)} 
-                          onClick={() => setVisible(!visible)}
-                          */}
-                          
-                          {/* {row.completed_at ? ( */}
-                            {/* 測試的 */}
-                              {row.review ? (<>
-                                <button className={styles.aza1} style={{ marginRight: '10px' }} onClick={() => setTrueIsModalOpen(true)}>審核成功</button>
-                                <button className={styles.aza2} style={{ marginRight: '10px' }} onClick={() => setFalseIsModalOpen(true)}>審核失敗</button>
-
-                                <EditSuccessModal isOpen={isTrueModalOpen} onClose={() => setTrueIsModalOpen(false)} />
-                                <EditFalseModal isOpen={isFalseModalOpen} onClose={() => setFalseIsModalOpen(false)} />
-                              </>
-                            ) : (
-                              <button className={styles.aza1} disabled>'尚未完成'</button>
-                              
-                            )}
 
                           {/* 正式的 */}
-                         {row.completed_at ? (
-                          row.review ? (
-                            getReview(row.review)
-                          ) : (
-                             <>
-                              <button className={styles.aza1} style={{ marginRight: '10px' }} onClick={() => setTrueIsModalOpen(true)}>
-                                審核成功
-                              </button>
-                              <button className={styles.aza2} onClick={() => setFalseIsModalOpen(true)}>
-                                審核失敗
-                              </button>
-                            </>
-                          )
-                        ) : (
-                          <button className={styles.aza3}>尚未完成</button>
-                        )}
+                          {row.completed_at ? (
+                              row.review === 1 ? (
+                                <>
+                                  <button className={styles.aza1} style={{ marginRight: '10px' }} onClick={() => setTrueIsModalOpen(row.authorized_record_id)}>
+                                    審核成功
+                                  </button>
+                                  <button className={styles.aza2} onClick={() => setFalseIsModalOpen(row.authorized_record_id)}>
+                                    審核失敗
+                                  </button>
+                                  <EditSuccessModal isOpen={isTrueModalOpen === row.authorized_record_id} onClose={() => setTrueIsModalOpen(null)} authorizedRecordId={row.authorized_record_id}/>
+                                  <EditFalseModal isOpen={isFalseModalOpen === row.authorized_record_id} onClose={() => setFalseIsModalOpen(null)} authorizedRecordId={row.authorized_record_id}/>
+                                </>
+                              ) : row.review === 2 ? (
+                                <button className={styles.aza1}>審核成功</button>
+                              ) : row.review === 3 ? (
+                                <button className={styles.aza2}>審核失敗</button>
+                              ) : (
+                                getReview(row.review)
+                              )
+                            ) : (
+                              <button className={styles.aza3}>尚未完成</button>
+                            )
+                          }
 
                         </CTableDataCell>
                       </CTableRow>
@@ -334,12 +323,12 @@ const Tabs = () => {
                         沒有找到符合條件的資料
                       </CTableDataCell>
                     </CTableRow>
-                  )}
+                  )
+                  }
                 </CTableBody>
               </CTable>
-              {/* onClick={() => setVisible(!visible)} */}
+              {/* 盤點完成button */}
               {/* <div style={{ textAlign: 'center' }}>
-              
                 <button className={styles.complete} onClick={() => setVisible(!visible)}>盤點完成</button>
               </div> */}
             </CForm>

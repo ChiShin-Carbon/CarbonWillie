@@ -1,7 +1,7 @@
 from docx import Document
 from docx.shared import Cm
 
-from storeDef import set_heading, set_heading2, set_paragraph, set_explain,set_ch3_table1
+from 盤查報告書.storeDef import set_heading, set_heading2, set_paragraph, set_explain,set_ch3_table1
 
 
 def create_chapter3():
