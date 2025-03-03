@@ -8,7 +8,7 @@ def add_stairs_paragraphs(doc, texts, format_func):
         para = doc.add_paragraph(text)
         format_func(para) 
 
-def create_chapter4_2():
+def create_chapter4_2(user_id):
     doc = Document()
 
         # 獲取文檔的第一個 section（默認只有一個）

@@ -4,7 +4,7 @@ from docx.shared import Cm
 from .storeDef import set_heading, set_heading2, set_paragraph, set_ch6_stairs1
 
 
-def create_chapter6():
+def create_chapter6(user_id):
     doc = Document()
 
         # 獲取文檔的第一個 section（默認只有一個）
