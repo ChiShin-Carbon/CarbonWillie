@@ -11,35 +11,22 @@ import EditModal from './編輯Modal.js';
 import Zoom from 'react-medium-image-zoom';
 import 'react-medium-image-zoom/dist/styles.css';
 
+import { getSellingWasteData } from '../fetchdata.js';
+
 export const SellingWaste = () => {
     const [isEditModalVisible, setEditModalVisible] = useState(false);
     const [sellingWasteData, setSellingWasteData] = useState([]);  // State to hold fetched selling waste data
     const [selectedWaste, setSelectedWaste] = useState(null); // Store selected waste for edit
 
-    // Function to fetch selling waste data
-    const getSellingWasteData = async () => {
-        try {
-            const response = await fetch('http://localhost:8000/Selling_waste', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-            const data = await response.json();
-
-            if (response.ok) {
-                setSellingWasteData(data.Selling_Waste);  // Set selling waste data to state
-            } else {
-                console.error(`Error ${response.status}: ${data.detail}`);
-            }
-        } catch (error) {
-            console.error('Error fetching selling waste data:', error);
-        }
-    };
-
-    // Fetch selling waste data on component mount
+    // Fetch commute data on component mount
     useEffect(() => {
-        getSellingWasteData();
+        const fetchData = async () => {
+            const data = await getSellingWasteData();
+            if (data) {
+                setSellingWasteData(data);
+            }
+        };
+        fetchData();
     }, []);
 
     return (
@@ -55,26 +42,37 @@ export const SellingWaste = () => {
                     </tr>
                 </CTableHead>
                 <CTableBody className={styles.activityTableBody}>
-                    {sellingWasteData.map((waste, index) => (
-                        <tr key={index}>
-                            <td>{waste.waste_item}</td>
-                            <td>{waste.remark}</td>
-                            <td>
-                                <Zoom>
-                                    <img src={waste.img_path} alt="image" />
-                                </Zoom>
-                            </td>
-                            <td>{waste.edit_time}</td>
-                            <td>
-                                <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => {
-                                    setEditModalVisible(true)
-                                    setSelectedWaste(waste.waste_id)
-                                    console.log(waste.waste_id)
-                                    }} />
-                                <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
-                            </td>
-                        </tr>
-                    ))}
+                    {sellingWasteData.length > 0 ?
+                        sellingWasteData.map((waste, index) => (
+                            <tr key={index}>
+                                <td>{waste.waste_item}</td>
+                                <td>{waste.remark}</td>
+                                <td>
+                                    <Zoom>
+                                        <img src={`fastapi/${waste.img_path}`} alt="image" />
+                                    </Zoom>
+                                </td>
+                                <td>{waste.edit_time}</td>
+                                <td>
+                                    <FontAwesomeIcon
+                                        icon={faPenToSquare}
+                                        className={styles.iconPen}
+                                        onClick={() => {
+                                            setEditModalVisible(true);
+                                            setSelectedWaste(waste.waste_id);
+                                            console.log(waste.waste_id);
+                                        }}
+                                    />
+                                    <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
+                                </td>
+                            </tr>
+                        ))
+                        : (
+                            <tr>
+                                <td colSpan="14" className={styles.noDataMessage}>目前沒有銷售產品的廢棄物資料</td>
+                            </tr>
+                        )
+                    }
                 </CTableBody>
             </CTable>
             <EditModal

@@ -11,37 +11,23 @@ import EditModal from './編輯Modal.js';
 import Zoom from 'react-medium-image-zoom';
 import 'react-medium-image-zoom/dist/styles.css';
 
+import { getCommuteData } from '../fetchdata.js';
+
 export const Commuting = () => {
     const [isEditModalVisible, setEditModalVisible] = useState(false);
     const [Commute, setCommute] = useState([]);  // State to hold fetched commute data
     const [selectedCommute, setSelectedCommute] = useState(null); // Store selected commute for edit
 
-    // Function to fetch commute data
-    const getCommuteData = async () => {
-        try {
-            const response = await fetch('http://localhost:8000/Commute', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-            const data = await response.json();
-
-            if (response.ok) {
-                setCommute(data.Commute);  // Set commute data to state
-            } else {
-                console.error(`Error ${response.status}: ${data.detail}`);
-            }
-        } catch (error) {
-            console.error('Error fetching commute data:', error);
-        }
-    };
-
     // Fetch commute data on component mount
     useEffect(() => {
-        getCommuteData();
+        const fetchData = async () => {
+            const data = await getCommuteData();
+            if (data) {
+                setCommute(data);
+            }
+        };
+        fetchData();
     }, []);
-
     return (
         <div>
             <CTable hover className={styles.activityTableShort}>
@@ -57,29 +43,38 @@ export const Commuting = () => {
                     </tr>
                 </CTableHead>
                 <CTableBody className={styles.activityTableBody}>
-                    {Commute.map((commute, index) => (
-                        <tr key={index}>
-                            <td>{commute.transportation}</td>
-                            <td>{commute.kilometer}</td>
-                            <td>{commute.oil_species ? '柴油' : '汽油'}</td>
-                            <td>{commute.remark}</td>
-                            <td>
-                                <Zoom>
-                                    <img src={commute.img_path} alt="image" />
-                                </Zoom>
-                            </td>
-                            <td>{commute.edit_time}</td>
-                            <td>
-                                <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => 
-                                    {
-                                    setEditModalVisible(true)
-                                    setSelectedCommute(commute.commute_id)
-                                    console.log(commute.commute_id)
-                                    }} />
-                                <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
-                            </td>
+                    {Commute.length > 0 ? (
+                        Commute.map((commute, index) => (
+                            <tr key={index}>
+                                <td>{commute.transportation}</td>
+                                <td>{commute.kilometer}</td>
+                                <td>{commute.oil_species ? '柴油' : '汽油'}</td>
+                                <td>{commute.remark}</td>
+                                <td>
+                                    <Zoom>
+                                        <img src={`fastapi/${commute.img_path}`} alt="image" />
+                                    </Zoom>
+                                </td>
+                                <td>{commute.edit_time}</td>
+                                <td>
+                                    <FontAwesomeIcon
+                                        icon={faPenToSquare}
+                                        className={styles.iconPen}
+                                        onClick={() => {
+                                            setEditModalVisible(true);
+                                            setSelectedCommute(commute.commute_id);
+                                            console.log(commute.commute_id);
+                                        }}
+                                    />
+                                    <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
+                                </td>
+                            </tr>
+                        ))
+                    ) : (
+                        <tr>
+                            <td colSpan="14" className={styles.noData}>目前沒有員工通勤資料</td>
                         </tr>
-                    ))}
+                    )}
                 </CTableBody>
             </CTable>
             <EditModal

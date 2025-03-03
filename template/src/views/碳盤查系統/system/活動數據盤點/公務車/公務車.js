@@ -24,32 +24,14 @@ import styles from '../../../../../scss/活動數據盤點.module.css'
 import EditModal from './編輯Modal.js'
 import Zoom from 'react-medium-image-zoom'
 import 'react-medium-image-zoom/dist/styles.css'
+import { getVehicleData } from '../fetchdata'
+
 
 export const Vehicle = () => {
   const [isEditModalVisible, setEditModalVisible] = useState(false)
   const [vehicles, setVehicles] = useState([]) // State to hold fetched vehicle data
   const [selectedVehicleId, setSelectedVehicleId] = useState(null) // State to store selected vehicle ID
 
-  // Function to fetch vehicle data
-  const getVehicleData = async () => {
-    try {
-      const response = await fetch('http://localhost:8000/vehicle', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-      const data = await response.json()
-
-      if (response.ok) {
-        setVehicles(data.vehicles) // Set vehicle data to state
-      } else {
-        console.error(`Error ${response.status}: ${data.detail}`)
-      }
-    } catch (error) {
-      console.error('Error fetching vehicle data:', error)
-    }
-  }
 
   const deleteVehicle = async (vehicle_id) => {
     try {
@@ -70,8 +52,14 @@ export const Vehicle = () => {
 
   // Fetch vehicle data on component mount
   useEffect(() => {
-    getVehicleData()
-  }, [])
+    const fetchData = async () => {
+      const data = await getVehicleData();
+      if (data) {
+        setVehicles(data);
+      }
+    };
+    fetchData();
+  }, []);
 
   return (
     <div>
@@ -90,46 +78,51 @@ export const Vehicle = () => {
           </tr>
         </CTableHead>
         <CTableBody className={styles.activityTableBody}>
-          {vehicles.map((vehicle) => (
-            <tr key={vehicle.vehicle_id}>
-              <td>{vehicle.Doc_date}</td>
-              <td>{vehicle.Doc_number}</td>
-              <td>{vehicle.oil_species ? '柴油' : '汽油'}</td>
-              <td>公升</td>
-              <td>{vehicle.liters}</td>
-              <td>{vehicle.remark}</td>
-              <td>
-                <Zoom>
-                  <img
-                    src={`fastapi/${vehicle.img_path}`}
-                    alt="receipt"
-                    style={{ width: '100px' }}
+          {vehicles.length > 0 ? (
+            vehicles.map((vehicle) => (
+              <tr key={vehicle.vehicle_id}>
+                <td>{vehicle.Doc_date}</td>
+                <td>{vehicle.Doc_number}</td>
+                <td>{vehicle.oil_species ? '柴油' : '汽油'}</td>
+                <td>公升</td>
+                <td>{vehicle.liters}</td>
+                <td>{vehicle.remark}</td>
+                <td>
+                  <Zoom>
+                    <img
+                      src={`fastapi/${vehicle.img_path}`}
+                      alt="receipt"
+                      style={{ width: '100px' }}
+                    />
+                  </Zoom>
+                </td>
+                <td>
+                  {vehicle.username}
+                  <br />
+                  {vehicle.edit_time}
+                </td>
+                <td>
+                  <FontAwesomeIcon
+                    icon={faPenToSquare}
+                    className={styles.iconPen}
+                    onClick={() => {
+                      setSelectedVehicleId(vehicle.vehicle_id);
+                      setEditModalVisible(true);
+                    }}
                   />
-                </Zoom>
-              </td>
-              <td>
-                {vehicle.username}
-                <br />
-                {vehicle.edit_time}
-              </td>
-              <td>
-                <FontAwesomeIcon
-                  icon={faPenToSquare}
-                  className={styles.iconPen}
-                  onClick={() => {
-                    setSelectedVehicleId(vehicle.vehicle_id) // Set the selected vehicle ID
-                    setEditModalVisible(true) // Open the modal
-                  }}
-                />
-                <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} 
-                  onClick={() => {
-                    deleteVehicle(vehicle.vehicle_id)
-                  }
-                }
-                />
-              </td>
-            </tr>
-          ))}
+                  <FontAwesomeIcon
+                    icon={faTrashCan}
+                    className={styles.iconTrash}
+                    onClick={() => {
+                      deleteVehicle(vehicle.vehicle_id);
+                    }}
+                  />
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr><td colSpan="14">目前沒有公務車資料</td></tr> /* Adding an empty state */
+          )}
         </CTableBody>
       </CTable>
       <EditModal
