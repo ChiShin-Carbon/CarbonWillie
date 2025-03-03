@@ -1,9 +1,15 @@
 from docx import Document
 from docx.shared import Cm
 
-from storeDef import set_heading, set_heading2, set_paragraph, set_explain,set_ch1_table1,set_ch1_pointlist
+from .storeDef import set_heading, set_heading2, set_paragraph, set_explain,set_ch1_table1,set_ch1_pointlist
+from .storeDef2 import get_org_name,get_charge_person,get_org_address
 
-def create_chapter1():
+
+def create_chapter1(user_id):
+    org_name = get_org_name(user_id)
+    org_address = get_org_address(user_id)
+    charge_person = get_charge_person(user_id)
+
     doc = Document()
 
     # 獲取文檔的第一個 section（默認只有一個）
@@ -44,13 +50,13 @@ def create_chapter1():
     set_explain(table_explain)
     table = doc.add_table(rows=4, cols=2)
     table.cell(0, 0).text = "機構名稱"
-    table.cell(0, 1).text = ""
+    table.cell(0, 1).text = f"{org_name}"
     table.cell(1, 0).text = "負責人"
-    table.cell(1, 1).text = ""
+    table.cell(1, 1).text = f"{charge_person}"
     table.cell(2, 0).text = "員工總人數"
     table.cell(2, 1).text = "n人"
     table.cell(3, 0).text = "機構地址"
-    table.cell(3, 1).text = ""
+    table.cell(3, 1).text = f"{org_address}"
     set_ch1_table1(table)
 
 
@@ -63,7 +69,7 @@ def create_chapter1():
     content = doc.add_paragraph("【請插入組織架構圖】")
     set_paragraph(content)
 
-    photo_explain = doc.add_paragraph("圖一、【機構名稱】組織架構圖")
+    photo_explain = doc.add_paragraph(f"圖一、{org_name}組織架構圖")
     set_explain(photo_explain)
 
     # 插入分頁符號
@@ -74,7 +80,7 @@ def create_chapter1():
     preface = doc.add_heading("1.4 報告書涵蓋期間與責任/有效期間",level=2)
     set_heading2(preface)
     content1_4_1 = doc.add_paragraph("1.4.1 報告書涵蓋期間與責任")
-    content1_4_1_1=doc.add_paragraph("本報告書之盤查內容是以【OOOO年度】於【地址】（以下均稱本機構）組織邊界範圍內產生之所有溫室氣體為盤查範圍，並供作下年度新報告書完成前引用。")
+    content1_4_1_1=doc.add_paragraph(f"本報告書之盤查內容是以【OOOO年度】於{org_address}（以下均稱本機構）組織邊界範圍內產生之所有溫室氣體為盤查範圍，並供作下年度新報告書完成前引用。")
     
     content1_4_2 = doc.add_paragraph("1.4.2 本報告書為隔年1月時開始進行前一年度之溫室氣體排放量之各項盤查工作，並於2月開始報告書之內容製作，其涵蓋前一年本校之溫室氣體排放總結，供作本年度及下年度新報告書完成前引用。")
     content1_4_3=doc.add_paragraph("1.4.3 報告書完成後，經過年度內部諮詢之程序，並修正缺失後，完成本報告書。")

@@ -1,10 +1,10 @@
 from docx import Document
 from docx.shared import Cm
 
-from storeDef import set_heading, set_heading2, set_paragraph, set_explain,set_ch4_table1,set_ch4_stairs1,set_ch4_stairs2,set_ch4_stairs3,set_ch4_stairs4
+from .storeDef import set_heading, set_heading2, set_paragraph, set_explain,set_ch4_table1,set_ch4_stairs1,set_ch4_stairs2,set_ch4_stairs3,set_ch4_stairs4
 
 
-def create_chapter4_1():
+def create_chapter4_1(user_id):
     doc = Document()
 
         # 獲取文檔的第一個 section（默認只有一個）

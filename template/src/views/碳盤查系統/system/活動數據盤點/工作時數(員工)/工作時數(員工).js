@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPenToSquare, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 import styles from '../../../../../scss/活動數據盤點.module.css';
 import EditModal from './編輯Modal.js';
+import {getEmployeeData} from '../fetchdata.js'
 
 import Zoom from 'react-medium-image-zoom';
 import 'react-medium-image-zoom/dist/styles.css';
@@ -15,28 +16,15 @@ export const Employee = () => {
     const [employeeData, setEmployeeData] = useState([]);
     const [selectedEmployee, setSelectedEmployee] = useState(null); // Store selected employee for edit
 
-    const getEmployeeData = async () => {
-        try {
-            const response = await fetch('http://localhost:8000/employee', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-            const data = await response.json();
-
-            if (response.ok) {
-                setEmployeeData(data.employees);
-            } else {
-                console.error(`Error ${response.status}: ${data.detail}`);
-            }
-        } catch (error) {
-            console.error('Error fetching employee data:', error);
-        }
-    };
 
     useEffect(() => {
-        getEmployeeData();
+        const fetchData = async () => {
+            const data = await getEmployeeData();
+            if (data) {
+                setEmployeeData(data);
+            }
+        };
+        fetchData();
     }, []);
 
     const handleEditClick = (employee) => {
@@ -65,40 +53,48 @@ export const Employee = () => {
                     </tr>
                 </CTableHead>
                 <CTableBody className={styles.activityTableBody}>
-                    {employeeData.map((employee, index) => (
-                        <tr key={index}>
-                            <td>{employee.period_date}</td>
-                            <td>{employee.employee_number}</td>
-                            <td>{employee.daily_hours}</td>
-                            <td>{employee.workday}</td>
-                            <td>{employee.overtime}</td>
-                            <td>{employee.sick_leave}</td>
-                            <td>{employee.personal_leave}</td>
-                            <td>{employee.business_trip}</td>
-                            <td>{employee.wedding_and_funeral}</td>
-                            <td>{employee.special_leave}</td>
-                            <td>{employee.remark}</td>
-                            
-                            <td>
-                                <Zoom>
-                                    <img src={`fastapi/${employee.img_path}`} alt="image" width="100" height="100" />
-                                </Zoom>
-                            </td>
+                    {employeeData.length > 0 ? (
+                        employeeData.map((employee, index) => (
+                            <tr key={index}>
+                                <td>{employee.period_date}</td>
+                                <td>{employee.employee_number}</td>
+                                <td>{employee.daily_hours}</td>
+                                <td>{employee.workday}</td>
+                                <td>{employee.overtime}</td>
+                                <td>{employee.sick_leave}</td>
+                                <td>{employee.personal_leave}</td>
+                                <td>{employee.business_trip}</td>
+                                <td>{employee.wedding_and_funeral}</td>
+                                <td>{employee.special_leave}</td>
+                                <td>{employee.remark}</td>
 
-                            <td>
-                                {employee.username}<br />
-                                {new Date(employee.edit_time).toLocaleString()} {/* Format date */}
-                            </td>
+                                <td>
+                                    <Zoom>
+                                        <img src={`fastapi/${employee.img_path}`} alt="image" width="100" height="100" />
+                                    </Zoom>
+                                </td>
 
-                            <td>
-                                <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => {
-                                        setSelectedEmployee(employee.employee_id) // Set the selected vehicle ID
-                                        setEditModalVisible(true) // Open the modal
+                                <td>
+                                    {employee.username}<br />
+                                    {new Date(employee.edit_time).toLocaleString()}
+                                </td>
+
+                                <td>
+                                    <FontAwesomeIcon icon={faPenToSquare} className={styles.iconPen} onClick={() => {
+                                        setSelectedEmployee(employee.employee_id);
+                                        setEditModalVisible(true);
                                     }} />
-                                <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
+                                    <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
+                                </td>
+                            </tr>
+                        ))
+                    ) : (
+                        <tr>
+                            <td colSpan="14" style={{ textAlign: 'center', padding: '20px' }}>
+                                目前沒有員工資料
                             </td>
                         </tr>
-                    ))}
+                    )}
                 </CTableBody>
             </CTable>
             <EditModal

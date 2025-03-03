@@ -1,30 +1,35 @@
-from chapter1 import create_chapter1
-from chapter2 import create_chapter2
-from chapter3 import create_chapter3
-from chapter4_1 import create_chapter4_1
-from chapter4_2 import create_chapter4_2
-from chapter4_3 import create_chapter4_3
-from chapter5 import create_chapter5
-from chapter6 import create_chapter6
-from title import create_title
-
-
-
-
+from .chapter1 import create_chapter1
+from .chapter2 import create_chapter2
+from .chapter3 import create_chapter3
+from .chapter4_1 import create_chapter4_1
+from .chapter4_2 import create_chapter4_2
+from .chapter4_3 import create_chapter4_3
+from .chapter5 import create_chapter5
+from .chapter6 import create_chapter6
+from .title import create_title
 
 from docx import Document
-from docx.shared import Cm
+from fastapi import FastAPI,APIRouter
+import os
+from fastapi.responses import FileResponse
 
-def merge_documents():
-    doc1 = create_chapter1()
-    doc2 = create_chapter2()
-    doc3 = create_chapter3()
-    doc4_1 = create_chapter4_1()
-    doc4_2 = create_chapter4_2()
-    doc4_3 = create_chapter4_3()
-    doc5 = create_chapter5()
-    doc6 = create_chapter6()
-    title = create_title()
+from fastapi import BackgroundTasks
+
+
+
+# 建立 APIRouter 實例
+get_word = APIRouter(tags=["word專用"])
+
+def merge_documents(user_id):
+    doc1 = create_chapter1(user_id)
+    doc2 = create_chapter2(user_id)
+    doc3 = create_chapter3(user_id)
+    doc4_1 = create_chapter4_1(user_id)
+    doc4_2 = create_chapter4_2(user_id)
+    doc4_3 = create_chapter4_3(user_id)
+    doc5 = create_chapter5(user_id)
+    doc6 = create_chapter6(user_id)
+    title = create_title(user_id)
 
 
     combined_doc = Document()
@@ -65,3 +70,17 @@ def merge_documents():
 
 if __name__ == "__main__":
     merge_documents()
+
+
+
+
+@get_word.get("/generate_word/{user_id}")
+async def generate_word(user_id: int, background_tasks: BackgroundTasks):
+    """API 端點，生成 Word 檔案後提供下載"""
+    file_path = "combined.docx"  # 設定檔案名稱
+
+    # 將生成檔案的操作放入背景任務
+    background_tasks.add_task(merge_documents, user_id)
+
+    return {"message": "文件生成中，請稍後查收下載"}
+

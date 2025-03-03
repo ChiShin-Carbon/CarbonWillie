@@ -1,10 +1,10 @@
 from docx import Document
 from docx.shared import Cm
 
-from storeDef import set_heading, set_heading2, set_paragraph, set_ch6_stairs1
+from .storeDef import set_heading, set_heading2, set_paragraph, set_ch6_stairs1
 
 
-def create_chapter6():
+def create_chapter6(user_id):
     doc = Document()
 
         # 獲取文檔的第一個 section（默認只有一個）
@@ -37,6 +37,9 @@ def create_chapter6():
 
     # 插入分頁符號
     doc.add_page_break()
+
+    title = doc.add_heading("附件",level=1)
+    set_heading(title)
 
 
     return doc

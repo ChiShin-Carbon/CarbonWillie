@@ -30,7 +30,9 @@ import EditFillModal from './編輯填充Modal.js'
 import Zoom from 'react-medium-image-zoom'
 import 'react-medium-image-zoom/dist/styles.css'
 
-export const Refrigerant = () => {
+import { getRefrigerantData } from '../fetchdata.js'
+
+export const Refrigerant = ({refreshRefrigerantData}) => {
   const [isEditModalVisible, setEditModalVisible] = useState(false)
   const [selectedRow, setSelectedRow] = useState(null) // 用於追蹤展開的列
   const currentFunction = 'Refrigerant'
@@ -38,9 +40,9 @@ export const Refrigerant = () => {
   const [isAddFillModalVisible, setAddFillModalVisible] = useState(false)
   const [isEditFillModalVisible, setEditFillModalVisible] = useState(false)
 
-  const[selectedRefId, setSelectedRefId] = useState(null)
-  const[selectedFillId, setSelectedFillId] = useState(null)
-  const[selectedRef, setSelectedRef] = useState(null)
+  const [selectedRefId, setSelectedRefId] = useState(null)
+  const [selectedFillId, setSelectedFillId] = useState(null)
+  const [selectedRef, setSelectedRef] = useState(null)
 
   const device_type_Map = {
     1: '冷氣機', // Replace with actual device_type names
@@ -69,36 +71,29 @@ export const Refrigerant = () => {
     17: '其他',
   }
 
-  const [refrigerants, setRefrigerants] = useState([]) // State to hold fetched refrigerant data
-  // Function to fetch refrigerant data
-  const getRefrigerantData = async () => {
-    try {
-      const response = await fetch('http://localhost:8000/refrigerant', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-      const data = await response.json()
-
-      if (response.ok) {
-        setRefrigerants(data.refrigerants) // Set refrigerant data to state
-      } else {
-        console.error(`Error ${response.status}: ${data.detail}`)
-      }
-    } catch (error) {
-      console.error('Error fetching refrigerant data:', error)
+  // Add this function inside your Refrigerant component
+  const toggleRow = (rowIndex) => {
+    if (selectedRow === rowIndex) {
+      // If the clicked row is already selected, close it
+      setSelectedRow(null);
+    } else {
+      // Otherwise, select the clicked row
+      setSelectedRow(rowIndex);
     }
-  }
+  };
 
-  // Fetch refrigerant data on component mount
+  const [refrigerants, setRefrigerants] = useState([]) // State to hold fetched refrigerant data
+
+  // Fetch employee data when the component mounts
   useEffect(() => {
-    getRefrigerantData()
-  }, [])
-
-  const toggleRow = (index) => {
-    setSelectedRow(selectedRow === index ? null : index)
-  }
+    const fetchData = async () => {
+      const data = await getRefrigerantData();
+      if (data) {
+        setRefrigerants(data);
+      }
+    };
+    fetchData();
+  }, []);
 
   return (
     <div>
@@ -115,107 +110,128 @@ export const Refrigerant = () => {
           </tr>
         </CTableHead>
         <CTableBody className={styles.activityTableBody}>
-          {refrigerants.map((refrigerant, refrigerant_id) => (
-            <React.Fragment key={refrigerant.refrigerant_id}>
-              <tr onClick={() => toggleRow(refrigerant_id)} className={styles.trChoose}>
-                <td>{device_type_Map[refrigerant.device_type]}</td>
-                <td>{refrigerant.device_location}</td>
-                <td>{refrigerant_type_Map[refrigerant.refrigerant_type]}</td>
-                <td>{refrigerant.remark}</td>
-                <td>
-                  <Zoom>
-                    <img
-                      src={`fastapi/${refrigerant.img_path}`}
-                      alt="receipt"
-                      style={{ width: '100px' }}
-                    />
-                  </Zoom>
-                </td>
-                <td>
-                  {refrigerant.username}
-                  <br />
-                  {refrigerant.edit_time}
-                </td>
-                <td>
-                  <FontAwesomeIcon
-                    icon={faPenToSquare}
-                    className={styles.iconPen}
-                    onClick={() => 
-                      {setEditModalVisible(true)
-                      setSelectedRef(refrigerant.refrigerant_id)
+          {refrigerants.length > 0 ? (
+            refrigerants.map((refrigerant, refrigerant_id) => (
+              <React.Fragment key={refrigerant.refrigerant_id}>
+                <tr onClick={() => toggleRow(refrigerant_id)} className={styles.trChoose}>
+                  <td>{device_type_Map[refrigerant.device_type]}</td>
+                  <td>{refrigerant.device_location}</td>
+                  <td>{refrigerant_type_Map[refrigerant.refrigerant_type]}</td>
+                  <td>{refrigerant.remark}</td>
+                  <td>
+                    <Zoom>
+                      <img
+                        src={`fastapi/${refrigerant.img_path}`}
+                        alt="receipt"
+                        style={{ width: '100px' }}
+                      />
+                    </Zoom>
+                  </td>
+                  <td>
+                    {refrigerant.username}
+                    <br />
+                    {refrigerant.edit_time}
+                  </td>
+                  <td>
+                    <FontAwesomeIcon
+                      icon={faPenToSquare}
+                      className={styles.iconPen}
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevent row toggle when clicking the edit icon
+                        setEditModalVisible(true);
+                        setSelectedRef(refrigerant.refrigerant_id);
                       }}
-                  />
-                  <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
-                </td>
-              </tr>
-              {selectedRow === refrigerant_id && (
-                <td colSpan="7">
-                  <div className={styles.expandedContent}>
-                    {/* 在展開的區塊中放置你需要的內容 */}
-                    <div className={styles.fill}>
-                      <div>填充紀錄</div>
-                      <button onClick={() => {
-                        setAddFillModalVisible(true)
-                        const selectedRefId = refrigerant.refrigerant_id
-                        setSelectedRefId(selectedRefId)
-                        console.log(selectedRefId)
-                        }}>新增</button>
-                    </div>
-                    <table>
-                      {refrigerant.fillrec && refrigerant.fillrec.length > 0 && (
-                        <>
-                          <tr>
-                            <th>發票/收據日期</th>
-                            <th>發票號碼/收據編號</th>
-                            <th>填充量</th>
-                            <th>逸散率(%)</th>
-                            <th>備註</th>
-                            <th>圖片</th>
-                            <th>最近編輯</th>
-                            <th>操作</th>
-                          </tr>
-                          {refrigerant.fillrec.map((fill, index) => (
-                            <tr key={fill.fillrec_id}>
-                              <td>{fill.Doc_date}</td>
-                              <td>{fill.Doc_number}</td>
-                              <td>{fill.usage}</td>
-                              <td>{fill.escape_rate}</td>
-                              <td>{fill.fillrec_remark}</td>
-                              <td>
-                                <Zoom>
-                                  <img
-                                    src={`fastapi/${fill.fillrec_img_path}`}
-                                    alt="receipt"
-                                    style={{ width: '100px' }}
-                                  />
-                                </Zoom>
-                              </td>
-                              <td>
-                                {fill.fillrec_username}
-                                <br />
-                                {fill.fillrec_edit_time}
-                              </td>
-                              <td>
-                                <FontAwesomeIcon
-                                  icon={faPenToSquare}
-                                  className={styles.iconPen}
-                                  onClick={() => 
-                                    {setEditFillModalVisible(true)
-                                    setSelectedFillId(fill.fillrec_id)
-                                    }}
-                                />
-                                <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
-                              </td>
-                            </tr>
-                          ))}
-                        </>
-                      )}
-                    </table>
-                  </div>
-                </td>
-              )}
-            </React.Fragment>
-          ))}
+                    />
+                    <FontAwesomeIcon
+                      icon={faTrashCan}
+                      className={styles.iconTrash}
+                      onClick={(e) => e.stopPropagation()} // Prevent row toggle when clicking the trash icon
+                    />
+                  </td>
+                </tr>
+                {selectedRow === refrigerant_id && (
+                  <tr>
+                    <td colSpan="7">
+                      <div className={styles.expandedContent}>
+                        <div className={styles.fill}>
+                          <div>填充紀錄</div>
+                          <button onClick={() => {
+                            setAddFillModalVisible(true);
+                            const selectedRefId = refrigerant.refrigerant_id;
+                            setSelectedRefId(selectedRefId);
+                            console.log(selectedRefId);
+                          }}>新增</button>
+                        </div>
+                        <table>
+                          {refrigerant.fillrec && refrigerant.fillrec.length > 0 && (
+                            <>
+                              <thead>
+                                <tr>
+                                  <th>發票/收據日期</th>
+                                  <th>發票號碼/收據編號</th>
+                                  <th>填充量</th>
+                                  <th>逸散率(%)</th>
+                                  <th>備註</th>
+                                  <th>圖片</th>
+                                  <th>最近編輯</th>
+                                  <th>操作</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {refrigerant.fillrec.map((fill, index) => (
+                                  <tr key={fill.fillrec_id}>
+                                    <td>{fill.Doc_date}</td>
+                                    <td>{fill.Doc_number}</td>
+                                    <td>{fill.usage}</td>
+                                    <td>{fill.escape_rate}</td>
+                                    <td>{fill.fillrec_remark}</td>
+                                    <td>
+                                      <Zoom>
+                                        <img
+                                          src={`fastapi/${fill.fillrec_img_path}`}
+                                          alt="receipt"
+                                          style={{ width: '100px' }}
+                                        />
+                                      </Zoom>
+                                    </td>
+                                    <td>
+                                      {fill.fillrec_username}
+                                      <br />
+                                      {fill.fillrec_edit_time}
+                                    </td>
+                                    <td>
+                                      <FontAwesomeIcon
+                                        icon={faPenToSquare}
+                                        className={styles.iconPen}
+                                        onClick={(e) => {
+                                          e.stopPropagation(); // Prevent row toggle
+                                          setEditFillModalVisible(true);
+                                          setSelectedFillId(fill.fillrec_id);
+                                        }}
+                                      />
+                                      <FontAwesomeIcon
+                                        icon={faTrashCan}
+                                        className={styles.iconTrash}
+                                        onClick={(e) => e.stopPropagation()} // Prevent row toggle
+                                      />
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </>
+                          )}
+                        </table>
+                      </div>
+                    </td>
+                  </tr>
+                )}
+              </React.Fragment>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="14" className="text-center">目前沒有冷媒資料</td>
+            </tr>
+          )}
         </CTableBody>
       </CTable>
       <EditModal
@@ -230,7 +246,8 @@ export const Refrigerant = () => {
         isAddFillModalVisible={isAddFillModalVisible}
         setAddFillModalVisible={setAddFillModalVisible}
         selectedRefId={selectedRefId}
-      />
+        refreshRefrigerantData={refreshRefrigerantData}
+        />
 
       <EditFillModal
         isEditFillModalVisible={isEditFillModalVisible}

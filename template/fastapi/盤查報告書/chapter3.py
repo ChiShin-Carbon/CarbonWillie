@@ -1,10 +1,12 @@
 from docx import Document
 from docx.shared import Cm
 
-from storeDef import set_heading, set_heading2, set_paragraph, set_explain,set_ch3_table1
+from .storeDef import set_heading, set_heading2, set_paragraph, set_explain,set_ch3_table1
+from .storeDef2 import get_org_name
 
 
-def create_chapter3():
+def create_chapter3(user_id):
+    org_name = get_org_name(user_id)
     doc = Document()
 
         # 獲取文檔的第一個 section（默認只有一個）
@@ -35,7 +37,7 @@ def create_chapter3():
     content = doc.add_paragraph("本機構直接溫室氣體排放源，如表3-1所示。")
     set_paragraph(content)
 
-    table_explain = doc.add_paragraph("表3-1、【機構名稱】直接溫室氣體排放源")
+    table_explain = doc.add_paragraph(f"表3-1、{org_name}直接溫室氣體排放源")
     set_explain(table_explain)
     # 新增表格
     table1 = doc.add_table(rows=15, cols=16)
@@ -50,7 +52,7 @@ def create_chapter3():
     content = doc.add_paragraph("本機構能源間接溫室氣體排放源，如表3-2所示。")
     set_paragraph(content)
 
-    table_explain = doc.add_paragraph("表3-2、【機構名稱】能源間接溫室氣體排放源")
+    table_explain = doc.add_paragraph(f"表3-2、{org_name}能源間接溫室氣體排放源")
     set_explain(table_explain)
     
     table2 = doc.add_table(rows=3, cols=16)

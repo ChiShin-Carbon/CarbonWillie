@@ -66,3 +66,29 @@ def get_authorized_records():
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error retrieving authorized records: {e}")
     else:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Could not connect to the database.")
+
+@authorizedTable.put("/authorizedTable/{authorized_record_id}")
+def update_authorized_record(authorized_record_id: int, is_done: bool, completed_at: Optional[datetime] = None):
+    conn = connectDB()
+    if conn:
+        cursor = conn.cursor()
+        try:
+            query = """
+                UPDATE Authorized_Table
+                SET is_done = ?, completed_at = ?
+                WHERE authorized_record_id = ?
+            """
+            cursor.execute(query, (is_done, completed_at, authorized_record_id))
+            conn.commit()
+            
+            if cursor.rowcount == 0:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Record not found")
+            
+            return {"status": "success", "message": "Record updated successfully"}
+        except Exception as e:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error updating record: {e}")
+        finally:
+            cursor.close()
+            conn.close()
+    else:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Could not connect to the database.")

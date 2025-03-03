@@ -14,7 +14,7 @@ uploads_dir.mkdir(exist_ok=True)
 @insert_employee.post("/insert_employee")
 async def read_user_credentials(
     user_id: int = Form(...),
-    month: datetime = Form(...),
+    month: str = Form(...),
     employee: int = Form(...),
     daily_hours: int = Form(...),
     workday: int = Form(...),

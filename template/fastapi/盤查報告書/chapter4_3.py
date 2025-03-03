@@ -1,14 +1,14 @@
 from docx import Document
 from docx.shared import Cm
 
-from storeDef import set_heading, set_heading2, set_paragraph, set_ch4_stairs7
+from .storeDef import set_heading, set_heading2, set_paragraph, set_ch4_stairs7
 
 def add_stairs_paragraphs(doc, texts, format_func):
     for text in texts:
         para = doc.add_paragraph(text)
         format_func(para) 
 
-def create_chapter4_3():
+def create_chapter4_3(user_id):
     doc = Document()
 
         # 獲取文檔的第一個 section（默認只有一個）
