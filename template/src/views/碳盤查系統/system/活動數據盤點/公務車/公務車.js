@@ -27,7 +27,7 @@ import 'react-medium-image-zoom/dist/styles.css'
 import { getVehicleData } from '../fetchdata'
 
 
-export const Vehicle = () => {
+export const Vehicle = ({refreshVehicleData}) => {
   const [isEditModalVisible, setEditModalVisible] = useState(false)
   const [vehicles, setVehicles] = useState([]) // State to hold fetched vehicle data
   const [selectedVehicleId, setSelectedVehicleId] = useState(null) // State to store selected vehicle ID
@@ -129,6 +129,7 @@ export const Vehicle = () => {
         isEditModalVisible={isEditModalVisible}
         setEditModalVisible={setEditModalVisible}
         selectedVehicleId={selectedVehicleId}
+        refreshVehicleData={refreshVehicleData}
       />
     </div>
   )
