@@ -1,14 +1,27 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
-    CModal, CModalHeader, CModalBody, CModalFooter, CButton, CFormLabel, CFormInput, CFormTextarea, CRow, CCol, CFormSelect, CForm
+    CModal, CModalHeader, CModalBody, CModalFooter, CButton, CFormLabel, CFormInput, CFormTextarea, CRow, CCol, CFormSelect, CForm,
+    CModalTitle, CAlert
 } from '@coreui/react';
 import styles from '../../../../../scss/活動數據盤點.module.css';
+import Zoom from 'react-medium-image-zoom';
+import 'react-medium-image-zoom/dist/styles.css';
 
-import Zoom from 'react-medium-image-zoom'
-import 'react-medium-image-zoom/dist/styles.css'
+import { useRefreshData } from '../refreshdata';
 
-const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedEmployee }) => {
-    const handleClose = () => setEditModalVisible(false);
+const EditModal = ({ 
+    isEditModalVisible, 
+    setEditModalVisible, 
+    selectedEmployee,
+    refreshEmployeeData,
+    setCurrentFunction,
+    setCurrentTitle
+}) => {
+    // Create a local refresh instance as backup
+    const localRefreshData = useRefreshData();
+    const [previewImage, setPreviewImage] = useState(null); // State for image preview
+    const [existingImage, setExistingImage] = useState(null); // State to track if there's an existing image
+    const [useExistingImage, setUseExistingImage] = useState(true); // Track if using existing image
     const [formValues, setFormValues] = useState({
         period_date: '',
         employee_number: '',
@@ -21,30 +34,122 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedEmployee }
         wedding_and_funeral: '',
         special_leave: '',
         remark: '',
-        img_path: null,
+        image: null,
     });
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [formErrors, setFormErrors] = useState({});
+    
+    // Alert states
+    const [showAlert, setShowAlert] = useState(false);
+    const [alertMessage, setAlertMessage] = useState('');
+    const [alertColor, setAlertColor] = useState('danger');
 
+    // Reset states when modal closes or opens
+    const resetStates = useCallback(() => {
+        setPreviewImage(null);
+        setExistingImage(null);
+        setUseExistingImage(true);
+        setShowAlert(false);
+        setFormErrors({});
+        setFormValues({
+            period_date: '',
+            employee_number: '',
+            daily_hours: '',
+            workday: '',
+            overtime: '',
+            sick_leave: '',
+            personal_leave: '',
+            business_trip: '',
+            wedding_and_funeral: '',
+            special_leave: '',
+            remark: '',
+            image: null,
+        });
+    }, []);
 
-    const [previewImage, setPreviewImage] = useState(null); // 用來存儲圖片的 
+    // Handle closing the modal
+    const handleClose = () => {
+        setEditModalVisible(false);
+        resetStates();
+    };
 
-    const handleImageChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const previewUrl = URL.createObjectURL(file);
-            setPreviewImage(previewUrl);
-            setFormValues((prevValues) => ({ ...prevValues, img_path: file }));
+    // Safe refresh function that tries multiple approaches
+    const safeRefresh = async () => {
+        console.log("Attempting to refresh employee data...");
+        try {
+            // First try the prop passed from parent
+            if (typeof refreshEmployeeData === 'function') {
+                console.log("Using refreshEmployeeData from props");
+                await refreshEmployeeData();
+                return true;
+            }
+            // Then try our local refresh
+            else if (localRefreshData && typeof localRefreshData.refreshEmployeeData === 'function') {
+                console.log("Using localRefreshEmployeeData");
+                await localRefreshData.refreshEmployeeData();
+                return true;
+            }
+            console.warn("No valid refresh function found");
+            return false;
+        } catch (error) {
+            console.error("Error refreshing data:", error);
+            return false;
         }
     };
 
-    const handleInputChange = (e) => {
-        const { id, value } = e.target;
-        setFormValues((prev) => ({ ...prev, [id]: value }));
+    // Show alert with auto-hide
+    const showFormAlert = (message, color) => {
+        setAlertMessage(message);
+        setAlertColor(color);
+        setShowAlert(true);
+
+        // Auto hide after 5 seconds
+        setTimeout(() => {
+            setShowAlert(false);
+        }, 5000);
     };
 
+    // Handle image change
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            // Validate file type
+            const validImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+            if (!validImageTypes.includes(file.type)) {
+                showFormAlert('請上傳有效的圖片檔案 (JPEG, PNG, GIF, WEBP)', 'danger');
+                return;
+            }
 
+            // Validate file size (max 5MB)
+            const maxSize = 5 * 1024 * 1024; // 5MB
+            if (file.size > maxSize) {
+                showFormAlert('圖片大小不能超過 5MB', 'danger');
+                return;
+            }
+
+            // Clear previous preview
+            if (previewImage && !existingImage) {
+                URL.revokeObjectURL(previewImage);
+            }
+
+            const previewUrl = URL.createObjectURL(file);
+            setPreviewImage(previewUrl);
+            setFormValues((prev) => ({ ...prev, image: file }));
+            setUseExistingImage(false); // 選擇新圖片時，不使用現有圖片
+        } else {
+            // 如果用戶取消選擇，恢復使用現有圖片（如果有的話）
+            if (existingImage && useExistingImage) {
+                setPreviewImage(`fastapi/${existingImage}`);
+            }
+        }
+    };
+
+    // Fetch employee data when selectedEmployee changes
     useEffect(() => {
         const fetchEmployeeData = async () => {
             if (!selectedEmployee) return;
+
+            resetStates(); // Reset all states before fetching new data
 
             try {
                 const response = await fetch('http://localhost:8000/employee_findone', {
@@ -54,67 +159,142 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedEmployee }
                     },
                     body: JSON.stringify({ Employee_id: selectedEmployee }),
                 });
-
+                
                 if (response.ok) {
                     const data = await response.json();
-                    const employee = data.employees[0]; // Ensure correct structure
-                    setFormValues({
-                        period_date: employee?.period_date || '',
-                        employee_number: employee?.employee_number || '',
-                        daily_hours: employee?.daily_hours || '',
-                        workday: employee?.workday || '',
-                        overtime: employee?.overtime || '',
-                        sick_leave: employee?.sick_leave || '',
-                        personal_leave: employee?.personal_leave || '',
-                        business_trip: employee?.business_trip || '',
-                        wedding_and_funeral: employee?.wedding_and_funeral || '',
-                        special_leave: employee?.special_leave || '',
-                        remark: employee?.remark || '',
-                        img_path: employee?.img_path || '',
+                    if (data.employees && data.employees.length > 0) {
+                        // Populate form with fetched data
+                        const employee = data.employees[0];
+                        setFormValues({
+                            period_date: employee?.period_date || '',
+                            employee_number: employee?.employee_number || '',
+                            daily_hours: employee?.daily_hours || '',
+                            workday: employee?.workday || '',
+                            overtime: employee?.overtime || '',
+                            sick_leave: employee?.sick_leave || '',
+                            personal_leave: employee?.personal_leave || '',
+                            business_trip: employee?.business_trip || '',
+                            wedding_and_funeral: employee?.wedding_and_funeral || '',
+                            special_leave: employee?.special_leave || '',
+                            remark: employee?.remark || '',
+                            image: null, // Don't set file object here, just track path
+                        });
 
-                    });
-                    setPreviewImage(employee?.img_path || null);
+                        if (employee?.img_path) {
+                            // Store existing image path
+                            setExistingImage(employee.img_path);
+                            // Set preview with full URL path
+                            setPreviewImage(`fastapi/${employee.img_path}`);
+                            setUseExistingImage(true);
+                        }
+                    } else {
+                        console.error('No employee data found');
+                        showFormAlert('找不到員工資料', 'danger');
+                    }
                 } else {
-                    console.error('Error fetching Employee data:', await response.text());
+                    console.error('Error fetching employee data:', await response.text());
+                    showFormAlert('擷取資料時發生錯誤，請重試', 'danger');
                 }
             } catch (error) {
-                console.error('Error fetching Employee data:', error);
+                console.error('Error fetching employee data:', error);
+                showFormAlert('擷取資料時發生錯誤，請重試', 'danger');
             }
         };
 
-        fetchEmployeeData();
-    }, [selectedEmployee]);
+        if (isEditModalVisible && selectedEmployee) {
+            fetchEmployeeData();
+        }
+    }, [selectedEmployee, isEditModalVisible, resetStates]);
 
+    // Validate the form
+    const validateForm = () => {
+        const errors = {};
+
+        if (!formValues.period_date) errors.period_date = '請選擇月份';
+        if (!formValues.employee_number) errors.employee_number = '請輸入員工數';
+        if (!formValues.daily_hours) errors.daily_hours = '請輸入每日工時';
+        if (!formValues.workday) errors.workday = '請輸入每月工作日數';
+        if (!formValues.image && !existingImage) errors.image = '請上傳圖片';
+
+        // Validate numeric fields to ensure they're non-negative
+        const numericFields = [
+            'employee_number', 'daily_hours', 'workday', 'overtime', 
+            'sick_leave', 'personal_leave', 'business_trip', 
+            'wedding_and_funeral', 'special_leave'
+        ];
+        
+        numericFields.forEach(field => {
+            if (formValues[field] && parseFloat(formValues[field]) < 0) {
+                errors[field] = '數值不能為負數';
+            }
+        });
+
+        setFormErrors(errors);
+        return Object.keys(errors).length === 0;
+    };
+
+    // Handle form input changes
+    const handleChange = (e) => {
+        const { id, value } = e.target;
+        setFormValues((prev) => ({ ...prev, [id]: value }));
+
+        // Clear validation error for this field
+        if (formErrors[id]) {
+            setFormErrors(prev => ({
+                ...prev,
+                [id]: undefined
+            }));
+        }
+    };
+
+    // Handle form submission
     const handleEditSubmit = async (e) => {
         e.preventDefault();
 
-        const form = new FormData();
-        form.append("employee_id", selectedEmployee);
-        form.append("user_id", window.sessionStorage.getItem('user_id'));
-        form.append("month", formValues.period_date);
-        form.append("employee", formValues.employee_number);
-        form.append("daily_hours", formValues.daily_hours);
-        form.append("workday", formValues.workday);
-        form.append("overtime", formValues.overtime);
-        form.append("sick", formValues.sick_leave);
-        form.append("personal", formValues.personal_leave);
-        form.append("business", formValues.business_trip);
-        form.append("funeral", formValues.wedding_and_funeral);
-        form.append("special", formValues.special_leave);
-        form.append("explain", formValues.remark);
-        if (formValues.img_path) {
-            form.append("image", formValues.img_path);
-        }
-        
-        if (formValues.image) {
-            form.append("image", formValues.image);
+        // Prevent double submissions
+        if (isSubmitting) return;
+
+        // Validate form
+        if (!validateForm()) {
+            showFormAlert('請填寫所有必填欄位', 'danger');
+            return;
         }
 
-        for (let [key, value] of form.entries()) {
-            console.log(`${key}:`, value); // Debugging output
-        }
+        setIsSubmitting(true);
 
         try {
+            showFormAlert('正在提交資料...', 'info');
+
+            const form = new FormData();
+            form.append("employee_id", selectedEmployee);
+            form.append("user_id", window.sessionStorage.getItem('user_id'));
+            form.append("month", formValues.period_date);
+            form.append("employee", formValues.employee_number);
+            form.append("daily_hours", formValues.daily_hours);
+            form.append("workday", formValues.workday);
+            form.append("overtime", formValues.overtime);
+            form.append("sick", formValues.sick_leave);
+            form.append("personal", formValues.personal_leave);
+            form.append("business", formValues.business_trip);
+            form.append("funeral", formValues.wedding_and_funeral);
+            form.append("special", formValues.special_leave);
+            form.append("explain", formValues.remark);
+
+            // Only append image if a new one was selected
+            if (formValues.image) {
+                const imageFile = formValues.image;
+                // Rename with timestamp to avoid duplicate names
+                const newFile = new File(
+                    [imageFile],
+                    `${Date.now()}_${imageFile.name}`,
+                    { type: imageFile.type }
+                );
+                form.append("image", newFile);
+            } else if (existingImage && useExistingImage) {
+                // Let backend know we're keeping existing image
+                form.append("existing_image", existingImage);
+            }
+
             const response = await fetch('http://localhost:8000/edit_employee', {
                 method: 'POST',
                 body: form, // Send FormData directly
@@ -122,213 +302,358 @@ const EditModal = ({ isEditModalVisible, setEditModalVisible, selectedEmployee }
 
             const data = await response.json();
             if (response.ok && data.status === "success") {
-                alert("Employee record updated successfully!");
-                handleClose();
+                // Close modal first
+                setEditModalVisible(false);
+
+                // Wait a moment before refreshing data
+                setTimeout(async () => {
+                    const refreshSuccessful = await safeRefresh();
+
+                    // Update current function and title if available
+                    if (typeof setCurrentFunction === 'function') {
+                        setCurrentFunction("Employee");
+                    }
+
+                    if (typeof setCurrentTitle === 'function') {
+                        setCurrentTitle("工作時數(員工)");
+                    }
+
+                    if (refreshSuccessful) {
+                        alert("資料提交成功！");
+                    } else {
+                        alert("資料已提交，但無法自動刷新頁面。請手動刷新。");
+                    }
+                }, 500);
             } else {
-                alert(data.message || "Failed to update employee record.");
+                showFormAlert(data.message || "更新員工記錄失敗。", "danger");
             }
         } catch (error) {
-            console.error("Error updating employee record:", error);
-            alert("An error occurred while updating the employee record.");
+            console.error("更新員工記錄時發生錯誤:", error);
+            showFormAlert(`提交時發生錯誤: ${error.message}`, "danger");
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
+    // Clean up resources when component unmounts or modal closes
+    useEffect(() => {
+        return () => {
+            if (previewImage && !existingImage) {
+                URL.revokeObjectURL(previewImage);
+            }
+        };
+    }, [previewImage, existingImage]);
 
     return (
-        <CModal backdrop="static" visible={isEditModalVisible} onClose={handleClose} className={styles.modal} size='xl'>
+        <CModal
+            backdrop="static"
+            visible={isEditModalVisible}
+            onClose={handleClose}
+            aria-labelledby="EmployeeModalLabel"
+            size="xl"
+            className={styles.modal}
+        >
             <CModalHeader>
-                <h5><b>編輯數據-工作時數(員工)</b></h5>
+                <CModalTitle id="EmployeeModalLabel">
+                    <b>編輯數據-工作時數(員工)</b>
+                </CModalTitle>
             </CModalHeader>
             <CForm onSubmit={handleEditSubmit}>
                 <CModalBody>
+                    {showAlert && (
+                        <CAlert color={alertColor} dismissible>
+                            {alertMessage}
+                        </CAlert>
+                    )}
                     <div className={styles.addmodal}>
                         <div className={styles.modalLeft}>
-
                             <CRow className="mb-3">
-                                <CFormLabel htmlFor="month" className={`col-sm-2 col-form-label ${styles.addlabel}`} >月份*</CFormLabel>
-                                <CCol><CFormInput
-                                    className={styles.addinput}
-                                    type="date"
-                                    id="period_date"
-                                    value={formValues.period_date}
-                                    onChange={handleInputChange}
-                                    required /></CCol>
+                                <CFormLabel htmlFor="period_date" className={`col-sm-2 col-form-label ${styles.addlabel}`}>
+                                    月份*
+                                </CFormLabel>
+                                <CCol>
+                                    <CFormInput
+                                        className={styles.addinput}
+                                        type="month"
+                                        id="period_date"
+                                        value={formValues.period_date}
+                                        onChange={handleChange}
+                                        invalid={!!formErrors.period_date}
+                                    />
+                                    {formErrors.period_date && (
+                                        <div className="invalid-feedback">{formErrors.period_date}</div>
+                                    )}
+                                </CCol>
                             </CRow>
                             <CRow className="mb-3">
-                                <CFormLabel htmlFor="people" className={`col-sm-2 col-form-label ${styles.addlabel}`} >員工數*</CFormLabel>
+                                <CFormLabel htmlFor="employee_number" className={`col-sm-2 col-form-label ${styles.addlabel}`}>
+                                    員工數*
+                                </CFormLabel>
                                 <CCol>
                                     <CFormInput
                                         className={styles.addinput}
                                         type="number"
-                                        min='0'
+                                        min="0"
                                         id="employee_number"
                                         value={formValues.employee_number}
-                                        onChange={handleInputChange}
-                                        required />
+                                        onChange={handleChange}
+                                        invalid={!!formErrors.employee_number}
+                                    />
+                                    {formErrors.employee_number && (
+                                        <div className="invalid-feedback">{formErrors.employee_number}</div>
+                                    )}
                                 </CCol>
                             </CRow>
                             <CRow className="mb-3">
-                                <CFormLabel htmlFor="workhour" className={`col-sm-2 col-form-label ${styles.addlabel}`} >每日工時*<br /><span className={styles.Note}> 不含休息時間</span></CFormLabel>
+                                <CFormLabel htmlFor="daily_hours" className={`col-sm-2 col-form-label ${styles.addlabel}`}>
+                                    每日工時*<br /><span className={styles.Note}>不含休息時間</span>
+                                </CFormLabel>
                                 <CCol>
                                     <CFormInput
                                         className={styles.addinput}
                                         type="number"
-                                        min='0'
+                                        min="0"
                                         id="daily_hours"
                                         value={formValues.daily_hours}
-                                        onChange={handleInputChange}
-                                        required />
+                                        onChange={handleChange}
+                                        invalid={!!formErrors.daily_hours}
+                                    />
+                                    {formErrors.daily_hours && (
+                                        <div className="invalid-feedback">{formErrors.daily_hours}</div>
+                                    )}
                                 </CCol>
                             </CRow>
                             <CRow className="mb-3">
-                                <CFormLabel htmlFor="workday" className={`col-sm-2 col-form-label ${styles.addlabel}`} >每月工作日數*</CFormLabel>
+                                <CFormLabel htmlFor="workday" className={`col-sm-2 col-form-label ${styles.addlabel}`}>
+                                    每月工作日數*
+                                </CFormLabel>
                                 <CCol>
                                     <CFormInput
                                         className={styles.addinput}
                                         type="number"
-                                        min='0'
+                                        min="0"
                                         id="workday"
                                         value={formValues.workday}
-                                        onChange={handleInputChange}
-                                        required />
+                                        onChange={handleChange}
+                                        invalid={!!formErrors.workday}
+                                    />
+                                    {formErrors.workday && (
+                                        <div className="invalid-feedback">{formErrors.workday}</div>
+                                    )}
                                 </CCol>
                             </CRow>
                             <CRow className="mb-3">
-                                <CFormLabel htmlFor="plushou" className={`col-sm-2 col-form-label ${styles.addlabel}`} >總加班時數</CFormLabel>
+                                <CFormLabel htmlFor="overtime" className={`col-sm-2 col-form-label ${styles.addlabel}`}>
+                                    總加班時數
+                                </CFormLabel>
                                 <CCol>
                                     <CFormInput
                                         className={styles.addinput}
                                         type="number"
-                                        min='0'
-                                        id="plushour"
+                                        min="0"
+                                        id="overtime"
                                         value={formValues.overtime}
-                                        onChange={handleInputChange}
+                                        onChange={handleChange}
+                                        invalid={!!formErrors.overtime}
                                     />
+                                    {formErrors.overtime && (
+                                        <div className="invalid-feedback">{formErrors.overtime}</div>
+                                    )}
                                 </CCol>
                             </CRow>
                             <CRow className="mb-3">
-                                <CFormLabel htmlFor="sickhour" className={`col-sm-2 col-form-label ${styles.addlabel}`} >總病假時數</CFormLabel>
+                                <CFormLabel htmlFor="sick_leave" className={`col-sm-2 col-form-label ${styles.addlabel}`}>
+                                    總病假時數
+                                </CFormLabel>
                                 <CCol>
                                     <CFormInput
                                         className={styles.addinput}
                                         type="number"
-                                        min='0'
-                                        id="sickhour"
+                                        min="0"
+                                        id="sick_leave"
                                         value={formValues.sick_leave}
-                                        onChange={handleInputChange}
+                                        onChange={handleChange}
+                                        invalid={!!formErrors.sick_leave}
                                     />
+                                    {formErrors.sick_leave && (
+                                        <div className="invalid-feedback">{formErrors.sick_leave}</div>
+                                    )}
                                 </CCol>
                             </CRow>
                             <CRow className="mb-3">
-                                <CFormLabel htmlFor="personalhour" className={`col-sm-2 col-form-label ${styles.addlabel}`} >總事假時數</CFormLabel>
+                                <CFormLabel htmlFor="personal_leave" className={`col-sm-2 col-form-label ${styles.addlabel}`}>
+                                    總事假時數
+                                </CFormLabel>
                                 <CCol>
                                     <CFormInput
                                         className={styles.addinput}
                                         type="number"
-                                        min='0'
-                                        id="personalhour"
+                                        min="0"
+                                        id="personal_leave"
                                         value={formValues.personal_leave}
-                                        onChange={handleInputChange}
+                                        onChange={handleChange}
+                                        invalid={!!formErrors.personal_leave}
                                     />
+                                    {formErrors.personal_leave && (
+                                        <div className="invalid-feedback">{formErrors.personal_leave}</div>
+                                    )}
                                 </CCol>
                             </CRow>
                             <CRow className="mb-3">
-                                <CFormLabel htmlFor="businesshour" className={`col-sm-2 col-form-label ${styles.addlabel}`} >總出差時數</CFormLabel>
+                                <CFormLabel htmlFor="business_trip" className={`col-sm-2 col-form-label ${styles.addlabel}`}>
+                                    總出差時數
+                                </CFormLabel>
                                 <CCol>
                                     <CFormInput
                                         className={styles.addinput}
                                         type="number"
-                                        min='0'
-                                        id="businesshour"
+                                        min="0"
+                                        id="business_trip"
                                         value={formValues.business_trip}
-                                        onChange={handleInputChange}
+                                        onChange={handleChange}
+                                        invalid={!!formErrors.business_trip}
                                     />
+                                    {formErrors.business_trip && (
+                                        <div className="invalid-feedback">{formErrors.business_trip}</div>
+                                    )}
                                 </CCol>
                             </CRow>
                             <CRow className="mb-3">
-                                <CFormLabel htmlFor="deadhour" className={`col-sm-2 col-form-label ${styles.addlabel}`} >總婚喪時數</CFormLabel>
+                                <CFormLabel htmlFor="wedding_and_funeral" className={`col-sm-2 col-form-label ${styles.addlabel}`}>
+                                    總婚喪時數
+                                </CFormLabel>
                                 <CCol>
                                     <CFormInput
                                         className={styles.addinput}
                                         type="number"
-                                        min='0'
-                                        id="deadhour"
+                                        min="0"
+                                        id="wedding_and_funeral"
                                         value={formValues.wedding_and_funeral}
-                                        onChange={handleInputChange}
+                                        onChange={handleChange}
+                                        invalid={!!formErrors.wedding_and_funeral}
                                     />
+                                    {formErrors.wedding_and_funeral && (
+                                        <div className="invalid-feedback">{formErrors.wedding_and_funeral}</div>
+                                    )}
                                 </CCol>
                             </CRow>
                             <CRow className="mb-3">
-                                <CFormLabel htmlFor="resthour" className={`col-sm-2 col-form-label ${styles.addlabel}`} >總特休時數</CFormLabel>
+                                <CFormLabel htmlFor="special_leave" className={`col-sm-2 col-form-label ${styles.addlabel}`}>
+                                    總特休時數
+                                </CFormLabel>
                                 <CCol>
                                     <CFormInput
                                         className={styles.addinput}
                                         type="number"
-                                        min='0'
-                                        id="resthour"
+                                        min="0"
+                                        id="special_leave"
                                         value={formValues.special_leave}
-                                        onChange={handleInputChange}
+                                        onChange={handleChange}
+                                        invalid={!!formErrors.special_leave}
                                     />
+                                    {formErrors.special_leave && (
+                                        <div className="invalid-feedback">{formErrors.special_leave}</div>
+                                    )}
                                 </CCol>
                             </CRow>
                             <CRow className="mb-3">
-                                <CFormLabel htmlFor="explain" className={`col-sm-2 col-form-label ${styles.addlabel}`} >備註</CFormLabel>
+                                <CFormLabel htmlFor="remark" className={`col-sm-2 col-form-label ${styles.addlabel}`}>
+                                    備註
+                                </CFormLabel>
                                 <CCol>
                                     <CFormTextarea
                                         className={styles.addinput}
-                                        type="text"
-                                        id="explain"
+                                        id="remark"
                                         rows={3}
                                         value={formValues.remark}
-                                        onChange={handleInputChange}
+                                        onChange={handleChange}
+                                        placeholder="選填，可記錄其他相關資訊"
                                     />
-
                                 </CCol>
                             </CRow>
                             <CRow className="mb-3">
-                                <CFormLabel
-                                    htmlFor="photo"
-                                    className={`col-sm-2 col-form-label ${styles.addlabel}`}
-                                >
+                                <CFormLabel htmlFor="image" className={`col-sm-2 col-form-label ${styles.addlabel}`}>
                                     圖片*
                                 </CFormLabel>
                                 <CCol>
-                                    <CFormInput type="file" id="C1image" onChange={(e) => (handleImageChange(e), handleC1image(e))} required />
+                                    <CFormInput
+                                        type="file"
+                                        id="image"
+                                        onChange={handleImageChange}
+                                        accept="image/*"
+                                        invalid={!!formErrors.image}
+                                    />
+                                    {formErrors.image && (
+                                        <div className="invalid-feedback">{formErrors.image}</div>
+                                    )}
+                                    {existingImage && (
+                                        <div className="form-text">
+                                            已有上傳圖片。如需更改，請選擇新圖片。
+                                        </div>
+                                    )}
+                                    <div className="form-text">
+                                        支援的格式: JPG, PNG, GIF, WEBP (最大 5MB)
+                                    </div>
                                 </CCol>
                             </CRow>
-                            <br />
-                            <div style={{ textAlign: 'center' }}>*為必填欄位</div>
-
+                            <div className="text-center mt-3">
+                                <small>*為必填欄位</small>
+                            </div>
                         </div>
                         <div className={styles.modalRight}>
-                            <CFormLabel className={`col-sm-2 col-form-label ${styles.addlabel}`} >
+                            <CFormLabel className={styles.addlabel}>
                                 圖片預覽
                             </CFormLabel>
                             <div className={styles.imgBlock}>
-                                {previewImage && ( // 如果有圖片 URL，則顯示預覽
-                                    <Zoom><img src={previewImage} alt="Uploaded Preview" /></Zoom>
+                                {previewImage ? (
+                                    <Zoom>
+                                        <img
+                                            src={previewImage}
+                                            alt="預覽圖片"
+                                            style={{ maxWidth: '100%', maxHeight: '200px', objectFit: 'contain' }}
+                                        />
+                                    </Zoom>
+                                ) : (
+                                    <div className="text-center p-4 text-muted border">
+                                        尚未上傳圖片
+                                    </div>
                                 )}
                             </div>
 
-                            <CFormLabel className={`col-sm-2 col-form-label ${styles.addlabel}`}>
-                                偵測錯誤提醒
+                            <CFormLabel className={styles.addlabel}>
+                                填表說明
                             </CFormLabel>
-                            <div className={styles.errorMSG}>
-                                {/* 偵測日期:{C1date}  <span>{dateincorrectmessage}</span><br />
-                                偵測號碼:{C1num}  <span>{numincorrectmessage}</span> */}
+                            <div className={styles.infoBlock || 'p-3 border'}>
+                                <ul className="mb-0">
+                                    <li>所有帶有 * 的欄位為必填項目</li>
+                                    <li>每日工時不含休息時間</li>
+                                    <li>數值不能為負數</li>
+                                    <li>備註欄位可填寫額外資訊或特殊說明</li>
+                                </ul>
                             </div>
-
                         </div>
                     </div>
                 </CModalBody>
                 <CModalFooter>
-                    <CButton className="modalbutton1" onClick={handleClose}>取消</CButton>
-                    <CButton className="modalbutton2" type="submit">儲存</CButton>
+                    <CButton
+                        className="modalbutton1"
+                        onClick={handleClose}
+                        disabled={isSubmitting}
+                        type="button"
+                    >
+                        取消
+                    </CButton>
+                    <CButton
+                        type="submit"
+                        className="modalbutton2"
+                        disabled={isSubmitting}
+                    >
+                        {isSubmitting ? '提交中...' : '儲存'}
+                    </CButton>
                 </CModalFooter>
             </CForm>
-        </CModal >
+        </CModal>
     );
 };
-
 
 export default EditModal;
