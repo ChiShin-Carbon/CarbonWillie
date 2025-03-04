@@ -12,7 +12,7 @@ import 'react-medium-image-zoom/dist/styles.css';
 
 import { getNonEmployeeData } from '../fetchdata.js';
 
-export const NonEmployee = () => {
+export const NonEmployee = ({refreshNonEmployeeData}) => {
     const [isEditModalVisible, setEditModalVisible] = useState(false);
     const [selectedNonemployeeId, setSelectedNonemployeeId] = useState(null) // State to store selected vehicle ID
     const [nonemployeeData, setNonEmployeeData] = useState([]);
@@ -83,6 +83,7 @@ export const NonEmployee = () => {
                 isEditModalVisible={isEditModalVisible}
                 setEditModalVisible={setEditModalVisible}
                 selectedNonemployeeId={selectedNonemployeeId}
+                refreshNonEmployeeData={refreshNonEmployeeData}
             />
         </div>
     );

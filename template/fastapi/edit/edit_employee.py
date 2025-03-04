@@ -40,7 +40,7 @@ async def update_employee_record(
     special: float = Form(...),
     explain: str = Form(None),
     image: UploadFile = File(None),  # For new image uploads
-    existing_image: str = Form(None)  # Add this parameter for existing images):
+    existing_image: str = Form(None)  # Add this parameter for existing images)
 ):
     image_path = None
     # Handle new image upload
@@ -54,7 +54,7 @@ async def update_employee_record(
     # Use existing image if no new image uploaded
     elif existing_image:
         image_path = existing_image
-        
+
     # Database update
     conn = connectDB()
     if conn:
