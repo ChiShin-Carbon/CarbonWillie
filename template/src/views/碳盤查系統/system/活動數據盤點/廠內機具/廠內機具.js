@@ -12,7 +12,7 @@ import 'react-medium-image-zoom/dist/styles.css';
 
 import { getMachineryData } from '../fetchdata.js'
 
-export const Machinery = () => {
+export const Machinery = ({refreshMachineryData}) => {
     const [isEditModalVisible, setEditModalVisible] = useState(false);
     const [machineryData, setMachineryData] = useState([]);  // Updated state name for clarity
     const [selectedMachinery, setSelectedMachinery] = useState(null); // Store selected employee for edit
@@ -86,6 +86,7 @@ export const Machinery = () => {
                 isEditModalVisible={isEditModalVisible}
                 setEditModalVisible={setEditModalVisible}
                 selectedMachinery={selectedMachinery}
+                refreshMachineryData={refreshMachineryData}
             />
         </div>
     );

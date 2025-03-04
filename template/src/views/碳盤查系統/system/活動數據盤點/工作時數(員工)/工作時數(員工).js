@@ -11,7 +11,7 @@ import {getEmployeeData} from '../fetchdata.js'
 import Zoom from 'react-medium-image-zoom';
 import 'react-medium-image-zoom/dist/styles.css';
 
-export const Employee = () => {
+export const Employee = ({refreshEmployeeData}) => {
     const [isEditModalVisible, setEditModalVisible] = useState(false);
     const [employeeData, setEmployeeData] = useState([]);
     const [selectedEmployee, setSelectedEmployee] = useState(null); // Store selected employee for edit
@@ -101,6 +101,7 @@ export const Employee = () => {
                 isEditModalVisible={isEditModalVisible}
                 setEditModalVisible={setEditModalVisible}
                 selectedEmployee={selectedEmployee} // Pass selected employee to modal
+                refreshEmployeeData={refreshEmployeeData}
             />
         </div>
     );

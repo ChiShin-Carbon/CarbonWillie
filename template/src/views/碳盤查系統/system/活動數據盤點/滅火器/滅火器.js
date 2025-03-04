@@ -196,6 +196,7 @@ export const FireExtinguisher = ({refreshFireExtinguisherData}) => {
         isEditModalVisible={isEditModalVisible}
         setEditModalVisible={setEditModalVisible}
         selectedExtinguisher={selectedExtinguisher}
+        refreshFireExtinguisherData={refreshFireExtinguisherData}
       />
 
       {/* 填充新增編輯modal */}
@@ -210,6 +211,7 @@ export const FireExtinguisher = ({refreshFireExtinguisherData}) => {
         isEditFillModalVisible={isEditFillModalVisible}
         setEditFillModalVisible={setEditFillModalVisible}
         selectedFill={selectedFill}
+        refreshFireExtinguisherData={refreshFireExtinguisherData}
       />
     </div>
   )

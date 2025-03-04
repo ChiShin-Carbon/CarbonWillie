@@ -12,7 +12,7 @@ import 'react-medium-image-zoom/dist/styles.css';
 
 import { getBusiness_TripData } from '../fetchdata.js';
 
-export const BusinessTrip = () => {
+export const BusinessTrip = ({refreshBusinessTripData}) => {
     const [isEditModalVisible, setEditModalVisible] = useState(false);
     const [BT, setBT] = useState([]);  // State to hold fetched vehicle data
     const [selectedbusiness, setSelectedbusiness] = useState(null);
@@ -77,6 +77,7 @@ export const BusinessTrip = () => {
                 isEditModalVisible={isEditModalVisible}
                 setEditModalVisible={setEditModalVisible}
                 selectedbusiness={selectedbusiness}
+                refreshBusinessTripData={refreshBusinessTripData}
             />
         </div>
     );

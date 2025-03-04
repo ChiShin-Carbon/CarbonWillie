@@ -3,9 +3,8 @@ from connect.connect import connectDB
 from datetime import datetime
 from pathlib import Path
 
-uploads_dir = Path("uploads")
-uploads_dir.mkdir(exist_ok=True)
-
+edit_dir = Path("uploads")
+edit_dir.mkdir(exist_ok=True)
 edit_ExtinguisherFill = APIRouter()
 
 @edit_ExtinguisherFill.post("/edit_ExtinguisherFill")
@@ -13,21 +12,26 @@ async def update_emergency_record(
     fillrec_id: int = Form(...),
     user_id: int = Form(...),
     Doc_date: str = Form(...),
-    Doc_number: int = Form(...),
+    Doc_number: str = Form(...),
     usage: str = Form(...),
     remark: str = Form(...),
-    image: UploadFile = None
+    image: UploadFile = File(None),  # For new image uploads
+    existing_image: str = Form(None)  # Add this parameter for existing images):
 ):
     
-    # Handle image upload
     image_path = None
+    # Handle new image upload
     if image:
-        image_path = uploads_dir / image.filename
+        image_path = edit_dir / image.filename
         try:
             with open(image_path, "wb") as file:
                 file.write(await image.read())
         except Exception as e:
             raise HTTPException(status_code=500, detail="Could not save image file")
+    # Use existing image if no new image uploaded
+    elif existing_image:
+        image_path = existing_image
+
 
     conn = connectDB()
     if conn:

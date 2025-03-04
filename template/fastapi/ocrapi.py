@@ -99,8 +99,19 @@ async def ocr_image(image: UploadFile = File(...)):
             )
         )
 
-        response_content = completion.choices[0].message.content.split(" ")
-        
+        gpt_response = completion.choices[0].message.content.strip()
+        print(f"Raw GPT response: {gpt_response}")
+
+        # Check if it contains brackets as shown in example
+        if gpt_response.startswith('[') and gpt_response.endswith(']'):
+            # Remove brackets and split by comma
+            cleaned_response = gpt_response[1:-1]  # Remove [ and ]
+            items = [item.strip().strip("'\"") for item in cleaned_response.split(',')]
+            response_content = items
+        else:
+            # Fall back to space splitting if not in expected format
+            response_content = gpt_response.split()
+
         # Return the response as a structured array
         print(f"Processed response: {response_content}")
         return {"response_content": response_content, "raw_ocr_text": output}

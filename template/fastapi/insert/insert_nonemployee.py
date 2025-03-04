@@ -24,13 +24,7 @@ async def read_user_credentials(
             file.write(await image.read())
     except Exception as e:
         raise HTTPException(status_code=500, detail="Could not save image file")
-
-    # Parse the month string and format it as YYYY-MM-DD
-    try:
-        formatted_month = datetime.strptime(month, "%Y-%m").strftime('%Y-%m-%d')
-    except ValueError:
-        raise HTTPException(status_code=400, detail="Invalid month format. Expected format: YYYY-MM")
-
+    
     # Database insertion
     conn = connectDB()
     if conn:
@@ -43,7 +37,7 @@ async def read_user_credentials(
             """
             values = (
                 user_id,
-                formatted_month,
+                month,
                 nonemployee,
                 total_hours,
                 total_day,

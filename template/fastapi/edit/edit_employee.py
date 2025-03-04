@@ -6,9 +6,8 @@ from pydantic import BaseModel
 
 
 edit_employee = APIRouter()
-uploads_dir = Path("uploads")
-uploads_dir.mkdir(exist_ok=True)
-
+edit_dir = Path("uploads")
+edit_dir.mkdir(exist_ok=True)
 class EmployeeRequest(BaseModel):
     employee_id: int
     user_id: int
@@ -40,17 +39,21 @@ async def update_employee_record(
     funeral: float = Form(...),
     special: float = Form(...),
     explain: str = Form(None),
-    image: UploadFile = None
+    image: UploadFile = File(None),  # For new image uploads
+    existing_image: str = Form(None)  # Add this parameter for existing images)
 ):
-    # Handle image upload
     image_path = None
+    # Handle new image upload
     if image:
-        image_path = uploads_dir / image.filename
+        image_path = edit_dir / image.filename
         try:
             with open(image_path, "wb") as file:
                 file.write(await image.read())
         except Exception as e:
             raise HTTPException(status_code=500, detail="Could not save image file")
+    # Use existing image if no new image uploaded
+    elif existing_image:
+        image_path = existing_image
 
     # Database update
     conn = connectDB()

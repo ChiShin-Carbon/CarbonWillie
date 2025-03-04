@@ -12,7 +12,7 @@ import 'react-medium-image-zoom/dist/styles.css';
 
 import { getOperationalWasteData } from '../fetchdata.js';
 
-export const OperationalWaste = () => {
+export const OperationalWaste = ({refreshWasteData}) => {
     const [isEditModalVisible, setEditModalVisible] = useState(false);
     const [operationalWasteData, setOperationalWasteData] = useState([]);  // State to hold fetched operational waste data
     const [selectedWaste, setSelectedWaste] = useState(null); // Store selected waste for edit
@@ -81,6 +81,7 @@ export const OperationalWaste = () => {
                 selectedWaste={selectedWaste}
                 isEditModalVisible={isEditModalVisible}
                 setEditModalVisible={setEditModalVisible}
+                refreshWasteData={refreshWasteData}
             />
         </div>
     );

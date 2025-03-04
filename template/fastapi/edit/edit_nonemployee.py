@@ -5,8 +5,8 @@ from pathlib import Path
 from pydantic import BaseModel
 
 edit_nonemployee = APIRouter()
-uploads_dir = Path("uploads")
-uploads_dir.mkdir(exist_ok=True)
+edit_dir = Path("uploads")
+edit_dir.mkdir(exist_ok=True)
 
 class NonEmployeeRequest(BaseModel):
     nonemployee_id: int
@@ -27,23 +27,22 @@ async def update_nonemployee_record(
     total_hours: int = Form(...),
     total_day: int = Form(...),
     explain: str = Form(None),
-    image: UploadFile = None
+    image: UploadFile = File(None),  # For new image uploads
+    existing_image: str = Form(None)  # Add this parameter for existing images)
 ):
     # Handle image upload
     image_path = None
+    # Handle new image upload
     if image:
-        image_path = uploads_dir / image.filename
+        image_path = edit_dir / image.filename
         try:
             with open(image_path, "wb") as file:
                 file.write(await image.read())
         except Exception as e:
             raise HTTPException(status_code=500, detail="Could not save image file")
-
-    # Parse the month string and format it as YYYY-MM-DD
-    try:
-        formatted_month = datetime.strptime(month, "%Y-%m").strftime('%Y-%m-%d')
-    except ValueError:
-        raise HTTPException(status_code=400, detail="Invalid month format. Expected format: YYYY-MM")
+    # Use existing image if no new image uploaded
+    elif existing_image:
+        image_path = existing_image
 
     # Database update
     conn = connectDB()
@@ -59,7 +58,7 @@ async def update_nonemployee_record(
             """
             values = (
                 user_id,
-                formatted_month,
+                month,
                 nonemployee,
                 total_hours,
                 total_day,

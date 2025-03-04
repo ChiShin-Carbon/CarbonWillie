@@ -21,7 +21,7 @@ export const CommutingAdd = ({
     // Form state with default values
     const defaultFormData = {
         transportation: '1',
-        oil_species: '2',
+        oil_species: '0',
         kilometer: '',
         remark: '',
         image: null
@@ -268,9 +268,8 @@ export const CommutingAdd = ({
 
     // Oil type options
     const oilOptions = [
-        { value: '1', label: '無' },
-        { value: '2', label: '汽油' },
-        { value: '3', label: '柴油' }
+        { value: '0', label: '汽油' },
+        { value: '1', label: '柴油' },
     ];
 
     return (

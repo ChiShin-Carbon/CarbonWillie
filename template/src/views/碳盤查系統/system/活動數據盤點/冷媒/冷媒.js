@@ -45,10 +45,17 @@ export const Refrigerant = ({refreshRefrigerantData}) => {
   const [selectedRef, setSelectedRef] = useState(null)
 
   const device_type_Map = {
-    1: '冷氣機', // Replace with actual device_type names
-    2: '飲水機',
-    3: '車用冷媒',
-    4: '其他',
+    1: '冰箱',
+    2: '冷氣機',
+    3: '飲水機',
+    4: '冰水主機',
+    5: '空壓機',
+    6: '除濕機',
+    7: '車用冷媒',
+    8: '製冰機',
+    9: '冰櫃',
+    10: '冷凍櫃',
+    11: '其他'
   }
 
   const refrigerant_type_Map = {
@@ -239,6 +246,7 @@ export const Refrigerant = ({refreshRefrigerantData}) => {
         setEditModalVisible={setEditModalVisible}
         currentFunction={currentFunction}
         selectedRef={selectedRef}
+        refreshRefrigerantData={refreshRefrigerantData}
       />
 
       {/* 填充新增編輯modal */}
@@ -253,6 +261,7 @@ export const Refrigerant = ({refreshRefrigerantData}) => {
         isEditFillModalVisible={isEditFillModalVisible}
         setEditFillModalVisible={setEditFillModalVisible}
         selectedFillId={selectedFillId}
+        refreshRefrigerantData={refreshRefrigerantData}
       />
     </div>
   )
