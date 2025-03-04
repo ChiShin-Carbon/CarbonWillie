@@ -13,7 +13,7 @@ import 'react-medium-image-zoom/dist/styles.css';
 
 import { getCommuteData } from '../fetchdata.js';
 
-export const Commuting = () => {
+export const Commuting = ({refreshCommuteData}) => {
     const [isEditModalVisible, setEditModalVisible] = useState(false);
     const [Commute, setCommute] = useState([]);  // State to hold fetched commute data
     const [selectedCommute, setSelectedCommute] = useState(null); // Store selected commute for edit
@@ -81,6 +81,7 @@ export const Commuting = () => {
                 isEditModalVisible={isEditModalVisible}
                 setEditModalVisible={setEditModalVisible}
                 selectedCommute={selectedCommute}
+                refreshCommuteData={refreshCommuteData}
             />
         </div>
     );

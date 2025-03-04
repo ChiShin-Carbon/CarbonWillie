@@ -13,7 +13,7 @@ import 'react-medium-image-zoom/dist/styles.css';
 
 import { getSellingWasteData } from '../fetchdata.js';
 
-export const SellingWaste = () => {
+export const SellingWaste = ({refreshSellingWasteData}) => {
     const [isEditModalVisible, setEditModalVisible] = useState(false);
     const [sellingWasteData, setSellingWasteData] = useState([]);  // State to hold fetched selling waste data
     const [selectedWaste, setSelectedWaste] = useState(null); // Store selected waste for edit
@@ -79,6 +79,7 @@ export const SellingWaste = () => {
                 isEditModalVisible={isEditModalVisible}
                 setEditModalVisible={setEditModalVisible}
                 selectedWaste={selectedWaste}
+                refreshSellingWasteData={refreshSellingWasteData}
             />
         </div>
     );
