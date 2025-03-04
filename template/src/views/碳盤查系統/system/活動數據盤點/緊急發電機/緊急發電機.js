@@ -12,7 +12,7 @@ import 'react-medium-image-zoom/dist/styles.css';
 
 import { getEmergency_GeneratorData } from '../fetchdata.js';
 
-export const EmergencyGenerator = () => {
+export const EmergencyGenerator = ({refreshEmergency_GeneratorData}) => {
     const [isEditModalVisible, setEditModalVisible] = useState(false);
     const [Emergency_Generator, setEmergency_Generator] = useState([]);  // Set default as an empty array
     const [selectedGenerator, setSelectedGenerator] = useState(null);
@@ -72,6 +72,7 @@ export const EmergencyGenerator = () => {
                 isEditModalVisible={isEditModalVisible}
                 setEditModalVisible={setEditModalVisible}
                 selectedGenerator={selectedGenerator}
+                refreshEmergency_GeneratorData={refreshEmergency_GeneratorData}
             />
         </div>
     );

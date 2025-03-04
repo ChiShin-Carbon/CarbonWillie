@@ -4,8 +4,8 @@ from datetime import datetime
 from pathlib import Path
 from pydantic import BaseModel
 
-uploads_dir = Path("uploads")
-uploads_dir.mkdir(exist_ok=True)
+edit_dir = Path("uploads")
+edit_dir.mkdir(exist_ok=True)
 
 class machineRequest(BaseModel):
     machine_id: int
@@ -29,14 +29,21 @@ async def read_user_credentials(
     type: int = Form(...),
     usage: float = Form(...),
     remark: str = Form(...),
-    image: UploadFile = File(...)
-):
-    image_path = uploads_dir / image.filename
-    try:
-        with open(image_path, "wb") as file:
-            file.write(await image.read())
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="Could not save image file")
+    image: UploadFile = File(None),  # For new image uploads
+    existing_image: str = Form(None)  # Add this parameter for existing images)
+    ):
+    image_path = None
+    # Handle new image upload
+    if image:
+        image_path = edit_dir / image.filename
+        try:
+            with open(image_path, "wb") as file:
+                file.write(await image.read())
+        except Exception as e:
+            raise HTTPException(status_code=500, detail="Could not save image file")
+    # Use existing image if no new image uploaded
+    elif existing_image:
+        image_path = existing_image
 
     conn = connectDB()
     if conn:
