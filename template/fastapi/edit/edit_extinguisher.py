@@ -3,8 +3,8 @@ from connect.connect import connectDB
 from datetime import datetime
 from pathlib import Path
 
-uploads_dir = Path("uploads")
-uploads_dir.mkdir(exist_ok=True)
+edit_dir = Path("uploads")
+edit_dir.mkdir(exist_ok=True)
 
 edit_extinguisher = APIRouter()
 
@@ -16,18 +16,22 @@ async def update_emergency_record(
     ingredient: int = Form(...),
     specification: str = Form(...),
     remark: str = Form(...),
-    image: UploadFile = None
+    image: UploadFile = File(None),  # For new image uploads
+    existing_image: str = Form(None)  # Add this parameter for existing images):
 ):
     
-    # Handle image upload
     image_path = None
+    # Handle new image upload
     if image:
-        image_path = uploads_dir / image.filename
+        image_path = edit_dir / image.filename
         try:
             with open(image_path, "wb") as file:
                 file.write(await image.read())
         except Exception as e:
             raise HTTPException(status_code=500, detail="Could not save image file")
+    # Use existing image if no new image uploaded
+    elif existing_image:
+        image_path = existing_image
 
     conn = connectDB()
     if conn:
