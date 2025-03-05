@@ -15,6 +15,7 @@ import {
   CModalFooter,
   CModalHeader,
   CModalTitle,
+  CTooltip
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilLoopCircular } from '@coreui/icons'
@@ -36,6 +37,26 @@ const EmissionFactorsDashboard = () => {
     verticalAlign: 'middle',
     height: '40px',
   }
+
+  // Function to format numbers to scientific notation with 2 decimal places
+  const formatToScientific = (number) => {
+    if (number === null || number === undefined || isNaN(number)) {
+      return '—';
+    }
+    
+    // Convert to number first to handle string inputs
+    const num = typeof number === 'string' ? parseFloat(number) : number;
+    
+    // Format to scientific notation with 2 decimal places and uppercase E
+    return num.toExponential(2).toUpperCase();
+  }
+  
+  // Tooltip component for displaying original values
+  const ValueWithTooltip = ({ original, formatted }) => (
+    <CTooltip content={original}>
+      <span>{formatted}</span>
+    </CTooltip>
+  );
 
   useEffect(() => {
     const fetchData = async () => {
@@ -81,6 +102,33 @@ const EmissionFactorsDashboard = () => {
     <thead style={{ border: '1px solid white', backgroundColor: 'orange', color: 'white' }}>
       <tr>
         <th scope="col" style={{...cellStyle, width: '150px'}} rowSpan={2}></th>
+        <th scope="col" style={cellStyle} colSpan={3}>
+          燃料單位熱值之排放係數(Kg/Kcal)
+        </th>
+        <th scope="col" style={cellStyle} colSpan={1}>
+          低位熱值(Kcal/l)
+        </th>
+        <th scope="col" style={cellStyle} colSpan={3}>
+          燃料單位重量/體積之排放係數(KgCO2/Kg)
+        </th>
+      </tr>
+      <tr>
+        <th scope="col" style={cellStyle}>CO2</th>
+        <th scope="col" style={cellStyle}>CH4</th>
+        <th scope="col" style={cellStyle}>N2O</th>
+        <th scope="col" style={cellStyle}>LHV</th>
+        <th scope="col" style={cellStyle}>CO2</th>
+        <th scope="col" style={cellStyle}>CH4</th>
+        <th scope="col" style={cellStyle}>N2O</th>
+      </tr>
+    </thead>
+  )
+
+  // Table header component for emissions
+  const MobileEmissionsTableHeader = () => (
+    <thead style={{ border: '1px solid white', backgroundColor: 'orange', color: 'white' }}>
+      <tr>
+        <th scope="col" style={{...cellStyle, width: '150px'}} rowSpan={2} colSpan={2}></th>
         <th scope="col" style={cellStyle} colSpan={3}>
           燃料單位熱值之排放係數(Kg/Kcal)
         </th>
@@ -191,13 +239,48 @@ const EmissionFactorsDashboard = () => {
                           .map((factor) => (
                             <tr key={factor.fuel_factor_id}>
                               <td style={cellStyle}><b>{factor.FuelType}</b></td>
-                              <td style={cellStyle}>{factor.CO2_Emission}</td>
-                              <td style={cellStyle}>{factor.CH4_Emission}</td>
-                              <td style={cellStyle}>{factor.N2O_Emission}</td>
-                              <td style={cellStyle}>{factor.LHV}</td>
-                              <td style={cellStyle}>{factor.CO2_Total}</td>
-                              <td style={cellStyle}>{factor.CH4_Total}</td>
-                              <td style={cellStyle}>{factor.N2O_Total}</td>
+                              <td style={cellStyle}>
+                                <ValueWithTooltip 
+                                  original={factor.CO2_Emission} 
+                                  formatted={formatToScientific(factor.CO2_Emission)} 
+                                />
+                              </td>
+                              <td style={cellStyle}>
+                                <ValueWithTooltip 
+                                  original={factor.CH4_Emission} 
+                                  formatted={formatToScientific(factor.CH4_Emission)} 
+                                />
+                              </td>
+                              <td style={cellStyle}>
+                                <ValueWithTooltip 
+                                  original={factor.N2O_Emission} 
+                                  formatted={formatToScientific(factor.N2O_Emission)} 
+                                />
+                              </td>
+                              <td style={cellStyle}>
+                                <ValueWithTooltip 
+                                  original={factor.LHV} 
+                                  formatted={formatToScientific(factor.LHV)} 
+                                />
+                              </td>
+                              <td style={cellStyle}>
+                                <ValueWithTooltip 
+                                  original={factor.CO2_Total} 
+                                  formatted={formatToScientific(factor.CO2_Total)} 
+                                />
+                              </td>
+                              <td style={cellStyle}>
+                                <ValueWithTooltip 
+                                  original={factor.CH4_Total} 
+                                  formatted={formatToScientific(factor.CH4_Total)} 
+                                />
+                              </td>
+                              <td style={cellStyle}>
+                                <ValueWithTooltip 
+                                  original={factor.N2O_Total} 
+                                  formatted={formatToScientific(factor.N2O_Total)} 
+                                />
+                              </td>
                             </tr>
                           ))}
                       </tbody>
@@ -217,7 +300,7 @@ const EmissionFactorsDashboard = () => {
                     <div>Loading...</div>
                   ) : (
                     <table style={{ width: '100%', fontSize: '1.2rem' }}>
-                      <EmissionsTableHeader />
+                      <MobileEmissionsTableHeader />
                       <tbody style={{ border: '1px solid white', backgroundColor: '#FFE4CA' }}>
                         {/* 車用汽油 section */}
                         <tr>
@@ -229,13 +312,48 @@ const EmissionFactorsDashboard = () => {
                             .filter(factor => factor.FuelType === '車用汽油-未控制')
                             .map((factor) => (
                               <React.Fragment key={factor.fuel_factor_id}>
-                                <td style={cellStyle}>{factor.CO2_Emission}</td>
-                                <td style={cellStyle}>{factor.CH4_Emission}</td>
-                                <td style={cellStyle}>{factor.N2O_Emission}</td>
-                                <td style={cellStyle}>{factor.LHV}</td>
-                                <td style={cellStyle}>{factor.CO2_Total}</td>
-                                <td style={cellStyle}>{factor.CH4_Total}</td>
-                                <td style={cellStyle}>{factor.N2O_Total}</td>
+                                <td style={cellStyle}>
+                                  <ValueWithTooltip 
+                                    original={factor.CO2_Emission} 
+                                    formatted={formatToScientific(factor.CO2_Emission)} 
+                                  />
+                                </td>
+                                <td style={cellStyle}>
+                                  <ValueWithTooltip 
+                                    original={factor.CH4_Emission} 
+                                    formatted={formatToScientific(factor.CH4_Emission)} 
+                                  />
+                                </td>
+                                <td style={cellStyle}>
+                                  <ValueWithTooltip 
+                                    original={factor.N2O_Emission} 
+                                    formatted={formatToScientific(factor.N2O_Emission)} 
+                                  />
+                                </td>
+                                <td style={cellStyle}>
+                                  <ValueWithTooltip 
+                                    original={factor.LHV} 
+                                    formatted={formatToScientific(factor.LHV)} 
+                                  />
+                                </td>
+                                <td style={cellStyle}>
+                                  <ValueWithTooltip 
+                                    original={factor.CO2_Total} 
+                                    formatted={formatToScientific(factor.CO2_Total)} 
+                                  />
+                                </td>
+                                <td style={cellStyle}>
+                                  <ValueWithTooltip 
+                                    original={factor.CH4_Total} 
+                                    formatted={formatToScientific(factor.CH4_Total)} 
+                                  />
+                                </td>
+                                <td style={cellStyle}>
+                                  <ValueWithTooltip 
+                                    original={factor.N2O_Total} 
+                                    formatted={formatToScientific(factor.N2O_Total)} 
+                                  />
+                                </td>
                               </React.Fragment>
                             ))}
                         </tr>
@@ -245,13 +363,48 @@ const EmissionFactorsDashboard = () => {
                             .filter(factor => factor.FuelType === '車用汽油-氧化觸媒')
                             .map((factor) => (
                               <React.Fragment key={factor.fuel_factor_id}>
-                                <td style={cellStyle}>{factor.CO2_Emission}</td>
-                                <td style={cellStyle}>{factor.CH4_Emission}</td>
-                                <td style={cellStyle}>{factor.N2O_Emission}</td>
-                                <td style={cellStyle}>{factor.LHV}</td>
-                                <td style={cellStyle}>{factor.CO2_Total}</td>
-                                <td style={cellStyle}>{factor.CH4_Total}</td>
-                                <td style={cellStyle}>{factor.N2O_Total}</td>
+                                <td style={cellStyle}>
+                                  <ValueWithTooltip 
+                                    original={factor.CO2_Emission} 
+                                    formatted={formatToScientific(factor.CO2_Emission)} 
+                                  />
+                                </td>
+                                <td style={cellStyle}>
+                                  <ValueWithTooltip 
+                                    original={factor.CH4_Emission} 
+                                    formatted={formatToScientific(factor.CH4_Emission)} 
+                                  />
+                                </td>
+                                <td style={cellStyle}>
+                                  <ValueWithTooltip 
+                                    original={factor.N2O_Emission} 
+                                    formatted={formatToScientific(factor.N2O_Emission)} 
+                                  />
+                                </td>
+                                <td style={cellStyle}>
+                                  <ValueWithTooltip 
+                                    original={factor.LHV} 
+                                    formatted={formatToScientific(factor.LHV)} 
+                                  />
+                                </td>
+                                <td style={cellStyle}>
+                                  <ValueWithTooltip 
+                                    original={factor.CO2_Total} 
+                                    formatted={formatToScientific(factor.CO2_Total)} 
+                                  />
+                                </td>
+                                <td style={cellStyle}>
+                                  <ValueWithTooltip 
+                                    original={factor.CH4_Total} 
+                                    formatted={formatToScientific(factor.CH4_Total)} 
+                                  />
+                                </td>
+                                <td style={cellStyle}>
+                                  <ValueWithTooltip 
+                                    original={factor.N2O_Total} 
+                                    formatted={formatToScientific(factor.N2O_Total)} 
+                                  />
+                                </td>
                               </React.Fragment>
                             ))}
                         </tr>
@@ -261,13 +414,48 @@ const EmissionFactorsDashboard = () => {
                             .filter(factor => factor.FuelType === '車用汽油-1995年後之低里程輕型車輛')
                             .map((factor) => (
                               <React.Fragment key={factor.fuel_factor_id}>
-                                <td style={cellStyle}>{factor.CO2_Emission}</td>
-                                <td style={cellStyle}>{factor.CH4_Emission}</td>
-                                <td style={cellStyle}>{factor.N2O_Emission}</td>
-                                <td style={cellStyle}>{factor.LHV}</td>
-                                <td style={cellStyle}>{factor.CO2_Total}</td>
-                                <td style={cellStyle}>{factor.CH4_Total}</td>
-                                <td style={cellStyle}>{factor.N2O_Total}</td>
+                                <td style={cellStyle}>
+                                  <ValueWithTooltip 
+                                    original={factor.CO2_Emission} 
+                                    formatted={formatToScientific(factor.CO2_Emission)} 
+                                  />
+                                </td>
+                                <td style={cellStyle}>
+                                  <ValueWithTooltip 
+                                    original={factor.CH4_Emission} 
+                                    formatted={formatToScientific(factor.CH4_Emission)} 
+                                  />
+                                </td>
+                                <td style={cellStyle}>
+                                  <ValueWithTooltip 
+                                    original={factor.N2O_Emission} 
+                                    formatted={formatToScientific(factor.N2O_Emission)} 
+                                  />
+                                </td>
+                                <td style={cellStyle}>
+                                  <ValueWithTooltip 
+                                    original={factor.LHV} 
+                                    formatted={formatToScientific(factor.LHV)} 
+                                  />
+                                </td>
+                                <td style={cellStyle}>
+                                  <ValueWithTooltip 
+                                    original={factor.CO2_Total} 
+                                    formatted={formatToScientific(factor.CO2_Total)} 
+                                  />
+                                </td>
+                                <td style={cellStyle}>
+                                  <ValueWithTooltip 
+                                    original={factor.CH4_Total} 
+                                    formatted={formatToScientific(factor.CH4_Total)} 
+                                  />
+                                </td>
+                                <td style={cellStyle}>
+                                  <ValueWithTooltip 
+                                    original={factor.N2O_Total} 
+                                    formatted={formatToScientific(factor.N2O_Total)} 
+                                  />
+                                </td>
                               </React.Fragment>
                             ))}
                         </tr>
@@ -279,13 +467,48 @@ const EmissionFactorsDashboard = () => {
                             .filter(factor => factor.FuelType === '柴油(移動燃燒排放源)')
                             .map((factor) => (
                               <React.Fragment key={factor.fuel_factor_id}>
-                                <td style={cellStyle}>{factor.CO2_Emission}</td>
-                                <td style={cellStyle}>{factor.CH4_Emission}</td>
-                                <td style={cellStyle}>{factor.N2O_Emission}</td>
-                                <td style={cellStyle}>{factor.LHV}</td>
-                                <td style={cellStyle}>{factor.CO2_Total}</td>
-                                <td style={cellStyle}>{factor.CH4_Total}</td>
-                                <td style={cellStyle}>{factor.N2O_Total}</td>
+                                <td style={cellStyle}>
+                                  <ValueWithTooltip 
+                                    original={factor.CO2_Emission} 
+                                    formatted={formatToScientific(factor.CO2_Emission)} 
+                                  />
+                                </td>
+                                <td style={cellStyle}>
+                                  <ValueWithTooltip 
+                                    original={factor.CH4_Emission} 
+                                    formatted={formatToScientific(factor.CH4_Emission)} 
+                                  />
+                                </td>
+                                <td style={cellStyle}>
+                                  <ValueWithTooltip 
+                                    original={factor.N2O_Emission} 
+                                    formatted={formatToScientific(factor.N2O_Emission)} 
+                                  />
+                                </td>
+                                <td style={cellStyle}>
+                                  <ValueWithTooltip 
+                                    original={factor.LHV} 
+                                    formatted={formatToScientific(factor.LHV)} 
+                                  />
+                                </td>
+                                <td style={cellStyle}>
+                                  <ValueWithTooltip 
+                                    original={factor.CO2_Total} 
+                                    formatted={formatToScientific(factor.CO2_Total)} 
+                                  />
+                                </td>
+                                <td style={cellStyle}>
+                                  <ValueWithTooltip 
+                                    original={factor.CH4_Total} 
+                                    formatted={formatToScientific(factor.CH4_Total)} 
+                                  />
+                                </td>
+                                <td style={cellStyle}>
+                                  <ValueWithTooltip 
+                                    original={factor.N2O_Total} 
+                                    formatted={formatToScientific(factor.N2O_Total)} 
+                                  />
+                                </td>
                               </React.Fragment>
                             ))}
                         </tr>
@@ -334,11 +557,21 @@ const EmissionFactorsDashboard = () => {
                     <tbody style={{ border: '1px solid white', backgroundColor: '#FFE4CA' }}>
                       <tr>
                         <td style={cellStyle}><b>電力排放係數(CO2e/度)</b></td>
-                        <td style={cellStyle}>0.494</td>
-                        <td style={cellStyle}>0.494</td>
-                        <td style={cellStyle}>0.494</td>
-                        <td style={cellStyle}>0.494</td>
-                        <td style={cellStyle}>0.494</td>
+                        <td style={cellStyle}>
+                          <ValueWithTooltip original="0.494" formatted={formatToScientific(0.494)} />
+                        </td>
+                        <td style={cellStyle}>
+                          <ValueWithTooltip original="0.494" formatted={formatToScientific(0.494)} />
+                        </td>
+                        <td style={cellStyle}>
+                          <ValueWithTooltip original="0.494" formatted={formatToScientific(0.494)} />
+                        </td>
+                        <td style={cellStyle}>
+                          <ValueWithTooltip original="0.494" formatted={formatToScientific(0.494)} />
+                        </td>
+                        <td style={cellStyle}>
+                          <ValueWithTooltip original="0.494" formatted={formatToScientific(0.494)} />
+                        </td>
                       </tr>
                     </tbody>
                   </table>
@@ -364,17 +597,23 @@ const EmissionFactorsDashboard = () => {
                       <tr>
                         <td style={{ ...cellStyle, width: '350px' }}><b>--</b></td>
                         <td style={cellStyle}>CO2二氧化碳</td>
-                        <td style={cellStyle}>1</td>
+                        <td style={cellStyle}>
+                          <ValueWithTooltip original="1" formatted="1" />
+                        </td>
                       </tr>
                       <tr>
                         <td style={{ ...cellStyle, width: '350px' }}><b>--</b></td>
                         <td style={cellStyle}>CH4甲烷</td>
-                        <td style={cellStyle}>28</td>
+                        <td style={cellStyle}>
+                          <ValueWithTooltip original="28" formatted={formatToScientific(28)} />
+                        </td>
                       </tr>
                       <tr>
                         <td style={{ ...cellStyle, width: '350px' }}><b>--</b></td>
                         <td style={cellStyle}>N2O氧化亞氮</td>
-                        <td style={cellStyle}>265</td>
+                        <td style={cellStyle}>
+                          <ValueWithTooltip original="265" formatted={formatToScientific(265)} />
+                        </td>
                       </tr>
                     </tbody>
                   </table>
