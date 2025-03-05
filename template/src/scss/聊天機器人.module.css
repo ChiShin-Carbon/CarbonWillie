@@ -222,3 +222,32 @@
     transform: rotate(45deg);
 }
 
+
+/* Add these to your existing CSS module file (../../scss/聊天機器人.module.css) */
+
+.loadingIcon {
+    margin-right: 8px;
+    color: #4a6fff;
+  }
+  
+  .loadingText {
+    font-style: italic;
+    color: #666;
+  }
+  
+  /* Optional: Add a pulse animation to make the loading state more noticeable */
+  @keyframes pulse {
+    0% {
+      opacity: 0.6;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0.6;
+    }
+  }
+  
+  .messageContainer:last-child .loadingText {
+    animation: pulse 1.5s infinite ease-in-out;
+  }
