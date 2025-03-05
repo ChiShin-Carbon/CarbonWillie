@@ -42,6 +42,7 @@ def extract_date_and_id(text):
     """
     Extract date (YYYY-MM-DD or similar formats) and ID numbers (XX-12345678 pattern) from text.
     Returns a list with the found items or None if nothing is found.
+    Date is always converted to strict YYYY-MM-DD format with leading zeros.
     """
     results = []
     
@@ -58,9 +59,24 @@ def extract_date_and_id(text):
         # Convert Chinese format dates if present
         if '年' in date or '月' in date or '日' in date:
             date = date.replace('年', '-').replace('月', '-').replace('日', '')
+        
         # Replace slashes and dots with hyphens for standardization
-        standardized = date.replace('/', '-').replace('.', '-')
-        results.append(standardized)
+        date_parts = re.split(r'[-/\.]', date)
+        
+        if len(date_parts) == 3:
+            year = date_parts[0]
+            month = date_parts[1].zfill(2)  # Add leading zero if needed
+            day = date_parts[2].zfill(2)    # Add leading zero if needed
+            
+            # Ensure year is 4 digits
+            if len(year) == 2:
+                year = '20' + year if int(year) < 50 else '19' + year
+                
+            standardized = f"{year}-{month}-{day}"
+            results.append(standardized)
+        else:
+            # If we can't parse it properly, skip this date
+            print(f"Skipping unparseable date: {date}")
     
     # Add found IDs
     for id_str in ids:
