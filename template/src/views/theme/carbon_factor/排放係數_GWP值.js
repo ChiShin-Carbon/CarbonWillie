@@ -260,7 +260,7 @@ const EmissionFactorsDashboard = () => {
                               <td style={cellStyle}>
                                 <ValueWithTooltip 
                                   original={factor.LHV} 
-                                  formatted={formatToScientific(factor.LHV)} 
+                                  formatted={factor.LHV} 
                                 />
                               </td>
                               <td style={cellStyle}>
@@ -333,7 +333,7 @@ const EmissionFactorsDashboard = () => {
                                 <td style={cellStyle}>
                                   <ValueWithTooltip 
                                     original={factor.LHV} 
-                                    formatted={formatToScientific(factor.LHV)} 
+                                    formatted={factor.LHV} 
                                   />
                                 </td>
                                 <td style={cellStyle}>
@@ -384,7 +384,7 @@ const EmissionFactorsDashboard = () => {
                                 <td style={cellStyle}>
                                   <ValueWithTooltip 
                                     original={factor.LHV} 
-                                    formatted={formatToScientific(factor.LHV)} 
+                                    formatted={factor.LHV} 
                                   />
                                 </td>
                                 <td style={cellStyle}>
@@ -435,7 +435,7 @@ const EmissionFactorsDashboard = () => {
                                 <td style={cellStyle}>
                                   <ValueWithTooltip 
                                     original={factor.LHV} 
-                                    formatted={formatToScientific(factor.LHV)} 
+                                    formatted={factor.LHV} 
                                   />
                                 </td>
                                 <td style={cellStyle}>
@@ -488,7 +488,7 @@ const EmissionFactorsDashboard = () => {
                                 <td style={cellStyle}>
                                   <ValueWithTooltip 
                                     original={factor.LHV} 
-                                    formatted={formatToScientific(factor.LHV)} 
+                                    formatted={factor.LHV} 
                                   />
                                 </td>
                                 <td style={cellStyle}>
@@ -558,19 +558,19 @@ const EmissionFactorsDashboard = () => {
                       <tr>
                         <td style={cellStyle}><b>電力排放係數(CO2e/度)</b></td>
                         <td style={cellStyle}>
-                          <ValueWithTooltip original="0.494" formatted={formatToScientific(0.494)} />
+                          <ValueWithTooltip original="0.494" formatted={0.494} />
                         </td>
                         <td style={cellStyle}>
-                          <ValueWithTooltip original="0.494" formatted={formatToScientific(0.494)} />
+                          <ValueWithTooltip original="0.494" formatted={0.494} />
                         </td>
                         <td style={cellStyle}>
-                          <ValueWithTooltip original="0.494" formatted={formatToScientific(0.494)} />
+                          <ValueWithTooltip original="0.494" formatted={0.494} />
                         </td>
                         <td style={cellStyle}>
-                          <ValueWithTooltip original="0.494" formatted={formatToScientific(0.494)} />
+                          <ValueWithTooltip original="0.494" formatted={0.494} />
                         </td>
                         <td style={cellStyle}>
-                          <ValueWithTooltip original="0.494" formatted={formatToScientific(0.494)} />
+                          <ValueWithTooltip original="0.494" formatted={0.494} />
                         </td>
                       </tr>
                     </tbody>
@@ -605,14 +605,14 @@ const EmissionFactorsDashboard = () => {
                         <td style={{ ...cellStyle, width: '350px' }}><b>--</b></td>
                         <td style={cellStyle}>CH4甲烷</td>
                         <td style={cellStyle}>
-                          <ValueWithTooltip original="28" formatted={formatToScientific(28)} />
+                          <ValueWithTooltip original="28" formatted={"28"} />
                         </td>
                       </tr>
                       <tr>
                         <td style={{ ...cellStyle, width: '350px' }}><b>--</b></td>
                         <td style={cellStyle}>N2O氧化亞氮</td>
                         <td style={cellStyle}>
-                          <ValueWithTooltip original="265" formatted={formatToScientific(265)} />
+                          <ValueWithTooltip original="265" formatted={"265"} />
                         </td>
                       </tr>
                     </tbody>
