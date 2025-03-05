@@ -115,6 +115,8 @@ from edit.edit_SellingWaste import edit_SellingWaste
 
 from delete.delete_vehicle import delete_vehicle
 
+from Fuel_Factor_GWP import Fuel_Factors
+
 app = FastAPI()
 load_dotenv()
 connectDB()
@@ -235,11 +237,11 @@ app.include_router(edit_BusinessTrip)
 app.include_router(edit_OperationWaste)
 app.include_router(edit_SellingWaste)
 app.include_router(delete_vehicle)
+app.include_router(Fuel_Factors)
+
 
 
 
 app.include_router(word_companyinfo)
 app.include_router(get_word)
 app.include_router(word_ai)
-
-
