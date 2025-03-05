@@ -265,3 +265,24 @@ export const getSellingWasteData = async () => {
         console.error('Error fetching selling waste data:', error);
     }
 };
+
+// Function to fetch Fuel Factors data
+export const getFuelFactorsData = async () => {
+    try {
+        const response = await fetch('http://localhost:8000/Fuel_Factors', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        const data = await response.json();
+
+        if (response.ok) {
+            return data.Fuel_Factors;  // Set selling waste data to state
+        } else {
+            console.error(`Error ${response.status}: ${data.detail}`);
+        }
+    } catch (error) {
+        console.error('Error fetching selling waste data:', error);
+    }
+};
