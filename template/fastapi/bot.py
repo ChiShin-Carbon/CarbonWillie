@@ -282,6 +282,8 @@ Your task is to:
     else:
         # Handle other intents here
         print("Intent is others.")
+        return {"response": "抱歉，碳智郎僅能回答資料庫中和碳盤查相關的問題"}
+
 
     
 
