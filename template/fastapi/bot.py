@@ -15,6 +15,8 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain.schema import Document  # Import Document class
 import json
 
+from collections import Counter
+
 # Load environment variables
 load_dotenv()
 
@@ -207,6 +209,42 @@ Your task is to:
     內容片段 2:
     {chunk2}
             """
+
+            # num_retries = 5  # 設置多次詢問次數
+            # responses = []
+
+            # for _ in range(num_retries):
+            #     compare_response = client.chat.completions.create(
+            #         model="gpt-4o",
+            #         temperature=0,  # 確保結果確定性
+            #         messages=[
+            #             {"role": "system", "content": (
+            #                 "你是一位精通文本比較的專家，請使用邏輯推理分析以下內容。\n"
+            #                 "請遵循以下原則：\n"
+            #                 "1. **思維鏈拆解 (CoT)**：逐步分解比較標準，確保嚴謹推理。\n"
+            #                 "2. **驗算與驗證 (Analyze Rate)**：檢查比較結果是否合理，並提供簡單驗證。\n"
+            #                 "3. **自洽性 (Self-Consistency)**：若存在多種可能結果，請統計最常見的結論。\n"
+            #                 "4. **思維圖譜 (Graphs of Thought, GoT)**：使用結構化方式進行比較。\n"
+            #                 "5. **請根據範例輸出 JSON 格式，確保內容結構化**。"
+            #             )},
+            #             {"role": "user", "content": compare_prompt}
+            #         ]
+            #     )
+
+            #     content = compare_response.choices[0].message.content.strip()
+                
+            #     try:
+            #         result = json.loads(content)
+            #         responses.append(result.get("more_relevant_chunk", ""))
+            #     except Exception:
+            #         responses.append("")  # 解析失敗時，記錄空字串以避免報錯
+
+            # # **使用 Self-Consistency 確保穩定輸出**
+            # most_common_response = Counter(responses).most_common(1)[0][0]
+
+            # # **確保結果不為空，否則回傳 chunk1**
+            # return most_common_response if most_common_response else chunk1
+
 
             compare_response = client.chat.completions.create(
                 model="gpt-4o",
