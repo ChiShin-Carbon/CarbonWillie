@@ -7,6 +7,8 @@ import openai
 from dotenv import load_dotenv
 import os
 import torch
+import pytesseract
+import re
 
 # Load environment variables from a .env file
 load_dotenv()
@@ -36,9 +38,90 @@ try:
 except Exception as e:
     print(f"Error loading Donut model: {e}")
 
+def extract_date_and_id(text):
+    """
+    Extract date (YYYY-MM-DD or similar formats) and ID numbers (XX-12345678 pattern) from text.
+    Returns a list with the found items or None if nothing is found.
+    Date is always converted to strict YYYY-MM-DD format with leading zeros.
+    """
+    results = []
+    
+    # Date patterns (handles various formats like YYYY-MM-DD, YYYY/MM/DD, etc.)
+    date_pattern = r'(\d{4}[-/\.年]\d{1,2}[-/\.月]\d{1,2}日?)'
+    dates = re.findall(date_pattern, text)
+    
+    # ID pattern (format like XX-12345678)
+    id_pattern = r'([A-Za-z]{2}-\d{8})'
+    ids = re.findall(id_pattern, text)
+    
+    # Add found dates (convert to standard format if needed)
+    for date in dates:
+        # Convert Chinese format dates if present
+        if '年' in date or '月' in date or '日' in date:
+            date = date.replace('年', '-').replace('月', '-').replace('日', '')
+        
+        # Replace slashes and dots with hyphens for standardization
+        date_parts = re.split(r'[-/\.]', date)
+        
+        if len(date_parts) == 3:
+            year = date_parts[0]
+            month = date_parts[1].zfill(2)  # Add leading zero if needed
+            day = date_parts[2].zfill(2)    # Add leading zero if needed
+            
+            # Ensure year is 4 digits
+            if len(year) == 2:
+                year = '20' + year if int(year) < 50 else '19' + year
+                
+            standardized = f"{year}-{month}-{day}"
+            results.append(standardized)
+        else:
+            # If we can't parse it properly, skip this date
+            print(f"Skipping unparseable date: {date}")
+    
+    # Add found IDs
+    for id_str in ids:
+        results.append(id_str)
+    
+    return results if results else None
+
+def ocr_with_tesseract(img):
+    """
+    Process image with Tesseract OCR using English, Traditional Chinese, and Simplified Chinese
+    """
+    try:
+        # Ensure img is in the right format for pytesseract
+        if not isinstance(img, Image.Image):
+            img = Image.open(io.BytesIO(img))
+        
+        # Run OCR with multiple languages
+        text = pytesseract.image_to_string(img, lang='eng+chi_tra+chi_sim')
+        print(f"Tesseract OCR output: {text}")
+        
+        # Extract date and ID information
+        extracted_info = extract_date_and_id(text)
+        return extracted_info, text
+    except Exception as e:
+        print(f"Tesseract OCR error: {e}")
+        return None, ""
+
 @ocrapi.post("/ocrapi")
 async def ocr_image(image: UploadFile = File(...)):
     try:
+        # Read the uploaded image
+        img_bytes = await image.read()
+        img = Image.open(io.BytesIO(img_bytes)).convert("RGB")
+        
+        # First try with Tesseract OCR
+        tesseract_results, tesseract_text = ocr_with_tesseract(img)
+        
+        # If Tesseract successfully extracted both date and ID, return the result
+        if tesseract_results and len(tesseract_results) >= 2:
+            print(f"Tesseract successfully extracted: {tesseract_results}")
+            return {"response_content": tesseract_results, "raw_ocr_text": tesseract_text, "source": "tesseract"}
+        
+        # If Tesseract didn't find what we need, proceed with Donut model
+        print("Tesseract results insufficient, falling back to Donut model...")
+        
         # Check if model was loaded successfully
         if 'processor' not in globals() or 'model' not in globals():
             raise HTTPException(
@@ -46,12 +129,7 @@ async def ocr_image(image: UploadFile = File(...)):
                 detail="Donut model failed to load. Check your HUGGINGFACE_TOKEN and model availability."
             )
 
-        # Read and process the uploaded image
-        img_bytes = await image.read()
-        img = Image.open(io.BytesIO(img_bytes)).convert("RGB")
-        
         # Define a task-specific prompt for Chinese document understanding
-        # This prompt can be adjusted based on the specific document type
         task_prompt = "<s_cord-v2>"
         
         # Process the image with the task-specific prompt
@@ -73,14 +151,25 @@ async def ocr_image(image: UploadFile = File(...)):
         )
         
         # Decode the generated text
-        output = processor.batch_decode(
+        donut_output = processor.batch_decode(
             generated_ids, 
             skip_special_tokens=True
         )[0]
         
-        print(f"Raw OCR output: {output}")
+        print(f"Raw Donut OCR output: {donut_output}")
+        
+        # If Tesseract found partial results, try to complete them from Donut output
+        if tesseract_results:
+            # Extract from Donut output to supplement Tesseract
+            donut_extracted = extract_date_and_id(donut_output)
+            if donut_extracted:
+                # Combine unique results
+                combined_results = list(set(tesseract_results + donut_extracted))
+                if len(combined_results) >= 2:
+                    return {"response_content": combined_results, "raw_ocr_text": f"Tesseract: {tesseract_text}\nDonut: {donut_output}", "source": "combined"}
         
         # Use GPT-4o with specific instructions for Chinese text processing
+        # This is used when neither Tesseract nor direct extraction from Donut was sufficient
         completion = await run_in_threadpool(
             lambda: openai.chat.completions.create(
                 model="gpt-4o",  # Using the full model for better Chinese processing
@@ -94,7 +183,7 @@ async def ocr_image(image: UploadFile = File(...)):
                     If you can't find both items, extract whatever you can find.
                     e.g.: ['2025/02/28', 'AB-12345678']
                     """},
-                    {"role": "user", "content": f"Process this OCR text from a Chinese document: {output}"}
+                    {"role": "user", "content": f"Process this OCR text from a Chinese document. Tesseract: {tesseract_text}\nDonut: {donut_output}"}
                 ]
             )
         )
@@ -114,14 +203,7 @@ async def ocr_image(image: UploadFile = File(...)):
 
         # Return the response as a structured array
         print(f"Processed response: {response_content}")
-        return {"response_content": response_content, "raw_ocr_text": output}
+        return {"response_content": response_content, "raw_ocr_text": f"Tesseract: {tesseract_text}\nDonut: {donut_output}", "source": "gpt"}
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-    
-#@inproceedings{kim2022donut,
-#  title     = {OCR-Free Document Understanding Transformer},
-#  author    = {Kim, Geewook and Hong, Teakgyu and Yim, Moonbin and Nam, JeongYeon and Park, Jinyoung and Yim, Jinyeong and Hwang, Wonseok and Yun, Sangdoo and Han, Dongyoon and Park, Seunghyun},
-#  booktitle = {European Conference on Computer Vision (ECCV)},
-#  year      = {2022}
-#}
