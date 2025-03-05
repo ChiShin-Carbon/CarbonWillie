@@ -1,11 +1,11 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Depends
 from connect.connect import connectDB
 from pydantic import BaseModel
 from datetime import datetime
 from typing import Optional
 
 # 建立 APIRouter 實例
-authorizedTable = APIRouter()
+authorized_review = APIRouter()
 
 # 定義 Pydantic 模型類別
 class AuthorizedRecord(BaseModel):
@@ -14,18 +14,20 @@ class AuthorizedRecord(BaseModel):
     table_name: str
     is_done: bool
     completed_at: Optional[datetime]  # Allows datetime or None for NULL
-    review: int
+    review: Optional[int]  # 允許 review 為 None
     username: str
     department: int
-    
-@authorizedTable.get("/authorizedTable", response_model=list[AuthorizedRecord])
+
+class UpdateReviewRequest(BaseModel):
+    review: int  # 審核狀態
+
+# 取得授權記錄
+@authorized_review.get("/authorized_review", response_model=list[AuthorizedRecord])
 def get_authorized_records():
-    # 使用自定義連接函數建立資料庫連接
     conn = connectDB()
     if conn:
         cursor = conn.cursor()
         try:
-            # 執行 SQL 查詢從 Authorized_Table 獲取資料
             query = """
                 SELECT 
                     a.authorized_record_id,
@@ -33,7 +35,7 @@ def get_authorized_records():
                     a.table_name,
                     a.is_done,
                     a.completed_at,
-                    a.review ,
+                    a.review,
                     u.username,
                     u.department 
                 FROM Authorized_Table a
@@ -44,7 +46,6 @@ def get_authorized_records():
             conn.close()
 
             if records:
-                # 將結果轉換為 AuthorizedRecord 模型的字典列表，並將 completed_at 轉換為字符串
                 results = [
                     AuthorizedRecord(
                         authorized_record_id=record[0],
@@ -58,37 +59,32 @@ def get_authorized_records():
                     )
                     for record in records
                 ]
-                return results  # 返回授權記錄列表
+                return results
             else:
                 raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No authorized records found")
-        
         except Exception as e:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error retrieving authorized records: {e}")
     else:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Could not connect to the database.")
 
-@authorizedTable.put("/authorizedTable/{authorized_record_id}")
-def update_authorized_record(authorized_record_id: int, is_done: bool, completed_at: Optional[datetime] = None):
+# 更新 review 欄位
+@authorized_review.put("/update_review/{authorized_record_id}")
+def update_review(authorized_record_id: int, update_request: UpdateReviewRequest):
     conn = connectDB()
     if conn:
         cursor = conn.cursor()
         try:
             query = """
                 UPDATE Authorized_Table
-                SET is_done = ?, completed_at = ?
+                SET review = ?
                 WHERE authorized_record_id = ?
             """
-            cursor.execute(query, (is_done, completed_at, authorized_record_id))
+            cursor.execute(query, (update_request.review, authorized_record_id))
             conn.commit()
-            
-            if cursor.rowcount == 0:
-                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Record not found")
-            
-            return {"status": "success", "message": "Record updated successfully"}
-        except Exception as e:
-            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error updating record: {e}")
-        finally:
-            cursor.close()
             conn.close()
+            return {"message": "Review updated successfully"}
+        except Exception as e:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error updating review: {e}")
     else:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Could not connect to the database.")
+    

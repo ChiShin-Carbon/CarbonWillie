@@ -25,6 +25,8 @@ import { faChevronDown, faArrowRightFromBracket, faChevronUp } from '@fortawesom
 
 const Tabs = () => {
 
+    const userId = window.sessionStorage.getItem('user_id');
+    console.log('目前的 user_id:', userId);
 
     const API_KEY = import.meta.env.VITE_TINYMCE_API_KEY
 

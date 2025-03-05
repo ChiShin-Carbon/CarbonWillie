@@ -1,14 +1,14 @@
 from docx import Document
 from docx.shared import Cm
 
-from storeDef import set_heading, set_heading2, set_paragraph, set_explain,set_ch4_table1,set_ch4_table2,set_ch4_table3,set_ch4_stairs1,set_ch4_stairs2,set_ch4_stairs3,set_ch4_stairs4,set_ch4_stairs5,set_ch4_stairs6
+from .storeDef import set_heading, set_heading2, set_paragraph, set_explain,set_ch4_table1,set_ch4_table2,set_ch4_table3,set_ch4_stairs1,set_ch4_stairs2,set_ch4_stairs3,set_ch4_stairs4,set_ch4_stairs5,set_ch4_stairs6
 
 def add_stairs_paragraphs(doc, texts, format_func):
     for text in texts:
         para = doc.add_paragraph(text)
         format_func(para) 
 
-def create_chapter4_2():
+def create_chapter4_2(user_id):
     doc = Document()
 
         # 獲取文檔的第一個 section（默認只有一個）
@@ -54,7 +54,7 @@ def create_chapter4_2():
 
     doc.add_paragraph("")  # 插入一個空白行
 ############################################################################
-    stairs2 = doc.add_paragraph("E.	製程排放：校區內並無製程紀錄，本項次無對應活動數據，故無對應之盤查結果可供揭露。")
+    stairs2 = doc.add_paragraph("E.	製程排放：機構內並無製程紀錄，本項次無對應活動數據，故無對應之盤查結果可供揭露。")
     set_ch4_stairs2(stairs2)
 
     stairs3 = doc.add_paragraph("(A) 溫室氣體排放量計算公式如下：\n溫室氣體排放量 = 活動數據 × 排放係數 × 全球暖化潛勢值(GWP)")
@@ -113,7 +113,7 @@ def create_chapter4_2():
 
     stairs5 = doc.add_paragraph("4.1.1 活動數據蒐集與轉換方式")
     set_ch4_stairs5(stairs5)
-    stairs6 = doc.add_paragraph("(1) 本公司各排放源之量化公式與活動數據蒐集方式彙整如表4-10所示。")
+    stairs6 = doc.add_paragraph("(1) 本機構各排放源之量化公式與活動數據蒐集方式彙整如表4-10所示。")
     set_ch4_stairs5(stairs6)
     stairs6 = doc.add_paragraph("(2) 各種溫室氣體之排放依來源不同，將活動數據單位化為公噸、公秉、千度等單位。")
     set_ch4_stairs5(stairs6)
@@ -145,7 +145,7 @@ def create_chapter4_2():
     table4.cell(2, 4).text = "消防設備調查表（滅火器）"
     table4.cell(3, 4).text = "冷媒銘牌填充量"
     table4.cell(4, 4).text = "採購單據"
-    table4.cell(5, 4).text = "亞東科技大學板橋校區台電電費單\n(電號：01-18-2933-11-6、01-18-2931-11-4、01-18-2931-01-2)"
+    table4.cell(5, 4).text = "亞東科技大學板橋校區台電電費單\n(電號：nn-nn-nnnn-nn-n)"
 
     set_ch4_table3(table4)
 

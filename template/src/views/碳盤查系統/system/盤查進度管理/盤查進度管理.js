@@ -28,13 +28,12 @@ import '../../../../scss/盤查進度管理.css'
 import '../../../../scss/碳盤查系統.css'
 import styles from '../../../../scss/活動數據盤點.module.css'
 import EditSuccessModal from './審核成功Modal.js'
+import EditFalseModal from './審核失敗Modal.js'
 import { cilCheckAlt, cilX } from '@coreui/icons'
 
 const Tabs = () => {
-  const [successbutton, setsuccessVisible] = useState(false)
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [falsebutton, setfalseVisible] = useState(false)
-  const [visible, setVisible] = useState(false)
+  const [isTrueModalOpen, setTrueIsModalOpen] = useState(null)
+  const [isFalseModalOpen, setFalseIsModalOpen] = useState(null)
 
   const [searchInput, setSearchInput] = useState('') // 存放輸入框的臨時搜尋值
   const [searchValue, setSearchValue] = useState('') // 觸發搜尋的值
@@ -103,7 +102,9 @@ const Tabs = () => {
       case 1:
         return '尚未審核'
       case 2:
-        return '已審核'
+        return '已審核-審核成功'
+      case 3:
+        return '已審核-審核失敗'
       default:
         return '其他'
     }
@@ -114,11 +115,12 @@ const Tabs = () => {
     (row) =>
       (row.table_name.includes(searchValue) ||
         row.username.includes(searchValue) ||
+        row.authorized_record_id||
         getDepartmentName(row.department).includes(searchValue) || // 使用轉換後的部門名稱
         getReview(row.review).includes(searchValue) //|| // 使用轉換後的部門名稱
         //row.completed_at.includes(searchValue)  先註解因為只要table裡面有completed_at==null時就會失敗
       )&&
-      (selectedFeedback === '' || (row.is_done ? '已審核' : '尚未審核') === selectedFeedback),
+      (selectedFeedback === '' || (row.review === 1 ? '尚未審核' : '已審核') === selectedFeedback),
   )
 
   // handleSearchInput 處理輸入框變化
@@ -152,7 +154,6 @@ const Tabs = () => {
     }
     setShowModal(true);
   };
-
 
   return (
     <CRow>
@@ -265,7 +266,7 @@ const Tabs = () => {
                         <CTableDataCell>
                           <CFormCheck style={{ borderColor: 'black' }} />
                         </CTableDataCell>*/}
-                        {/* 排放源項目 */}
+                        {/* 排放源項目 */}{/*測試用 {row.review} */}
                         <CTableDataCell>{row.table_name}</CTableDataCell>
                         {/* 顯示部門名稱 */}
                         <CTableDataCell>{getDepartmentName(row.department)}</CTableDataCell>
@@ -287,41 +288,31 @@ const Tabs = () => {
                         </CTableDataCell>
                         {/* 回報狀態 */}
                         <CTableDataCell>
-                          {/* {getReview(row.review)} 
-                          onClick={() => setVisible(!visible)}
-                          */}
-                          
-                          {/* {row.completed_at ? ( */}
-                            {/* 測試的 */}
-                            {row.review ? (<>
-                              <button className={styles.aza1} style={{ marginRight: '10px' }} onClick={() => setIsModalOpen(true)}>
-                                審核成功
-                              </button>
-                              <EditSuccessModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
-                              
-                              <button className={styles.aza2} onClick={() => setfalseVisible(!visible)}>審核失敗</button>
-                            </>
-                          ) : (
-                            '尚未完成'
-                          )}
 
                           {/* 正式的 */}
-                         {row.completed_at ? (
-                          row.review ? (
-                            getReview(row.review)
-                          ) : (
-                             <>
-                              <button className={styles.aza1} style={{ marginRight: '10px' }} onClick={() => setsuccessVisible(!visible)}>
-                                審核成功
-                              </button>
-                              <button className={styles.aza2} onClick={() => setfalseVisible(!visible)}>
-                                審核失敗
-                              </button>
-                            </>
-                          )
-                        ) : (
-                          '尚未完成'
-                        )}
+                          {row.completed_at ? (
+                              row.review === 1 ? (
+                                <>
+                                  <button className={styles.aza1} style={{ marginRight: '10px' }} onClick={() => setTrueIsModalOpen(row.authorized_record_id)}>
+                                    審核成功
+                                  </button>
+                                  <button className={styles.aza2} onClick={() => setFalseIsModalOpen(row.authorized_record_id)}>
+                                    審核失敗
+                                  </button>
+                                  <EditSuccessModal isOpen={isTrueModalOpen === row.authorized_record_id} onClose={() => setTrueIsModalOpen(null)} authorizedRecordId={row.authorized_record_id}/>
+                                  <EditFalseModal isOpen={isFalseModalOpen === row.authorized_record_id} onClose={() => setFalseIsModalOpen(null)} authorizedRecordId={row.authorized_record_id}/>
+                                </>
+                              ) : row.review === 2 ? (
+                                <button className={styles.aza1}>審核成功</button>
+                              ) : row.review === 3 ? (
+                                <button className={styles.aza2}>審核失敗</button>
+                              ) : (
+                                getReview(row.review)
+                              )
+                            ) : (
+                              <button className={styles.aza3}>尚未完成</button>
+                            )
+                          }
 
                         </CTableDataCell>
                       </CTableRow>
@@ -332,54 +323,14 @@ const Tabs = () => {
                         沒有找到符合條件的資料
                       </CTableDataCell>
                     </CTableRow>
-                  )}
+                  )
+                  }
                 </CTableBody>
               </CTable>
-              {/* onClick={() => setVisible(!visible)} */}
+              {/* 盤點完成button */}
               {/* <div style={{ textAlign: 'center' }}>
-              
                 <button className={styles.complete} onClick={() => setVisible(!visible)}>盤點完成</button>
               </div> */}
-
-              {/* 審核成功model */}
-              <CModal
-                visible={successbutton}
-                onClose={() => setsuccessVisible(false)}
-                aria-labelledby="LiveDemoExampleLabel"
-              >
-                <CModalHeader>
-                  <CModalTitle id="LiveDemoExampleLabel"></CModalTitle>
-                </CModalHeader>
-                <CModalBody>
-                  <div className="d-flex flex-column align-items-center"><center>確定為審核成功嗎?</center></div>
-                </CModalBody>
-                <CModalFooter>
-                  <CButton className="modalbutton1" onClick={() => setsuccessVisible(false)}>
-                    關閉
-                  </CButton>
-                  <CButton className="modalbutton2">確定</CButton>
-                </CModalFooter>
-              </CModal>
-                {/* 審核失敗model */}
-              <CModal
-                visible={falsebutton}
-                onClose={() => setfalseVisible(false)}
-                aria-labelledby="LiveDemoExampleLabel"
-              >
-                <CModalHeader>
-                  <CModalTitle id="LiveDemoExampleLabel"></CModalTitle>
-                </CModalHeader>
-                <CModalBody>
-                  <div className="d-flex flex-column align-items-center"><center>確定為審核失敗嗎?</center></div>
-                </CModalBody>
-                <CModalFooter>
-                  <CButton className="modalbutton1" onClick={() => setfalseVisible(false)}>
-                    關閉
-                  </CButton>
-                  <CButton className="modalbutton2">確定</CButton>
-                </CModalFooter>
-              </CModal>
-
             </CForm>
           </CCardBody>
         </CCard>

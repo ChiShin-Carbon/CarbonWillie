@@ -39,6 +39,7 @@ from insert.insert_Selling_waste import insert_Selling_waste
 from authorizedTable.authorizedTable import authorizedTable
 from authorizedTable.insert_authorized import insert_authorized
 from authorizedTable.edit_authorized import edit_authorized
+from authorizedTable.authorized_review import authorized_review
 from vehicle import vehicle
 from Selling_waste import Selling_waste
 from Operational_Waste import Operational_Waste
@@ -70,6 +71,12 @@ from 管理者.adminConsultant import adminConsultant
 from 管理者.delete_adminConsultant import delete_adminConsultant
 from 管理者.insert_adminConsultant import insert_adminConsultant
 from 管理者.edit_adminConsultant import edit_adminConsultant
+
+from 盤查報告書.getBusiness import word_companyinfo
+from 盤查報告書.merge import get_word
+from 盤查報告書.word_ai import word_ai
+
+
 
 
 
@@ -152,6 +159,7 @@ app.include_router(insert_employee)
 app.include_router(authorizedTable)
 app.include_router(insert_authorized)
 app.include_router(edit_authorized)
+app.include_router(authorized_review)
 
 app.include_router(insert_machine)
 app.include_router(insert_emergency)
@@ -200,8 +208,6 @@ app.include_router(edit_adminConsultant)
 
 
 
-
-
 app.include_router(vehicle_findone)
 app.include_router(employee_findone)
 app.include_router(NonEmployee_findone)
@@ -232,3 +238,10 @@ app.include_router(edit_OperationWaste)
 app.include_router(edit_SellingWaste)
 app.include_router(delete_vehicle)
 app.include_router(Fuel_Factors)
+
+
+
+
+app.include_router(word_companyinfo)
+app.include_router(get_word)
+app.include_router(word_ai)

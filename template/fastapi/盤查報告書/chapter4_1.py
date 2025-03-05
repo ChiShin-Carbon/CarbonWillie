@@ -1,10 +1,10 @@
 from docx import Document
 from docx.shared import Cm
 
-from storeDef import set_heading, set_heading2, set_paragraph, set_explain,set_ch4_table1,set_ch4_stairs1,set_ch4_stairs2,set_ch4_stairs3,set_ch4_stairs4
+from .storeDef import set_heading, set_heading2, set_paragraph, set_explain,set_ch4_table1,set_ch4_stairs1,set_ch4_stairs2,set_ch4_stairs3,set_ch4_stairs4
 
 
-def create_chapter4_1():
+def create_chapter4_1(user_id):
     doc = Document()
 
         # 獲取文檔的第一個 section（默認只有一個）
@@ -25,7 +25,7 @@ def create_chapter4_1():
     preface = doc.add_heading("4.1 量化方法",level=2)
     set_heading2(preface)
     
-    content = doc.add_paragraph("本公司各種溫室氣體排放量計算方式主要採用「排放係數法」計算。")
+    content = doc.add_paragraph("本機構各種溫室氣體排放量計算方式主要採用「排放係數法」計算。")
     set_paragraph(content)
 
     stairs1 = doc.add_paragraph("(1) 類別1 – 直接排放")
