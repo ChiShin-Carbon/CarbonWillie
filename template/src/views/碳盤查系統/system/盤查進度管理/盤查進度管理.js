@@ -290,7 +290,7 @@ const Tabs = () => {
                         <CTableDataCell>
 
                           {/* 正式的 */}
-                          {row.completed_at ? (
+                          {row.is_done ? (
                               row.review === 1 ? (
                                 <>
                                   <button className={styles.aza1} style={{ marginRight: '10px' }} onClick={() => setTrueIsModalOpen(row.authorized_record_id)}>
@@ -299,8 +299,8 @@ const Tabs = () => {
                                   <button className={styles.aza2} onClick={() => setFalseIsModalOpen(row.authorized_record_id)}>
                                     審核失敗
                                   </button>
-                                  <EditSuccessModal isOpen={isTrueModalOpen === row.authorized_record_id} onClose={() => setTrueIsModalOpen(null)} authorizedRecordId={row.authorized_record_id}/>
-                                  <EditFalseModal isOpen={isFalseModalOpen === row.authorized_record_id} onClose={() => setFalseIsModalOpen(null)} authorizedRecordId={row.authorized_record_id}/>
+                                  <EditSuccessModal isOpen={isTrueModalOpen === row.authorized_record_id} onClose={() => setTrueIsModalOpen(null)} authorizedRecordId={row.authorized_record_id} refreshData={getAuthorizedRecords}/>
+                                  <EditFalseModal isOpen={isFalseModalOpen === row.authorized_record_id} onClose={() => setFalseIsModalOpen(null)} authorizedRecordId={row.authorized_record_id} refreshData={getAuthorizedRecords}/>
                                 </>
                               ) : row.review === 2 ? (
                                 <button className={styles.aza1}>審核成功</button>

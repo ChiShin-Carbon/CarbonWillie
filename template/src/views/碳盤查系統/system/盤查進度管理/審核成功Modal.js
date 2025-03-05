@@ -4,8 +4,7 @@ import '../../../../scss/盤查進度管理.css';
 import '../../../../scss/碳盤查系統.css';
 import styles from '../../../../scss/活動數據盤點.module.css';
 
-const EditSuccessModal = ({ isOpen, onClose, authorizedRecordId, reviewValue = 2 }) => {
-  
+const EditSuccessModal = ({ isOpen, onClose, authorizedRecordId, reviewValue = 2, refreshData }) => {
   const handleConfirm = async () => {
     try {
       console.log("Sending request for ID:", authorizedRecordId); // 確保 ID 正確
@@ -23,14 +22,16 @@ const EditSuccessModal = ({ isOpen, onClose, authorizedRecordId, reviewValue = 2
       if (!response.ok) {
         throw new Error('Failed to update review');
       }
-      alert('審核狀態已更新!');
+      
+      // **新增這行: 更新後重新抓取資料**
+      refreshData(); 
+      
       onClose();
     } catch (error) {
       console.error('Error:', error);
       alert('更新失敗，請稍後再試');
     }
   };
-  
 
   return (
     <CModal visible={isOpen} onClose={onClose}>
