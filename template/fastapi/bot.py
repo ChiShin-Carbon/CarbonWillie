@@ -14,14 +14,16 @@ from langchain_openai import OpenAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain.schema import Document  # Import Document class
 import json
-
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
+import re
 from collections import Counter
 
 # Load environment variables
 load_dotenv()
 
 # Initialize FastAPI router
-botapi = APIRouter()
+botapi = APIRouter(tags=["bot"])
 
 # Define a request model for the incoming data
 class MessageRequest(BaseModel):
@@ -158,7 +160,7 @@ Your task is to:
                     print(f"⚠️ PDF '{pdf_name}' 沒有提取到任何文字。跳過此檔案。")
                     continue
 
-                child_splitter = RecursiveCharacterTextSplitter(chunk_size=2000)
+                child_splitter = RecursiveCharacterTextSplitter(chunk_size=2500)
                 text_chunks = child_splitter.split_text(pdf_text)
 
                 if not text_chunks:
@@ -188,103 +190,96 @@ Your task is to:
             sub_docs = vectorstore.similarity_search(user_query, k=k)
             return [doc.page_content for doc in sub_docs]
 
-        # ---- 函數封裝：Pairwise 比較 ----
-        def pairwise_compare(query, chunk1, chunk2):
+        # ---- 函數封裝：Pointwise 評分 (同步版本) ----
+        def score_chunk_sync(client, query, chunk, index):
             """
-            使用 GPT 對兩個 chunk 進行 Pairwise 比較，判斷哪個更相關。
-            回傳更相關的 chunk。
+            同步函數：對單個 chunk 進行評分
             """
-            compare_prompt = f"""
-    你是一個審核員，負責比較以下兩個內容片段，判斷哪個更適合回答使用者問題。
-    請你輸出以下JSON格式，無其他文字：
-    {{
-      "more_relevant_chunk": "更相關的內容片段"
-    }}
+            score_prompt = f"""
+你的任務是評估以下內容片段與使用者問題的相關性。
+根據相關性給該片段打分，分數範圍是0到10，其中10分表示非常相關，0分表示完全不相關。
 
-    使用者問題: {query}
+評分標準：
+- 內容是否直接回答問題 (0-3分)
+- 內容是否提供相關背景知識 (0-2分)
+- 內容的專業性和準確性 (0-3分)
+- 內容的完整性 (0-2分)
 
-    內容片段 1:
-    {chunk1}
+只需輸出一個整數分數，不要包含任何其他文字、解釋或標點符號，只有數字。
+例如：7
 
-    內容片段 2:
-    {chunk2}
+使用者問題: {query}
+
+內容片段:
+{chunk}
             """
 
-            # num_retries = 5  # 設置多次詢問次數
-            # responses = []
-
-            # for _ in range(num_retries):
-            #     compare_response = client.chat.completions.create(
-            #         model="gpt-4o",
-            #         temperature=0,  # 確保結果確定性
-            #         messages=[
-            #             {"role": "system", "content": (
-            #                 "你是一位精通文本比較的專家，請使用邏輯推理分析以下內容。\n"
-            #                 "請遵循以下原則：\n"
-            #                 "1. **思維鏈拆解 (CoT)**：逐步分解比較標準，確保嚴謹推理。\n"
-            #                 "2. **驗算與驗證 (Analyze Rate)**：檢查比較結果是否合理，並提供簡單驗證。\n"
-            #                 "3. **自洽性 (Self-Consistency)**：若存在多種可能結果，請統計最常見的結論。\n"
-            #                 "4. **思維圖譜 (Graphs of Thought, GoT)**：使用結構化方式進行比較。\n"
-            #                 "5. **請根據範例輸出 JSON 格式，確保內容結構化**。"
-            #             )},
-            #             {"role": "user", "content": compare_prompt}
-            #         ]
-            #     )
-
-            #     content = compare_response.choices[0].message.content.strip()
-                
-            #     try:
-            #         result = json.loads(content)
-            #         responses.append(result.get("more_relevant_chunk", ""))
-            #     except Exception:
-            #         responses.append("")  # 解析失敗時，記錄空字串以避免報錯
-
-            # # **使用 Self-Consistency 確保穩定輸出**
-            # most_common_response = Counter(responses).most_common(1)[0][0]
-
-            # # **確保結果不為空，否則回傳 chunk1**
-            # return most_common_response if most_common_response else chunk1
-
-
-            compare_response = client.chat.completions.create(
+            score_response = client.chat.completions.create(
                 model="gpt-4o",
-                temperature=0,  # 確保結果確定性
+                temperature=0,
                 messages=[
-                    {"role": "system", "content": "請專注於比較，不要輸出多餘解釋。"},
-                    {"role": "user", "content": compare_prompt}
+                    {"role": "system", "content": "你是專業評分員。你的回答必須只包含一個數字（0-10），不要有任何其他文字。"},
+                    {"role": "user", "content": score_prompt}
                 ]
             )
 
-            content = compare_response.choices[0].message.content.strip()
+            content = score_response.choices[0].message.content.strip()
+            print(f"Chunk {index} raw score: {content}")
 
             try:
-                result = json.loads(content)
-                return result.get("more_relevant_chunk", chunk1)  # 預設回傳 chunk1
-            except Exception:
-                return chunk1  # 若解析失敗，回傳 chunk1
+                # 嘗試將回應直接轉換為整數
+                score = int(content)
+                # 確保分數在 0-10 的範圍內
+                return max(0, min(score, 10)), chunk
+            except Exception as e:
+                print(f"Error parsing score for chunk {index}: {e}")
+                # 如果無法解析為整數，嘗試從文本中提取數字
+                number_match = re.search(r'\d+', content)
+                if number_match:
+                    try:
+                        score = int(number_match.group())
+                        return max(0, min(score, 10)), chunk
+                    except:
+                        pass
+                return 5, chunk  # 預設回傳中間值
 
-        # ---- 函數封裝：淘汰機制 ----
-        def eliminate_chunks(query, chunks):
+        # ---- 函數封裝：非同步選擇最佳 chunks ----
+        async def select_best_chunks_async(client, query, chunks, top_n=3):
             """
-            對 chunks 進行 Pairwise 比較，淘汰掉較不相關的 chunk。
-            最終留下 2 個最相關的 chunk。
+            非同步函數：對每個 chunk 進行獨立評分，選出分數最高的 top_n 個。
             """
-            while len(chunks) > 1:
-                # 每次比較前兩個 chunk，淘汰較不相關的
-                more_relevant = pairwise_compare(query, chunks[0], chunks[1])
-                if more_relevant == chunks[0]:
-                    chunks.pop(1)  # 淘汰 chunks[1]
-                    print("eliminate 1 chunk")
-                else:
-                    chunks.pop(0)  # 淘汰 chunks[0]
-                    print("eliminate 1 chunk")
-
-            return chunks
+            print(f"Scoring {len(chunks)} chunks asynchronously...")
+            
+            # 使用 ThreadPoolExecutor 處理可能阻塞的 API 呼叫
+            scored_chunks = []
+            with ThreadPoolExecutor(max_workers=min(10, len(chunks))) as executor:
+                # 建立任務清單
+                futures = []
+                for i, chunk in enumerate(chunks):
+                    future = executor.submit(score_chunk_sync, client, query, chunk, i)
+                    futures.append(future)
+                
+                # 等待所有任務完成
+                for i, future in enumerate(futures):
+                    try:
+                        score, chunk = future.result()
+                        scored_chunks.append((score, chunk))
+                        print(f"Completed {i+1}/{len(chunks)} evaluations")
+                    except Exception as e:
+                        print(f"Error in chunk evaluation {i}: {e}")
+                        # 如果評分失敗，給予低分數但仍保留這個 chunk
+                        scored_chunks.append((1, chunks[i]))
+            
+            # 按分數排序並取 top_n 個
+            scored_chunks.sort(key=lambda x: x[0], reverse=True)  # 從高到低排序
+            top_chunks = [chunk for _, chunk in scored_chunks[:top_n]]
+            
+            return top_chunks
 
         # ---- 函數封裝：總結 ----
         def summarize_chunks(query, chunks):
             """
-            對留下的 chunks 進行總結，生成最終回答。
+            對選出的 chunks 進行總結，生成最終回答。
             """
             summarize_response = client.chat.completions.create(
                 model="gpt-4o",
@@ -305,13 +300,13 @@ Your task is to:
         # ---- main process ----
         query = user_message
 
-        # 1. 檢索 top-5 chunks
-        top_chunks = retrieve_top_k_chunks(query, k=5)
-        print(f"Step1:retrieve top 5 chunks, numbers of chunks:{len(top_chunks)}")
+        # 1. 檢索 top-k chunks
+        top_chunks = retrieve_top_k_chunks(query, k=7)
+        print(f"Step1: Retrieved top 7 chunks, number of chunks: {len(top_chunks)}")
 
-        # 2. Pairwise 比較，淘汰掉 4 個 chunk，留下 1 個
-        final_chunks = eliminate_chunks(query, top_chunks)
-        print(f"final chunks number:{len(final_chunks)}")
+        # 2. Pointwise 評分，選出最佳的 chunks
+        final_chunks = await select_best_chunks_async(client, query, top_chunks, top_n=3)
+        print(f"Step2: Selected top 3 chunks based on pointwise scoring")
 
         # 3. 對留下的 chunk 進行總結
         final_answer = summarize_chunks(query, final_chunks)
@@ -321,25 +316,3 @@ Your task is to:
         # Handle other intents here
         print("Intent is others.")
         return {"response": "抱歉，碳智郎僅能回答資料庫中和碳盤查相關的問題"}
-
-
-    
-
-    # try:
-    #     # Run the OpenAI API call in a thread pool
-    #     completion = await run_in_threadpool(
-    #         openai.ChatCompletion.create,
-    #         model="gpt-4",  # Use a valid model
-    #         messages=[
-    #             {"role": "system", "content": "You are a helpful assistant."},
-    #             {"role": "user", "content": user_message},
-    #         ]
-    #     )
-
-    #     # Return the response content as JSON
-    #     return {"response": completion.choices[0].message.content}
-
-    # except Exception as e:
-    #     # Log the error and raise HTTPException
-    #     print(f"Error occurred: {str(e)}")  # Log error message
-    #     raise HTTPException(status_code=500, detail=f"An error occurred while processing the request: {str(e)}")
