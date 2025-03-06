@@ -160,7 +160,7 @@ Your task is to:
                     print(f"⚠️ PDF '{pdf_name}' 沒有提取到任何文字。跳過此檔案。")
                     continue
 
-                child_splitter = RecursiveCharacterTextSplitter(chunk_size=2500)
+                child_splitter = RecursiveCharacterTextSplitter(chunk_size=2000)
                 text_chunks = child_splitter.split_text(pdf_text)
 
                 if not text_chunks:
