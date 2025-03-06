@@ -27,3 +27,5 @@ chromadb
 donut-python
 huggingface_hub
 transformers
+serpapi
+google-search-results

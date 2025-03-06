@@ -9,9 +9,18 @@ import os
 import torch
 import pytesseract
 import re
+import logging
+import warnings
+from transformers import logging as transformers_logging
+
+# Set logging level to ERROR to suppress warnings and info messages
+logging.getLogger().setLevel(logging.ERROR)
+transformers_logging.set_verbosity_error()
+warnings.filterwarnings("ignore")
 
 # Load environment variables from a .env file
 load_dotenv()
+os.environ["TRANSFORMERS_VERBOSITY"] = "error"
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 ocrapi = APIRouter()
