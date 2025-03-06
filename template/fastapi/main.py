@@ -75,6 +75,8 @@ from 管理者.edit_adminConsultant import edit_adminConsultant
 from 盤查報告書.getBusiness import word_companyinfo
 from 盤查報告書.merge import get_word
 from 盤查報告書.word_ai import word_ai
+from 盤查報告書.word_爬蟲 import word_bug
+
 
 
 
@@ -245,3 +247,5 @@ app.include_router(Fuel_Factors)
 app.include_router(word_companyinfo)
 app.include_router(get_word)
 app.include_router(word_ai)
+app.include_router(word_bug)
+
