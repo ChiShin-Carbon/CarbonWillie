@@ -173,27 +173,41 @@ def verify_coefficients(coefficients_list):
         return coefficients_list[0]
     
     verification_prompt = (
-        "我有多個來源的溫室氣體排放係數，請幫我比較並確認哪一個是最新且最準確的。"
-        "請特別注意發布年份、來源的官方性和準確性。"
-        "以下是不同來源的係數數據：\n"
-        f"{coefficients_list}"
-        "\n請提供以下格式的JSON回應：\n"
-        "{"
-        "  \"most_reliable\": {最可靠的完整係數JSON對象},"
-        "  \"reason\": \"選擇理由\","
-        "  \"year\": \"確認的發布年份\""
-        "}"
-    )
+    "你是一位專業的溫室氣體數據分析專家，請系統性評估以下溫室氣體排放係數來源，確定最可靠的數據。\n\n"
+    "評估步驟：\n"
+    "1. 分析每個係數來源的發布年份\n"
+    "2. 評估來源機構的權威性（如政府機構、國際組織優於私人組織）\n"
+    "3. 檢查數據的完整性和詳細程度\n"
+    "4. 比較數據與公認標準的一致性\n"
+    "5. 請以適用於台灣的標準評估\n\n"
+    
+    "需評估的係數數據：\n"
+    f"{coefficients_list}\n\n"
+    
+    "請在評估後提供以下確切JSON格式的回應，不要有任何多餘文字：\n"
+    "{\n"
+    "  \"most_reliable\": {完整的最可靠係數JSON對象},\n"
+    "  \"reason\": \"選擇此係數的3-5個具體理由\",\n"
+    "  \"year\": \"確認的發布年份\",\n"
+    "  \"confidence_level\": \"高/中/低\",\n"
+    "  \"additional_notes\": \"任何需要使用者注意的重要說明\"\n"
+    "}\n\n"
+    
+    "請確保你的回應是有效的JSON格式，可以直接被程式解析。如果數據中有明顯矛盾或無法確定最可靠來源，請在additional_notes中說明。"
+)
+
     
     try:
         completion = client.chat.completions.create(
-            model="gpt-4o",
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant specialized in verifying greenhouse gas emission factors."},
-                {"role": "user", "content": verification_prompt}
-            ],
-            response_format={"type": "json_object"}
-        )
+    model="gpt-4o",
+    temperature=0.1,  # 降低溫度以提高一致性
+    messages=[
+        {"role": "system", "content": "你是台灣專業的溫室氣體數據與碳排放分析專家。請基於科學證據和最佳實踐分析數據，並嚴格按照要求的JSON格式回應。"},
+        {"role": "user", "content": verification_prompt}
+    ],
+    response_format={"type": "json_object"}  # 強制JSON格式回應
+)
+
         result = completion.choices[0].message.content
         return result
     except Exception as e:
