@@ -31,7 +31,13 @@ const EditFillModal = ({
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [formErrors, setFormErrors] = useState({});
-
+    
+    // OCR states (Added from EditModal)
+    const [ocrData, setOcrData] = useState({
+        date: '',
+        number: ''
+    });
+    
     // Alert states
     const [showAlert, setShowAlert] = useState(false);
     const [alertMessage, setAlertMessage] = useState('');
@@ -42,6 +48,10 @@ const EditFillModal = ({
         setPreviewImage(null);
         setExistingImage(null);
         setUseExistingImage(true);
+        setOcrData({
+            date: '',
+            number: ''
+        });
         setShowAlert(false);
         setFormErrors({});
         setFormValues({
@@ -95,6 +105,117 @@ const EditFillModal = ({
         }, 5000);
     };
 
+    // Process image with OCR (Added from EditModal)
+    const processImageWithOCR = async (imageFile) => {
+        showFormAlert('正在處理圖片...', 'info');
+
+        const formDataToSend = new FormData();
+        formDataToSend.append('image', imageFile);
+
+        try {
+            const res = await fetch('http://localhost:8000/ocrapi', {
+                method: 'POST',
+                body: formDataToSend,
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                console.log('OCR API response:', data);
+
+                // Properly extract and clean response values
+                let extractedDate = '';
+                let extractedNumber = '';
+
+                if (data.response_content && Array.isArray(data.response_content)) {
+                    // Clean up any potential string artifacts
+                    if (data.response_content[0]) {
+                        extractedDate = String(data.response_content[0])
+                            .replace(/[\[\]'"]/g, '') // Remove brackets and quotes
+                            .trim();
+                    }
+
+                    if (data.response_content[1]) {
+                        extractedNumber = String(data.response_content[1])
+                            .replace(/[\[\]'"]/g, '') // Remove brackets and quotes
+                            .trim();
+                    }
+                }
+
+                // Update OCR data with cleaned values
+                setOcrData({
+                    date: extractedDate,
+                    number: extractedNumber
+                });
+
+                // Check if the OCR data matches current form values
+                if (extractedDate && extractedDate !== formValues.Doc_date) {
+                    showFormAlert(`偵測的日期 (${extractedDate}) 與表單日期 (${formValues.Doc_date}) 不符`, 'warning');
+                }
+                
+                if (extractedNumber && extractedNumber !== formValues.Doc_number) {
+                    showFormAlert(`偵測的號碼 (${extractedNumber}) 與表單號碼 (${formValues.Doc_number}) 不符`, 'warning');
+                }
+
+                // Inform user that OCR data is available
+                if (extractedDate || extractedNumber) {
+                    showFormAlert('圖片處理完成，可點擊「應用偵測資料」按鈕填入資料', 'success');
+                } else {
+                    showFormAlert('圖片處理完成，未能識別日期或號碼', 'warning');
+                }
+            } else {
+                showFormAlert('OCR處理失敗，請手動輸入資料', 'warning');
+            }
+        } catch (error) {
+            console.error('Error processing image with OCR:', error);
+            showFormAlert('OCR處理發生錯誤，請手動輸入資料', 'warning');
+        }
+    };
+
+    // Apply OCR data to form (Added from EditModal)
+    const applyOcrData = () => {
+        let appliedCount = 0;
+
+        if (ocrData.date || ocrData.number) {
+            // Track what was applied for better messaging
+            const updates = [];
+
+            if (ocrData.date) {
+                setFormValues(prev => ({
+                    ...prev,
+                    Doc_date: ocrData.date
+                }));
+                appliedCount++;
+                updates.push('日期');
+            }
+
+            if (ocrData.number) {
+                setFormValues(prev => ({
+                    ...prev,
+                    Doc_number: ocrData.number
+                }));
+                appliedCount++;
+                updates.push('號碼');
+            }
+
+            // Clear related errors
+            setFormErrors(prev => ({
+                ...prev,
+                Doc_date: undefined,
+                Doc_number: undefined
+            }));
+
+            if (appliedCount > 0) {
+                showFormAlert(`已應用偵測${updates.join('和')}`, 'success');
+            } else {
+                showFormAlert('沒有可應用的偵測資料', 'warning');
+            }
+        } else {
+            showFormAlert('沒有可應用的偵測資料', 'warning');
+        }
+
+        return appliedCount;
+    };
+
     // Handle image change
     const handleImageChange = (e) => {
         const file = e.target.files[0];
@@ -122,6 +243,9 @@ const EditFillModal = ({
             setPreviewImage(previewUrl);
             setFormValues((prev) => ({ ...prev, image: file }));
             setUseExistingImage(false); // 選擇新圖片時，不使用現有圖片
+
+            // Process image with OCR (Added from EditModal)
+            processImageWithOCR(file);
         } else {
             // 如果用戶取消選擇，恢復使用現有圖片（如果有的話）
             if (existingImage && useExistingImage) {
@@ -214,6 +338,15 @@ const EditFillModal = ({
                 ...prev,
                 [id]: undefined
             }));
+        }
+
+        // Check for date or invoice number mismatches if OCR data exists (Added from EditModal)
+        if (id === 'Doc_date' && ocrData.date && value !== ocrData.date) {
+            showFormAlert(`輸入的日期 (${value}) 與偵測結果 (${ocrData.date}) 不符`, 'warning');
+        }
+
+        if (id === 'Doc_number' && ocrData.number && value !== ocrData.number) {
+            showFormAlert(`輸入的號碼 (${value}) 與偵測結果 (${ocrData.number}) 不符`, 'warning');
         }
     };
 
@@ -466,6 +599,27 @@ const EditFillModal = ({
                                 )}
                             </div>
 
+                            {/* Added OCR results section from EditModal */}
+                            <CFormLabel className={styles.addlabel}>
+                                偵測結果
+                                {(ocrData.date || ocrData.number) && (
+                                    <button
+                                        type="button"
+                                        className="btn btn-sm btn-outline-primary float-end"
+                                        onClick={applyOcrData}
+                                    >
+                                        應用偵測資料
+                                    </button>
+                                )}
+                            </CFormLabel>
+                            <div className={styles.errorMSG || 'p-3 border'}>
+                                <div>偵測日期: {ocrData.date || '尚未偵測'}</div>
+                                <div>偵測號碼: {ocrData.number || '尚未偵測'}</div>
+                                {!ocrData.date && !ocrData.number && existingImage && (
+                                    <div>已載入現有圖片。如需OCR檢查，請上傳新圖片。</div>
+                                )}
+                            </div>
+
                             <CFormLabel className={styles.addlabel}>
                                 填表說明
                             </CFormLabel>
@@ -474,6 +628,7 @@ const EditFillModal = ({
                                     <li>所有帶有 * 的欄位為必填項目</li>
                                     <li>填充量應為正數</li>
                                     <li>備註欄位可填寫額外資訊或特殊說明</li>
+                                    <li>如有上傳新圖片，系統會自動偵測日期和發票號碼</li>
                                     <li>請上傳發票或收據的圖片作為證明</li>
                                 </ul>
                             </div>
