@@ -79,7 +79,9 @@ const LocationForm = ({
       南澳: '272',
       釣魚臺列嶼: '290',
     },
-    新竹市: '300',
+    新竹市: {
+      全區: '300'
+    },
     新竹縣: {
       竹北: '302',
       湖口: '303',
@@ -204,7 +206,9 @@ const LocationForm = ({
       竹山: '557',
       鹿谷: '558',
     },
-    嘉義市: '600',
+    嘉義市: {
+      全區: '600'
+    },
     嘉義縣: {
       番路: '602',
       梅山: '603',
@@ -432,7 +436,16 @@ const LocationForm = ({
   const handleTownChange = (e) => {
     const selectedTown = e.target.value
     onTownChange(selectedTown)
-    onPostalCodeChange(cities[county][selectedTown])
+    
+    // Make sure cities[county] is an object and the selectedTown exists
+    if (county && cities[county] && typeof cities[county] === 'object' && cities[county][selectedTown]) {
+      onPostalCodeChange(cities[county][selectedTown])
+    }
+  }
+
+  // Helper function to check if a city has district/town data
+  const hasDistricts = (cityName) => {
+    return cityName && cities[cityName] && typeof cities[cityName] === 'object'
   }
 
   return (
@@ -457,9 +470,9 @@ const LocationForm = ({
           <CFormLabel>
             <strong>鄉鎮別</strong>
           </CFormLabel>
-          <CFormSelect id="edit_town" value={town} onChange={handleTownChange} disabled={!county}>
+          <CFormSelect id="edit_town" value={town} onChange={handleTownChange} disabled={!hasDistricts(county)}>
             <option value="">選擇鄉鎮別</option>
-            {county &&
+            {hasDistricts(county) &&
               Object.keys(cities[county]).map((township) => (
                 <option key={township} value={township}>
                   {township}
