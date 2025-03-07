@@ -66,6 +66,7 @@ const EditModal = ({
             remark: '',
             image: null,
         });
+        setMachinery([]);
     }, []);
 
     // Handle closing the modal
@@ -274,8 +275,15 @@ const EditModal = ({
                     },
                     body: JSON.stringify({ Machinery_id: selectedMachinery }),
                 });
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP error ${response.status}: ${errorText}`);
+                }
+                
                 const data = await response.json();
-                if (response.ok && data.Machinery && data.Machinery.length > 0) {
+                
+                if (data.Machinery && data.Machinery.length > 0) {
                     setMachinery(data.Machinery); // Store full machinery data
                     
                     // Populate form with fetched data
@@ -298,7 +306,7 @@ const EditModal = ({
                         setUseExistingImage(true);
                     }
                 } else {
-                    console.error(`Error ${response.status}: ${data.detail || 'No data found'}`);
+                    console.error('No machinery data found');
                     showFormAlert('無法取得機具資料', 'danger');
                 }
             } catch (error) {
@@ -332,6 +340,7 @@ const EditModal = ({
         return Object.keys(errors).length === 0;
     };
 
+    // Handle form submission
     const handleEditSubmit = async (e) => {
         e.preventDefault();
 
@@ -357,9 +366,9 @@ const EditModal = ({
             form.append("location", formValues.location);
             form.append("type", formValues.type);
             form.append("usage", formValues.usage);
-            form.append("remark", formValues.remark);
+            form.append("remark", formValues.remark || ""); // Ensure empty string if null
 
-            // Only append image if a new one was selected
+            // Handle image upload
             if (formValues.image) {
                 const imageFile = formValues.image;
                 // Rename with timestamp to avoid duplicate names
@@ -372,6 +381,17 @@ const EditModal = ({
             } else if (existingImage && useExistingImage) {
                 // Let backend know we're keeping existing image
                 form.append("existing_image", existingImage);
+            }
+
+            // Add better debugging info
+            console.log("Form data being sent:");
+            for (let [key, value] of form.entries()) {
+                // For File objects, print useful info
+                if (value instanceof File) {
+                    console.log(`${key}: File object (name: ${value.name}, size: ${value.size}, type: ${value.type})`);
+                } else {
+                    console.log(`${key}: ${value}`);
+                }
             }
 
             const response = await fetch('http://localhost:8000/edit_machine', {

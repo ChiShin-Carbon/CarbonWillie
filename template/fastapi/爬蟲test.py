@@ -200,7 +200,7 @@ def verify_coefficients(coefficients_list):
     try:
         completion = client.chat.completions.create(
     model="gpt-4o",
-    temperature=0.1,  # 降低溫度以提高一致性
+    temperature=0,  # 降低溫度以提高一致性
     messages=[
         {"role": "system", "content": "你是台灣專業的溫室氣體數據與碳排放分析專家。請基於科學證據和最佳實踐分析數據，並嚴格按照要求的JSON格式回應。"},
         {"role": "user", "content": verification_prompt}

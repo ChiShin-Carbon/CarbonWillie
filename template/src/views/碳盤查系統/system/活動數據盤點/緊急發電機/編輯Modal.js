@@ -62,6 +62,7 @@ const EditModal = ({
             remark: '',
             image: null,
         });
+        setGenerator([]); // Clear generator data
     }, []);
 
     // Handle closing the modal
@@ -270,8 +271,15 @@ const EditModal = ({
                     },
                     body: JSON.stringify({ EG_id: selectedGenerator }),
                 });
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP error ${response.status}: ${errorText}`);
+                }
+                
                 const data = await response.json();
-                if (response.ok && data.Emergency_Generator && data.Emergency_Generator.length > 0) {
+                
+                if (data.Emergency_Generator && data.Emergency_Generator.length > 0) {
                     setGenerator(data.Emergency_Generator); // Store full generator data
                     
                     // Populate form with fetched data
@@ -292,7 +300,7 @@ const EditModal = ({
                         setUseExistingImage(true);
                     }
                 } else {
-                    console.error(`Error ${response.status}: ${data.detail || 'No data found'}`);
+                    console.error('No emergency generator data found');
                     showFormAlert('無法取得緊急發電機資料', 'danger');
                 }
             } catch (error) {
@@ -324,6 +332,7 @@ const EditModal = ({
         return Object.keys(errors).length === 0;
     };
 
+    // Handle form submission
     const handleEditSubmit = async (e) => {
         e.preventDefault();
 
@@ -347,7 +356,7 @@ const EditModal = ({
             form.append("date", formValues.date);
             form.append("number", formValues.num);
             form.append("usage", formValues.usage);
-            form.append("remark", formValues.remark);
+            form.append("remark", formValues.remark || ""); // Ensure empty string if null
 
             // Only append image if a new one was selected
             if (formValues.image) {
@@ -362,6 +371,17 @@ const EditModal = ({
             } else if (existingImage && useExistingImage) {
                 // Let backend know we're keeping existing image
                 form.append("existing_image", existingImage);
+            }
+
+            // Add better debugging info
+            console.log("Form data being sent:");
+            for (let [key, value] of form.entries()) {
+                // For File objects, print useful info
+                if (value instanceof File) {
+                    console.log(`${key}: File object (name: ${value.name}, size: ${value.size}, type: ${value.type})`);
+                } else {
+                    console.log(`${key}: ${value}`);
+                }
             }
 
             const response = await fetch('http://localhost:8000/edit_emergency', {

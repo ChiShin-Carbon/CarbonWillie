@@ -65,11 +65,23 @@ const Tabs = () => {
         },
       })
       const data = await response.json()
-      setTableData(data) // 設置表格資料
+      
+      // Ensure data is an array before setting state
+      if (Array.isArray(data)) {
+        setTableData(data) // Set table data only if it's an array
+      } else if (data && Array.isArray(data.data)) {
+        // Handle case where API returns { data: [...] }
+        setTableData(data.data)
+      } else {
+        console.error('API did not return an array:', data)
+        setTableData([]) // Set to empty array as fallback
+      }
     } catch (error) {
       console.error('Error fetching data:', error)
+      setTableData([]) // Set to empty array on error
     }
   }
+  
 
   // 使用 useEffect 在組件加載時呼叫 API
   useEffect(() => {
@@ -111,17 +123,18 @@ const Tabs = () => {
   }
 
   // 過濾後的表格資料，排除 status 欄位的搜尋
-  const filteredData = tableData.filter(
-    (row) =>
-      (row.table_name.includes(searchValue) ||
-        row.username.includes(searchValue) ||
-        row.authorized_record_id||
-        getDepartmentName(row.department).includes(searchValue) || // 使用轉換後的部門名稱
-        getReview(row.review).includes(searchValue) //|| // 使用轉換後的部門名稱
-        //row.completed_at.includes(searchValue)  先註解因為只要table裡面有completed_at==null時就會失敗
-      )&&
-      (selectedFeedback === '' || (row.review === 1 ? '尚未審核' : '已審核') === selectedFeedback),
-  )
+  const filteredData = Array.isArray(tableData) 
+  ? tableData.filter(
+      (row) =>
+        (row.table_name?.includes(searchValue) ||
+          row.username?.includes(searchValue) ||
+          row.authorized_record_id ||
+          getDepartmentName(row.department)?.includes(searchValue) ||
+          getReview(row.review)?.includes(searchValue)
+        ) &&
+        (selectedFeedback === '' || (row.review === 1 ? '尚未審核' : '已審核') === selectedFeedback)
+    )
+  : [];
 
   // handleSearchInput 處理輸入框變化
   const handleSearchInput = (e) => {
