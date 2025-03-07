@@ -131,44 +131,72 @@ async def scrape_company_data(request: CompanyRequest):
 
 
 
+
+
+
+
 def generate_intro_and_summary_from_results(company_name: str, company_id: str, results: list):
-    """使用 OpenAI 生成企業前言與簡介，根據爬蟲獲得的多個網頁內容"""
-
+    """使用 OpenAI 先過濾企業相關資訊，再生成企業前言與簡介"""
     openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-
-    # 構建 OpenAI 輸入提示
-    messages = [
-        {"role": "system", "content": "你是一个專業的企業資訊生成助手，根據這些內容，整合並輸出以下內容： - 企業前言：描述企業的願景、使命、經營理念等（正式、嚴謹） - 企業簡介：詳細介紹企業的歷史、創立背景、主要業務等（正式、嚴謹）"},
-        {"role": "user", "content": f"這是關於企業 '{company_name}' 的資訊，企業編號為 '{company_id}'。請從以下多個來源的內容中提取最相關的企業資訊，形成正式的企業前言與簡介。每個網頁內容可能包含不同的信息，請盡可能整合它們並給出準確且專業的描述。"}
+    
+    # **Step 1: 先過濾與企業無關的內容**
+    filter_prompt = [
+        {"role": "system", "content": "你是一個企業資訊專家，請根據以下網頁內容判斷哪些與公司最相關，只保留高度相關的資訊。"},
+        {"role": "user", "content": f"這是企業 '{company_name}' (編號: {company_id}) 的相關資訊。請篩選出與該企業直接相關的內容，忽略無關的內容，只返回與該企業高度相關的內容。"}
     ]
-
-    # 添加爬蟲結果到messages
+    
     for idx, result in enumerate(results):
-        messages.append({
-            "role": "user",
+        filter_prompt.append({
+            "role": "user", 
             "content": f"網頁{idx+1}：\n標題：{result['title']}\n描述：{result['description']}\n內容：{result['content']}"
         })
-
     
-    # 呼叫 OpenAI 接口生成結果
-    response = openai_client.chat.completions.create(
+    filter_response = openai_client.chat.completions.create(
         model="gpt-4",
-        messages=messages,
-        max_tokens=1500,  # 設定適當的返回長度
-        temperature=0.5  # 設定適當的溫度
+        messages=filter_prompt,
+        max_tokens=2000,
+        temperature=0.3
     )
     
-    # 解析 OpenAI 返回的內容
-    generated_text = response.choices[0].message.content.strip()
+    filtered_text = filter_response.choices[0].message.content.strip()
+    
+    # **Step 2: 生成企業前言與簡介**
+    generate_prompt = [
+        {"role": "system", "content": "你是一個專業的企業資訊生成助手，請根據提供的企業資訊，整合並輸出以下內容："},
+        {"role": "user", "content": f"""
+        企業前言：描述企業的願景、使命、經營理念等（正式、嚴謹），內容請參考篩選後的資訊，生成與以下前言範例字數差不多的答案
+        前言範例(參考其架構):
+        本校創校迄今，歷任校長遵循創辦人創校職志，經營擘畫，積極發揚「誠、勤、樸、慎、創新」精神形成優良校風，並秉持「創意、務實、宏觀、合作、溝通、熱忱」的教育理念，以科技與人文融匯、創新與品質並重、專業與通識兼顧、理論與實務結合為主軸，發展為實務化、資訊化、人文化、創新化、國際化的高等學府。
+        為提供學生多元學習，整合相關學術資源，本校特成立電通、工程、醫護暨管理三大學院，藉由各學系的合作、因應產業需求，開設相關學程，讓學生透過跨領域學習，提升專業知能與職場競爭力。
+        本校積極提升教學、研究、輔導與服務外，並與遠傳、新世紀資通、遠東新世紀、亞東醫院等遠東集團產學合作，成果斐然，已成為技職教育新典範。
+        
+        企業簡介：詳細介紹企業的歷史、創立背景、創立年分、主要業務等（正式、嚴謹），內容請參考篩選後的資訊，生成與以下簡介範例字數差不多的答案
+        簡介範例(參考其架構):
+        亞東科技大學於民國五十七年十月，在遠東集團創辦人徐有庠先生的「弘文明德，育才興國」理念下創設，初名「私立亞東工業技藝專科學校」，為全國第一所私立二年制專科學校，六十二年六月奉准正名為「私立亞東工業專科學校」，八十九學年度獲教育部核定改制為「亞東技術學院」，一一Ｏ學年度改名為「亞東學校財團法人亞東科技大學」。
+        本校教職員生人數4,397人(資料時間2024年)其中學生3,931人，教職員工451人。
 
-    # 解析生成的文本，分割成前言與簡介
+        這是企業 '{company_name}' 的篩選後資訊，請根據這些內容撰寫企業前言與企業簡介。\n\n{filtered_text}
+        """}
+    ]
+    
+    generate_response = openai_client.chat.completions.create(
+        model="gpt-4",
+        messages=generate_prompt,
+        max_tokens=1500,
+        temperature=0.5
+    )
+    
+    generated_text = generate_response.choices[0].message.content.strip()
+    
+    # **Step 3: 擷取企業前言與簡介**
     intro_start = generated_text.find("企業前言：")
     summary_start = generated_text.find("企業簡介：")
-
+    
     intro = generated_text[intro_start + len("企業前言："):summary_start].strip() if intro_start != -1 else ""
     summary = generated_text[summary_start + len("企業簡介："):].strip() if summary_start != -1 else ""
-
+    
     return {"intro": intro, "summary": summary}
+
 
 # 修改 API 端點，整合爬蟲與 OpenAI 的功能
 @word_ai.post("/generate_company_info")
@@ -184,19 +212,12 @@ async def generate_company_info(request: CompanyRequest):
             results.append(data)
     
     # 生成前言與簡介
-    company_info = {
-        "org_name": request.org_name,
-        "business_id": request.business_id
-    }
-    
     generated_data = generate_intro_and_summary_from_results(request.org_name, request.business_id, results)
 
     return {
-        "company": company_info,
+        "company": request.org_name,
+        "business_id": request.business_id,
         "intro": generated_data['intro'],
-        "summary": generated_data['summary'],
-        "fetched_data": results
+        "summary": generated_data['summary']
     }
-
-
 
