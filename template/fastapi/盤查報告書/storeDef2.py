@@ -19,7 +19,9 @@ def fetch_org_info(user_id):
             "business_id": data.get("business_id", "business_id 未提供"),
             "org_name": data.get("org_name", "機構名稱未提供"),
             "org_address": data.get("org_address", "地址未提供"),
-            "charge_person": data.get("charge_person", "負責人未提供")
+            "charge_person": data.get("charge_person", "負責人未提供"),
+            "intro": data.get("intro", "前言未提供"),
+            "summary": data.get("summary", "簡介未提供")
         }
         return org_info_cache[user_id]
     except requests.RequestException as e:
@@ -28,7 +30,9 @@ def fetch_org_info(user_id):
             "business_id": "business_id 未提供",
             "org_name": "機構名稱未提供",
             "org_address": "地址未提供",
-            "charge_person": "負責人未提供"
+            "charge_person": "負責人未提供",
+            "intro": "前言未提供",
+            "summary": "簡介未提供"
         }
 
 def get_org_name(user_id):
@@ -46,3 +50,11 @@ def get_charge_person(user_id):
 def get_business_id(user_id):
     """獲取 business_id，不重複請求 API"""
     return fetch_org_info(user_id)["business_id"]
+
+def get_intro(user_id):
+    """獲取 intro，不重複請求 API"""
+    return fetch_org_info(user_id)["intro"]
+
+def get_summary(user_id):
+    """獲取 summary，不重複請求 API"""
+    return fetch_org_info(user_id)["summary"]
