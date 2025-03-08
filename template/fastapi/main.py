@@ -118,6 +118,13 @@ from edit.edit_SellingWaste import edit_SellingWaste
 from delete.delete_vehicle import delete_vehicle
 from delete.delete_Extinguisher import delete_router
 from delete.delete_employee import delete_employee
+from delete.delete_nonemployee import delete_nonemployee
+from delete.delete_Refrigerant import delete_refrigerant
+from delete.delete_mahine import delete_machine
+from delete.delete_emergency import delete_emergency
+from delete.delete_commute import delete_commute
+from delete.delete_OperationalWaste import delete_waste
+from delete.delete_SellingWaste import delete_SellingWaste
 
 from Fuel_Factor_GWP import Fuel_Factors
 
@@ -254,3 +261,10 @@ app.include_router(word_bug)
 
 app.include_router(delete_router)
 app.include_router(delete_employee)
+app.include_router(delete_nonemployee)
+app.include_router(delete_refrigerant)
+app.include_router(delete_machine)
+app.include_router(delete_emergency)
+app.include_router(delete_commute)
+app.include_router(delete_waste)
+app.include_router(delete_SellingWaste)

@@ -1,10 +1,15 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Body
 from connect.connect import connectDB
+from pydantic import BaseModel
+
+# Define model for the request body
+class WasteDelete(BaseModel):
+    waste_id: int
 
 delete_waste = APIRouter()
 
 @delete_waste.delete("/delete_waste")
-async def delete_waste_record(waste_id: int):
+async def delete_waste_record(data: WasteDelete = Body(...)):
     # Connect to the database
     conn = connectDB()
     if conn:
@@ -13,12 +18,12 @@ async def delete_waste_record(waste_id: int):
             # SQL query to delete the record based on waste_id
             query = """
                 DELETE FROM Operational_Waste
-                WHERE id = ?
+                WHERE waste_id = ?
             """
             print("Executing query:", query)  # Debug print
-            print("With waste_id:", waste_id)  # Debug print
+            print("With waste_id:", data.waste_id)  # Debug print
 
-            cursor.execute(query, (waste_id,))
+            cursor.execute(query, (data.waste_id,))
             conn.commit()
 
             # Check if any row was deleted

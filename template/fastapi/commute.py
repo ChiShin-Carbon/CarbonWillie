@@ -1,10 +1,7 @@
 from fastapi import APIRouter, HTTPException, status
 from connect.connect import connectDB
-from pydantic import BaseModel
-from fastapi.middleware.cors import CORSMiddleware
 
 Commute = APIRouter()
-
 
 @Commute.post("/Commute")
 def read_user_credentials():
@@ -13,7 +10,12 @@ def read_user_credentials():
         cursor = conn.cursor()
         try:
             # Secure SQL query using a parameterized query to prevent SQL injection
-            query = "SELECT * FROM Commute"
+            query = """
+            SELECT Commute.commute_id, Commute.user_id, Commute.transportation, Commute.oil_species, 
+                   Commute.kilometers, Commute.remark, Commute.img_path, Commute.edit_time, users.username
+            FROM Commute
+            LEFT JOIN users ON Commute.user_id = users.user_id
+            """
             cursor.execute(query)
             
             # Fetch all records for the user
@@ -27,11 +29,12 @@ def read_user_credentials():
                         "commute_id": record[0],
                         "user_id": record[1],
                         "transportation": record[2],
-                        "oil_species": bool(record[3]),  # Assuming oil_species is a BIT (True/False)
+                        "oil_species": bool(record[3]),
                         "kilometer": float(record[4]),
                         "remark": record[5],
-                        "img_path": record[6],  # Assuming oil_species is a BIT (True/False)
+                        "img_path": record[6],
                         "edit_time": record[7].strftime("%Y-%m-%d %H:%M"),
+                        "username": record[8]
                     }
                     for record in user_records
                 ]
