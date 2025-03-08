@@ -312,3 +312,17 @@ export const getFuelFactorsData = async () => {
         console.error('Error fetching selling waste data:', error);
     }
 };
+
+export const getBaseline = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/baseline')
+      if (response.ok) {
+        const data = await response.json()
+        return (data.baseline.cfv_start_date, data.baseline.cfv_end_date)
+      } else {
+        console.log(response.status)
+      }
+    } catch (error) {
+      console.error('Error:', error)
+    }
+  }
