@@ -25,8 +25,12 @@ def create_fire_extinguisher_sheet(wb):
 
     # 填入資料
     data = [
-        {'item_name': 'AT555', 'ingredient': '乾粉', 'specification': '公升', 'unit': '1,000', 'usage': '1,500', 'remark': 'none'},
-        {'item_name': '乾粉2', 'ingredient': '', 'specification': '', 'unit': '', 'usage': '', 'remark': ''}
+        {'item_name': '乾粉滅火器', 'ingredient': '其他', 'specification': '6.5', 'unit': '公斤', 'usage': '148', 'remark': '5樓'},
+        {'item_name': '二氧化碳滅火器', 'ingredient': 'CO2', 'specification': '4.5', 'unit': '公斤', 'usage': '11', 'remark': '5樓'},
+        {'item_name': '乾粉滅火器', 'ingredient': '其他', 'specification': '6.5', 'unit': '公斤', 'usage': '77', 'remark': '5樓'},
+        {'item_name': '二氧化碳滅火器', 'ingredient': 'CO2', 'specification': '4.5', 'unit': '公斤', 'usage': '1', 'remark': '5樓'},
+        {'item_name': '乾粉滅火器', 'ingredient': '其他', 'specification': '3.5', 'unit': '公斤', 'usage': '257', 'remark': '5樓'},
+        {'item_name': 'FM-200', 'ingredient': 'HFC-227ea', 'specification': '4.5', 'unit': '公斤', 'usage': '60', 'remark': '5樓'}
     ]
     
     row = 4
