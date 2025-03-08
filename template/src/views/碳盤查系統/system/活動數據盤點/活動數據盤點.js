@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import {
   CRow,
@@ -46,7 +46,6 @@ import { NonEmployee } from './工作時數(非員工)/工作時數(非員工).j
 import { Refrigerant } from './冷媒/冷媒.js'
 import { Machinery } from './廠內機具/廠內機具.js'
 import { EmergencyGenerator } from './緊急發電機/緊急發電機.js'
-// import { ElectricityUsage } from './電力使用/電力使用量.js'
 import { Electricity } from './電力使用量/電力使用量.js'
 import { Commuting } from './員工通勤/員工通勤.js'
 import { BusinessTrip } from './商務旅行/商務旅行.js'
@@ -60,7 +59,6 @@ import { NonEmployeeAdd } from './工作時數(非員工)/新增Modal.js'
 import { RefrigerantAdd } from './冷媒/新增Modal.js'
 import { MachineryAdd } from './廠內機具/新增Modal.js'
 import { EmergencyGeneratorAdd } from './緊急發電機/新增Modal.js'
-// import { ElectricityUsageAdd } from './電力使用/新增Modal.js'
 import { ElectricityAdd } from './電力使用量/新增Modal.js'
 import { CommutingAdd } from './員工通勤/新增Modal.js'
 import { BusinessTripAdd } from './商務旅行/新增Modal.js'
@@ -69,17 +67,51 @@ import { SellingWasteAdd } from './銷售產品的廢棄物/新增Modal.js'
 
 import { useRefreshData } from './refreshdata.js'
 
-import 'primereact/resources/themes/saga-blue/theme.css' // 主题样式
-import 'primereact/resources/primereact.min.css' // 核心 CSS
-import 'primeicons/primeicons.css' // 图标样式
+import 'primereact/resources/themes/saga-blue/theme.css' 
+import 'primereact/resources/primereact.min.css' 
+import 'primeicons/primeicons.css' 
 
 import styles from '../../../../scss/活動數據盤點.module.css'
 
-// import ActivityModal from './活動數據盤點新增modal.js';
+// Map function names to their Chinese titles
+const functionTitlesMap = {
+  'Vehicle': '公務車',
+  'FireExtinguisher': '滅火器',
+  'Employee': '工作時數(員工)',
+  'NonEmployee': '工作時數(非員工)',
+  'Refrigerant': '冷媒',
+  'Machinery': '廠內機具',
+  'EmergencyGenerator': '緊急發電機',
+  'Electricity': '電力使用量',
+  'Commuting': '員工通勤',
+  'BusinessTrip': '商務旅行',
+  'OperationalWaste': '營運產生廢棄物',
+  'SellingWaste': '銷售產品的廢棄物'
+};
+
+// Map Chinese table names to their function names
+const chineseToFunctionMap = {
+  '公務車': 'Vehicle',
+  '滅火器': 'FireExtinguisher',
+  '工作時數(員工)': 'Employee',
+  '工作時數(非員工)': 'NonEmployee',
+  '冷媒': 'Refrigerant',
+  '廠內機具': 'Machinery',
+  '緊急發電機': 'EmergencyGenerator',
+  '電力使用量': 'Electricity',
+  '員工通勤': 'Commuting',
+  '商務旅行': 'BusinessTrip',
+  '營運產生廢棄物': 'OperationalWaste',
+  '銷售產品的廢棄物': 'SellingWaste'
+};
 
 const Tabs = () => {
   const [currentFunction, setCurrentFunction] = useState('')
   const [currentTitle, setCurrentTitle] = useState('')
+  const [authorizedTables, setAuthorizedTables] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [userId, setUserId] = useState(null)
+  
   const {
     vehicle,
     extinguishers,
@@ -107,28 +139,93 @@ const Tabs = () => {
     refreshSellingWasteData
   } = useRefreshData();
 
+  // Fetch user ID and authorized tables on component mount
+  useEffect(() => {
+    // Get user ID from localStorage
+    const storedUserId = window.sessionStorage.getItem('user_id');
+    if (storedUserId) {
+      const parsedUserId = parseInt(storedUserId, 10);
+      setUserId(parsedUserId);
+      
+      // Fetch authorized tables from API
+      fetchAuthorizedTables(parsedUserId);
+    } else {
+      console.error('User ID not found in sessionStorage');
+      setIsLoading(false);
+    }
+  }, []);
+  
+  // Function to fetch authorized tables from the API
+  const fetchAuthorizedTables = async () => {
+    try {
+      setIsLoading(true);
 
-  // 點擊處理函數
+      const form = new FormData();
+      form.append("user_id", window.sessionStorage.getItem("user_id"));
+
+      // Use the exact endpoint path from your FastAPI router
+      const response = await fetch("http://localhost:8000/authorized-tables", {
+        method: "POST",
+        body: form
+    });
+
+      
+      // Check if the request was successful
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status} - ${response.statusText}`);
+      }
+      
+      // Parse the JSON response
+      const data = await response.json();
+      
+      // Update state with the fetched data
+      setAuthorizedTables(data);
+      console.log('Authorized tables loaded:', data);
+    } catch (error) {
+      console.error('Error fetching authorized tables:', error);
+      // Optional: show error message to user
+      // alert('Failed to load your authorized tables. Please try refreshing the page.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Check if a function/table is authorized for the current user
+  const isAuthorized = (functionName) => {
+    if (!authorizedTables.length) return false;
+    
+    // Convert function name to Chinese title
+    const chineseTitle = functionTitlesMap[functionName];
+    return authorizedTables.some(table => table.table_name === chineseTitle);
+  };
+
+  // Handle clicking on a function item
   const handleFunctionChange = (func, title) => {
-    setCurrentFunction(func)
-    setCurrentTitle(title)
-  }
+    if (isAuthorized(func)) {
+      setCurrentFunction(func);
+      setCurrentTitle(title);
+    } else {
+      // Optionally show unauthorized message
+      alert('您沒有權限查看此項目');
+    }
+  };
 
   // Add a key state to force component re-renders
   const [refreshKey, setRefreshKey] = useState(0);
 
-
   useEffect(() => {
-    // Initial data loading
+    // Initial data loading for tables
     refreshFireExtinguisherData();
     refreshEmployeeData();
     refreshNonEmployeeData();
     refreshRefrigerantData();
     refreshMachineryData();
     refreshEmergency_GeneratorData();
-  }, [refreshVehicleData, refreshFireExtinguisherData, refreshEmployeeData, refreshNonEmployeeData, refreshRefrigerantData, refreshMachineryData, refreshEmergency_GeneratorData, refreshCommuteData, refreshBusinessTripData,
+  }, [
+    refreshVehicleData, refreshFireExtinguisherData, refreshEmployeeData, 
+    refreshNonEmployeeData, refreshRefrigerantData, refreshMachineryData, 
+    refreshEmergency_GeneratorData, refreshCommuteData, refreshBusinessTripData,
     refreshWasteData, refreshSellingWasteData, refreshElectricityData
-
   ]);
 
   // Update key when extinguishers data changes
@@ -144,6 +241,39 @@ const Tabs = () => {
       setRefreshKey(prevKey => prevKey + 1);
     }
   }, [refrigerants]);
+  
+  // Update status in Authorized_Table when a table is completed
+  const updateTableStatus = async (functionName, isDone) => {
+    // Find the authorized_record_id for the current function
+    const tableName = functionTitlesMap[functionName];
+    const authorizedItem = authorizedTables.find(item => item.table_name === tableName);
+    
+    if (!authorizedItem) {
+      console.error(`No authorized record found for ${tableName}`);
+      return;
+    }
+    
+    try {
+      const response = await fetch(`/authorized-tables/${authorizedItem.authorized_record_id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ is_done: isDone }),
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status} - ${response.statusText}`);
+      }
+      
+      // Refresh the authorized tables after update
+      fetchAuthorizedTables(userId);
+      
+      console.log(`Status updated for ${tableName}: ${isDone ? 'Completed' : 'Incomplete'}`);
+    } catch (error) {
+      console.error('Error updating table status:', error);
+    }
+  };
 
   const [isAddModalVisible, setAddModalVisible] = useState(false)
 
@@ -194,7 +324,7 @@ const Tabs = () => {
           <RefrigerantAdd
             isAddModalVisible={isAddModalVisible}
             setAddModalVisible={setAddModalVisible}
-            refreshRefrigerantData={refreshRefrigerantData}  // Make sure this is passed correctly
+            refreshRefrigerantData={refreshRefrigerantData}
             setCurrentFunction={setCurrentFunction}
             setCurrentTitle={setCurrentTitle}
           />
@@ -204,7 +334,7 @@ const Tabs = () => {
           <MachineryAdd
             isAddModalVisible={isAddModalVisible}
             setAddModalVisible={setAddModalVisible}
-            refreshMachineryData={refreshMachineryData}  // Make sure this is passed correctly
+            refreshMachineryData={refreshMachineryData}
             setCurrentFunction={setCurrentFunction}
             setCurrentTitle={setCurrentTitle}
           />
@@ -214,24 +344,17 @@ const Tabs = () => {
           <EmergencyGeneratorAdd
             isAddModalVisible={isAddModalVisible}
             setAddModalVisible={setAddModalVisible}
-            refreshEmergency_GeneratorData={refreshEmergency_GeneratorData}  // Make sure this is passed correctly
+            refreshEmergency_GeneratorData={refreshEmergency_GeneratorData}
             setCurrentFunction={setCurrentFunction}
             setCurrentTitle={setCurrentTitle}
           />
         )
-      // case 'ElectricityUsage':
-      //   return (
-      //     <ElectricityUsageAdd
-      //       isAddModalVisible={isAddModalVisible}
-      //       setAddModalVisible={setAddModalVisible}
-      //     />
-      //   )
       case 'Electricity':
         return (
           <ElectricityAdd
             isAddModalVisible={isAddModalVisible}
             setAddModalVisible={setAddModalVisible}
-            refreshElectricityData={refreshElectricityData}  // Make sure this is passed correctly
+            refreshElectricityData={refreshElectricityData}
             setCurrentFunction={setCurrentFunction}
             setCurrentTitle={setCurrentTitle}
           />
@@ -241,7 +364,7 @@ const Tabs = () => {
           <CommutingAdd
             isAddModalVisible={isAddModalVisible}
             setAddModalVisible={setAddModalVisible}
-            refreshCommuteData={refreshCommuteData}  // Make sure this is passed correctly
+            refreshCommuteData={refreshCommuteData}
             setCurrentFunction={setCurrentFunction}
             setCurrentTitle={setCurrentTitle}
           />
@@ -251,7 +374,7 @@ const Tabs = () => {
           <BusinessTripAdd
             isAddModalVisible={isAddModalVisible}
             setAddModalVisible={setAddModalVisible}
-            refreshBusinessTripData={refreshBusinessTripData}  // Make sure this is passed correctly
+            refreshBusinessTripData={refreshBusinessTripData}
             setCurrentFunction={setCurrentFunction}
             setCurrentTitle={setCurrentTitle}
           />
@@ -261,7 +384,7 @@ const Tabs = () => {
           <OperationalWasteAdd
             isAddModalVisible={isAddModalVisible}
             setAddModalVisible={setAddModalVisible}
-            refreshWasteData={refreshWasteData}  // Make sure this is passed correctly
+            refreshWasteData={refreshWasteData}
             setCurrentFunction={setCurrentFunction}
             setCurrentTitle={setCurrentTitle}
           />
@@ -271,15 +394,37 @@ const Tabs = () => {
           <SellingWasteAdd
             isAddModalVisible={isAddModalVisible}
             setAddModalVisible={setAddModalVisible}
-            refreshSellingWasteData={refreshSellingWasteData}  // Make sure this is passed correctly
+            refreshSellingWasteData={refreshSellingWasteData}
             setCurrentFunction={setCurrentFunction}
             setCurrentTitle={setCurrentTitle}
           />
         )
-
       default:
         return null
     }
+  }
+
+  // Render a nav item with conditional styling based on authorization
+  const renderNavItem = (functionName, title) => {
+    const isAuthorizedItem = isAuthorized(functionName);
+    return (
+      <div
+        className={`${styles.navContent} 
+                   ${currentFunction === functionName ? styles.navContentChoose : ''} 
+                   ${!isAuthorizedItem ? styles.navContentDisabled : ''}`}
+        onClick={() => isAuthorizedItem && handleFunctionChange(functionName, title)}
+        style={{ 
+          cursor: isAuthorizedItem ? 'pointer' : 'not-allowed',
+          opacity: isAuthorizedItem ? 1 : 0.5
+        }}
+      >
+        {title}
+      </div>
+    );
+  };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
   }
 
   return (
@@ -320,7 +465,14 @@ const Tabs = () => {
           <h4 className="system-title">活動數據盤點</h4>
           <hr className="system-hr"></hr>
         </div>
-        <button className="system-save">完成填寫</button>
+        {currentFunction && (
+          <button 
+            className="system-save"
+            onClick={() => updateTableStatus(currentFunction, true)}
+          >
+            完成填寫
+          </button>
+        )}
       </div>
 
       <div className={styles.activityData}>
@@ -339,84 +491,87 @@ const Tabs = () => {
               <div className={styles.activityCardBody}>
                 {currentFunction === 'Vehicle' &&
                   <Vehicle
-                    key={JSON.stringify(vehicle)} // Force re-render when data changes
+                    key={JSON.stringify(vehicle)}
                     vehicle={vehicle}
                     refreshVehicleData={refreshVehicleData}
                   />}
                 {currentFunction === 'FireExtinguisher' &&
                   <FireExtinguisher
-                    key={refreshKey} // Use refreshKey instead of JSON.stringify
+                    key={refreshKey}
                     extinguishers={extinguishers}
                     refreshFireExtinguisherData={refreshFireExtinguisherData}
                   />}
                 {currentFunction === 'Employee' && (
                   <Employee
-                    key={JSON.stringify(employees)} // Force re-render when data changes
+                    key={JSON.stringify(employees)}
                     employees={employees}
                     refreshEmployeeData={refreshEmployeeData}
                   />
                 )}
                 {currentFunction === 'NonEmployee' && (
                   <NonEmployee
-                    key={JSON.stringify(nonemployees)} // Force re-render when data changes
+                    key={JSON.stringify(nonemployees)}
                     nonemployees={nonemployees}
                     refreshNonEmployeeData={refreshNonEmployeeData}
                   />
                 )}
                 {currentFunction === 'Refrigerant' &&
                   <Refrigerant
-                    key={refreshKey} // Make sure this is used the same way as in FireExtinguisher
+                    key={refreshKey}
                     refrigerants={refrigerants}
                     refreshRefrigerantData={refreshRefrigerantData}
                   />
                 }
                 {currentFunction === 'Machinery' &&
                   <Machinery
-                    key={JSON.stringify(machinery)} // Force re-render when data changes
+                    key={JSON.stringify(machinery)}
                     machinery={machinery}
                     refreshMachineryData={refreshMachineryData}
                   />}
                 {currentFunction === 'EmergencyGenerator' &&
                   <EmergencyGenerator
-                    key={JSON.stringify(Emergency_Generator)} // Force re-render when data changes
+                    key={JSON.stringify(Emergency_Generator)}
                     Emergency_Generator={Emergency_Generator}
                     refreshEmergency_GeneratorData={refreshEmergency_GeneratorData}
                   />}
-                {/* {currentFunction === 'ElectricityUsage' && <ElectricityUsage />} */}
                 {currentFunction === 'Electricity' &&
                   <Electricity
-                    key={JSON.stringify(electricity)} // Force re-render when data changes
+                    key={JSON.stringify(electricity)}
                     electricity={electricity}
                     refreshElectricityData={refreshElectricityData}
                   />}
                 {currentFunction === 'Commuting' &&
                   <Commuting
-                    key={JSON.stringify(commute)} // Force re-render when data changes
+                    key={JSON.stringify(commute)}
                     commute={commute}
                     refreshCommuteData={refreshCommuteData}
                   />}
                 {currentFunction === 'BusinessTrip' &&
                   <BusinessTrip
-                    key={JSON.stringify(business_trip)} // Force re-render when data changes
+                    key={JSON.stringify(business_trip)}
                     business_trip={business_trip}
                     refreshBusinessTripData={refreshBusinessTripData}
                   />}
                 {currentFunction === 'OperationalWaste' &&
                   <OperationalWaste
-                    key={JSON.stringify(operationalwaste)} // Force re-render when data changes
+                    key={JSON.stringify(operationalwaste)}
                     operationalwaste={operationalwaste}
                     refreshWasteData={refreshWasteData}
                   />}
                 {currentFunction === 'SellingWaste' &&
                   <SellingWaste
-                    key={JSON.stringify(sellingwaste)} // Force re-render when data changes
+                    key={JSON.stringify(sellingwaste)}
                     sellingwaste={sellingwaste}
                     refreshSellingWasteData={refreshSellingWasteData}
                   />}
               </div>
             </>
           ) : (
-            <div className={styles.noChoose}>請先選擇項目!</div>
+            <div className={styles.noChoose}>
+              {authorizedTables.length > 0 
+                ? '請選擇一個您有權限的項目!'
+                : '您目前沒有任何授權項目。請聯繫管理員獲取權限。'}
+            </div>
           )}
         </CCard>
 
@@ -425,87 +580,20 @@ const Tabs = () => {
             <h5 className={styles.navTitle}>健檢主要項目</h5>
             <hr className={styles.hr}></hr>
             <h6>範疇一</h6>
-            <div
-              className={`${styles.navContent} ${currentFunction === 'Vehicle' ? styles.navContentChoose : ''}`}
-              onClick={() => handleFunctionChange('Vehicle', '公務車')}
-            >
-              {' '}
-              公務車
-            </div>
-            <div
-              className={`${styles.navContent} ${currentFunction === 'FireExtinguisher' ? styles.navContentChoose : ''}`}
-              onClick={() => handleFunctionChange('FireExtinguisher', '滅火器')}
-            >
-              滅火器
-            </div>
-            <div
-              className={`${styles.navContent} ${currentFunction === 'Employee' ? styles.navContentChoose : ''}`}
-              onClick={() => handleFunctionChange('Employee', '工作時數(員工)')}
-            >
-              工作時數(員工)
-            </div>
-            <div
-              className={`${styles.navContent} ${currentFunction === 'NonEmployee' ? styles.navContentChoose : ''}`}
-              onClick={() => handleFunctionChange('NonEmployee', '工作時數(非員工)')}
-            >
-              工作時數(非員工)
-            </div>
-            <div
-              className={`${styles.navContent} ${currentFunction === 'Refrigerant' ? styles.navContentChoose : ''}`}
-              onClick={() => handleFunctionChange('Refrigerant', '冷媒')}
-            >
-              冷媒
-            </div>
-            <div
-              className={`${styles.navContent} ${currentFunction === 'Machinery' ? styles.navContentChoose : ''}`}
-              onClick={() => handleFunctionChange('Machinery', '廠內機具')}
-            >
-              廠內機具
-            </div>
-            <div
-              className={`${styles.navContent} ${currentFunction === 'EmergencyGenerator' ? styles.navContentChoose : ''}`}
-              onClick={() => handleFunctionChange('EmergencyGenerator', '緊急發電機')}
-            >
-              緊急發電機
-            </div>
+            {renderNavItem('Vehicle', '公務車')}
+            {renderNavItem('FireExtinguisher', '滅火器')}
+            {renderNavItem('Employee', '工作時數(員工)')}
+            {renderNavItem('NonEmployee', '工作時數(非員工)')}
+            {renderNavItem('Refrigerant', '冷媒')}
+            {renderNavItem('Machinery', '廠內機具')}
+            {renderNavItem('EmergencyGenerator', '緊急發電機')}
             <h6>範疇二</h6>
-            {/* <div
-              className={`${styles.navContent} ${currentFunction === 'ElectricityUsage' ? styles.navContentChoose : ''}`}
-              onClick={() => handleFunctionChange('ElectricityUsage', '電力使用')}
-            >
-              電力使用
-            </div> */}
-            <div
-              className={`${styles.navContent} ${currentFunction === 'Electricity' ? styles.navContentChoose : ''}`}
-              onClick={() => handleFunctionChange('Electricity', '電力使用量')}
-            >
-              電力使用量
-            </div>
+            {renderNavItem('Electricity', '電力使用量')}
             <h6>範疇三</h6>
-            <div
-              className={`${styles.navContent} ${currentFunction === 'Commuting' ? styles.navContentChoose : ''}`}
-              onClick={() => handleFunctionChange('Commuting', '員工通勤')}
-            >
-              員工通勤
-            </div>
-            <div
-              className={`${styles.navContent} ${currentFunction === 'BusinessTrip' ? styles.navContentChoose : ''}`}
-              onClick={() => handleFunctionChange('BusinessTrip', '商務旅行')}
-            >
-              商務旅行
-            </div>
-            <div
-              className={`${styles.navContent} ${currentFunction === 'OperationalWaste' ? styles.navContentChoose : ''}`}
-              onClick={() => handleFunctionChange('OperationalWaste', '營運產生廢棄物')}
-            >
-              營運產生廢棄物
-            </div>
-            <div
-              className={`${styles.navContent} ${currentFunction === 'SellingWaste' ? styles.navContentChoose : ''}`}
-              onClick={() => handleFunctionChange('SellingWaste', '銷售產品的廢棄物')}
-            >
-              銷售產品的廢棄物
-            </div>
+            {renderNavItem('Commuting', '員工通勤')}
+            {renderNavItem('BusinessTrip', '商務旅行')}
+            {renderNavItem('OperationalWaste', '營運產生廢棄物')}
+            {renderNavItem('SellingWaste', '銷售產品的廢棄物')}
           </div>
         </CCard>
       </div>

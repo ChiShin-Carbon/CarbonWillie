@@ -116,6 +116,7 @@ from edit.edit_SellingWaste import edit_SellingWaste
 from edit.edit_electricityUsage import edit_ElectricityUsage
 from findone.Electricity import Electricity_findone
 from edit.edit_electricity import edit_electricity
+from authorized_table import Authorized_table
 
 from delete.delete_vehicle import delete_vehicle
 from delete.delete_Extinguisher import delete_router
@@ -275,3 +276,4 @@ app.include_router(edit_ElectricityUsage)
 app.include_router(Electricity_findone)
 app.include_router(edit_electricity)
 app.include_router(electricity_delete_router)
+app.include_router(Authorized_table)
