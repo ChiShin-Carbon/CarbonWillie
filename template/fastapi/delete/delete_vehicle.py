@@ -1,10 +1,15 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Body
 from connect.connect import connectDB
+from pydantic import BaseModel
 
-delete_vehicle = APIRouter()
+# Define a model for the request body
+class VehicleDelete(BaseModel):
+    vehicle_id: int
+
+delete_vehicle = APIRouter(tags=["delete"])
 
 @delete_vehicle.delete("/delete_vehicle")
-async def delete_vehicle_record(vehicle_id: int):
+async def delete_vehicle_record(vehicle: VehicleDelete = Body(...)):
     # Connect to the database
     conn = connectDB()
     if conn:
@@ -16,9 +21,9 @@ async def delete_vehicle_record(vehicle_id: int):
                 WHERE vehicle_id = ?
             """
             print("Executing query:", query)  # Debug print
-            print("With vehicle_id:", vehicle_id)  # Debug print
+            print("With vehicle_id:", vehicle.vehicle_id)  # Debug print
 
-            cursor.execute(query, (vehicle_id,))
+            cursor.execute(query, (vehicle.vehicle_id,))
             conn.commit()
 
             # Check if any row was deleted

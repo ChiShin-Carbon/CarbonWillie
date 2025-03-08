@@ -116,8 +116,11 @@ from edit.edit_OperationWaste import edit_OperationWaste
 from edit.edit_SellingWaste import edit_SellingWaste
 
 from delete.delete_vehicle import delete_vehicle
+from delete.delete_Extinguisher import delete_router
+from delete.delete_employee import delete_employee
 
 from Fuel_Factor_GWP import Fuel_Factors
+
 
 app = FastAPI()
 load_dotenv()
@@ -249,3 +252,5 @@ app.include_router(get_word)
 app.include_router(word_ai)
 app.include_router(word_bug)
 
+app.include_router(delete_router)
+app.include_router(delete_employee)

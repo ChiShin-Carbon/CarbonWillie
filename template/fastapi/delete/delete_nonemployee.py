@@ -13,7 +13,7 @@ async def delete_nonemployee_record(nonemployee_id: int):
             # SQL query to delete the record based on nonemployee_id
             query = """
                 DELETE FROM NonEmployee
-                WHERE id = ?
+                WHERE nonemployee_id = ?
             """
             print("Executing query:", query)  # Debug print
             print("With nonemployee_id:", nonemployee_id)  # Debug print

@@ -1,4 +1,3 @@
-// functions.js
 import React, { useState, useEffect } from 'react'
 import {
   CTable,
@@ -39,6 +38,8 @@ export const FireExtinguisher = ({refreshFireExtinguisherData}) => {
   const [selectedExtinguisher, setSelectedExtinguisher] = useState(null) // Store selected extinguisher for edit
   const [selectedFill, setSelectedFill] = useState(null) // Store selected fill for edit
   const [selectedExtinguisherId, setSelectedExtinguisherId] = useState(null) // Store selected extinguisher for fill
+  const [isLoading, setIsLoading] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
 
   const ingredientMap = {
     1: 'CO2', // Replace with actual ingredient names
@@ -52,15 +53,119 @@ export const FireExtinguisher = ({refreshFireExtinguisherData}) => {
 
   const [extinguishers, setExtinguishers] = useState([]) // State to hold fetched extinguisher data
 
+  // Function to fetch extinguisher data
+  const fetchExtinguisherData = async () => {
+    setIsLoading(true);
+    try {
+      const data = await getExtinguisherData();
+      if (data) {
+        setExtinguishers(data);
+      }
+    } catch (error) {
+      console.error('Error fetching extinguisher data:', error);
+      setErrorMessage('無法獲取滅火器數據');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Fetch data on component mount
   useEffect(() => {
-    const fetchData = async () => {
-        const data = await getExtinguisherData();
-        if (data) {
-          setExtinguishers(data);
+    fetchExtinguisherData();
+  }, []);
+
+  // Function to delete an extinguisher record
+  const deleteExtinguisher = async (extinguisher_id) => {
+    if (!window.confirm('確定要刪除這筆滅火器資料嗎？此操作將同時刪除所有相關的填充記錄。')) {
+      return; // User cancelled the deletion
+    }
+
+    setIsLoading(true);
+    setErrorMessage('');
+    
+    try {
+      const response = await fetch(`http://localhost:8000/delete_Extinguisher`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ extinguisher_id: extinguisher_id }),
+      });
+
+      if (response.ok) {
+        // Update local state to remove the deleted item
+        setExtinguishers(prevExtinguishers => 
+          prevExtinguishers.filter(extinguisher => extinguisher.extinguisher_id !== extinguisher_id)
+        );
+        
+        // If parent component provided a refresh function, call it
+        if (typeof refreshFireExtinguisherData === 'function') {
+          refreshFireExtinguisherData();
+        } else {
+          // Otherwise fetch data again
+          fetchExtinguisherData();
         }
-    };
-    fetchData();
-}, []);
+      } else {
+        const errorData = await response.json();
+        setErrorMessage(`刪除失敗: ${errorData.detail || response.statusText}`);
+        console.error(`Error ${response.status}: ${errorData.detail || response.statusText}`);
+      }
+    } catch (error) {
+      setErrorMessage('連接伺服器時發生錯誤');
+      console.error('Error deleting extinguisher:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Function to delete a fill record
+  const deleteFill = async (fillrec_id) => {
+    if (!window.confirm('確定要刪除這筆填充記錄嗎？')) {
+      return; // User cancelled the deletion
+    }
+
+    setIsLoading(true);
+    setErrorMessage('');
+    
+    try {
+      const response = await fetch(`http://localhost:8000/delete_ExtinguisherFill`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ fillrec_id: fillrec_id }),
+      });
+
+      if (response.ok) {
+        // Update local state to remove the deleted fill record
+        setExtinguishers(prevExtinguishers => 
+          prevExtinguishers.map(extinguisher => ({
+            ...extinguisher,
+            fillrec: extinguisher.fillrec ? 
+              extinguisher.fillrec.filter(fill => fill.fillrec_id !== fillrec_id) : 
+              []
+          }))
+        );
+        
+        // If parent component provided a refresh function, call it
+        if (typeof refreshFireExtinguisherData === 'function') {
+          refreshFireExtinguisherData();
+        } else {
+          // Otherwise fetch data again
+          fetchExtinguisherData();
+        }
+      } else {
+        const errorData = await response.json();
+        setErrorMessage(`刪除失敗: ${errorData.detail || response.statusText}`);
+        console.error(`Error ${response.status}: ${errorData.detail || response.statusText}`);
+      }
+    } catch (error) {
+      setErrorMessage('連接伺服器時發生錯誤');
+      console.error('Error deleting fill record:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const toggleRow = (index) => {
     setSelectedRow(selectedRow === index ? null : index)
@@ -68,135 +173,176 @@ export const FireExtinguisher = ({refreshFireExtinguisherData}) => {
 
   return (
     <div>
-      <CTable hover className={styles.activityTable1}>
-        <CTableHead className={styles.activityTableHead}>
-          <tr>
-            <th>品名</th>
-            <th>成分</th>
-            <th>規格(重量)</th>
-            <th>備註</th>
-            <th>圖片</th>
-            <th>最近編輯</th>
-            <th>操作</th>
-          </tr>
-        </CTableHead>
-        <CTableBody className={styles.activityTableBody}>
-          {extinguishers.length > 0 ? (
-            extinguishers.map((extinguisher, extinguisher_id) => (
-              <React.Fragment key={extinguisher.extinguisher_id}>
-                <tr onClick={() => toggleRow(extinguisher_id)} className={styles.trChoose}>
-                  <td>{extinguisher.item_name}</td>
-                  <td>{ingredientMap[extinguisher.ingredient]}</td>
-                  <td>{extinguisher.specification}</td>
-                  <td>{extinguisher.remark}</td>
-                  <td>
-                    <Zoom>
-                      <img
-                        src={`fastapi/${extinguisher.img_path}`}
-                        alt="receipt"
-                        style={{ width: '100px' }}
+      {errorMessage && (
+        <div className="alert alert-danger" role="alert">
+          {errorMessage}
+        </div>
+      )}
+      
+      {isLoading ? (
+        <div className="d-flex justify-content-center">
+          <div className="spinner-border" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      ) : (
+        <CTable hover className={styles.activityTable1}>
+          <CTableHead className={styles.activityTableHead}>
+            <tr>
+              <th>品名</th>
+              <th>成分</th>
+              <th>規格(重量)</th>
+              <th>備註</th>
+              <th>圖片</th>
+              <th>最近編輯</th>
+              <th>操作</th>
+            </tr>
+          </CTableHead>
+          <CTableBody className={styles.activityTableBody}>
+            {extinguishers.length > 0 ? (
+              extinguishers.map((extinguisher, extinguisher_id) => (
+                <React.Fragment key={extinguisher.extinguisher_id}>
+                  <tr onClick={() => toggleRow(extinguisher_id)} className={styles.trChoose}>
+                    <td>{extinguisher.item_name}</td>
+                    <td>{ingredientMap[extinguisher.ingredient]}</td>
+                    <td>{extinguisher.specification}</td>
+                    <td>{extinguisher.remark}</td>
+                    <td>
+                      <Zoom>
+                        <img
+                          src={`fastapi/${extinguisher.img_path}`}
+                          alt="receipt"
+                          style={{ width: '100px' }}
+                        />
+                      </Zoom>
+                    </td>
+                    <td>
+                      {extinguisher.username}
+                      <br />
+                      {extinguisher.edit_time}
+                    </td>
+                    <td>
+                      <FontAwesomeIcon
+                        icon={faPenToSquare}
+                        className={styles.iconPen}
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevent row toggle
+                          setEditModalVisible(true);
+                          setSelectedExtinguisher(extinguisher.extinguisher_id);
+                        }}
                       />
-                    </Zoom>
-                  </td>
-                  <td>
-                    {extinguisher.username}
-                    <br />
-                    {extinguisher.edit_time}
-                  </td>
-                  <td>
-                    <FontAwesomeIcon
-                      icon={faPenToSquare}
-                      className={styles.iconPen}
-                      onClick={() => {
-                        setEditModalVisible(true)
-                        setSelectedExtinguisher(extinguisher.extinguisher_id)
-                      }}
-                    />
-                    <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
-                  </td>
-                </tr>
-                {selectedRow === extinguisher_id && (
-                  <td colSpan="9">
-                    <div className={styles.expandedContent}>
-                      {/* 在展開的區塊中放置你需要的內容 */}
-                      <div className={styles.fill}>
-                        <div>填充紀錄</div>
-                        <button
-                          onClick={() => {
-                            setAddFillModalVisible(true);
-                            const extinguisherId = extinguisher.extinguisher_id; // Capture the ID directly
-                            setSelectedExtinguisherId(extinguisherId);
-                            console.log(extinguisherId); // Log the correct ID
-                          }}
-                        >新增</button>
-                      </div>
-                      <table>
-                        {extinguisher.fillrec && extinguisher.fillrec.length > 0 && (
-                          <>
-                            <tr>
-                              <th>發票/收據日期</th>
-                              <th>發票號碼/收據編號</th>
-                              <th>填充量</th>
-                              <th>備註</th>
-                              <th>圖片</th>
-                              <th>最近編輯</th>
-                              <th>操作</th>
-                            </tr>
-                            {extinguisher.fillrec.map((fill, index) => (
-                              <tr key={fill.fillrec_id}>
-                                <td>{fill.Doc_date}</td>
-                                <td>{fill.Doc_number}</td>
-                                <td>{fill.usage}</td>
-                                <td>{fill.fillrec_remark}</td>
-                                <td>
-                                  <Zoom>
-                                    <img
-                                      src={`fastapi/${fill.fillrec_img_path}`}
-                                      alt="receipt"
-                                      style={{ width: '100px' }}
-                                    />
-                                  </Zoom>
-                                </td>
-                                <td>
-                                  {fill.fillrec_username}
-                                  <br />
-                                  {fill.fillrec_edit_time}
-                                </td>
-                                <td>
-                                  <FontAwesomeIcon
-                                    icon={faPenToSquare}
-                                    className={styles.iconPen}
-                                    onClick={() => {
-                                      setEditFillModalVisible(true)
-                                      setSelectedFill(fill.fillrec_id)
-                                    }}
-                                  />
-                                  <FontAwesomeIcon icon={faTrashCan} className={styles.iconTrash} />
+                      <FontAwesomeIcon 
+                        icon={faTrashCan} 
+                        className={styles.iconTrash} 
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevent row toggle
+                          deleteExtinguisher(extinguisher.extinguisher_id);
+                        }}
+                      />
+                    </td>
+                  </tr>
+                  {selectedRow === extinguisher_id && (
+                    <tr>
+                      <td colSpan="9">
+                        <div className={styles.expandedContent}>
+                          {/* 在展開的區塊中放置你需要的內容 */}
+                          <div className={styles.fill}>
+                            <div>填充紀錄</div>
+                            <button
+                              onClick={() => {
+                                setAddFillModalVisible(true);
+                                const extinguisherId = extinguisher.extinguisher_id; // Capture the ID directly
+                                setSelectedExtinguisherId(extinguisherId);
+                                console.log(extinguisherId); // Log the correct ID
+                              }}
+                            >新增</button>
+                          </div>
+                          <table>
+                            {extinguisher.fillrec && extinguisher.fillrec.length > 0 ? (
+                              <>
+                                <thead>
+                                  <tr>
+                                    <th>發票/收據日期</th>
+                                    <th>發票號碼/收據編號</th>
+                                    <th>填充量</th>
+                                    <th>備註</th>
+                                    <th>圖片</th>
+                                    <th>最近編輯</th>
+                                    <th>操作</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {extinguisher.fillrec.map((fill, index) => (
+                                    <tr key={fill.fillrec_id}>
+                                      <td>{fill.Doc_date}</td>
+                                      <td>{fill.Doc_number}</td>
+                                      <td>{fill.usage}</td>
+                                      <td>{fill.fillrec_remark}</td>
+                                      <td>
+                                        <Zoom>
+                                          <img
+                                            src={`fastapi/${fill.fillrec_img_path}`}
+                                            alt="receipt"
+                                            style={{ width: '100px' }}
+                                          />
+                                        </Zoom>
+                                      </td>
+                                      <td>
+                                        {fill.fillrec_username}
+                                        <br />
+                                        {fill.fillrec_edit_time}
+                                      </td>
+                                      <td>
+                                        <FontAwesomeIcon
+                                          icon={faPenToSquare}
+                                          className={styles.iconPen}
+                                          onClick={() => {
+                                            setEditFillModalVisible(true);
+                                            setSelectedFill(fill.fillrec_id);
+                                          }}
+                                        />
+                                        <FontAwesomeIcon 
+                                          icon={faTrashCan} 
+                                          className={styles.iconTrash}
+                                          onClick={() => {
+                                            deleteFill(fill.fillrec_id);
+                                          }}
+                                        />
+                                      </td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </>
+                            ) : (
+                              <tr>
+                                <td colSpan="7" style={{ textAlign: 'center', padding: '10px' }}>
+                                  沒有填充記錄
                                 </td>
                               </tr>
-                            ))}
-                          </>
-                        )}
-                      </table>
-                    </div>
-                  </td>
-                )}
-              </React.Fragment>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="7" style={{ textAlign: 'center', padding: '20px' }}>
-                沒有滅火器活動數據
-              </td>
-            </tr>
-          )}
-        </CTableBody>
-      </CTable>
+                            )}
+                          </table>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="7" style={{ textAlign: 'center', padding: '20px' }}>
+                  沒有滅火器活動數據
+                </td>
+              </tr>
+            )}
+          </CTableBody>
+        </CTable>
+      )}
+      
       <EditModal
         isEditModalVisible={isEditModalVisible}
         setEditModalVisible={setEditModalVisible}
         selectedExtinguisher={selectedExtinguisher}
-        refreshFireExtinguisherData={refreshFireExtinguisherData}
+        refreshFireExtinguisherData={refreshFireExtinguisherData || fetchExtinguisherData}
       />
 
       {/* 填充新增編輯modal */}
@@ -204,14 +350,14 @@ export const FireExtinguisher = ({refreshFireExtinguisherData}) => {
         isAddFillModalVisible={isAddFillModalVisible}
         setAddFillModalVisible={setAddFillModalVisible}
         selectedExtinguisherId={selectedExtinguisherId}
-        refreshFireExtinguisherData={refreshFireExtinguisherData}
+        refreshFireExtinguisherData={refreshFireExtinguisherData || fetchExtinguisherData}
       />
 
       <EditFillModal
         isEditFillModalVisible={isEditFillModalVisible}
         setEditFillModalVisible={setEditFillModalVisible}
         selectedFill={selectedFill}
-        refreshFireExtinguisherData={refreshFireExtinguisherData}
+        refreshFireExtinguisherData={refreshFireExtinguisherData || fetchExtinguisherData}
       />
     </div>
   )
