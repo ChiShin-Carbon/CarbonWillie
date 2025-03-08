@@ -88,10 +88,9 @@ from findone.employee import employee_findone
 from findone.Nonemployee import NonEmployee_findone
 from findone.Machinery import Machinery_findone
 from findone.Emergency_Generator import Emergency_Generator_findone
-from findone.Electricity_Usage import Electricity_Usage_findone
 from findone.Machinery import Machinery_findone
 from findone.Emergency_Generator import Emergency_Generator_findone
-from findone.Electricity_Usage import Electricity_Usage_findone
+from findone.Electricity_Usage import ElectricityUsage_findone
 from findone.commute import Commute_findone
 from findone.Business_trip import Business_Trip_findone
 from findone.Operational_Waste import Operational_Waste_findone
@@ -114,6 +113,9 @@ from edit.edit_commute import edit_commute
 from edit.edit_BusinessTrip import edit_BusinessTrip
 from edit.edit_OperationWaste import edit_OperationWaste
 from edit.edit_SellingWaste import edit_SellingWaste
+from edit.edit_electricityUsage import edit_ElectricityUsage
+from findone.Electricity import Electricity_findone
+from edit.edit_electricity import edit_electricity
 
 from delete.delete_vehicle import delete_vehicle
 from delete.delete_Extinguisher import delete_router
@@ -125,6 +127,7 @@ from delete.delete_emergency import delete_emergency
 from delete.delete_commute import delete_commute
 from delete.delete_OperationalWaste import delete_waste
 from delete.delete_SellingWaste import delete_SellingWaste
+from delete.delete_electricity import electricity_delete_router
 
 from Fuel_Factor_GWP import Fuel_Factors
 
@@ -225,7 +228,7 @@ app.include_router(employee_findone)
 app.include_router(NonEmployee_findone)
 app.include_router(Machinery_findone)
 app.include_router(Emergency_Generator_findone)
-app.include_router(Electricity_Usage_findone)
+app.include_router(ElectricityUsage_findone)
 app.include_router(Commute_findone)
 app.include_router(Business_Trip_findone)
 app.include_router(Operational_Waste_findone)
@@ -268,3 +271,7 @@ app.include_router(delete_emergency)
 app.include_router(delete_commute)
 app.include_router(delete_waste)
 app.include_router(delete_SellingWaste)
+app.include_router(edit_ElectricityUsage)
+app.include_router(Electricity_findone)
+app.include_router(edit_electricity)
+app.include_router(electricity_delete_router)

@@ -88,6 +88,7 @@ const Tabs = () => {
     refrigerants,
     machinery,
     Emergency_Generator,
+    electricity,
     commute,
     business_trip,
     operationalwaste,
@@ -99,6 +100,7 @@ const Tabs = () => {
     refreshRefrigerantData,
     refreshMachineryData,
     refreshEmergency_GeneratorData,
+    refreshElectricityData,
     refreshCommuteData,
     refreshBusinessTripData,
     refreshWasteData,
@@ -124,8 +126,8 @@ const Tabs = () => {
     refreshRefrigerantData();
     refreshMachineryData();
     refreshEmergency_GeneratorData();
-  }, [refreshVehicleData, refreshFireExtinguisherData, refreshEmployeeData, refreshNonEmployeeData, refreshRefrigerantData,refreshMachineryData,refreshEmergency_GeneratorData,refreshCommuteData, refreshBusinessTripData,
-    refreshWasteData , refreshSellingWasteData
+  }, [refreshVehicleData, refreshFireExtinguisherData, refreshEmployeeData, refreshNonEmployeeData, refreshRefrigerantData, refreshMachineryData, refreshEmergency_GeneratorData, refreshCommuteData, refreshBusinessTripData,
+    refreshWasteData, refreshSellingWasteData, refreshElectricityData
 
   ]);
 
@@ -150,11 +152,11 @@ const Tabs = () => {
       case 'Vehicle':
         return (
           <VehicleAdd
-          isAddModalVisible={isAddModalVisible}
-          setAddModalVisible={setAddModalVisible}
-          refreshVehicleData={refreshVehicleData}
-          setCurrentFunction={setCurrentFunction}
-          setCurrentTitle={setCurrentTitle}
+            isAddModalVisible={isAddModalVisible}
+            setAddModalVisible={setAddModalVisible}
+            refreshVehicleData={refreshVehicleData}
+            setCurrentFunction={setCurrentFunction}
+            setCurrentTitle={setCurrentTitle}
           />
         )
       case 'FireExtinguisher':
@@ -227,51 +229,51 @@ const Tabs = () => {
       case 'Electricity':
         return (
           <ElectricityAdd
-          isAddModalVisible={isAddModalVisible}
-          setAddModalVisible={setAddModalVisible}
-          refreshCommuteData={refreshCommuteData}  // Make sure this is passed correctly
-          setCurrentFunction={setCurrentFunction}
-          setCurrentTitle={setCurrentTitle}
+            isAddModalVisible={isAddModalVisible}
+            setAddModalVisible={setAddModalVisible}
+            refreshElectricityData={refreshElectricityData}  // Make sure this is passed correctly
+            setCurrentFunction={setCurrentFunction}
+            setCurrentTitle={setCurrentTitle}
           />
         )
       case 'Commuting':
         return (
           <CommutingAdd
-          isAddModalVisible={isAddModalVisible}
-          setAddModalVisible={setAddModalVisible}
-          refreshCommuteData={refreshCommuteData}  // Make sure this is passed correctly
-          setCurrentFunction={setCurrentFunction}
-          setCurrentTitle={setCurrentTitle}
+            isAddModalVisible={isAddModalVisible}
+            setAddModalVisible={setAddModalVisible}
+            refreshCommuteData={refreshCommuteData}  // Make sure this is passed correctly
+            setCurrentFunction={setCurrentFunction}
+            setCurrentTitle={setCurrentTitle}
           />
         )
       case 'BusinessTrip':
         return (
           <BusinessTripAdd
-          isAddModalVisible={isAddModalVisible}
-          setAddModalVisible={setAddModalVisible}
-          refreshBusinessTripData={refreshBusinessTripData}  // Make sure this is passed correctly
-          setCurrentFunction={setCurrentFunction}
-          setCurrentTitle={setCurrentTitle}
+            isAddModalVisible={isAddModalVisible}
+            setAddModalVisible={setAddModalVisible}
+            refreshBusinessTripData={refreshBusinessTripData}  // Make sure this is passed correctly
+            setCurrentFunction={setCurrentFunction}
+            setCurrentTitle={setCurrentTitle}
           />
         )
       case 'OperationalWaste':
         return (
           <OperationalWasteAdd
-          isAddModalVisible={isAddModalVisible}
-          setAddModalVisible={setAddModalVisible}
-          refreshWasteData={refreshWasteData}  // Make sure this is passed correctly
-          setCurrentFunction={setCurrentFunction}
-          setCurrentTitle={setCurrentTitle}
+            isAddModalVisible={isAddModalVisible}
+            setAddModalVisible={setAddModalVisible}
+            refreshWasteData={refreshWasteData}  // Make sure this is passed correctly
+            setCurrentFunction={setCurrentFunction}
+            setCurrentTitle={setCurrentTitle}
           />
         )
       case 'SellingWaste':
         return (
           <SellingWasteAdd
-          isAddModalVisible={isAddModalVisible}
-          setAddModalVisible={setAddModalVisible}
-          refreshSellingWasteData={refreshSellingWasteData}  // Make sure this is passed correctly
-          setCurrentFunction={setCurrentFunction}
-          setCurrentTitle={setCurrentTitle}
+            isAddModalVisible={isAddModalVisible}
+            setAddModalVisible={setAddModalVisible}
+            refreshSellingWasteData={refreshSellingWasteData}  // Make sure this is passed correctly
+            setCurrentFunction={setCurrentFunction}
+            setCurrentTitle={setCurrentTitle}
           />
         )
 
@@ -335,12 +337,12 @@ const Tabs = () => {
                 </button>
               </div>
               <div className={styles.activityCardBody}>
-                {currentFunction === 'Vehicle' && 
-                <Vehicle 
-                key={JSON.stringify(vehicle)} // Force re-render when data changes
-                vehicle={vehicle}
-                refreshVehicleData={refreshVehicleData}
-                />}
+                {currentFunction === 'Vehicle' &&
+                  <Vehicle
+                    key={JSON.stringify(vehicle)} // Force re-render when data changes
+                    vehicle={vehicle}
+                    refreshVehicleData={refreshVehicleData}
+                  />}
                 {currentFunction === 'FireExtinguisher' &&
                   <FireExtinguisher
                     key={refreshKey} // Use refreshKey instead of JSON.stringify
@@ -368,44 +370,49 @@ const Tabs = () => {
                     refreshRefrigerantData={refreshRefrigerantData}
                   />
                 }
-                {currentFunction === 'Machinery' && 
-                <Machinery 
-                key={JSON.stringify(machinery)} // Force re-render when data changes
-                machinery={machinery}
-                refreshMachineryData={refreshMachineryData}
-                />}
-                {currentFunction === 'EmergencyGenerator' && 
-                <EmergencyGenerator 
-                key={JSON.stringify(Emergency_Generator)} // Force re-render when data changes
-                Emergency_Generator={Emergency_Generator}
-                refreshEmergency_GeneratorData={refreshEmergency_GeneratorData}
-                />}
+                {currentFunction === 'Machinery' &&
+                  <Machinery
+                    key={JSON.stringify(machinery)} // Force re-render when data changes
+                    machinery={machinery}
+                    refreshMachineryData={refreshMachineryData}
+                  />}
+                {currentFunction === 'EmergencyGenerator' &&
+                  <EmergencyGenerator
+                    key={JSON.stringify(Emergency_Generator)} // Force re-render when data changes
+                    Emergency_Generator={Emergency_Generator}
+                    refreshEmergency_GeneratorData={refreshEmergency_GeneratorData}
+                  />}
                 {/* {currentFunction === 'ElectricityUsage' && <ElectricityUsage />} */}
-                {currentFunction === 'Electricity' && <Electricity />}
-                {currentFunction === 'Commuting' && 
-                <Commuting 
-                key={JSON.stringify(commute)} // Force re-render when data changes
-                commute={commute}
-                refreshCommuteData={refreshCommuteData}
-                />}
-                {currentFunction === 'BusinessTrip' && 
-                <BusinessTrip 
-                key={JSON.stringify(business_trip)} // Force re-render when data changes
-                business_trip={business_trip}
-                refreshBusinessTripData={refreshBusinessTripData}
-                />}
-                {currentFunction === 'OperationalWaste' && 
-                <OperationalWaste 
-                key={JSON.stringify(operationalwaste)} // Force re-render when data changes
-                operationalwaste={operationalwaste}
-                refreshWasteData={refreshWasteData}
-                />}
-                {currentFunction === 'SellingWaste' && 
-                <SellingWaste 
-                key={JSON.stringify(sellingwaste)} // Force re-render when data changes
-                sellingwaste={sellingwaste}
-                refreshSellingWasteData={refreshSellingWasteData}
-                />}
+                {currentFunction === 'Electricity' &&
+                  <Electricity
+                    key={JSON.stringify(electricity)} // Force re-render when data changes
+                    electricity={electricity}
+                    refreshElectricityData={refreshElectricityData}
+                  />}
+                {currentFunction === 'Commuting' &&
+                  <Commuting
+                    key={JSON.stringify(commute)} // Force re-render when data changes
+                    commute={commute}
+                    refreshCommuteData={refreshCommuteData}
+                  />}
+                {currentFunction === 'BusinessTrip' &&
+                  <BusinessTrip
+                    key={JSON.stringify(business_trip)} // Force re-render when data changes
+                    business_trip={business_trip}
+                    refreshBusinessTripData={refreshBusinessTripData}
+                  />}
+                {currentFunction === 'OperationalWaste' &&
+                  <OperationalWaste
+                    key={JSON.stringify(operationalwaste)} // Force re-render when data changes
+                    operationalwaste={operationalwaste}
+                    refreshWasteData={refreshWasteData}
+                  />}
+                {currentFunction === 'SellingWaste' &&
+                  <SellingWaste
+                    key={JSON.stringify(sellingwaste)} // Force re-render when data changes
+                    sellingwaste={sellingwaste}
+                    refreshSellingWasteData={refreshSellingWasteData}
+                  />}
               </div>
             </>
           ) : (

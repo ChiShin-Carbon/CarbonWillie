@@ -170,6 +170,32 @@ export const getEmergency_GeneratorData = async () => {
     }
 };
 
+export const getElectricityData = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/Electricity', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      const data = await response.json();
+  
+      if (response.ok) {
+        return data.electricities;
+      } else if (response.status === 404) {
+        console.warn('No electricity data found.');
+        return [];
+      } else {
+        console.error(`Error ${response.status}: ${data.detail}`);
+        return null;
+      }
+    } catch (error) {
+      console.error('Error fetching electricity data:', error);
+      return null;
+    }
+  };
+
 // Function to fetch commute data
 export const getCommuteData = async () => {
     try {

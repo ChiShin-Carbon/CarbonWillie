@@ -7,6 +7,7 @@ import {
     getRefrigerantData, 
     getMachineryData, 
     getEmergency_GeneratorData,
+    getElectricityData,
     getCommuteData,
     getBusiness_TripData,
     getOperationalWasteData,
@@ -21,6 +22,7 @@ export const useRefreshData = () => {
     const [refrigerants, setRefrigerants] = useState([]);
     const [machinery, setMachinery] = useState([]);
     const [Emergency_Generator, setEmergency_Generator] = useState([]);
+    const [electricity, setElectricity] = useState([]);
     const [commute, setCommute] = useState([]);
     const [business_trip, setbusiness_trip] = useState([]);
     const [operationalwaste, setOperationalwaste] = useState([]);
@@ -102,6 +104,17 @@ export const useRefreshData = () => {
         }
     }, []);
 
+    const refreshElectricityData = useCallback(async () => {
+        console.log("🔄 Refreshing Electricity data...");
+        try {
+            const data = await getElectricityData();
+            console.log("✅ Retrieved data:", data);
+            setElectricity(Array.isArray(data) ? data : data.extinguishers || []);
+        } catch (error) {
+            console.error("Error refreshing Electricity data:", error);
+        }
+    }, []);
+
     const refreshCommuteData = useCallback(async () => {
         console.log("🔄 Refreshing Emergency_Generator data...");
         try {
@@ -156,6 +169,7 @@ export const useRefreshData = () => {
         refrigerants,
         machinery,
         Emergency_Generator,
+        electricity,
         commute,
         business_trip,
         operationalwaste,
@@ -167,6 +181,7 @@ export const useRefreshData = () => {
         refreshRefrigerantData,
         refreshMachineryData,
         refreshEmergency_GeneratorData,
+        refreshElectricityData,
         refreshCommuteData,
         refreshBusinessTripData,
         refreshWasteData,
