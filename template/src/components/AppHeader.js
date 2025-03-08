@@ -29,7 +29,10 @@ import {
 
 import { AppHeaderDropdown } from './header/index'
 
-const AppHeader = () => {
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faRobot, faLocationArrow, faSpinner } from '@fortawesome/free-solid-svg-icons';
+
+const AppHeader = ({ toggleRobot }) => {
   const headerRef = useRef()
   const { colorMode, setColorMode } = useColorModes('coreui-free-react-admin-template-theme')
 
@@ -71,7 +74,7 @@ const AppHeader = () => {
               <CIcon icon={cilBell} size="lg" />
             </CNavLink>
           </CNavItem>
-          <CNavItem>
+          {/* <CNavItem>
             <CNavLink href="#">
               <CIcon icon={cilList} size="lg" />
             </CNavLink>
@@ -80,9 +83,9 @@ const AppHeader = () => {
             <CNavLink href="#">
               <CIcon icon={cilEnvelopeOpen} size="lg" />
             </CNavLink>
-          </CNavItem>
+          </CNavItem> */}
           <CNavItem>
-            <CNavLink href="#">
+          <CNavLink onClick={toggleRobot} style={{ cursor: 'pointer' }}>
               <CIcon icon={cilHeadphones} size="lg" />
             </CNavLink>
           </CNavItem>
