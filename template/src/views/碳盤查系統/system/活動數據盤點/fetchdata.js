@@ -326,3 +326,45 @@ export const getBaseline = async () => {
       console.error('Error:', error)
     }
   }
+
+  // Function to fetch Fuel Factors data
+export const getPowerFactorsData = async () => {
+    try {
+        const response = await fetch('http://localhost:8000/Power_Emission_Factor', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        const data = await response.json();
+
+        if (response.ok) {
+            return data.Power_Emission_Factor;  // Set selling waste data to state
+        } else {
+            console.error(`Error ${response.status}: ${data.detail}`);
+        }
+    } catch (error) {
+        console.error('Error fetching selling waste data:', error);
+    }
+};
+
+//gwp_factors
+export const getGWPData = async () => {
+    try {
+        const response = await fetch('http://localhost:8000/gwp_factors', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        const data = await response.json();
+
+        if (response.ok) {
+            return data.gwp_factors;  // Set selling waste data to state
+        } else {
+            console.error(`Error ${response.status}: ${data.detail}`);
+        }
+    } catch (error) {
+        console.error('Error fetching selling waste data:', error);
+    }
+};

@@ -131,7 +131,8 @@ from delete.delete_SellingWaste import delete_SellingWaste
 from delete.delete_electricity import electricity_delete_router
 
 from Fuel_Factor_GWP import Fuel_Factors
-
+from power_emission_factor import Power_Emission_Factor
+from GWP import gwp_factors
 
 app = FastAPI()
 load_dotenv()
@@ -277,3 +278,5 @@ app.include_router(Electricity_findone)
 app.include_router(edit_electricity)
 app.include_router(electricity_delete_router)
 app.include_router(Authorized_table)
+app.include_router(Power_Emission_Factor)
+app.include_router(gwp_factors)

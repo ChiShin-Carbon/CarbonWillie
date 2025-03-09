@@ -24,11 +24,15 @@ import { faTableList, faCircleInfo } from '@fortawesome/free-solid-svg-icons'
 
 import styles from '../../../scss/盤查結果查詢.module.css'
 import { getFuelFactorsData } from '../../碳盤查系統/system/活動數據盤點/fetchdata'
+import { getPowerFactorsData } from '../../碳盤查系統/system/活動數據盤點/fetchdata'
+import { getGWPData } from '../../碳盤查系統/system/活動數據盤點/fetchdata'
 
 const EmissionFactorsDashboard = () => {
   const [activeTab, setActiveTab] = useState('tab1')
   const [visible1, setVisible1] = useState(false)
   const [fuelFactors, setFuelFactors] = useState([])
+  const [powerFactors, setPowerFactors] = useState([])
+  const [GWP, setGWP] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [updateTime, setUpdateTime] = useState(null)
 
@@ -65,10 +69,18 @@ const EmissionFactorsDashboard = () => {
       setIsLoading(true)
       try {
         const data = await getFuelFactorsData()
+        const PowerData = await getPowerFactorsData()
+        const GWPData = await getGWPData()
         if (data) {
           setFuelFactors(data)
           const firstFactor = data[0]
           setUpdateTime(firstFactor.updata_time)
+        }
+        if(PowerData){
+          setPowerFactors(PowerData)
+        }
+        if(GWPData){
+          setGWP(GWPData)
         }
       } catch (error) {
         console.error('Error fetching fuel factors:', error)
@@ -547,38 +559,39 @@ const EmissionFactorsDashboard = () => {
                   </div>
                 </CCardTitle>
                 <CCardBody>
-                  <table style={{ width: '100%', fontSize: '1.2rem' }}>
-                    <thead style={{ border: '1px solid white', backgroundColor: 'orange', color: 'white' }}>
-                      <tr>
-                        <th scope="col" style={{ ...cellStyle, width: '200px' }}></th>
-                        <th scope="col" style={{ ...cellStyle, width: '400px', textAlign: 'center' }}>110年</th>
-                        <th scope="col" style={{ ...cellStyle, width: '300px', textAlign: 'center' }}>111年</th>
-                        <th scope="col" style={{ ...cellStyle, width: '300px', textAlign: 'center' }}>112年</th>
-                        <th scope="col" style={{ ...cellStyle, width: '300px', textAlign: 'center' }}>113年</th>
-                        <th scope="col" style={{ ...cellStyle, width: '300px', textAlign: 'center' }}>114年</th>
-                      </tr>
-                    </thead>
-                    <tbody style={{ border: '1px solid white', backgroundColor: '#FFE4CA' }}>
-                      <tr>
-                        <td style={cellStyle}><b>電力排放係數(CO2e/度)</b></td>
-                        <td style={cellStyle}>
-                          <ValueWithTooltip original="0.494" formatted={0.494} />
-                        </td>
-                        <td style={cellStyle}>
-                          <ValueWithTooltip original="0.494" formatted={0.494} />
-                        </td>
-                        <td style={cellStyle}>
-                          <ValueWithTooltip original="0.494" formatted={0.494} />
-                        </td>
-                        <td style={cellStyle}>
-                          <ValueWithTooltip original="0.494" formatted={0.494} />
-                        </td>
-                        <td style={cellStyle}>
-                          <ValueWithTooltip original="0.494" formatted={0.494} />
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
+                  {isLoading ? (
+                    <div>Loading...</div>
+                  ) : (
+                    <table style={{ width: '100%', fontSize: '1.2rem' }}>
+                      <thead style={{ border: '1px solid white', backgroundColor: 'orange', color: 'white' }}>
+                        <tr>
+                          <th scope="col" style={{ ...cellStyle, width: '200px' }}></th>
+                          {powerFactors.map((factor, index) => (
+                            <th 
+                              key={index} 
+                              scope="col" 
+                              style={{ ...cellStyle, width: '300px', textAlign: 'center' }}
+                            >
+                              {factor.year}年 (民國{factor.year-1911}年)
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody style={{ border: '1px solid white', backgroundColor: '#FFE4CA' }}>
+                        <tr>
+                          <td style={cellStyle}><b>電力排放係數(CO2e/度)</b></td>
+                          {powerFactors.map((factor, index) => (
+                            <td style={cellStyle} key={index}>
+                              <ValueWithTooltip 
+                                original={factor.emission_factor} 
+                                formatted={parseFloat(factor.emission_factor).toFixed(3)} 
+                              />
+                            </td>
+                          ))}
+                        </tr>
+                      </tbody>
+                    </table>
+                  )}
                 </CCardBody>
               </CCard>
               <br />
@@ -589,38 +602,37 @@ const EmissionFactorsDashboard = () => {
                   <SectionTitle title="GWP值" />
                 </CCardTitle>
                 <CCardBody>
-                  <table style={{ width: '100%', fontSize: '1.2rem' }}>
-                    <thead style={{ border: '1px solid white', backgroundColor: 'orange', color: 'white' }}>
-                      <tr>
-                        <th scope="col" style={cellStyle}>種類</th>
-                        <th scope="col" style={cellStyle}>溫室氣體化學式</th>
-                        <th scope="col" style={cellStyle}>IPCC 2013年預設GWP值</th>
-                      </tr>
-                    </thead>
-                    <tbody style={{ border: '1px solid white', backgroundColor: '#FFE4CA' }}>
-                      <tr>
-                        <td style={{ ...cellStyle, width: '350px' }}><b>--</b></td>
-                        <td style={cellStyle}>CO2二氧化碳</td>
-                        <td style={cellStyle}>
-                          <ValueWithTooltip original="1" formatted="1" />
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style={{ ...cellStyle, width: '350px' }}><b>--</b></td>
-                        <td style={cellStyle}>CH4甲烷</td>
-                        <td style={cellStyle}>
-                          <ValueWithTooltip original="28" formatted={"28"} />
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style={{ ...cellStyle, width: '350px' }}><b>--</b></td>
-                        <td style={cellStyle}>N2O氧化亞氮</td>
-                        <td style={cellStyle}>
-                          <ValueWithTooltip original="265" formatted={"265"} />
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
+                  {isLoading ? (
+                    <div>Loading...</div>
+                  ) : (
+                    <table style={{ width: '100%', fontSize: '1.2rem' }}>
+                      <thead style={{ border: '1px solid white', backgroundColor: 'orange', color: 'white' }}>
+                        <tr>
+                          <th scope="col" style={cellStyle}>種類</th>
+                          <th scope="col" style={cellStyle}>溫室氣體化學式</th>
+                          <th scope="col" style={cellStyle}>
+                            {GWP.length > 0 ? `${GWP[0].reference} ${GWP[0].publication_year}年預設GWP值` : 'IPCC 預設GWP值'}
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody style={{ border: '1px solid white', backgroundColor: '#FFE4CA' }}>
+                        {GWP.map((factor) => (
+                          <tr key={factor.gwp_id}>
+                            <td style={{ ...cellStyle, width: '350px' }}>
+                              <b>{factor.gwp_type || '--'}</b>
+                            </td>
+                            <td style={cellStyle}>{factor.chemical_formula}</td>
+                            <td style={cellStyle}>
+                              <ValueWithTooltip 
+                                original={factor.gwp_value} 
+                                formatted={factor.gwp_value} 
+                              />
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
                 </CCardBody>
               </CCard>
 
