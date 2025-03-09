@@ -228,7 +228,7 @@ export const VehicleAdd = ({
           }));
           appliedCount++;
           updates.push('日期');
-          
+
           // Clear date error if it exists
           setFormErrors(prev => ({
             ...prev,
@@ -244,7 +244,7 @@ export const VehicleAdd = ({
         }));
         appliedCount++;
         updates.push('號碼');
-        
+
         // Clear number error
         setFormErrors(prev => ({
           ...prev,
@@ -318,7 +318,7 @@ export const VehicleAdd = ({
     } else if (cfvStartDate && cfvEndDate && (formData.date < cfvStartDate || formData.date > cfvEndDate)) {
       errors.date = `日期必須在 ${cfvStartDate} 至 ${cfvEndDate} 之間`;
     }
-    
+
     if (!formData.number) errors.number = '請輸入發票號碼/收據編號';
     if (!formData.quantity) errors.quantity = '請輸入公升數/金額';
     if (!formData.image) errors.image = '請上傳圖片';
@@ -668,8 +668,22 @@ export const VehicleAdd = ({
                 )}
               </CFormLabel>
               <div className={styles.errorMSG || 'p-3 border'}>
-                <div>偵測日期: {ocrData.date || '尚未偵測'}</div>
-                <div>偵測號碼: {ocrData.number || '尚未偵測'}</div>
+                <div>
+                  偵測日期: {ocrData.date || '尚未偵測'}
+                  {ocrData.date && formData.date && ocrData.date !== formData.date && (
+                    <span className="text-danger ms-2">
+                      (發票日期與偵測不符)
+                    </span>
+                  )}
+                </div>
+                <div>
+                  偵測號碼: {ocrData.number || '尚未偵測'}
+                  {ocrData.number && formData.number && ocrData.number !== formData.number && (
+                    <span className="text-danger ms-2">
+                      (發票號碼與偵測不符)
+                    </span>
+                  )}
+                </div>
               </div>
 
               <CFormLabel className={styles.addlabel}>

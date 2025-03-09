@@ -776,9 +776,24 @@ const AddFillModal = ({
                                 )}
                             </CFormLabel>
                             <div className={styles.errorMSG || 'p-3 border'}>
-                                <div>偵測日期: {ocrData.date || '尚未偵測'}</div>
-                                <div>偵測號碼: {ocrData.num || '尚未偵測'}</div>
+                                <div>
+                                    偵測日期: {ocrData.date || '尚未偵測'}
+                                    {ocrData.date && formData.date && ocrData.date !== formData.date && (
+                                        <span className="text-danger ms-2">
+                                            (發票日期與偵測不符)
+                                        </span>
+                                    )}
+                                </div>
+                                <div>
+                                    偵測號碼: {ocrData.num || '尚未偵測'}
+                                    {ocrData.num && formData.num && ocrData.num !== formData.num && (
+                                        <span className="text-danger ms-2">
+                                            (發票號碼與偵測不符)
+                                        </span>
+                                    )}
+                                </div>
                             </div>
+
 
                             <CFormLabel className={styles.addlabel}>
                                 填表說明

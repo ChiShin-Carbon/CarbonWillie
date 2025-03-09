@@ -510,7 +510,6 @@ const AddFillModal = ({
                                         id="date"
                                         value={formData.date}
                                         onChange={handleInputChange}
-                                        invalid={!!validation.formErrors.date || !validation.isDateCorrect}
                                         min={cfvStartDate}
                                         max={cfvEndDate}
                                     />
@@ -536,7 +535,6 @@ const AddFillModal = ({
                                         id="num"
                                         value={formData.num}
                                         onChange={handleInputChange}
-                                        invalid={!!validation.formErrors.num || !validation.isNumCorrect}
                                     />
                                     {validation.formErrors.num && (
                                         <div className="invalid-feedback">{validation.formErrors.num}</div>
@@ -672,14 +670,18 @@ const AddFillModal = ({
                             <div className={styles.errorMSG || 'p-3 border'}>
                                 <div>
                                     偵測日期: {ocrData.date || '尚未偵測'}
-                                    {!validation.isDateCorrect && (
-                                        <span className="text-danger ms-2">{validation.dateErrorMessage}</span>
+                                    {ocrData.date && formData.date && ocrData.date !== formData.date && (
+                                        <span className="text-danger ms-2">
+                                            (發票日期與偵測不符)
+                                        </span>
                                     )}
                                 </div>
                                 <div>
                                     偵測號碼: {ocrData.num || '尚未偵測'}
-                                    {!validation.isNumCorrect && (
-                                        <span className="text-danger ms-2">{validation.numErrorMessage}</span>
+                                    {ocrData.num && formData.num && ocrData.num !== formData.num && (
+                                        <span className="text-danger ms-2">
+                                            (發票號碼與偵測不符)
+                                        </span>
                                     )}
                                 </div>
                             </div>

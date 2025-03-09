@@ -742,8 +742,22 @@ const EditModal = ({
                                 )}
                             </CFormLabel>
                             <div className={styles.errorMSG || 'p-3 border'}>
-                                <div>偵測日期: {ocrData.date || '尚未偵測'}</div>
-                                <div>偵測號碼: {ocrData.number || '尚未偵測'}</div>
+                                <div>
+                                    偵測日期: {ocrData.date || '尚未偵測'}
+                                    {ocrData.date && formValues.date && ocrData.date !== formValues.date && (
+                                        <span className="text-danger ms-2">
+                                            (發票日期與偵測不符)
+                                        </span>
+                                    )}
+                                </div>
+                                <div>
+                                    偵測號碼: {ocrData.number || '尚未偵測'}
+                                    {ocrData.number && formValues.num && ocrData.number !== formValues.num && (
+                                        <span className="text-danger ms-2">
+                                            (發票號碼與偵測不符)
+                                        </span>
+                                    )}
+                                </div>
                                 {!ocrData.date && !ocrData.number && existingImage && (
                                     <div>已載入現有圖片。如需OCR檢查，請上傳新圖片。</div>
                                 )}

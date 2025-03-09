@@ -23,11 +23,11 @@ const EditModal = ({
     const [previewImage, setPreviewImage] = useState(null); // State for image preview
     const [existingImage, setExistingImage] = useState(null); // State to track if there's an existing image
     const [useExistingImage, setUseExistingImage] = useState(true); // Track if using existing image
-    
+
     // State for date restrictions
     const [cfvStartDate, setCfvStartDate] = useState('');
     const [cfvEndDate, setCfvEndDate] = useState('');
-    
+
     const [formValues, setFormValues] = useState({
         date: '',
         num: '',
@@ -37,13 +37,13 @@ const EditModal = ({
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [formErrors, setFormErrors] = useState({});
-    
+
     // OCR states
     const [ocrData, setOcrData] = useState({
         date: '',
         number: ''
     });
-    
+
     // Alert states
     const [showAlert, setShowAlert] = useState(false);
     const [alertMessage, setAlertMessage] = useState('');
@@ -188,7 +188,7 @@ const EditModal = ({
                 if (extractedDate && extractedDate !== formValues.date) {
                     showFormAlert(`偵測的日期 (${extractedDate}) 與表單日期 (${formValues.date}) 不符`, 'warning');
                 }
-                
+
                 if (extractedNumber && extractedNumber !== formValues.num) {
                     showFormAlert(`偵測的號碼 (${extractedNumber}) 與表單號碼 (${formValues.num}) 不符`, 'warning');
                 }
@@ -227,7 +227,7 @@ const EditModal = ({
                     }));
                     appliedCount++;
                     updates.push('日期');
-                    
+
                     // Clear date error if it exists
                     setFormErrors(prev => ({
                         ...prev,
@@ -243,7 +243,7 @@ const EditModal = ({
                 }));
                 appliedCount++;
                 updates.push('號碼');
-                
+
                 // Clear num error
                 setFormErrors(prev => ({
                     ...prev,
@@ -316,17 +316,17 @@ const EditModal = ({
                     },
                     body: JSON.stringify({ EG_id: selectedGenerator }),
                 });
-                
+
                 if (!response.ok) {
                     const errorText = await response.text();
                     throw new Error(`HTTP error ${response.status}: ${errorText}`);
                 }
-                
+
                 const data = await response.json();
-                
+
                 if (data.Emergency_Generator && data.Emergency_Generator.length > 0) {
                     setGenerator(data.Emergency_Generator); // Store full generator data
-                    
+
                     // Populate form with fetched data
                     const generatorData = data.Emergency_Generator[0];
                     setFormValues({
@@ -344,7 +344,7 @@ const EditModal = ({
                         setPreviewImage(`fastapi/${generatorData.img_path}`);
                         setUseExistingImage(true);
                     }
-                    
+
                     // Check if the loaded date is within valid range
                     if (generatorData?.Doc_date && cfvStartDate && cfvEndDate) {
                         if (generatorData.Doc_date < cfvStartDate || generatorData.Doc_date > cfvEndDate) {
@@ -378,7 +378,7 @@ const EditModal = ({
         } else if (cfvStartDate && cfvEndDate && (formValues.date < cfvStartDate || formValues.date > cfvEndDate)) {
             errors.date = `日期必須在 ${cfvStartDate} 至 ${cfvEndDate} 之間`;
         }
-        
+
         if (!formValues.num) errors.num = '請輸入發票號碼/收據編號';
         if (!formValues.usage) errors.usage = '請輸入使用量';
         if (!formValues.image && !existingImage) errors.image = '請上傳圖片';
@@ -510,7 +510,7 @@ const EditModal = ({
         } else if (id === 'num' && ocrData.number && value !== ocrData.number) {
             showFormAlert(`輸入的號碼 (${value}) 與偵測結果 (${ocrData.number}) 不符`, 'warning');
         }
-        
+
         // Clear validation error for this field (except date which we handled above)
         if (id !== 'date' && formErrors[id]) {
             setFormErrors(prev => ({
@@ -576,11 +576,11 @@ const EditModal = ({
                                         </div>
                                     )}
                                     {formValues.date && cfvStartDate && cfvEndDate &&
-                                     (formValues.date < cfvStartDate || formValues.date > cfvEndDate) && (
-                                        <div className="text-danger mt-1">
-                                            <strong>注意：此記錄的日期 ({formValues.date}) 不在當前有效範圍內</strong>
-                                        </div>
-                                    )}
+                                        (formValues.date < cfvStartDate || formValues.date > cfvEndDate) && (
+                                            <div className="text-danger mt-1">
+                                                <strong>注意：此記錄的日期 ({formValues.date}) 不在當前有效範圍內</strong>
+                                            </div>
+                                        )}
                                 </CCol>
                             </CRow>
                             <CRow className="mb-3">
@@ -699,13 +699,26 @@ const EditModal = ({
                                 )}
                             </CFormLabel>
                             <div className={styles.errorMSG || 'p-3 border'}>
-                                <div>偵測日期: {ocrData.date || '尚未偵測'}</div>
-                                <div>偵測號碼: {ocrData.number || '尚未偵測'}</div>
+                                <div>
+                                    偵測日期: {ocrData.date || '尚未偵測'}
+                                    {ocrData.date && formValues.date && ocrData.date !== formValues.date && (
+                                        <span className="text-danger ms-2">
+                                            (發票日期與偵測不符)
+                                        </span>
+                                    )}
+                                </div>
+                                <div>
+                                    偵測號碼: {ocrData.number || '尚未偵測'}
+                                    {ocrData.number && formValues.num && ocrData.number !== formValues.num && (
+                                        <span className="text-danger ms-2">
+                                            (發票號碼與偵測不符)
+                                        </span>
+                                    )}
+                                </div>
                                 {!ocrData.date && !ocrData.number && existingImage && (
                                     <div>已載入現有圖片。如需OCR檢查，請上傳新圖片。</div>
                                 )}
                             </div>
-
                             <CFormLabel className={styles.addlabel}>
                                 填表說明
                             </CFormLabel>
