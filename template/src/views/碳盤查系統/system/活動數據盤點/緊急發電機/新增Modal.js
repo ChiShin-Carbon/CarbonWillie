@@ -18,6 +18,10 @@ export const EmergencyGeneratorAdd = ({
     // Create a local refresh instance as backup
     const localRefreshData = useRefreshData();
     
+    // State for date restrictions
+    const [cfvStartDate, setCfvStartDate] = useState('');
+    const [cfvEndDate, setCfvEndDate] = useState('');
+    
     // Form state with default values
     const defaultFormData = {
         date: '',
@@ -42,6 +46,29 @@ export const EmergencyGeneratorAdd = ({
         date: '',
         number: ''
     });
+
+    // Fetch baseline data when component mounts
+    useEffect(() => {
+        getBaseline();
+    }, []);
+
+    // Function to fetch baseline data
+    const getBaseline = async () => {
+        try {
+            const response = await fetch('http://localhost:8000/baseline');
+            if (response.ok) {
+                const data = await response.json();
+                setCfvStartDate(data.baseline.cfv_start_date);
+                setCfvEndDate(data.baseline.cfv_end_date);
+            } else {
+                console.log(response.status);
+                showFormAlert('無法取得基準期間資料', 'warning');
+            }
+        } catch (error) {
+            console.error('Error fetching baseline:', error);
+            showFormAlert('取得基準期間資料時發生錯誤', 'warning');
+        }
+    };
 
     // Clean up resources when component unmounts or modal closes
     useEffect(() => {
@@ -85,15 +112,30 @@ export const EmergencyGeneratorAdd = ({
             [id]: value
         }));
         
-        // If this is a field with OCR data, check if it matches
-        if (id === 'date' && ocrData.date && value !== ocrData.date) {
-            showFormAlert(`輸入的日期 (${value}) 與偵測結果 (${ocrData.date}) 不符`, 'warning');
+        // Check if date is within valid range for date field
+        if (id === 'date') {
+            if (cfvStartDate && cfvEndDate && (value < cfvStartDate || value > cfvEndDate)) {
+                setFormErrors(prev => ({
+                    ...prev,
+                    date: `日期必須在 ${cfvStartDate} 至 ${cfvEndDate} 之間`
+                }));
+            } else {
+                setFormErrors(prev => ({
+                    ...prev,
+                    date: undefined
+                }));
+            }
+
+            // If this is a field with OCR data, check if it matches
+            if (ocrData.date && value !== ocrData.date) {
+                showFormAlert(`輸入的日期 (${value}) 與偵測結果 (${ocrData.date}) 不符`, 'warning');
+            }
         } else if (id === 'number' && ocrData.number && value !== ocrData.number) {
             showFormAlert(`輸入的號碼 (${value}) 與偵測結果 (${ocrData.number}) 不符`, 'warning');
         }
         
-        // Clear validation error for this field
-        if (formErrors[id]) {
+        // Clear validation error for this field (except date which we handled above)
+        if (id !== 'date' && formErrors[id]) {
             setFormErrors(prev => ({
                 ...prev,
                 [id]: undefined
@@ -101,26 +143,59 @@ export const EmergencyGeneratorAdd = ({
         }
     };
 
-    // Apply OCR data to form
+    // Apply OCR data to form with better feedback and date validation
     const applyOcrData = () => {
+        let appliedCount = 0;
+        
         if (ocrData.date || ocrData.number) {
-            setFormData(prev => ({
-                ...prev,
-                date: ocrData.date || prev.date,
-                number: ocrData.number || prev.number
-            }));
+            // Track what was applied for better messaging
+            const updates = [];
             
-            // Clear related errors
-            setFormErrors(prev => ({
-                ...prev,
-                date: undefined,
-                number: undefined
-            }));
+            if (ocrData.date) {
+                // Check if date is within valid range before applying
+                if (cfvStartDate && cfvEndDate && (ocrData.date < cfvStartDate || ocrData.date > cfvEndDate)) {
+                    showFormAlert(`偵測到的日期 (${ocrData.date}) 不在有效範圍內，未套用`, 'warning');
+                } else {
+                    setFormData(prev => ({
+                        ...prev,
+                        date: ocrData.date
+                    }));
+                    appliedCount++;
+                    updates.push('日期');
+                    
+                    // Clear date error if it exists
+                    setFormErrors(prev => ({
+                        ...prev,
+                        date: undefined
+                    }));
+                }
+            }
             
-            showFormAlert('已應用偵測資料', 'success');
+            if (ocrData.number) {
+                setFormData(prev => ({
+                    ...prev,
+                    number: ocrData.number
+                }));
+                appliedCount++;
+                updates.push('號碼');
+                
+                // Clear number error
+                setFormErrors(prev => ({
+                    ...prev,
+                    number: undefined
+                }));
+            }
+            
+            if (appliedCount > 0) {
+                showFormAlert(`已應用偵測${updates.join('和')}`, 'success');
+            } else {
+                showFormAlert('沒有可應用的偵測資料', 'warning');
+            }
         } else {
             showFormAlert('沒有可應用的偵測資料', 'warning');
         }
+        
+        return appliedCount;
     };
 
     // Handle image changes
@@ -183,31 +258,47 @@ export const EmergencyGeneratorAdd = ({
 
             if (res.ok) {
                 const data = await res.json();
-                const extractedDate = data.response_content[0];
-                const extractedNumber = data.response_content[1];
+                console.log('OCR API response:', data);
                 
-                // Update OCR data
+                // Properly extract and clean response values
+                let extractedDate = '';
+                let extractedNumber = '';
+                
+                if (data.response_content && Array.isArray(data.response_content)) {
+                    // Clean up any potential string artifacts
+                    if (data.response_content[0]) {
+                        extractedDate = String(data.response_content[0])
+                            .replace(/[\[\]'"]/g, '') // Remove brackets and quotes
+                            .trim();
+                    }
+                    
+                    if (data.response_content[1]) {
+                        extractedNumber = String(data.response_content[1])
+                            .replace(/[\[\]'"]/g, '') // Remove brackets and quotes
+                            .trim();
+                    }
+                }
+                
+                // Update OCR data with cleaned values
                 setOcrData({
                     date: extractedDate,
                     number: extractedNumber
                 });
                 
-                // Auto-apply OCR data if form fields are empty
-                if (!formData.date && extractedDate) {
-                    setFormData(prev => ({
-                        ...prev,
-                        date: extractedDate
-                    }));
+                // Check if extracted date is within valid range
+                if (extractedDate && cfvStartDate && cfvEndDate) {
+                    if (extractedDate < cfvStartDate || extractedDate > cfvEndDate) {
+                        showFormAlert(`偵測到的日期 (${extractedDate}) 不在有效範圍內，請確認`, 'warning');
+                    }
                 }
                 
-                if (!formData.number && extractedNumber) {
-                    setFormData(prev => ({
-                        ...prev,
-                        number: extractedNumber
-                    }));
+                // No auto-application of OCR data to form fields
+                // Only inform the user that data is available to apply
+                if (extractedDate || extractedNumber) {
+                    showFormAlert('圖片處理完成，可點擊「應用偵測資料」按鈕填入資料', 'success');
+                } else {
+                    showFormAlert('圖片處理完成，未能識別日期或號碼', 'warning');
                 }
-                
-                showFormAlert('圖片處理完成', 'success');
             } else {
                 showFormAlert('OCR處理失敗，請手動輸入資料', 'warning');
             }
@@ -221,7 +312,12 @@ export const EmergencyGeneratorAdd = ({
     const validateForm = () => {
         const errors = {};
         
-        if (!formData.date) errors.date = '請選擇日期';
+        if (!formData.date) {
+            errors.date = '請選擇日期';
+        } else if (cfvStartDate && cfvEndDate && (formData.date < cfvStartDate || formData.date > cfvEndDate)) {
+            errors.date = `日期必須在 ${cfvStartDate} 至 ${cfvEndDate} 之間`;
+        }
+        
         if (!formData.number) errors.number = '請輸入發票號碼/收據編號';
         if (!formData.usage) errors.usage = '請輸入使用量';
         if (!formData.image) errors.image = '請上傳圖片';
@@ -278,7 +374,7 @@ export const EmergencyGeneratorAdd = ({
         
         // Validate form
         if (!validateForm()) {
-            showFormAlert('請填寫所有必填欄位', 'danger');
+            showFormAlert('請填寫所有必填欄位，並確保日期在有效範圍內', 'danger');
             return;
         }
         
@@ -365,7 +461,7 @@ export const EmergencyGeneratorAdd = ({
                         <div className={styles.modalLeft}>
                             <CRow className="mb-3">
                                 <CFormLabel htmlFor="date" className={`col-sm-2 col-form-label ${styles.addlabel}`}>
-                                    發票/收據日期*
+                                    收據/發票日期*
                                 </CFormLabel>
                                 <CCol>
                                     <CFormInput 
@@ -375,9 +471,16 @@ export const EmergencyGeneratorAdd = ({
                                         value={formData.date}
                                         onChange={handleInputChange}
                                         invalid={!!formErrors.date}
+                                        min={cfvStartDate}
+                                        max={cfvEndDate}
                                     />
                                     {formErrors.date && (
                                         <div className="invalid-feedback">{formErrors.date}</div>
+                                    )}
+                                    {cfvStartDate && cfvEndDate && (
+                                        <div className="form-text">
+                                            有效日期範圍: {cfvStartDate} 至 {cfvEndDate}
+                                        </div>
                                     )}
                                 </CCol>
                             </CRow>
@@ -511,6 +614,7 @@ export const EmergencyGeneratorAdd = ({
                             <div className={styles.infoBlock || 'p-3 border'}>
                                 <ul className="mb-0">
                                     <li>所有帶有 * 的欄位為必填項目</li>
+                                    <li>發票/收據日期必須在規定的基準期間內</li>
                                     <li>使用量請以公升為單位</li>
                                     <li>請上傳緊急發電機相關發票或收據的圖片</li>
                                     <li>系統會自動偵測上傳圖片中的日期和發票號碼</li>

@@ -19,6 +19,15 @@ const EditModal = ({
 }) => {
     // Create a local refresh instance as backup
     const localRefreshData = useRefreshData();
+    
+    // State for date restrictions
+    const [cfvStartDate, setCfvStartDate] = useState('');
+    const [cfvEndDate, setCfvEndDate] = useState('');
+    
+    // Computed min/max month values (YYYY-MM format)
+    const [minMonth, setMinMonth] = useState('');
+    const [maxMonth, setMaxMonth] = useState('');
+    
     const [previewImage, setPreviewImage] = useState(null); // State for image preview
     const [existingImage, setExistingImage] = useState(null); // State to track if there's an existing image
     const [useExistingImage, setUseExistingImage] = useState(true); // Track if using existing image
@@ -37,6 +46,47 @@ const EditModal = ({
     const [showAlert, setShowAlert] = useState(false);
     const [alertMessage, setAlertMessage] = useState('');
     const [alertColor, setAlertColor] = useState('danger');
+
+    // Fetch baseline data when component mounts
+    useEffect(() => {
+        getBaseline();
+    }, []);
+
+    // Function to fetch baseline data
+    const getBaseline = async () => {
+        try {
+            const response = await fetch('http://localhost:8000/baseline');
+            if (response.ok) {
+                const data = await response.json();
+                const startDate = data.baseline.cfv_start_date;
+                const endDate = data.baseline.cfv_end_date;
+                
+                setCfvStartDate(startDate);
+                setCfvEndDate(endDate);
+                
+                // Convert dates to YYYY-MM format for month input
+                // Extract just the year and month parts from the date strings
+                if (startDate && endDate) {
+                    const startParts = startDate.split('-');
+                    const endParts = endDate.split('-');
+                    
+                    if (startParts.length >= 2 && endParts.length >= 2) {
+                        const startYearMonth = `${startParts[0]}-${startParts[1]}`;
+                        const endYearMonth = `${endParts[0]}-${endParts[1]}`;
+                        
+                        setMinMonth(startYearMonth);
+                        setMaxMonth(endYearMonth);
+                    }
+                }
+            } else {
+                console.log(response.status);
+                showFormAlert('無法取得基準期間資料', 'warning');
+            }
+        } catch (error) {
+            console.error('Error fetching baseline:', error);
+            showFormAlert('取得基準期間資料時發生錯誤', 'warning');
+        }
+    };
 
     // Reset states when modal closes or opens
     const resetStates = useCallback(() => {
@@ -59,6 +109,14 @@ const EditModal = ({
     const handleClose = () => {
         setEditModalVisible(false);
         resetStates();
+    };
+
+    // Format month for display
+    const formatYearMonthDisplay = (yearMonth) => {
+        if (!yearMonth) return '';
+        const parts = yearMonth.split('-');
+        if (parts.length < 2) return yearMonth;
+        return `${parts[0]}年${parts[1]}月`;
     };
 
     // Safe refresh function that tries multiple approaches
@@ -172,6 +230,13 @@ const EditModal = ({
                             setPreviewImage(`fastapi/${nonemployee.img_path}`);
                             setUseExistingImage(true);
                         }
+                        
+                        // Check if the loaded month is within valid range
+                        if (month && minMonth && maxMonth) {
+                            if (month < minMonth || month > maxMonth) {
+                                showFormAlert(`注意：此記錄的月份 (${formatYearMonthDisplay(month)}) 不在當前有效範圍內`, 'warning');
+                            }
+                        }
                     } else {
                         console.error('No nonemployee data found');
                         showFormAlert('找不到非員工資料', 'danger');
@@ -189,13 +254,18 @@ const EditModal = ({
         if (isEditModalVisible && selectedNonemployeeId) {
             fetchNonemployeeData();
         }
-    }, [selectedNonemployeeId, isEditModalVisible, resetStates]);
+    }, [selectedNonemployeeId, isEditModalVisible, resetStates, minMonth, maxMonth]);
 
     // Validate the form
     const validateForm = () => {
         const errors = {};
 
-        if (!formValues.period_date) errors.period_date = '請選擇月份';
+        if (!formValues.period_date) {
+            errors.period_date = '請選擇月份';
+        } else if (minMonth && maxMonth && (formValues.period_date < minMonth || formValues.period_date > maxMonth)) {
+            errors.period_date = `月份必須在 ${formatYearMonthDisplay(minMonth)} 至 ${formatYearMonthDisplay(maxMonth)} 之間`;
+        }
+        
         if (!formValues.nonemployee_number) errors.nonemployee_number = '請輸入人數';
         if (!formValues.total_hours) errors.total_hours = '請輸入總工作時數';
         if (!formValues.total_days) errors.total_days = '請輸入總工作人天';
@@ -219,8 +289,22 @@ const EditModal = ({
         const { id, value } = e.target;
         setFormValues((prev) => ({ ...prev, [id]: value }));
 
-        // Clear validation error for this field
-        if (formErrors[id]) {
+        // Special validation for month field
+        if (id === 'period_date') {
+            if (minMonth && maxMonth && (value < minMonth || value > maxMonth)) {
+                setFormErrors(prev => ({
+                    ...prev,
+                    period_date: `月份必須在 ${formatYearMonthDisplay(minMonth)} 至 ${formatYearMonthDisplay(maxMonth)} 之間`
+                }));
+            } else {
+                setFormErrors(prev => ({
+                    ...prev,
+                    period_date: undefined
+                }));
+            }
+        }
+        // Clear validation error for other fields
+        else if (formErrors[id]) {
             setFormErrors(prev => ({
                 ...prev,
                 [id]: undefined
@@ -237,7 +321,7 @@ const EditModal = ({
 
         // Validate form
         if (!validateForm()) {
-            showFormAlert('請填寫所有必填欄位', 'danger');
+            showFormAlert('請填寫所有必填欄位，並確保月份在有效範圍內', 'danger');
             return;
         }
 
@@ -354,9 +438,16 @@ const EditModal = ({
                                         value={formValues.period_date}
                                         onChange={handleChange}
                                         invalid={!!formErrors.period_date}
+                                        min={minMonth}
+                                        max={maxMonth}
                                     />
                                     {formErrors.period_date && (
                                         <div className="invalid-feedback">{formErrors.period_date}</div>
+                                    )}
+                                    {minMonth && maxMonth && (
+                                        <div className="form-text">
+                                            有效月份範圍: {formatYearMonthDisplay(minMonth)} 至 {formatYearMonthDisplay(maxMonth)}
+                                        </div>
                                     )}
                                 </CCol>
                             </CRow>
@@ -487,6 +578,7 @@ const EditModal = ({
                             <div className={styles.infoBlock || 'p-3 border'}>
                                 <ul className="mb-0">
                                     <li>所有帶有 * 的欄位為必填項目</li>
+                                    <li>月份必須在基準期間的月份範圍內</li>
                                     <li>人數、總工作時數、總工作人天應為正數</li>
                                     <li>總工作人天為所有非員工的工作天數總和</li>
                                     <li>備註欄位可填寫額外資訊或特殊說明</li>

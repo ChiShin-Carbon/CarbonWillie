@@ -18,6 +18,10 @@ export const VehicleAdd = ({
   // Create a local refresh instance as backup
   const localRefreshData = useRefreshData();
 
+  // State for date restrictions
+  const [cfvStartDate, setCfvStartDate] = useState('');
+  const [cfvEndDate, setCfvEndDate] = useState('');
+
   // Form state with default values
   const defaultFormData = {
     date: '',
@@ -44,6 +48,29 @@ export const VehicleAdd = ({
     date: '',
     number: ''
   });
+
+  // Fetch baseline data when component mounts
+  useEffect(() => {
+    getBaseline();
+  }, []);
+
+  // Function to fetch baseline data
+  const getBaseline = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/baseline');
+      if (response.ok) {
+        const data = await response.json();
+        setCfvStartDate(data.baseline.cfv_start_date);
+        setCfvEndDate(data.baseline.cfv_end_date);
+      } else {
+        console.log(response.status);
+        showFormAlert('無法取得基準期間資料', 'warning');
+      }
+    } catch (error) {
+      console.error('Error fetching baseline:', error);
+      showFormAlert('取得基準期間資料時發生錯誤', 'warning');
+    }
+  };
 
   // Clean up resources when component unmounts or modal closes
   useEffect(() => {
@@ -87,15 +114,30 @@ export const VehicleAdd = ({
       [id]: value
     }));
 
-    // If this is a field with OCR data, check if it matches
-    if (id === 'date' && ocrData.date && value !== ocrData.date) {
-      showFormAlert(`輸入的日期 (${value}) 與偵測結果 (${ocrData.date}) 不符`, 'warning');
+    // Check if date is within valid range for date field
+    if (id === 'date') {
+      if (cfvStartDate && cfvEndDate && (value < cfvStartDate || value > cfvEndDate)) {
+        setFormErrors(prev => ({
+          ...prev,
+          date: `日期必須在 ${cfvStartDate} 至 ${cfvEndDate} 之間`
+        }));
+      } else {
+        setFormErrors(prev => ({
+          ...prev,
+          date: undefined
+        }));
+      }
+
+      // If this is a field with OCR data, check if it matches
+      if (ocrData.date && value !== ocrData.date) {
+        showFormAlert(`輸入的日期 (${value}) 與偵測結果 (${ocrData.date}) 不符`, 'warning');
+      }
     } else if (id === 'number' && ocrData.number && value !== ocrData.number) {
       showFormAlert(`輸入的號碼 (${value}) 與偵測結果 (${ocrData.number}) 不符`, 'warning');
     }
 
-    // Clear validation error for this field
-    if (formErrors[id]) {
+    // Clear validation error for this field (except date which we handled above)
+    if (id !== 'date' && formErrors[id]) {
       setFormErrors(prev => ({
         ...prev,
         [id]: undefined
@@ -144,6 +186,13 @@ export const VehicleAdd = ({
           number: extractedNumber
         });
 
+        // Check if extracted date is within valid range
+        if (extractedDate && cfvStartDate && cfvEndDate) {
+          if (extractedDate < cfvStartDate || extractedDate > cfvEndDate) {
+            showFormAlert(`偵測到的日期 (${extractedDate}) 不在有效範圍內，請確認`, 'warning');
+          }
+        }
+
         // No auto-application of OCR data to form fields
         // Only inform the user that data is available to apply
         if (extractedDate || extractedNumber) {
@@ -160,7 +209,7 @@ export const VehicleAdd = ({
     }
   };
 
-  // Modified applyOcrData function with better feedback
+  // Modified applyOcrData function with date validation
   const applyOcrData = () => {
     let appliedCount = 0;
 
@@ -169,12 +218,23 @@ export const VehicleAdd = ({
       const updates = [];
 
       if (ocrData.date) {
-        setFormData(prev => ({
-          ...prev,
-          date: ocrData.date
-        }));
-        appliedCount++;
-        updates.push('日期');
+        // Check if date is within valid range before applying
+        if (cfvStartDate && cfvEndDate && (ocrData.date < cfvStartDate || ocrData.date > cfvEndDate)) {
+          showFormAlert(`偵測到的日期 (${ocrData.date}) 不在有效範圍內，未套用`, 'warning');
+        } else {
+          setFormData(prev => ({
+            ...prev,
+            date: ocrData.date
+          }));
+          appliedCount++;
+          updates.push('日期');
+          
+          // Clear date error if it exists
+          setFormErrors(prev => ({
+            ...prev,
+            date: undefined
+          }));
+        }
       }
 
       if (ocrData.number) {
@@ -184,14 +244,13 @@ export const VehicleAdd = ({
         }));
         appliedCount++;
         updates.push('號碼');
+        
+        // Clear number error
+        setFormErrors(prev => ({
+          ...prev,
+          number: undefined
+        }));
       }
-
-      // Clear related errors
-      setFormErrors(prev => ({
-        ...prev,
-        date: undefined,
-        number: undefined
-      }));
 
       if (appliedCount > 0) {
         showFormAlert(`已應用偵測${updates.join('和')}`, 'success');
@@ -204,6 +263,7 @@ export const VehicleAdd = ({
 
     return appliedCount;
   };
+
   // Handle image changes
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -249,12 +309,16 @@ export const VehicleAdd = ({
     processImageWithOCR(file);
   };
 
-
   // Validate the form
   const validateForm = () => {
     const errors = {};
 
-    if (!formData.date) errors.date = '請選擇日期';
+    if (!formData.date) {
+      errors.date = '請選擇日期';
+    } else if (cfvStartDate && cfvEndDate && (formData.date < cfvStartDate || formData.date > cfvEndDate)) {
+      errors.date = `日期必須在 ${cfvStartDate} 至 ${cfvEndDate} 之間`;
+    }
+    
     if (!formData.number) errors.number = '請輸入發票號碼/收據編號';
     if (!formData.quantity) errors.quantity = '請輸入公升數/金額';
     if (!formData.image) errors.image = '請上傳圖片';
@@ -311,7 +375,7 @@ export const VehicleAdd = ({
 
     // Validate form
     if (!validateForm()) {
-      showFormAlert('請填寫所有必填欄位', 'danger');
+      showFormAlert('請填寫所有必填欄位，並確保日期在有效範圍內', 'danger');
       return;
     }
 
@@ -436,9 +500,16 @@ export const VehicleAdd = ({
                     value={formData.date}
                     onChange={handleInputChange}
                     invalid={!!formErrors.date}
+                    min={cfvStartDate}
+                    max={cfvEndDate}
                   />
                   {formErrors.date && (
                     <div className="invalid-feedback">{formErrors.date}</div>
+                  )}
+                  {cfvStartDate && cfvEndDate && (
+                    <div className="form-text">
+                      有效日期範圍: {cfvStartDate} 至 {cfvEndDate}
+                    </div>
                   )}
                 </CCol>
               </CRow>
@@ -601,13 +672,13 @@ export const VehicleAdd = ({
                 <div>偵測號碼: {ocrData.number || '尚未偵測'}</div>
               </div>
 
-
               <CFormLabel className={styles.addlabel}>
                 填表說明
               </CFormLabel>
               <div className={styles.infoBlock || 'p-3 border'}>
                 <ul className="mb-0">
                   <li>所有帶有 * 的欄位為必填項目</li>
+                  <li>發票/收據日期必須在規定的基準期間內</li>
                   <li>油種選擇汽油或柴油</li>
                   <li>單位請以公升為優先填寫項目</li>
                   <li>請上傳車輛用油相關發票或收據的圖片</li>

@@ -19,6 +19,11 @@ const EditModal = ({
 }) => {
     // Create a local refresh instance as backup
     const localRefreshData = useRefreshData();
+    
+    // State for date restrictions
+    const [cfvStartDate, setCfvStartDate] = useState('');
+    const [cfvEndDate, setCfvEndDate] = useState('');
+    
     const [machinery, setMachinery] = useState([]); // State to hold fetched machinery data
     const [previewImage, setPreviewImage] = useState(null); // State for image preview
     const [existingImage, setExistingImage] = useState(null); // State to track if there's an existing image
@@ -45,6 +50,29 @@ const EditModal = ({
     const [showAlert, setShowAlert] = useState(false);
     const [alertMessage, setAlertMessage] = useState('');
     const [alertColor, setAlertColor] = useState('danger');
+
+    // Fetch baseline data when component mounts
+    useEffect(() => {
+        getBaseline();
+    }, []);
+
+    // Function to fetch baseline data
+    const getBaseline = async () => {
+        try {
+            const response = await fetch('http://localhost:8000/baseline');
+            if (response.ok) {
+                const data = await response.json();
+                setCfvStartDate(data.baseline.cfv_start_date);
+                setCfvEndDate(data.baseline.cfv_end_date);
+            } else {
+                console.log(response.status);
+                showFormAlert('無法取得基準期間資料', 'warning');
+            }
+        } catch (error) {
+            console.error('Error fetching baseline:', error);
+            showFormAlert('取得基準期間資料時發生錯誤', 'warning');
+        }
+    };
 
     // Reset states when modal closes or opens
     const resetStates = useCallback(() => {
@@ -158,6 +186,13 @@ const EditModal = ({
                     showFormAlert(`偵測的日期 (${extractedDate}) 與表單日期 (${formValues.date}) 不符`, 'warning');
                 }
                 
+                // Check if extracted date is within valid range
+                if (extractedDate && cfvStartDate && cfvEndDate) {
+                    if (extractedDate < cfvStartDate || extractedDate > cfvEndDate) {
+                        showFormAlert(`偵測到的日期 (${extractedDate}) 不在有效範圍內，請確認`, 'warning');
+                    }
+                }
+                
                 if (extractedNumber && extractedNumber !== formValues.num) {
                     showFormAlert(`偵測的號碼 (${extractedNumber}) 與表單號碼 (${formValues.num}) 不符`, 'warning');
                 }
@@ -186,12 +221,23 @@ const EditModal = ({
             const updates = [];
 
             if (ocrData.date) {
-                setFormValues(prev => ({
-                    ...prev,
-                    date: ocrData.date
-                }));
-                appliedCount++;
-                updates.push('日期');
+                // Check if date is within valid range before applying
+                if (cfvStartDate && cfvEndDate && (ocrData.date < cfvStartDate || ocrData.date > cfvEndDate)) {
+                    showFormAlert(`偵測到的日期 (${ocrData.date}) 不在有效範圍內，未套用`, 'warning');
+                } else {
+                    setFormValues(prev => ({
+                        ...prev,
+                        date: ocrData.date
+                    }));
+                    appliedCount++;
+                    updates.push('日期');
+                    
+                    // Clear date error
+                    setFormErrors(prev => ({
+                        ...prev,
+                        date: undefined
+                    }));
+                }
             }
 
             if (ocrData.number) {
@@ -201,14 +247,13 @@ const EditModal = ({
                 }));
                 appliedCount++;
                 updates.push('號碼');
+                
+                // Clear number error
+                setFormErrors(prev => ({
+                    ...prev,
+                    num: undefined
+                }));
             }
-
-            // Clear related errors
-            setFormErrors(prev => ({
-                ...prev,
-                date: undefined,
-                num: undefined
-            }));
 
             if (appliedCount > 0) {
                 showFormAlert(`已應用偵測${updates.join('和')}`, 'success');
@@ -305,6 +350,13 @@ const EditModal = ({
                         setPreviewImage(`fastapi/${machineryData.img_path}`);
                         setUseExistingImage(true);
                     }
+                    
+                    // Check if the loaded date is within valid range
+                    if (machineryData?.Doc_date && cfvStartDate && cfvEndDate) {
+                        if (machineryData.Doc_date < cfvStartDate || machineryData.Doc_date > cfvEndDate) {
+                            showFormAlert(`注意：此記錄的日期 (${machineryData.Doc_date}) 不在當前有效範圍內`, 'warning');
+                        }
+                    }
                 } else {
                     console.error('No machinery data found');
                     showFormAlert('無法取得機具資料', 'danger');
@@ -318,13 +370,18 @@ const EditModal = ({
         if (isEditModalVisible && selectedMachinery) {
             fetchMachineryData();
         }
-    }, [selectedMachinery, isEditModalVisible, resetStates]);
+    }, [selectedMachinery, isEditModalVisible, resetStates, cfvStartDate, cfvEndDate]);
 
     // Validate the form
     const validateForm = () => {
         const errors = {};
 
-        if (!formValues.date) errors.date = '請選擇日期';
+        if (!formValues.date) {
+            errors.date = '請選擇日期';
+        } else if (cfvStartDate && cfvEndDate && (formValues.date < cfvStartDate || formValues.date > cfvEndDate)) {
+            errors.date = `日期必須在 ${cfvStartDate} 至 ${cfvEndDate} 之間`;
+        }
+        
         if (!formValues.num) errors.num = '請輸入發票號碼/收據編號';
         if (!formValues.location) errors.location = '請輸入設備位置';
         if (!formValues.type) errors.type = '請選擇能源類型';
@@ -349,7 +406,7 @@ const EditModal = ({
 
         // Validate form
         if (!validateForm()) {
-            showFormAlert('請填寫所有必填欄位', 'danger');
+            showFormAlert('請填寫所有必填欄位，並確保日期在有效範圍內', 'danger');
             return;
         }
 
@@ -439,21 +496,36 @@ const EditModal = ({
         const { id, value } = e.target;
         setFormValues((prev) => ({ ...prev, [id]: value }));
 
-        // Clear validation error for this field
-        if (formErrors[id]) {
+        // Special validation for date field
+        if (id === 'date') {
+            if (cfvStartDate && cfvEndDate && (value < cfvStartDate || value > cfvEndDate)) {
+                setFormErrors(prev => ({
+                    ...prev,
+                    date: `日期必須在 ${cfvStartDate} 至 ${cfvEndDate} 之間`
+                }));
+            } else {
+                setFormErrors(prev => ({
+                    ...prev,
+                    date: undefined
+                }));
+            }
+            
+            // Check if OCR date matches
+            if (ocrData.date && value !== ocrData.date) {
+                showFormAlert(`輸入的日期 (${value}) 與偵測結果 (${ocrData.date}) 不符`, 'warning');
+            }
+        }
+        // Clear validation errors for other fields
+        else if (formErrors[id]) {
             setFormErrors(prev => ({
                 ...prev,
                 [id]: undefined
             }));
-        }
-
-        // Check for date or invoice number mismatches if OCR data exists
-        if (id === 'date' && ocrData.date && value !== ocrData.date) {
-            showFormAlert(`輸入的日期 (${value}) 與偵測結果 (${ocrData.date}) 不符`, 'warning');
-        }
-
-        if (id === 'num' && ocrData.number && value !== ocrData.number) {
-            showFormAlert(`輸入的號碼 (${value}) 與偵測結果 (${ocrData.number}) 不符`, 'warning');
+            
+            // Check for invoice number mismatches if OCR data exists
+            if (id === 'num' && ocrData.number && value !== ocrData.number) {
+                showFormAlert(`輸入的號碼 (${value}) 與偵測結果 (${ocrData.number}) 不符`, 'warning');
+            }
         }
     };
 
@@ -501,9 +573,16 @@ const EditModal = ({
                                         value={formValues.date}
                                         onChange={handleChange}
                                         invalid={!!formErrors.date}
+                                        min={cfvStartDate}
+                                        max={cfvEndDate}
                                     />
                                     {formErrors.date && (
                                         <div className="invalid-feedback">{formErrors.date}</div>
+                                    )}
+                                    {cfvStartDate && cfvEndDate && (
+                                        <div className="form-text">
+                                            有效日期範圍: {cfvStartDate} 至 {cfvEndDate}
+                                        </div>
                                     )}
                                 </CCol>
                             </CRow>
@@ -676,6 +755,7 @@ const EditModal = ({
                             <div className={styles.infoBlock || 'p-3 border'}>
                                 <ul className="mb-0">
                                     <li>所有帶有 * 的欄位為必填項目</li>
+                                    <li>發票/收據日期必須在規定的基準期間內</li>
                                     <li>能源類型選擇柴油、汽油或其他</li>
                                     <li>使用量應為正數</li>
                                     <li>如有上傳新圖片，系統會自動偵測日期和發票號碼</li>
