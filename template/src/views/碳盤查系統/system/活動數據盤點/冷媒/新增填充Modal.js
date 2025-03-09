@@ -20,6 +20,10 @@ const AddFillModal = ({
 
     const localRefreshData = useRefreshData();
 
+    // State for date restrictions
+    const [cfvStartDate, setCfvStartDate] = useState('');
+    const [cfvEndDate, setCfvEndDate] = useState('');
+
     // Single form data state object
     const [formData, setFormData] = useState({
         date: '',
@@ -51,6 +55,29 @@ const AddFillModal = ({
     const [alertMessage, setAlertMessage] = useState('');
     const [alertColor, setAlertColor] = useState('danger');
     const [collapseVisible, setCollapseVisible] = useState(false);
+
+    // Fetch baseline data when component mounts
+    useEffect(() => {
+        getBaseline();
+    }, []);
+
+    // Function to fetch baseline data
+    const getBaseline = async () => {
+        try {
+            const response = await fetch('http://localhost:8000/baseline');
+            if (response.ok) {
+                const data = await response.json();
+                setCfvStartDate(data.baseline.cfv_start_date);
+                setCfvEndDate(data.baseline.cfv_end_date);
+            } else {
+                console.log(response.status);
+                showFormAlert('無法取得基準期間資料', 'warning');
+            }
+        } catch (error) {
+            console.error('Error fetching baseline:', error);
+            showFormAlert('取得基準期間資料時發生錯誤', 'warning');
+        }
+    };
 
     // Clean up resources when modal closes
     useEffect(() => {
@@ -102,36 +129,75 @@ const AddFillModal = ({
             [id]: value
         }));
 
-        // Clear validation errors for this field
-        setValidation(prev => ({
-            ...prev,
-            formErrors: {
-                ...prev.formErrors,
-                [id]: undefined
+        // Special validation for date field
+        if (id === 'date') {
+            if (cfvStartDate && cfvEndDate && (value < cfvStartDate || value > cfvEndDate)) {
+                setValidation(prev => ({
+                    ...prev,
+                    formErrors: {
+                        ...prev.formErrors,
+                        date: `日期必須在 ${cfvStartDate} 至 ${cfvEndDate} 之間`
+                    }
+                }));
+            } else {
+                setValidation(prev => ({
+                    ...prev,
+                    formErrors: {
+                        ...prev.formErrors,
+                        date: undefined
+                    }
+                }));
             }
-        }));
-
-        // Check if OCR values match the new input
-        if (id === 'date' && ocrData.date) {
-            const isMatch = value === ocrData.date;
+            
+            // Check if OCR values match the new input
+            if (ocrData.date) {
+                const isMatch = value === ocrData.date;
+                setValidation(prev => ({
+                    ...prev,
+                    isDateCorrect: isMatch,
+                    dateErrorMessage: isMatch ? '' : '日期不正確'
+                }));
+            }
+        } 
+        // Clear validation errors for other fields
+        else {
             setValidation(prev => ({
                 ...prev,
-                isDateCorrect: isMatch,
-                dateErrorMessage: isMatch ? '' : '日期不正確'
+                formErrors: {
+                    ...prev.formErrors,
+                    [id]: undefined
+                }
             }));
-        } else if (id === 'num' && ocrData.num) {
-            const isMatch = value === ocrData.num;
-            setValidation(prev => ({
-                ...prev,
-                isNumCorrect: isMatch,
-                numErrorMessage: isMatch ? '' : '發票號碼不正確'
-            }));
+            
+            // Check if OCR num matches the new input
+            if (id === 'num' && ocrData.num) {
+                const isMatch = value === ocrData.num;
+                setValidation(prev => ({
+                    ...prev,
+                    isNumCorrect: isMatch,
+                    numErrorMessage: isMatch ? '' : '發票號碼不正確'
+                }));
+            }
         }
     };
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (!file) return;
+
+        // Validate file type
+        const validImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+        if (!validImageTypes.includes(file.type)) {
+            showFormAlert('請上傳有效的圖片檔案 (JPEG, PNG, GIF, WEBP)', 'danger');
+            return;
+        }
+
+        // Validate file size (max 5MB)
+        const maxSize = 5 * 1024 * 1024; // 5MB
+        if (file.size > maxSize) {
+            showFormAlert('圖片大小不能超過 5MB', 'danger');
+            return;
+        }
 
         // Clear previous preview
         if (previewImage) {
@@ -151,6 +217,8 @@ const AddFillModal = ({
     };
 
     const processImageWithOCR = async (imageFile) => {
+        showFormAlert('正在處理圖片...', 'info');
+        
         const formDataToSend = new FormData();
         formDataToSend.append('image', imageFile);
 
@@ -162,8 +230,23 @@ const AddFillModal = ({
 
             if (res.ok) {
                 const data = await res.json();
-                const extractedDate = data.response_content[0];
-                const extractedNum = data.response_content[1];
+                
+                // Extract and clean OCR results
+                let extractedDate = '';
+                let extractedNum = '';
+
+                if (data.response_content && Array.isArray(data.response_content)) {
+                    if (data.response_content[0]) {
+                        extractedDate = String(data.response_content[0])
+                            .replace(/[\[\]'"]/g, '')
+                            .trim();
+                    }
+                    if (data.response_content[1]) {
+                        extractedNum = String(data.response_content[1])
+                            .replace(/[\[\]'"]/g, '')
+                            .trim();
+                    }
+                }
 
                 // Update OCR data
                 setOcrData({
@@ -182,6 +265,17 @@ const AddFillModal = ({
                     dateErrorMessage: isDateMatch ? '' : '日期不正確',
                     numErrorMessage: isNumMatch ? '' : '發票號碼不正確'
                 }));
+
+                // Check if the detected date is within valid range
+                if (extractedDate && cfvStartDate && cfvEndDate) {
+                    if (extractedDate < cfvStartDate || extractedDate > cfvEndDate) {
+                        showFormAlert(`偵測到的日期 (${extractedDate}) 不在有效範圍內，請確認`, 'warning');
+                    } else {
+                        showFormAlert('圖片處理完成', 'success');
+                    }
+                } else {
+                    showFormAlert('圖片處理完成', 'success');
+                }
             } else {
                 showFormAlert('OCR處理失敗，請手動輸入資料', 'warning');
             }
@@ -191,11 +285,81 @@ const AddFillModal = ({
         }
     };
 
+    // Apply OCR data to form
+    const applyOcrData = () => {
+        let appliedCount = 0;
+
+        if (ocrData.date || ocrData.num) {
+            // Track what was applied for better messaging
+            const updates = [];
+
+            if (ocrData.date) {
+                // Check if date is within valid range before applying
+                if (cfvStartDate && cfvEndDate && (ocrData.date < cfvStartDate || ocrData.date > cfvEndDate)) {
+                    showFormAlert(`偵測到的日期 (${ocrData.date}) 不在有效範圍內，未套用`, 'warning');
+                } else {
+                    setFormData(prev => ({
+                        ...prev,
+                        date: ocrData.date
+                    }));
+                    appliedCount++;
+                    updates.push('日期');
+                    
+                    // Clear date error
+                    setValidation(prev => ({
+                        ...prev,
+                        isDateCorrect: true,
+                        dateErrorMessage: '',
+                        formErrors: {
+                            ...prev.formErrors,
+                            date: undefined
+                        }
+                    }));
+                }
+            }
+
+            if (ocrData.num) {
+                setFormData(prev => ({
+                    ...prev,
+                    num: ocrData.num
+                }));
+                appliedCount++;
+                updates.push('號碼');
+                
+                // Clear number error
+                setValidation(prev => ({
+                    ...prev,
+                    isNumCorrect: true,
+                    numErrorMessage: '',
+                    formErrors: {
+                        ...prev.formErrors,
+                        num: undefined
+                    }
+                }));
+            }
+
+            if (appliedCount > 0) {
+                showFormAlert(`已應用偵測${updates.join('和')}`, 'success');
+            } else {
+                showFormAlert('沒有可應用的偵測資料', 'warning');
+            }
+        } else {
+            showFormAlert('沒有可應用的偵測資料', 'warning');
+        }
+
+        return appliedCount;
+    };
+
     const validateForm = () => {
         const errors = {};
 
         // Required fields validation
-        if (!formData.date) errors.date = '請輸入日期';
+        if (!formData.date) {
+            errors.date = '請輸入日期';
+        } else if (cfvStartDate && cfvEndDate && (formData.date < cfvStartDate || formData.date > cfvEndDate)) {
+            errors.date = `日期必須在 ${cfvStartDate} 至 ${cfvEndDate} 之間`;
+        }
+        
         if (!formData.num) errors.num = '請輸入發票號碼/收據編號';
         if (!formData.usage) errors.usage = '請輸入填充量';
         if (!formData.percent) errors.percent = '請輸入逸散率';
@@ -241,7 +405,7 @@ const AddFillModal = ({
 
         // Validate form
         if (!validateForm()) {
-            showFormAlert('請填寫所有必填欄位', 'danger');
+            showFormAlert('請填寫所有必填欄位，並確保日期在有效範圍內', 'danger');
             return;
         }
 
@@ -346,10 +510,16 @@ const AddFillModal = ({
                                         id="date"
                                         value={formData.date}
                                         onChange={handleInputChange}
-                                        invalid={!!validation.formErrors.date || !validation.isDateCorrect}
+                                        min={cfvStartDate}
+                                        max={cfvEndDate}
                                     />
                                     {validation.formErrors.date && (
                                         <div className="invalid-feedback">{validation.formErrors.date}</div>
+                                    )}
+                                    {cfvStartDate && cfvEndDate && (
+                                        <div className="form-text">
+                                            有效日期範圍: {cfvStartDate} 至 {cfvEndDate}
+                                        </div>
                                     )}
                                 </CCol>
                             </CRow>
@@ -365,7 +535,6 @@ const AddFillModal = ({
                                         id="num"
                                         value={formData.num}
                                         onChange={handleInputChange}
-                                        invalid={!!validation.formErrors.num || !validation.isNumCorrect}
                                     />
                                     {validation.formErrors.num && (
                                         <div className="invalid-feedback">{validation.formErrors.num}</div>
@@ -455,6 +624,9 @@ const AddFillModal = ({
                                     {validation.formErrors.image && (
                                         <div className="invalid-feedback">{validation.formErrors.image}</div>
                                     )}
+                                    <div className="form-text">
+                                        支援的格式: JPG, PNG, GIF, WEBP (最大 5MB)
+                                    </div>
                                 </CCol>
                             </CRow>
 
@@ -485,20 +657,46 @@ const AddFillModal = ({
 
                             <CFormLabel className={styles.addlabel}>
                                 偵測結果
+                                {(ocrData.date || ocrData.num) && (
+                                    <button
+                                        type="button"
+                                        className="btn btn-sm btn-outline-primary float-end"
+                                        onClick={applyOcrData}
+                                    >
+                                        應用偵測資料
+                                    </button>
+                                )}
                             </CFormLabel>
                             <div className={styles.errorMSG || 'p-3 border'}>
                                 <div>
                                     偵測日期: {ocrData.date || '尚未偵測'}
-                                    {!validation.isDateCorrect && (
-                                        <span className="text-danger ms-2">{validation.dateErrorMessage}</span>
+                                    {ocrData.date && formData.date && ocrData.date !== formData.date && (
+                                        <span className="text-danger ms-2">
+                                            (發票日期與偵測不符)
+                                        </span>
                                     )}
                                 </div>
                                 <div>
                                     偵測號碼: {ocrData.num || '尚未偵測'}
-                                    {!validation.isNumCorrect && (
-                                        <span className="text-danger ms-2">{validation.numErrorMessage}</span>
+                                    {ocrData.num && formData.num && ocrData.num !== formData.num && (
+                                        <span className="text-danger ms-2">
+                                            (發票號碼與偵測不符)
+                                        </span>
                                     )}
                                 </div>
+                            </div>
+                            
+                            <CFormLabel className={styles.addlabel}>
+                                填表說明
+                            </CFormLabel>
+                            <div className={styles.infoBlock || 'p-3 border'}>
+                                <ul className="mb-0">
+                                    <li>所有帶有 * 的欄位為必填項目</li>
+                                    <li>發票/收據日期必須在規定的基準期間內</li>
+                                    <li>填充量和逸散率必須為正數</li>
+                                    <li>可點擊「逸散率(%)建議表格」查看建議值</li>
+                                    <li>請上傳相關佐證文件的圖片</li>
+                                </ul>
                             </div>
                         </div>
                     </div>
@@ -509,6 +707,7 @@ const AddFillModal = ({
                         className="modalbutton1"
                         onClick={closeModal}
                         disabled={isSubmitting}
+                        type="button"
                     >
                         取消
                     </CButton>

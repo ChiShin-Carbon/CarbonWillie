@@ -52,94 +52,69 @@ except Exception as e:
 
 def preprocess_image(pil_img):
     """
-    Apply multiple preprocessing techniques to improve OCR accuracy
+    Apply optimized preprocessing techniques for faster OCR processing
     
     Args:
         pil_img: PIL Image object
         
     Returns:
-        PIL Image: Preprocessed image optimized for OCR
+        PIL Image: Optimized image for OCR with better speed
     """
-    # Convert PIL to OpenCV format for advanced processing
+    # Convert PIL to OpenCV format
     img = np.array(pil_img)
     img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
     
-    # 1. Resize the image if it's too small (helps with small text)
-    height, width = img.shape[:2]
-    min_size = 1000
-    scale_factor = max(min_size / width, min_size / height)
-    
-    if scale_factor > 1:
-        new_width = int(width * scale_factor)
-        new_height = int(height * scale_factor)
-        img = cv2.resize(img, (new_width, new_height), interpolation=cv2.INTER_CUBIC)
+    # 1. Resize the image to a reasonable fixed size for faster processing
+    # Using a more moderate size to balance accuracy and speed
+    target_width = 800
+    h, w = img.shape[:2]
+    scale = target_width / w
+    new_height = int(h * scale)
+    img = cv2.resize(img, (target_width, new_height), interpolation=cv2.INTER_AREA)
     
     # 2. Convert to grayscale
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     
-    # 3. Apply adaptive thresholding
-    # This works better than global thresholding for documents with varying lighting
+    # 3. Apply adaptive thresholding with larger block size for speed
     binary = cv2.adaptiveThreshold(
-        gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2
+        gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 15, 2
     )
     
-    # 4. Optional: Apply morphological operations to remove noise
-    kernel = np.ones((1, 1), np.uint8)
-    opening = cv2.morphologyEx(binary, cv2.MORPH_OPEN, kernel)
+    # Skip the morphological operations to save time
     
-    # 5. Optional: Apply denoising for better results
-    denoised = cv2.fastNlMeansDenoising(opening, None, 10, 7, 21)
+    # Skip the expensive denoising step
     
-    # 6. Convert back to PIL format
-    enhanced_img = Image.fromarray(denoised)
+    # 4. Convert back to PIL format
+    enhanced_img = Image.fromarray(binary)
     
-    # 7. Enhance contrast using PIL
-    enhancer = ImageEnhance.Contrast(enhanced_img)
-    enhanced_img = enhancer.enhance(2.0)  # Increase contrast
-    
-    # 8. Sharpen the image
+    # 5. Sharpen the image (keeping only the most effective enhancement)
     enhanced_img = enhanced_img.filter(ImageFilter.SHARPEN)
     
     return enhanced_img
 
 def create_processing_variants(pil_img):
     """
-    Create multiple processed variants of the same image to increase chance of successful OCR
+    Create a reduced set of image variants for faster OCR processing
     
     Args:
         pil_img: PIL Image object
         
     Returns:
-        list: List of preprocessed PIL Image objects
+        list: List of preprocessed PIL Image objects (reduced for speed)
     """
     variants = []
     
     # Original image
     variants.append(pil_img)
     
-    # Standard preprocessing
+    # Standard preprocessing (most effective variant)
     variants.append(preprocess_image(pil_img))
     
-    # Grayscale variant
+    # Grayscale with increased contrast (combines two previous variants)
     gray_img = pil_img.convert('L')
-    variants.append(gray_img)
-    
-    # High contrast binary variant
-    binary_img = gray_img.point(lambda x: 0 if x < 128 else 255, '1')
-    variants.append(binary_img)
-    
-    # Sharpened variant
-    sharp_img = pil_img.filter(ImageFilter.SHARPEN)
-    variants.append(sharp_img)
-    
-    # Increased contrast variant
-    contrast_enhancer = ImageEnhance.Contrast(pil_img)
-    high_contrast_img = contrast_enhancer.enhance(2.5)
+    contrast_enhancer = ImageEnhance.Contrast(gray_img)
+    high_contrast_img = contrast_enhancer.enhance(2.0)
     variants.append(high_contrast_img)
-    
-    # Edge enhanced variant (helps with text boundaries)
-    edge_img = pil_img.filter(ImageFilter.EDGE_ENHANCE_MORE)
-    variants.append(edge_img)
     
     return variants
 
@@ -209,38 +184,50 @@ def ocr_with_tesseract(img):
         print(f"Tesseract OCR error: {e}")
         return None, ""
 @ocrapi.post("/ocrapi")
-async def ocr_image(image: UploadFile = File(...)):
+async def ocr_image(image: UploadFile = File(...), fast_mode: bool = True):
     try:
         # Read the uploaded image
         img_bytes = await image.read()
         original_img = Image.open(io.BytesIO(img_bytes)).convert("RGB")
         
-        # Create multiple processed variants of the image
+        # Create processed variants of the image (reduced number for speed)
         image_variants = create_processing_variants(original_img)
         
+        # Fast path: Try only with the optimized preprocessing variant first
+        if fast_mode:
+            # Use the optimized preprocessed image (second in the list)
+            optimized_img = image_variants[1]
+            tesseract_results, tesseract_text = ocr_with_tesseract(optimized_img)
+            
+            # If we got good results immediately, return them
+            if tesseract_results and len(tesseract_results) >= 2:
+                print(f"Fast mode success with optimized variant: {tesseract_results}")
+                return {"response_content": tesseract_results, "raw_ocr_text": tesseract_text, "source": "tesseract_fast"}
+        
+        # If fast mode failed or is disabled, try with all variants
         best_result = None
         best_count = 0
         best_text = ""
         best_source = ""
         
-        # Try OCR on each variant to find the best result
         for i, img_variant in enumerate(image_variants):
             variant_name = f"variant_{i}"
             
-            # Try with Tesseract OCR first
+            # Skip the optimized variant if we already tried it in fast mode
+            if fast_mode and i == 1:
+                continue
+                
             tesseract_results, tesseract_text = ocr_with_tesseract(img_variant)
             
-            # If Tesseract successfully extracted both date and ID, consider this a good result
             if tesseract_results and len(tesseract_results) >= 2:
-                # Count how many items we found (more is better)
                 if len(tesseract_results) > best_count:
                     best_count = len(tesseract_results)
                     best_result = tesseract_results
                     best_text = tesseract_text
                     best_source = f"tesseract_{variant_name}"
                     
-                    # If we found 3 or more items, consider it very good and stop processing
-                    if best_count >= 3:
+                    # Early exit if we found good results
+                    if best_count >= 2:
                         break
         
         # If we found a good result from any variant, return it
@@ -248,63 +235,71 @@ async def ocr_image(image: UploadFile = File(...)):
             print(f"Best result from {best_source}: {best_result}")
             return {"response_content": best_result, "raw_ocr_text": best_text, "source": best_source}
         
-        # If no variant gave good results, proceed with the standard preprocessed image for Donut
-        standard_processed_img = image_variants[1]  # This is the main preprocessed variant
-        
-        # Check if model was loaded successfully
-        if 'processor' not in globals() or 'model' not in globals():
-            raise HTTPException(
-                status_code=500, 
-                detail="Donut model failed to load. Check your HUGGINGFACE_TOKEN and model availability."
+        # If no variant gave good results, try with Donut model but only if we have no results yet
+        if not best_result:
+            # Check if model was loaded successfully
+            if 'processor' not in globals() or 'model' not in globals():
+                raise HTTPException(
+                    status_code=500, 
+                    detail="Donut model failed to load. Check your HUGGINGFACE_TOKEN and model availability."
+                )
+    
+            # Use the optimized image for Donut
+            standard_processed_img = image_variants[1]
+            
+            # Define a task-specific prompt for Chinese document understanding
+            task_prompt = "<s_cord-v2>"
+            
+            # Process the image with the task-specific prompt
+            pixel_values = processor(standard_processed_img, return_tensors="pt").pixel_values.to(device)
+            decoder_input_ids = processor.tokenizer(task_prompt, add_special_tokens=False, return_tensors="pt").input_ids.to(device)
+            
+            # Generate text from image with optimized parameters for speed
+            generated_ids = model.generate(
+                pixel_values,
+                decoder_input_ids=decoder_input_ids,
+                max_length=256,  # Reduced from 512
+                early_stopping=True,
+                num_beams=3,     # Reduced from 5
+                do_sample=False, # Turn off sampling for speed
+                num_return_sequences=1,
+                length_penalty=1.0,
+                use_cache=True
             )
-
-        # Define a task-specific prompt for Chinese document understanding
-        task_prompt = "<s_cord-v2>"
+            
+            # Decode the generated text
+            donut_output = processor.batch_decode(
+                generated_ids, 
+                skip_special_tokens=True
+            )[0]
+            
+            print(f"Raw Donut OCR output: {donut_output}")
+            
+            # Try to extract from Donut output
+            donut_extracted = extract_date_and_id(donut_output)
+            
+            # If Donut found something useful, use it
+            if donut_extracted and len(donut_extracted) >= 2:
+                return {"response_content": donut_extracted, "raw_ocr_text": donut_output, "source": "donut_fast"}
+            
+            # If Tesseract found partial results, try to combine with Donut
+            if best_result and donut_extracted:
+                # Combine unique results
+                combined_results = list(set(best_result + donut_extracted))
+                if len(combined_results) >= 2:
+                    return {"response_content": combined_results, "raw_ocr_text": f"Tesseract: {best_text}\nDonut: {donut_output}", "source": "combined_fast"}
         
-        # Process the image with the task-specific prompt
-        pixel_values = processor(standard_processed_img, return_tensors="pt").pixel_values.to(device)
-        decoder_input_ids = processor.tokenizer(task_prompt, add_special_tokens=False, return_tensors="pt").input_ids.to(device)
-        
-        # Generate text from image with improved parameters for Chinese text
-        generated_ids = model.generate(
-            pixel_values,
-            decoder_input_ids=decoder_input_ids,
-            max_length=512,
-            early_stopping=True,
-            num_beams=5,
-            do_sample=True,
-            num_return_sequences=1,
-            temperature=0.7,
-            length_penalty=1.0,
-            use_cache=True
-        )
-        
-        # Decode the generated text
-        donut_output = processor.batch_decode(
-            generated_ids, 
-            skip_special_tokens=True
-        )[0]
-        
-        print(f"Raw Donut OCR output: {donut_output}")
-        
-        # Try to extract from Donut output
-        donut_extracted = extract_date_and_id(donut_output)
-        
-        # If Tesseract found partial results, try to combine with Donut
-        if best_result and donut_extracted:
-            # Combine unique results
-            combined_results = list(set(best_result + donut_extracted))
-            if len(combined_results) >= 2:
-                return {"response_content": combined_results, "raw_ocr_text": f"Tesseract: {best_text}\nDonut: {donut_output}", "source": "combined"}
-        
-        # Use GPT-4o with specific instructions for Chinese text processing
-        # Include all the OCR text we've gathered for more context
+        # Only use GPT-4o as a last resort when all else fails
         all_texts = []
         if best_text:
             all_texts.append(f"Tesseract: {best_text}")
-        if donut_output:
+        elif 'donut_output' in locals():
             all_texts.append(f"Donut: {donut_output}")
         
+        # Skip GPT-4o if we don't have any useful text
+        if not all_texts:
+            return {"response_content": [], "raw_ocr_text": "", "source": "no_results"}
+            
         combined_text = "\n".join(all_texts)
         
         completion = await run_in_threadpool(

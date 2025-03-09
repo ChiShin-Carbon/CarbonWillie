@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
-    CModal, CModalHeader, CModalBody, CModalFooter, CModalTitle, CButton, CFormLabel, 
+    CModal, CModalHeader, CModalBody, CModalFooter, CModalTitle, CButton, CFormLabel,
     CFormInput, CFormTextarea, CRow, CCol, CForm, CAlert
 } from '@coreui/react';
 import styles from '../../../../../scss/活動數據盤點.module.css';
@@ -8,16 +8,20 @@ import Zoom from 'react-medium-image-zoom';
 import 'react-medium-image-zoom/dist/styles.css';
 import { useRefreshData } from '../refreshdata';
 
-export const EmergencyGeneratorAdd = ({ 
-    isAddModalVisible, 
+export const EmergencyGeneratorAdd = ({
+    isAddModalVisible,
     setAddModalVisible,
-    refreshEmergency_GeneratorData, 
+    refreshEmergency_GeneratorData,
     setCurrentFunction,
     setCurrentTitle
 }) => {
     // Create a local refresh instance as backup
     const localRefreshData = useRefreshData();
-    
+
+    // State for date restrictions
+    const [cfvStartDate, setCfvStartDate] = useState('');
+    const [cfvEndDate, setCfvEndDate] = useState('');
+
     // Form state with default values
     const defaultFormData = {
         date: '',
@@ -26,8 +30,8 @@ export const EmergencyGeneratorAdd = ({
         remark: '',
         image: null
     };
-    
-    const [formData, setFormData] = useState({...defaultFormData});
+
+    const [formData, setFormData] = useState({ ...defaultFormData });
 
     // UI states
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -36,12 +40,35 @@ export const EmergencyGeneratorAdd = ({
     const [alertMessage, setAlertMessage] = useState('');
     const [alertColor, setAlertColor] = useState('danger');
     const [formErrors, setFormErrors] = useState({});
-    
+
     // OCR states
     const [ocrData, setOcrData] = useState({
         date: '',
         number: ''
     });
+
+    // Fetch baseline data when component mounts
+    useEffect(() => {
+        getBaseline();
+    }, []);
+
+    // Function to fetch baseline data
+    const getBaseline = async () => {
+        try {
+            const response = await fetch('http://localhost:8000/baseline');
+            if (response.ok) {
+                const data = await response.json();
+                setCfvStartDate(data.baseline.cfv_start_date);
+                setCfvEndDate(data.baseline.cfv_end_date);
+            } else {
+                console.log(response.status);
+                showFormAlert('無法取得基準期間資料', 'warning');
+            }
+        } catch (error) {
+            console.error('Error fetching baseline:', error);
+            showFormAlert('取得基準期間資料時發生錯誤', 'warning');
+        }
+    };
 
     // Clean up resources when component unmounts or modal closes
     useEffect(() => {
@@ -60,14 +87,14 @@ export const EmergencyGeneratorAdd = ({
     }, [isAddModalVisible]);
 
     const resetForm = useCallback(() => {
-        setFormData({...defaultFormData});
+        setFormData({ ...defaultFormData });
         setOcrData({ date: '', number: '' });
-        
+
         if (previewImage) {
             URL.revokeObjectURL(previewImage);
             setPreviewImage(null);
         }
-        
+
         setFormErrors({});
         setShowAlert(false);
     }, [previewImage, defaultFormData]);
@@ -79,21 +106,36 @@ export const EmergencyGeneratorAdd = ({
     // Handle form input changes
     const handleInputChange = (e) => {
         const { id, value } = e.target;
-        
+
         setFormData(prev => ({
             ...prev,
             [id]: value
         }));
-        
-        // If this is a field with OCR data, check if it matches
-        if (id === 'date' && ocrData.date && value !== ocrData.date) {
-            showFormAlert(`輸入的日期 (${value}) 與偵測結果 (${ocrData.date}) 不符`, 'warning');
+
+        // Check if date is within valid range for date field
+        if (id === 'date') {
+            if (cfvStartDate && cfvEndDate && (value < cfvStartDate || value > cfvEndDate)) {
+                setFormErrors(prev => ({
+                    ...prev,
+                    date: `日期必須在 ${cfvStartDate} 至 ${cfvEndDate} 之間`
+                }));
+            } else {
+                setFormErrors(prev => ({
+                    ...prev,
+                    date: undefined
+                }));
+            }
+
+            // If this is a field with OCR data, check if it matches
+            if (ocrData.date && value !== ocrData.date) {
+                showFormAlert(`輸入的日期 (${value}) 與偵測結果 (${ocrData.date}) 不符`, 'warning');
+            }
         } else if (id === 'number' && ocrData.number && value !== ocrData.number) {
             showFormAlert(`輸入的號碼 (${value}) 與偵測結果 (${ocrData.number}) 不符`, 'warning');
         }
-        
-        // Clear validation error for this field
-        if (formErrors[id]) {
+
+        // Clear validation error for this field (except date which we handled above)
+        if (id !== 'date' && formErrors[id]) {
             setFormErrors(prev => ({
                 ...prev,
                 [id]: undefined
@@ -101,26 +143,59 @@ export const EmergencyGeneratorAdd = ({
         }
     };
 
-    // Apply OCR data to form
+    // Apply OCR data to form with better feedback and date validation
     const applyOcrData = () => {
+        let appliedCount = 0;
+
         if (ocrData.date || ocrData.number) {
-            setFormData(prev => ({
-                ...prev,
-                date: ocrData.date || prev.date,
-                number: ocrData.number || prev.number
-            }));
-            
-            // Clear related errors
-            setFormErrors(prev => ({
-                ...prev,
-                date: undefined,
-                number: undefined
-            }));
-            
-            showFormAlert('已應用偵測資料', 'success');
+            // Track what was applied for better messaging
+            const updates = [];
+
+            if (ocrData.date) {
+                // Check if date is within valid range before applying
+                if (cfvStartDate && cfvEndDate && (ocrData.date < cfvStartDate || ocrData.date > cfvEndDate)) {
+                    showFormAlert(`偵測到的日期 (${ocrData.date}) 不在有效範圍內，未套用`, 'warning');
+                } else {
+                    setFormData(prev => ({
+                        ...prev,
+                        date: ocrData.date
+                    }));
+                    appliedCount++;
+                    updates.push('日期');
+
+                    // Clear date error if it exists
+                    setFormErrors(prev => ({
+                        ...prev,
+                        date: undefined
+                    }));
+                }
+            }
+
+            if (ocrData.number) {
+                setFormData(prev => ({
+                    ...prev,
+                    number: ocrData.number
+                }));
+                appliedCount++;
+                updates.push('號碼');
+
+                // Clear number error
+                setFormErrors(prev => ({
+                    ...prev,
+                    number: undefined
+                }));
+            }
+
+            if (appliedCount > 0) {
+                showFormAlert(`已應用偵測${updates.join('和')}`, 'success');
+            } else {
+                showFormAlert('沒有可應用的偵測資料', 'warning');
+            }
         } else {
             showFormAlert('沒有可應用的偵測資料', 'warning');
         }
+
+        return appliedCount;
     };
 
     // Handle image changes
@@ -152,10 +227,10 @@ export const EmergencyGeneratorAdd = ({
             ...prev,
             image: file
         }));
-        
+
         const previewUrl = URL.createObjectURL(file);
         setPreviewImage(previewUrl);
-        
+
         // Clear image validation error
         if (formErrors.image) {
             setFormErrors(prev => ({
@@ -163,7 +238,7 @@ export const EmergencyGeneratorAdd = ({
                 image: undefined
             }));
         }
-        
+
         // Process image with OCR
         processImageWithOCR(file);
     };
@@ -171,7 +246,7 @@ export const EmergencyGeneratorAdd = ({
     // Process image with OCR
     const processImageWithOCR = async (imageFile) => {
         showFormAlert('正在處理圖片...', 'info');
-        
+
         const formDataToSend = new FormData();
         formDataToSend.append('image', imageFile);
 
@@ -183,31 +258,47 @@ export const EmergencyGeneratorAdd = ({
 
             if (res.ok) {
                 const data = await res.json();
-                const extractedDate = data.response_content[0];
-                const extractedNumber = data.response_content[1];
-                
-                // Update OCR data
+                console.log('OCR API response:', data);
+
+                // Properly extract and clean response values
+                let extractedDate = '';
+                let extractedNumber = '';
+
+                if (data.response_content && Array.isArray(data.response_content)) {
+                    // Clean up any potential string artifacts
+                    if (data.response_content[0]) {
+                        extractedDate = String(data.response_content[0])
+                            .replace(/[\[\]'"]/g, '') // Remove brackets and quotes
+                            .trim();
+                    }
+
+                    if (data.response_content[1]) {
+                        extractedNumber = String(data.response_content[1])
+                            .replace(/[\[\]'"]/g, '') // Remove brackets and quotes
+                            .trim();
+                    }
+                }
+
+                // Update OCR data with cleaned values
                 setOcrData({
                     date: extractedDate,
                     number: extractedNumber
                 });
-                
-                // Auto-apply OCR data if form fields are empty
-                if (!formData.date && extractedDate) {
-                    setFormData(prev => ({
-                        ...prev,
-                        date: extractedDate
-                    }));
+
+                // Check if extracted date is within valid range
+                if (extractedDate && cfvStartDate && cfvEndDate) {
+                    if (extractedDate < cfvStartDate || extractedDate > cfvEndDate) {
+                        showFormAlert(`偵測到的日期 (${extractedDate}) 不在有效範圍內，請確認`, 'warning');
+                    }
                 }
-                
-                if (!formData.number && extractedNumber) {
-                    setFormData(prev => ({
-                        ...prev,
-                        number: extractedNumber
-                    }));
+
+                // No auto-application of OCR data to form fields
+                // Only inform the user that data is available to apply
+                if (extractedDate || extractedNumber) {
+                    showFormAlert('圖片處理完成，可點擊「應用偵測資料」按鈕填入資料', 'success');
+                } else {
+                    showFormAlert('圖片處理完成，未能識別日期或號碼', 'warning');
                 }
-                
-                showFormAlert('圖片處理完成', 'success');
             } else {
                 showFormAlert('OCR處理失敗，請手動輸入資料', 'warning');
             }
@@ -220,17 +311,22 @@ export const EmergencyGeneratorAdd = ({
     // Validate the form
     const validateForm = () => {
         const errors = {};
-        
-        if (!formData.date) errors.date = '請選擇日期';
+
+        if (!formData.date) {
+            errors.date = '請選擇日期';
+        } else if (cfvStartDate && cfvEndDate && (formData.date < cfvStartDate || formData.date > cfvEndDate)) {
+            errors.date = `日期必須在 ${cfvStartDate} 至 ${cfvEndDate} 之間`;
+        }
+
         if (!formData.number) errors.number = '請輸入發票號碼/收據編號';
         if (!formData.usage) errors.usage = '請輸入使用量';
         if (!formData.image) errors.image = '請上傳圖片';
-        
+
         // Validate numeric fields to ensure they're non-negative
         if (formData.usage && parseFloat(formData.usage) < 0) {
             errors.usage = '數值不能為負數';
         }
-        
+
         setFormErrors(errors);
         return Object.keys(errors).length === 0;
     };
@@ -244,7 +340,7 @@ export const EmergencyGeneratorAdd = ({
                 console.log("Using refreshEmergencyData from props");
                 await refreshEmergency_GeneratorData();
                 return true;
-            } 
+            }
             // Then try our local refresh
             else if (localRefreshData && typeof localRefreshData.refreshEmergency_GeneratorData === 'function') {
                 console.log("Using localRefreshData.refreshEmergencyData");
@@ -263,7 +359,7 @@ export const EmergencyGeneratorAdd = ({
         setAlertMessage(message);
         setAlertColor(color);
         setShowAlert(true);
-        
+
         // Auto hide after 5 seconds
         setTimeout(() => {
             setShowAlert(false);
@@ -272,18 +368,18 @@ export const EmergencyGeneratorAdd = ({
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         // Prevent double submissions
         if (isSubmitting) return;
-        
+
         // Validate form
         if (!validateForm()) {
-            showFormAlert('請填寫所有必填欄位', 'danger');
+            showFormAlert('請填寫所有必填欄位，並確保日期在有效範圍內', 'danger');
             return;
         }
-        
+
         setIsSubmitting(true);
-    
+
         try {
             // Prepare form data
             const formDataToSend = new FormData();
@@ -293,35 +389,35 @@ export const EmergencyGeneratorAdd = ({
             formDataToSend.append("usage", formData.usage);
             formDataToSend.append("remark", formData.remark || "");
             formDataToSend.append("image", formData.image);
-    
+
             // Show submission status
             showFormAlert('正在提交資料...', 'info');
-            
+
             // Send form data to the backend
             const res = await fetch("http://localhost:8000/insert_emergency", {
                 method: "POST",
                 body: formDataToSend,
             });
-    
+
             if (res.ok) {
                 console.log('✅ Form submitted successfully!');
-                
+
                 // Close modal first
                 setAddModalVisible(false);
-                
+
                 // Wait a moment before refreshing data
                 setTimeout(async () => {
                     const refreshSuccessful = await safeRefresh();
-                    
+
                     // Update current function and title if available
                     if (typeof setCurrentFunction === 'function') {
                         setCurrentFunction("EmergencyGenerator");
                     }
-                    
+
                     if (typeof setCurrentTitle === 'function') {
                         setCurrentTitle("緊急發電機");
                     }
-                    
+
                     if (refreshSuccessful) {
                         alert("資料提交成功！");
                     } else {
@@ -352,7 +448,7 @@ export const EmergencyGeneratorAdd = ({
             <CModalHeader>
                 <CModalTitle id="ActivityModalLabel"><b>新增緊急發電機紀錄</b></CModalTitle>
             </CModalHeader>
-            
+
             <CForm onSubmit={handleSubmit}>
                 <CModalBody>
                     {showAlert && (
@@ -360,37 +456,44 @@ export const EmergencyGeneratorAdd = ({
                             {alertMessage}
                         </CAlert>
                     )}
-                    
+
                     <div className={styles.addmodal}>
                         <div className={styles.modalLeft}>
                             <CRow className="mb-3">
                                 <CFormLabel htmlFor="date" className={`col-sm-2 col-form-label ${styles.addlabel}`}>
-                                    發票/收據日期*
+                                    收據/發票日期*
                                 </CFormLabel>
                                 <CCol>
-                                    <CFormInput 
-                                        className={styles.addinput} 
-                                        type="date" 
-                                        id="date" 
+                                    <CFormInput
+                                        className={styles.addinput}
+                                        type="date"
+                                        id="date"
                                         value={formData.date}
                                         onChange={handleInputChange}
                                         invalid={!!formErrors.date}
+                                        min={cfvStartDate}
+                                        max={cfvEndDate}
                                     />
                                     {formErrors.date && (
                                         <div className="invalid-feedback">{formErrors.date}</div>
                                     )}
+                                    {cfvStartDate && cfvEndDate && (
+                                        <div className="form-text">
+                                            有效日期範圍: {cfvStartDate} 至 {cfvEndDate}
+                                        </div>
+                                    )}
                                 </CCol>
                             </CRow>
-                            
+
                             <CRow className="mb-3">
                                 <CFormLabel htmlFor="number" className={`col-sm-2 col-form-label ${styles.addlabel}`}>
                                     發票號碼/收據編號*
                                 </CFormLabel>
                                 <CCol>
-                                    <CFormInput 
-                                        className={styles.addinput} 
-                                        type="text" 
-                                        id="number" 
+                                    <CFormInput
+                                        className={styles.addinput}
+                                        type="text"
+                                        id="number"
                                         value={formData.number}
                                         onChange={handleInputChange}
                                         invalid={!!formErrors.number}
@@ -400,18 +503,18 @@ export const EmergencyGeneratorAdd = ({
                                     )}
                                 </CCol>
                             </CRow>
-                            
+
                             <CRow className="mb-3">
                                 <CFormLabel htmlFor="usage" className={`col-sm-2 col-form-label ${styles.addlabel}`}>
                                     使用量(公升)*
                                 </CFormLabel>
                                 <CCol>
-                                    <CFormInput 
-                                        className={styles.addinput} 
-                                        type="number" 
-                                        min="0" 
+                                    <CFormInput
+                                        className={styles.addinput}
+                                        type="number"
+                                        min="0"
                                         step="0.01"
-                                        id="usage" 
+                                        id="usage"
                                         value={formData.usage}
                                         onChange={handleInputChange}
                                         invalid={!!formErrors.usage}
@@ -422,15 +525,15 @@ export const EmergencyGeneratorAdd = ({
                                     )}
                                 </CCol>
                             </CRow>
-                            
+
                             <CRow className="mb-3">
                                 <CFormLabel htmlFor="remark" className={`col-sm-2 col-form-label ${styles.addlabel}`}>
                                     備註
                                 </CFormLabel>
                                 <CCol>
-                                    <CFormTextarea 
-                                        className={styles.addinput} 
-                                        id="remark" 
+                                    <CFormTextarea
+                                        className={styles.addinput}
+                                        id="remark"
                                         rows={3}
                                         value={formData.remark}
                                         onChange={handleInputChange}
@@ -438,7 +541,7 @@ export const EmergencyGeneratorAdd = ({
                                     />
                                 </CCol>
                             </CRow>
-                            
+
                             <CRow className="mb-3">
                                 <CFormLabel
                                     htmlFor="image"
@@ -447,9 +550,9 @@ export const EmergencyGeneratorAdd = ({
                                     圖片*
                                 </CFormLabel>
                                 <CCol>
-                                    <CFormInput 
-                                        type="file" 
-                                        id="image" 
+                                    <CFormInput
+                                        type="file"
+                                        id="image"
                                         onChange={handleImageChange}
                                         invalid={!!formErrors.image}
                                         accept="image/*"
@@ -467,7 +570,7 @@ export const EmergencyGeneratorAdd = ({
                                 <small>*為必填欄位</small>
                             </div>
                         </div>
-                        
+
                         <div className={styles.modalRight}>
                             <CFormLabel className={styles.addlabel}>
                                 圖片預覽
@@ -475,8 +578,8 @@ export const EmergencyGeneratorAdd = ({
                             <div className={styles.imgBlock}>
                                 {previewImage ? (
                                     <Zoom>
-                                        <img 
-                                            src={previewImage} 
+                                        <img
+                                            src={previewImage}
                                             alt="Uploaded Preview"
                                             style={{ maxWidth: '100%', maxHeight: '200px' }}
                                         />
@@ -491,8 +594,8 @@ export const EmergencyGeneratorAdd = ({
                             <CFormLabel className={styles.addlabel}>
                                 偵測結果
                                 {(ocrData.date || ocrData.number) && (
-                                    <button 
-                                        type="button" 
+                                    <button
+                                        type="button"
                                         className="btn btn-sm btn-outline-primary float-end"
                                         onClick={applyOcrData}
                                     >
@@ -501,16 +604,31 @@ export const EmergencyGeneratorAdd = ({
                                 )}
                             </CFormLabel>
                             <div className={styles.errorMSG || 'p-3 border'}>
-                                <div>偵測日期: {ocrData.date || '尚未偵測'}</div>
-                                <div>偵測號碼: {ocrData.number || '尚未偵測'}</div>
+                                <div>
+                                    偵測日期: {ocrData.date || '尚未偵測'}
+                                    {ocrData.date && formData.date && ocrData.date !== formData.date && (
+                                        <span className="text-danger ms-2">
+                                            (發票日期與偵測不符)
+                                        </span>
+                                    )}
+                                </div>
+                                <div>
+                                    偵測號碼: {ocrData.number || '尚未偵測'}
+                                    {ocrData.number && formData.number && ocrData.number !== formData.number && (
+                                        <span className="text-danger ms-2">
+                                            (發票號碼與偵測不符)
+                                        </span>
+                                    )}
+                                </div>
                             </div>
-                            
+
                             <CFormLabel className={styles.addlabel}>
                                 填表說明
                             </CFormLabel>
                             <div className={styles.infoBlock || 'p-3 border'}>
                                 <ul className="mb-0">
                                     <li>所有帶有 * 的欄位為必填項目</li>
+                                    <li>發票/收據日期必須在規定的基準期間內</li>
                                     <li>使用量請以公升為單位</li>
                                     <li>請上傳緊急發電機相關發票或收據的圖片</li>
                                     <li>系統會自動偵測上傳圖片中的日期和發票號碼</li>
@@ -519,18 +637,18 @@ export const EmergencyGeneratorAdd = ({
                         </div>
                     </div>
                 </CModalBody>
-                
+
                 <CModalFooter>
-                    <CButton 
-                        className="modalbutton1" 
+                    <CButton
+                        className="modalbutton1"
                         onClick={handleClose}
                         disabled={isSubmitting}
                         type="button"
                     >
                         取消
                     </CButton>
-                    <CButton 
-                        type="submit" 
+                    <CButton
+                        type="submit"
                         className="modalbutton2"
                         disabled={isSubmitting}
                     >

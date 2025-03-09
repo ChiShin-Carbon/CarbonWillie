@@ -19,6 +19,10 @@ const AddFillModal = ({
     // Create a local refresh instance as backup
     const localRefreshData = useRefreshData();
 
+    // State for date restrictions
+    const [cfvStartDate, setCfvStartDate] = useState('');
+    const [cfvEndDate, setCfvEndDate] = useState('');
+
     // Form state with default values
     const defaultFormData = {
         date: '',
@@ -48,6 +52,29 @@ const AddFillModal = ({
         date: '',
         num: ''
     });
+
+    // Fetch baseline data when component mounts
+    useEffect(() => {
+        getBaseline();
+    }, []);
+
+    // Function to fetch baseline data
+    const getBaseline = async () => {
+        try {
+            const response = await fetch('http://localhost:8000/baseline');
+            if (response.ok) {
+                const data = await response.json();
+                setCfvStartDate(data.baseline.cfv_start_date);
+                setCfvEndDate(data.baseline.cfv_end_date);
+            } else {
+                console.log(response.status);
+                showFormAlert('無法取得基準期間資料', 'warning');
+            }
+        } catch (error) {
+            console.error('Error fetching baseline:', error);
+            showFormAlert('取得基準期間資料時發生錯誤', 'warning');
+        }
+    };
 
     // Clean up resources when component unmounts or modal closes
     useEffect(() => {
@@ -91,15 +118,30 @@ const AddFillModal = ({
             [id]: value
         }));
 
-        // If this is a field with OCR data, check if it matches
-        if (id === 'date' && ocrData.date && value !== ocrData.date) {
-            showFormAlert(`輸入的日期 (${value}) 與偵測結果 (${ocrData.date}) 不符`, 'warning');
+        // Check if date is within valid range for date field
+        if (id === 'date') {
+            if (cfvStartDate && cfvEndDate && (value < cfvStartDate || value > cfvEndDate)) {
+                setFormErrors(prev => ({
+                    ...prev,
+                    date: `日期必須在 ${cfvStartDate} 至 ${cfvEndDate} 之間`
+                }));
+            } else {
+                setFormErrors(prev => ({
+                    ...prev,
+                    date: undefined
+                }));
+            }
+
+            // If this is a field with OCR data, check if it matches
+            if (ocrData.date && value !== ocrData.date) {
+                showFormAlert(`輸入的日期 (${value}) 與偵測結果 (${ocrData.date}) 不符`, 'warning');
+            }
         } else if (id === 'num' && ocrData.num && value !== ocrData.num) {
             showFormAlert(`輸入的號碼 (${value}) 與偵測結果 (${ocrData.num}) 不符`, 'warning');
         }
 
-        // Clear validation error for this field
-        if (formErrors[id]) {
+        // Clear validation error for this field (except date which we handled above)
+        if (id !== 'date' && formErrors[id]) {
             setFormErrors(prev => ({
                 ...prev,
                 [id]: undefined
@@ -161,6 +203,13 @@ const AddFillModal = ({
                     num: extractedNum
                 });
 
+                // Check if extracted date is within valid range
+                if (extractedDate && cfvStartDate && cfvEndDate) {
+                    if (extractedDate < cfvStartDate || extractedDate > cfvEndDate) {
+                        showFormAlert(`偵測到的日期 (${extractedDate}) 不在有效範圍內，請確認`, 'warning');
+                    }
+                }
+
                 // Inform the user that data is available to apply
                 if (extractedDate || extractedNum) {
                     showFormAlert('圖片處理完成，可點擊「應用偵測資料」按鈕填入資料', 'success');
@@ -185,12 +234,23 @@ const AddFillModal = ({
             const updates = [];
 
             if (ocrData.date) {
-                setFormData(prev => ({
-                    ...prev,
-                    date: ocrData.date
-                }));
-                appliedCount++;
-                updates.push('日期');
+                // Check if date is within valid range before applying
+                if (cfvStartDate && cfvEndDate && (ocrData.date < cfvStartDate || ocrData.date > cfvEndDate)) {
+                    showFormAlert(`偵測到的日期 (${ocrData.date}) 不在有效範圍內，未套用`, 'warning');
+                } else {
+                    setFormData(prev => ({
+                        ...prev,
+                        date: ocrData.date
+                    }));
+                    appliedCount++;
+                    updates.push('日期');
+                    
+                    // Clear date error if it exists
+                    setFormErrors(prev => ({
+                        ...prev,
+                        date: undefined
+                    }));
+                }
             }
 
             if (ocrData.num) {
@@ -200,14 +260,13 @@ const AddFillModal = ({
                 }));
                 appliedCount++;
                 updates.push('號碼');
+                
+                // Clear num error
+                setFormErrors(prev => ({
+                    ...prev,
+                    num: undefined
+                }));
             }
-
-            // Clear related errors
-            setFormErrors(prev => ({
-                ...prev,
-                date: undefined,
-                num: undefined
-            }));
 
             if (appliedCount > 0) {
                 showFormAlert(`已應用偵測${updates.join('和')}`, 'success');
@@ -270,7 +329,12 @@ const AddFillModal = ({
     const validateForm = () => {
         const errors = {};
 
-        if (!formData.date) errors.date = '請選擇日期';
+        if (!formData.date) {
+            errors.date = '請選擇日期';
+        } else if (cfvStartDate && cfvEndDate && (formData.date < cfvStartDate || formData.date > cfvEndDate)) {
+            errors.date = `日期必須在 ${cfvStartDate} 至 ${cfvEndDate} 之間`;
+        }
+        
         if (!formData.num) errors.num = '請輸入發票號碼/收據編號';
         if (!formData.start) errors.start = '請選擇用電期間(起)';
         if (!formData.end) errors.end = '請選擇用電期間(迄)';
@@ -341,7 +405,7 @@ const AddFillModal = ({
         
         // Validate form
         if (!validateForm()) {
-            showFormAlert('請填寫所有必填欄位', 'danger');
+            showFormAlert('請填寫所有必填欄位，並確保日期在有效範圍內', 'danger');
             return;
         }
         
@@ -464,7 +528,7 @@ const AddFillModal = ({
                         <div className={styles.modalLeft}>
                             <CRow className="mb-3">
                                 <CFormLabel htmlFor="date" className={`col-sm-2 col-form-label ${styles.addlabel}`}>
-                                    發票/收據日期*
+                                    收據/發票日期*
                                 </CFormLabel>
                                 <CCol>
                                     <CFormInput 
@@ -474,9 +538,16 @@ const AddFillModal = ({
                                         value={formData.date}
                                         onChange={handleInputChange}
                                         invalid={!!formErrors.date}
+                                        min={cfvStartDate}
+                                        max={cfvEndDate}
                                     />
                                     {formErrors.date && (
                                         <div className="invalid-feedback">{formErrors.date}</div>
+                                    )}
+                                    {cfvStartDate && cfvEndDate && (
+                                        <div className="form-text">
+                                            有效日期範圍: {cfvStartDate} 至 {cfvEndDate}
+                                        </div>
                                     )}
                                 </CCol>
                             </CRow>
@@ -705,9 +776,24 @@ const AddFillModal = ({
                                 )}
                             </CFormLabel>
                             <div className={styles.errorMSG || 'p-3 border'}>
-                                <div>偵測日期: {ocrData.date || '尚未偵測'}</div>
-                                <div>偵測號碼: {ocrData.num || '尚未偵測'}</div>
+                                <div>
+                                    偵測日期: {ocrData.date || '尚未偵測'}
+                                    {ocrData.date && formData.date && ocrData.date !== formData.date && (
+                                        <span className="text-danger ms-2">
+                                            (發票日期與偵測不符)
+                                        </span>
+                                    )}
+                                </div>
+                                <div>
+                                    偵測號碼: {ocrData.num || '尚未偵測'}
+                                    {ocrData.num && formData.num && ocrData.num !== formData.num && (
+                                        <span className="text-danger ms-2">
+                                            (發票號碼與偵測不符)
+                                        </span>
+                                    )}
+                                </div>
                             </div>
+
 
                             <CFormLabel className={styles.addlabel}>
                                 填表說明
@@ -715,6 +801,7 @@ const AddFillModal = ({
                             <div className={styles.infoBlock || 'p-3 border'}>
                                 <ul className="mb-0">
                                     <li>所有帶有 * 的欄位為必填項目</li>
+                                    <li>收據/發票日期必須在規定的基準期間內</li>
                                     <li>填寫類型可選「用電度數」或「用電金額」</li>
                                     <li>建議優先填寫「用電度數」</li>
                                     <li>用電期間必須設定起始與結束日期</li>

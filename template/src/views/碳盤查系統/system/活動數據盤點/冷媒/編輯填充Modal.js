@@ -19,6 +19,11 @@ const EditFillModal = ({
 }) => {
     // Create a local refresh instance as backup
     const localRefreshData = useRefreshData();
+    
+    // State for date restrictions
+    const [cfvStartDate, setCfvStartDate] = useState('');
+    const [cfvEndDate, setCfvEndDate] = useState('');
+    
     const [collapseVisible, setCollapseVisible] = useState(false);
     const [previewImage, setPreviewImage] = useState(null); // State for image preview
     const [existingImage, setExistingImage] = useState(null); // State to track if there's an existing image
@@ -34,7 +39,7 @@ const EditFillModal = ({
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [formErrors, setFormErrors] = useState({});
     
-    // OCR states (Added)
+    // OCR states
     const [ocrData, setOcrData] = useState({
         date: '',
         number: ''
@@ -44,6 +49,29 @@ const EditFillModal = ({
     const [showAlert, setShowAlert] = useState(false);
     const [alertMessage, setAlertMessage] = useState('');
     const [alertColor, setAlertColor] = useState('danger');
+
+    // Fetch baseline data when component mounts
+    useEffect(() => {
+        getBaseline();
+    }, []);
+
+    // Function to fetch baseline data
+    const getBaseline = async () => {
+        try {
+            const response = await fetch('http://localhost:8000/baseline');
+            if (response.ok) {
+                const data = await response.json();
+                setCfvStartDate(data.baseline.cfv_start_date);
+                setCfvEndDate(data.baseline.cfv_end_date);
+            } else {
+                console.log(response.status);
+                showFormAlert('無法取得基準期間資料', 'warning');
+            }
+        } catch (error) {
+            console.error('Error fetching baseline:', error);
+            showFormAlert('取得基準期間資料時發生錯誤', 'warning');
+        }
+    };
 
     // Reset states when modal closes or opens
     const resetStates = useCallback(() => {
@@ -108,7 +136,7 @@ const EditFillModal = ({
         }, 5000);
     };
 
-    // Process image with OCR (Added)
+    // Process image with OCR
     const processImageWithOCR = async (imageFile) => {
         showFormAlert('正在處理圖片...', 'info');
 
@@ -155,6 +183,13 @@ const EditFillModal = ({
                     showFormAlert(`偵測的日期 (${extractedDate}) 與表單日期 (${formValues.Doc_date}) 不符`, 'warning');
                 }
                 
+                // Check if extracted date is within valid range
+                if (extractedDate && cfvStartDate && cfvEndDate) {
+                    if (extractedDate < cfvStartDate || extractedDate > cfvEndDate) {
+                        showFormAlert(`偵測到的日期 (${extractedDate}) 不在有效範圍內，請確認`, 'warning');
+                    }
+                }
+                
                 if (extractedNumber && extractedNumber !== formValues.Doc_number) {
                     showFormAlert(`偵測的號碼 (${extractedNumber}) 與表單號碼 (${formValues.Doc_number}) 不符`, 'warning');
                 }
@@ -174,7 +209,7 @@ const EditFillModal = ({
         }
     };
 
-    // Apply OCR data to form (Added)
+    // Apply OCR data to form
     const applyOcrData = () => {
         let appliedCount = 0;
 
@@ -183,12 +218,23 @@ const EditFillModal = ({
             const updates = [];
 
             if (ocrData.date) {
-                setFormValues(prev => ({
-                    ...prev,
-                    Doc_date: ocrData.date
-                }));
-                appliedCount++;
-                updates.push('日期');
+                // Check if date is within valid range before applying
+                if (cfvStartDate && cfvEndDate && (ocrData.date < cfvStartDate || ocrData.date > cfvEndDate)) {
+                    showFormAlert(`偵測到的日期 (${ocrData.date}) 不在有效範圍內，未套用`, 'warning');
+                } else {
+                    setFormValues(prev => ({
+                        ...prev,
+                        Doc_date: ocrData.date
+                    }));
+                    appliedCount++;
+                    updates.push('日期');
+                    
+                    // Clear date error
+                    setFormErrors(prev => ({
+                        ...prev,
+                        Doc_date: undefined
+                    }));
+                }
             }
 
             if (ocrData.number) {
@@ -198,14 +244,13 @@ const EditFillModal = ({
                 }));
                 appliedCount++;
                 updates.push('號碼');
+                
+                // Clear number error
+                setFormErrors(prev => ({
+                    ...prev,
+                    Doc_number: undefined
+                }));
             }
-
-            // Clear related errors
-            setFormErrors(prev => ({
-                ...prev,
-                Doc_date: undefined,
-                Doc_number: undefined
-            }));
 
             if (appliedCount > 0) {
                 showFormAlert(`已應用偵測${updates.join('和')}`, 'success');
@@ -247,7 +292,7 @@ const EditFillModal = ({
             setFormValues((prev) => ({ ...prev, image: file }));
             setUseExistingImage(false); // 選擇新圖片時，不使用現有圖片
 
-            // Process image with OCR (Added)
+            // Process image with OCR
             processImageWithOCR(file);
         } else {
             // 如果用戶取消選擇，恢復使用現有圖片（如果有的話）
@@ -294,6 +339,13 @@ const EditFillModal = ({
                             setPreviewImage(`fastapi/${refrigerantFill.img_path}`);
                             setUseExistingImage(true);
                         }
+                        
+                        // Check if the loaded date is within valid range
+                        if (refrigerantFill?.Doc_date && cfvStartDate && cfvEndDate) {
+                            if (refrigerantFill.Doc_date < cfvStartDate || refrigerantFill.Doc_date > cfvEndDate) {
+                                showFormAlert(`注意：此記錄的日期 (${refrigerantFill.Doc_date}) 不在當前有效範圍內`, 'warning');
+                            }
+                        }
                     } else {
                         console.error('No refrigerant fill data found');
                         showFormAlert('找不到冷媒填充資料', 'danger');
@@ -311,13 +363,18 @@ const EditFillModal = ({
         if (isEditFillModalVisible && selectedFillId) {
             fetchRefrigerantFillData();
         }
-    }, [selectedFillId, isEditFillModalVisible, resetStates]);
+    }, [selectedFillId, isEditFillModalVisible, resetStates, cfvStartDate, cfvEndDate]);
 
     // Validate the form
     const validateForm = () => {
         const errors = {};
 
-        if (!formValues.Doc_date) errors.Doc_date = '請輸入發票/收據日期';
+        if (!formValues.Doc_date) {
+            errors.Doc_date = '請輸入發票/收據日期';
+        } else if (cfvStartDate && cfvEndDate && (formValues.Doc_date < cfvStartDate || formValues.Doc_date > cfvEndDate)) {
+            errors.Doc_date = `日期必須在 ${cfvStartDate} 至 ${cfvEndDate} 之間`;
+        }
+        
         if (!formValues.Doc_number) errors.Doc_number = '請輸入發票號碼/收據編號';
         if (!formValues.usage || formValues.usage <= 0) errors.usage = '請輸入有效的填充量';
         if (!formValues.escape_rate || formValues.escape_rate < 0) errors.escape_rate = '請輸入有效的逸散率';
@@ -332,21 +389,38 @@ const EditFillModal = ({
         const { id, value } = e.target;
         setFormValues((prev) => ({ ...prev, [id]: value }));
 
-        // Clear validation error for this field
-        if (formErrors[id]) {
-            setFormErrors(prev => ({
-                ...prev,
-                [id]: undefined
-            }));
-        }
-
-        // Check for date or invoice number mismatches if OCR data exists (Added)
-        if (id === 'Doc_date' && ocrData.date && value !== ocrData.date) {
-            showFormAlert(`輸入的日期 (${value}) 與偵測結果 (${ocrData.date}) 不符`, 'warning');
-        }
-
-        if (id === 'Doc_number' && ocrData.number && value !== ocrData.number) {
-            showFormAlert(`輸入的號碼 (${value}) 與偵測結果 (${ocrData.number}) 不符`, 'warning');
+        // Special validation for date field
+        if (id === 'Doc_date') {
+            if (cfvStartDate && cfvEndDate && (value < cfvStartDate || value > cfvEndDate)) {
+                setFormErrors(prev => ({
+                    ...prev,
+                    Doc_date: `日期必須在 ${cfvStartDate} 至 ${cfvEndDate} 之間`
+                }));
+            } else {
+                setFormErrors(prev => ({
+                    ...prev,
+                    Doc_date: undefined
+                }));
+            }
+            
+            // Check if OCR values match the new input
+            if (ocrData.date && value !== ocrData.date) {
+                showFormAlert(`輸入的日期 (${value}) 與偵測結果 (${ocrData.date}) 不符`, 'warning');
+            }
+        } 
+        // Clear validation errors for other fields
+        else {
+            if (formErrors[id]) {
+                setFormErrors(prev => ({
+                    ...prev,
+                    [id]: undefined
+                }));
+            }
+            
+            // Check if OCR number matches
+            if (id === 'Doc_number' && ocrData.number && value !== ocrData.number) {
+                showFormAlert(`輸入的號碼 (${value}) 與偵測結果 (${ocrData.number}) 不符`, 'warning');
+            }
         }
     };
 
@@ -359,7 +433,7 @@ const EditFillModal = ({
 
         // Validate form
         if (!validateForm()) {
-            showFormAlert('請填寫所有必填欄位', 'danger');
+            showFormAlert('請填寫所有必填欄位，並確保日期在有效範圍內', 'danger');
             return;
         }
 
@@ -476,9 +550,16 @@ const EditFillModal = ({
                                         value={formValues.Doc_date}
                                         onChange={handleChange}
                                         invalid={!!formErrors.Doc_date}
+                                        min={cfvStartDate}
+                                        max={cfvEndDate}
                                     />
                                     {formErrors.Doc_date && (
                                         <div className="invalid-feedback">{formErrors.Doc_date}</div>
+                                    )}
+                                    {cfvStartDate && cfvEndDate && (
+                                        <div className="form-text">
+                                            有效日期範圍: {cfvStartDate} 至 {cfvEndDate}
+                                        </div>
                                     )}
                                 </CCol>
                             </CRow>
@@ -621,7 +702,6 @@ const EditFillModal = ({
                                 )}
                             </div>
 
-                            {/* Added OCR results section */}
                             <CFormLabel className={styles.addlabel}>
                                 偵測結果
                                 {(ocrData.date || ocrData.number) && (
@@ -635,8 +715,22 @@ const EditFillModal = ({
                                 )}
                             </CFormLabel>
                             <div className={styles.errorMSG || 'p-3 border'}>
-                                <div>偵測日期: {ocrData.date || '尚未偵測'}</div>
-                                <div>偵測號碼: {ocrData.number || '尚未偵測'}</div>
+                                <div>
+                                    偵測日期: {ocrData.date || '尚未偵測'}
+                                    {ocrData.date && formValues.Doc_date && ocrData.date !== formValues.Doc_date && (
+                                        <span className="text-danger ms-2">
+                                            (發票日期與偵測不符)
+                                        </span>
+                                    )}
+                                </div>
+                                <div>
+                                    偵測號碼: {ocrData.number || '尚未偵測'}
+                                    {ocrData.number && formValues.Doc_number && ocrData.number !== formValues.Doc_number && (
+                                        <span className="text-danger ms-2">
+                                            (發票號碼與偵測不符)
+                                        </span>
+                                    )}
+                                </div>
                                 {!ocrData.date && !ocrData.number && existingImage && (
                                     <div>已載入現有圖片。如需OCR檢查，請上傳新圖片。</div>
                                 )}
@@ -648,7 +742,7 @@ const EditFillModal = ({
                             <div className={styles.infoBlock || 'p-3 border'}>
                                 <ul className="mb-0">
                                     <li>所有帶有 * 的欄位為必填項目</li>
-                                    <li>發票/收據日期須為有效日期</li>
+                                    <li>發票/收據日期必須在規定的基準期間內</li>
                                     <li>填充量必須大於 0</li>
                                     <li>逸散率必須大於或等於 0</li>
                                     <li>點擊「逸散率(%)建議表格」可查看相關參考資料</li>
