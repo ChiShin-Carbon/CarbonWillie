@@ -242,9 +242,11 @@ const Tabs = () => {
         <div>
           <div className={styles.activityCard2Head}>
             <strong className={styles.activityCard2HeadTitle}>範疇一</strong>
-            <button className={styles.activityAddButton} onClick={handleOpenAddModal}>
-              新增
-            </button>
+            {window.sessionStorage.getItem("position") == 1 ? (
+              <button className={styles.activityAddButton} onClick={handleOpenAddModal}>
+                新增
+              </button>
+            ) : null}
           </div>
 
           <div className={styles.activityCardBody2}>
