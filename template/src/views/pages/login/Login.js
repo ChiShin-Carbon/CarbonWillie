@@ -50,7 +50,11 @@ const Login = () => {
         window.sessionStorage.setItem('user_id', data.user.user_id) // Store the user_id
         window.sessionStorage.setItem('username', data.user.username)
         window.sessionStorage.setItem('address', data.user.address)
+        window.sessionStorage.setItem('department', data.user.department)
+        window.sessionStorage.setItem('position', data.user.position)
+        window.sessionStorage.setItem('role', data.user.role)
         console.log('Stored user_id:', data.user.user_id)
+        console.log('role', data.user.role)
       } else {
         setMessage('帳號或密碼錯誤') // Use the error message from the response
         console.log(response.status) // Log the status code for debugging

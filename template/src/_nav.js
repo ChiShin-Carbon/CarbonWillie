@@ -28,6 +28,30 @@ import {
 } from '@coreui/icons'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 
+const getAdminNavItems = () => {
+  if (window.sessionStorage.getItem("role") == "false") {
+    return [
+      {
+        component: CNavTitle,
+        name: '管理者頁面',
+      },
+      {
+        component: CNavItem,
+        name: '企業與使用者列表',
+        to: '/管理者/企業列表',
+        icon: <CIcon icon={cilStorage} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: '顧問列表',
+        to: '/管理者/顧問列表',
+        icon: <CIcon icon={cilHandshake} customClassName="nav-icon" />,
+      },
+    ];
+  }
+  return [];
+};
+
 const _nav = [
   // {
   //   component: CNavTitle,
@@ -131,22 +155,8 @@ const _nav = [
     icon: <CIcon icon={cilBuilding} customClassName="nav-icon" />,
   },
 
-  {
-    component: CNavTitle,
-    name: '管理者頁面',
-  },
-  {
-    component: CNavItem,
-    name: '企業與使用者列表',
-    to: '/管理者/企業列表',
-    icon: <CIcon icon={cilStorage} customClassName="nav-icon" />,
-  },
-  {
-    component: CNavItem,
-    name: '顧問列表',
-    to: '/管理者/顧問列表',
-    icon: <CIcon icon={cilHandshake} customClassName="nav-icon" />,
-  },
+  ...getAdminNavItems(),
+
   {
     component: CNavTitle,
     name: 'Components',
