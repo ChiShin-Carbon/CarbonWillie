@@ -169,7 +169,7 @@ const EmissionFactorsDashboard = () => {
 
   return (
     <CRow>
-      <div className={styles.systemTablist}>
+      {/* <div className={styles.systemTablist}>
         <div className={styles.tabsLeft}>
           <div style={{ width: '250px', display: 'flex', justifyContent: 'left' }}>
             <strong style={{ fontSize: '1.0rem', display: 'flex', alignItems: 'center', padding: '5px' }}>
@@ -196,7 +196,7 @@ const EmissionFactorsDashboard = () => {
             </CCol>
           </div>
         </div>
-      </div>
+      </div> */}
 
       <div style={{ height: '10px' }}></div>
 
