@@ -35,11 +35,23 @@ const Tabs = () => {
                     const text = await page.getTextContent();
                     const textItems = text.items.map((item) => item.str).join(' ');
 
-                    if (textItems.includes('第一章')) {
-                        textContent.push({ chapter: '第一章', page: i });
+                    if (textItems.includes('第一章、機構簡介與政策聲明')) {
+                        textContent.push({ chapter: '第一章、機構簡介與政策聲明', page: i });
                     }
-                    if (textItems.includes('第二章')) {
-                        textContent.push({ chapter: '第二章', page: i });
+                    if (textItems.includes('第二章、盤查邊界設定')) {
+                        textContent.push({ chapter: '第二章、盤查邊界設定', page: i });
+                    }
+                    if (textItems.includes('第三章、報告溫室氣體排放量')) {
+                        textContent.push({ chapter: '第三章、報告溫室氣體排放量', page: i });
+                    }
+                    if (textItems.includes('第四章、數據品質管理')) {
+                        textContent.push({ chapter: '第四章、數據品質管理', page: i });
+                    }
+                    if (textItems.includes('第五章、基準年')) {
+                        textContent.push({ chapter: '第五章、基準年', page: i });
+                    }
+                    if (textItems.includes('第六章、參考文獻')) {
+                        textContent.push({ chapter: '第六章、參考文獻', page: i });
                     }
                 }
 

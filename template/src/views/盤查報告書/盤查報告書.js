@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React, { useRef, useEffect } from 'react'
 import { useState } from 'react';
 
 
@@ -17,38 +17,20 @@ import 'primereact/resources/primereact.min.css';          // 核心 CSS
 import 'primeicons/primeicons.css';                        // 图标样式
 
 
-import { Editor } from '@tinymce/tinymce-react';
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronDown, faArrowRightFromBracket, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 
+import { Viewer, Worker, SpecialZoomLevel } from '@react-pdf-viewer/core';
+import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
+import { getDocument } from 'pdfjs-dist';
+import '@react-pdf-viewer/core/lib/styles/index.css';
+import '@react-pdf-viewer/default-layout/lib/styles/index.css';
+
+
+
 
 const Tabs = () => {
-
-    const userId = window.sessionStorage.getItem('user_id');
-    console.log('目前的 user_id:', userId);
-
-    const API_KEY = import.meta.env.VITE_TINYMCE_API_KEY
-
-    const [openSections, setOpenSections] = useState({
-        section3: false,
-        section4: false,
-        'section4_3': false,
-        section5: false,
-        section6: false,
-    });
-
     const [activeSection, setActiveSection] = useState(null); // 用來追踪當前選中的章節
-
-    const toggleSection = (section) => {
-        setOpenSections((prev) => ({
-            ...prev,
-            [section]: !prev[section],
-        }));
-
-        setActiveSection(section); // 設置當前選中的章節
-    };
-
 
     const handleDownload = () => {
         // Specify the file URL and file name
@@ -64,6 +46,68 @@ const Tabs = () => {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+    };
+    ///////////////////////////////////////////////////////////////////////////////////////////
+
+    const pdfFile = '/pdf/combined.pdf';
+    const defaultLayoutPluginInstance = defaultLayoutPlugin();
+    const [chapterPages, setChapterPages] = useState({});
+    const [viewerKey, setViewerKey] = useState(0); // 強迫重新渲染用
+    const [targetPage, setTargetPage] = useState(null); // 目標頁面
+
+    // 解析章節
+    useEffect(() => {
+        const extractTextFromPDF = async () => {
+            try {
+                const pdf = await getDocument(pdfFile).promise;
+                let textContent = [];
+
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const text = await page.getTextContent();
+                    const textItems = text.items.map((item) => item.str).join(' ');
+
+                    if (textItems.includes('溫室氣體盤查報告書')) {
+                        textContent.push({ chapter: '封面', page: i });
+                    }
+                    if (textItems.includes('第一章、機構簡介與政策聲明')) {
+                        textContent.push({ chapter: '第一章、機構簡介與政策聲明', page: i });
+                    }
+                    if (textItems.includes('第二章、盤查邊界設定')) {
+                        textContent.push({ chapter: '第二章、盤查邊界設定', page: i });
+                    }
+                    if (textItems.includes('第三章、報告溫室氣體排放量')) {
+                        textContent.push({ chapter: '第三章、報告溫室氣體排放量', page: i });
+                    }
+                    if (textItems.includes('第四章、數據品質管理')) {
+                        textContent.push({ chapter: '第四章、數據品質管理', page: i });
+                    }
+                    if (textItems.includes('第五章、基準年')) {
+                        textContent.push({ chapter: '第五章、基準年', page: i });
+                    }
+                    if (textItems.includes('第六章、參考文獻')) {
+                        textContent.push({ chapter: '第六章、參考文獻', page: i });
+                    }
+                }
+
+                const chapters = {};
+                textContent.forEach(({ chapter, page }) => {
+                    chapters[chapter] = page;
+                });
+
+                setChapterPages(chapters);
+            } catch (error) {
+                console.error('解析 PDF 錯誤:', error);
+            }
+        };
+
+        extractTextFromPDF();
+    }, [pdfFile]);
+
+    // ** 重新渲染 PDF 並跳到指定頁 **
+    const goToPage = (pageNumber) => {
+        setTargetPage(pageNumber);
+        setViewerKey((prev) => prev + 1); // 透過 key 重新渲染
     };
 
 
@@ -108,8 +152,8 @@ const Tabs = () => {
                         <option value="1">編輯中</option>
                     </select>
                     <button className={styles.save}>儲存</button> */}
-                    <span style={{color:'gray',fontWeight:'bold'}}>最後上傳資訊 : XX部門-蔡沂庭 2024/12/2 23:59:23</span>
-                    <button className={styles.save}>上傳編修後檔案</button> 
+                    <span style={{ color: 'gray', fontWeight: 'bold' }}>最後上傳資訊 : XX部門-蔡沂庭 2024/12/2 23:59:23</span>
+                    <button className={styles.save}>上傳編修後檔案</button>
                 </div>
 
             </div>
@@ -118,16 +162,21 @@ const Tabs = () => {
             <div className={styles.cardRow}>
                 <CCard className={styles.cardCatalog}>
                     <div className={styles.CatalogBody}>
-                        <div className={`${styles.CatalogTitle} ${activeSection === 'cover' ? styles.active : ''}`} onClick={() => setActiveSection('cover')}>封面</div>
-                        <div className={`${styles.CatalogTitle} ${activeSection === 'catalog' ? styles.active : ''}`} onClick={() => setActiveSection('catalog')}>目錄</div>
-                        <div className={`${styles.CatalogTitle} ${activeSection === 'section1' ? styles.active : ''}`} onClick={() => setActiveSection('section1')}>第一章、機構簡介與政策聲明</div>
-                        <div className={`${styles.CatalogTitle} ${activeSection === 'section2' ? styles.active : ''}`} onClick={() => setActiveSection('section2')}>第二章、盤查邊界設定</div>
-                        <div className={`${styles.CatalogTitle} ${activeSection === 'section3' ? styles.active : ''}`} onClick={() => setActiveSection('section3')}>第三章、報告溫室氣體排放量</div>
-                        <div className={`${styles.CatalogTitle} ${activeSection === 'section4' ? styles.active : ''}`} onClick={() => setActiveSection('section4')}>第四章、數據品質管理</div>
-                        <div className={`${styles.CatalogTitle} ${activeSection === 'section5' ? styles.active : ''}`} onClick={() => setActiveSection('section5')}>第五章、基準年</div>
-                        <div className={`${styles.CatalogTitle} ${activeSection === 'section6' ? styles.active : ''}`} onClick={() => setActiveSection('section6')}>第六章、參考文獻</div>
-
-                       
+                        <div className={`${styles.CatalogTitle} ${activeSection === 'cover' ? styles.active : ''}`}
+                          onClick={() => { setActiveSection('cover'); goToPage(chapterPages['封面']); }}>封面</div>
+                        {/* 綁定章節+跳頁 */}
+                        <div className={`${styles.CatalogTitle} ${activeSection === 'section1' ? styles.active : ''}`}
+                            onClick={() => { setActiveSection('section1'); goToPage(chapterPages['第一章、機構簡介與政策聲明']); }}>第一章、機構簡介與政策聲明</div>
+                        <div className={`${styles.CatalogTitle} ${activeSection === 'section2' ? styles.active : ''}`}
+                            onClick={() => { setActiveSection('section2'); goToPage(chapterPages['第二章、盤查邊界設定']); }}>第二章、盤查邊界設定</div>
+                        <div className={`${styles.CatalogTitle} ${activeSection === 'section3' ? styles.active : ''}`}
+                            onClick={() => { setActiveSection('section3'); goToPage(chapterPages['第三章、報告溫室氣體排放量']); }}>第三章、報告溫室氣體排放量</div>
+                        <div className={`${styles.CatalogTitle} ${activeSection === 'section4' ? styles.active : ''}`}
+                            onClick={() => { setActiveSection('section4'); goToPage(chapterPages['第四章、數據品質管理']); }}>第四章、數據品質管理</div>
+                        <div className={`${styles.CatalogTitle} ${activeSection === 'section5' ? styles.active : ''}`}
+                            onClick={() => { setActiveSection('section5'); goToPage(chapterPages['第五章、基準年']); }}>第五章、基準年</div>
+                        <div className={`${styles.CatalogTitle} ${activeSection === 'section6' ? styles.active : ''}`}
+                            onClick={() => { setActiveSection('section6'); goToPage(chapterPages['第六章、參考文獻']); }}>第六章、參考文獻</div>
                     </div>
                     <div className={styles.CatalogFoot}>
                         <a href="src/assets/files/盤查報告書參考範本_各行業通用.odt" download="盤查報告書參考範本_各行業通用.odt">點此下載報告書範本</a>
@@ -138,12 +187,18 @@ const Tabs = () => {
 
 
                 <CCard className={styles.cardMain}>
-                    <div style={{ height: '95%' }}>
-
-                        
-
+                    <div style={{ height: '600px' }}>
+                        <Worker workerUrl={`https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js`}>
+                            <Viewer
+                                key={viewerKey}
+                                fileUrl={pdfFile}
+                                defaultScale={SpecialZoomLevel.PageFit}
+                                initialPage={targetPage ? targetPage - 1 : 0} // 透過 initialPage 跳轉
+                                plugins={[defaultLayoutPluginInstance]}
+                            />
+                        </Worker>
                     </div>
-                    <div style={{ textAlign: 'right' }}>
+                    <div style={{ textAlign: 'right' }} className={styles.export}>
                         <button onClick={handleDownload}>
                             <FontAwesomeIcon icon={faArrowRightFromBracket} /> 匯出報告
                         </button>
