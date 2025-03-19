@@ -371,7 +371,7 @@ const Charts = () => {
                                                     <option value="3">表3</option>
                                                 </CFormSelect>
 
-                                                <MultiSelect
+                                                {/* <MultiSelect
                                                     value={selectedCities}
                                                     onChange={(e) => setSelectedCities(e.value)}
                                                     options={years}
@@ -385,7 +385,7 @@ const Charts = () => {
                                                         height: '38px',  // 調整高度
                                                         fontSize: '0.875rem' // 調整字體大小
                                                     }}
-                                                />
+                                                /> */}
                                             </div>
                                             {/*無資料
                                             <br/><br/><br/><br/><br/><br/><br/>
