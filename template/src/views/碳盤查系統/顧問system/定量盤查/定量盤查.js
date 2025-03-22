@@ -66,7 +66,7 @@ const Tabs = () => {
         : []
 
       // Make sure emissionFactors is an array
-      const emissionFactors = Array.isArray(source.emission_factors) ? source.emission_factors : [];
+      const emissionFactors = Array.isArray(source.emission_factors) ? source.emission_factors : []
 
       return activityData.map((activity) => ({
         status: 'completed',
@@ -79,17 +79,17 @@ const Tabs = () => {
           emiCoe1: gasTypes,
           emiCoeList: gasTypes.map((gasType, index) => {
             // Get the emission factor for this index, or use a default empty object if it doesn't exist
-            const emissionFactor = emissionFactors[index] || {};
-            
+            const emissionFactor = emissionFactors[index] || {}
+
             return {
               gasType,
-              emiCoeType: emissionFactor.factor_type || '1', // Default to '1' (预设)
-              emiCoeNum: emissionFactor.factor || 0,         // Default to 0
+              emiCoeType: emissionFactor.factor_type || '1', // Default to '1' (預設)
+              emiCoeNum: emissionFactor.factor || 0, // Default to 0
               emiCoeSource: emissionFactor.factor_source || '',
               emiCoeUnit: `${gasType}/${activity_data_unit_map[activity.activity_data_unit]}`,
               emiCoeClass: '5國家排放係數',
-              emiCoeGWP: emissionFactor.GWP || 1,           // Default GWP to 1
-            };
+              emiCoeGWP: emissionFactor.GWP || 1, // Default GWP to 1
+            }
           }),
           other1: source.is_bioenergy,
           other2: source.is_bioenergy,

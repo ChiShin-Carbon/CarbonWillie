@@ -94,12 +94,12 @@ async def read_user_credentials(
                 # 若不存在，插入新記錄
                 insert_activity_query = """
                     INSERT INTO Activity_Data (
-                        source_id, activity_data, distribution_ratio, data_source, save_unit, data_type,
+                        source_id, activity_data, distribution_ratio, activity_data_unit, data_source, save_unit, data_type,
                         calorific_value, moisture_content, carbon_content
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """
                 insert_activity_values = (
-                    source_id, liters, 100, data_source, save_unit, data_type, calorific_value, 0, 0
+                    source_id, liters, 100, 2, data_source, save_unit, data_type, calorific_value, 0, 0
                 )
                 cursor.execute(insert_activity_query, insert_activity_values)
             conn.commit()
@@ -111,8 +111,8 @@ async def read_user_credentials(
 
             if factor_gwp_list:
                 for gas_type, factor, gwp in factor_gwp_list:
-                    emissions = (liters / 1000) * factor #排放量
-                    emission_equivalent = emissions * gwp #排放當量
+                    emissions = round((liters / 1000) * factor,5) #排放量
+                    emission_equivalent = round(emissions * gwp, 5) #排放當量
 
                 # 在 Quantitative_Inventory 表插入資料
                 # 查詢是否已有相同 source_id 之 Quantitative_Inventory 記錄
@@ -122,8 +122,8 @@ async def read_user_credentials(
 
                 if existing_emissions:
                     # 若存在，累加 emissions, emission_equivalent
-                    new_emissions = existing_emissions[0] + emissions
-                    new_emission_equivalent = existing_emissions[1] + emission_equivalent
+                    new_emissions = round(existing_emissions[0] + emissions, 5)
+                    new_emission_equivalent = round(existing_emissions[1] + emission_equivalent, 5)
                     update_emissions_query = "UPDATE Quantitative_Inventory SET emissions = ?, emission_equivalent = ? WHERE source_id = ? AND gas_type = ?"
                     cursor.execute(update_emissions_query, (new_emissions, new_emission_equivalent, source_id, gas_type))
                 else:
