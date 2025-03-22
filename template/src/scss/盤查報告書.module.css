@@ -149,8 +149,12 @@
     border-radius: 10px;
 }
 
+.export{
+    text-align: right;
+}
+
 .export button{
-    width: 100px;
+    width: auto;
     margin:10px;
     background-color: #ffbb33;
     border:none;

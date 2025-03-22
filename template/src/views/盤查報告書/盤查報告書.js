@@ -18,7 +18,7 @@ import 'primeicons/primeicons.css';                        // 图标样式
 
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faChevronDown, faArrowRightFromBracket, faChevronUp } from '@fortawesome/free-solid-svg-icons';
+import { faFileExport } from '@fortawesome/free-solid-svg-icons';
 
 import { Viewer, Worker, SpecialZoomLevel } from '@react-pdf-viewer/core';
 import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
@@ -49,7 +49,7 @@ const Tabs = () => {
     };
     ///////////////////////////////////////////////////////////////////////////////////////////
 
-    const pdfFile = '/pdf/combined.pdf';
+    const pdfFile = '/original_report/combined.pdf';
     const defaultLayoutPluginInstance = defaultLayoutPlugin();
     const [chapterPages, setChapterPages] = useState({});
     const [viewerKey, setViewerKey] = useState(0); // 強迫重新渲染用
@@ -128,12 +128,11 @@ const Tabs = () => {
                     </div>
                     <div>
                         <strong>
-                            選擇計畫
+                            選擇版本
                         </strong>
                         <select>
-                            <option>xx2024盤查報告</option>
-                            <option value="1">xx2023盤查報告</option>
-                            <option value="2">xx2022盤查報告</option>
+                            <option>系統原始生成版本</option>
+                            <option value="1">版本1</option>
                         </select>
                     </div>
                 </div>
@@ -152,7 +151,7 @@ const Tabs = () => {
                         <option value="1">編輯中</option>
                     </select>
                     <button className={styles.save}>儲存</button> */}
-                    <span style={{ color: 'gray', fontWeight: 'bold' }}>最後上傳資訊 : XX部門-蔡沂庭 2024/12/2 23:59:23</span>
+                    <span style={{ color: 'gray', fontWeight: 'bold' }}>該版本上傳資訊 : XX部門-蔡沂庭 2024/12/2 23:59:23</span>
                     <button className={styles.save}>上傳編修後檔案</button>
                 </div>
 
@@ -198,10 +197,11 @@ const Tabs = () => {
                             />
                         </Worker>
                     </div>
-                    <div style={{ textAlign: 'right' }} className={styles.export}>
+                    <div className={styles.export}>
                         <button onClick={handleDownload}>
-                            <FontAwesomeIcon icon={faArrowRightFromBracket} /> 匯出報告
+                        <FontAwesomeIcon icon={faFileExport} /> 匯出該版本報告
                         </button>
+
                     </div>
 
                 </CCard>
