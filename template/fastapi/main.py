@@ -76,7 +76,7 @@ from 盤查報告書.getBusiness import word_companyinfo
 from 盤查報告書.merge import get_word
 from 盤查報告書.word_ai import word_ai
 from 盤查報告書.word_爬蟲 import word_bug
-from 盤查報告書.zGetReport import report_api
+from 盤查報告書.zGetReport import report_router
 
 
 
@@ -265,7 +265,7 @@ app.include_router(word_companyinfo)
 app.include_router(get_word)
 app.include_router(word_ai)
 app.include_router(word_bug)
-app.include_router(report_api)
+app.include_router(report_router)
 
 
 
