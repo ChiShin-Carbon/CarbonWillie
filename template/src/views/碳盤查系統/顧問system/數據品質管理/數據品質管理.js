@@ -23,6 +23,7 @@ import {
   process_code_Map,
   device_code_Map,
   fuel_code_Map,
+  gas_type_map,
   emission_category_Map,
   emission_pattern_Map,
 } from '../EmissionSource'
@@ -30,14 +31,16 @@ import {
 const Tabs = () => {
   // 設定 state 來儲存選擇的行數據，初始值為 null
   const [selectedRowData, setSelectedRowData] = useState(null)
-
   const [emission_sources, setEmissionSources] = useState([])
+  const [totalEmissionEquivalent, setTotalEmissionEquivalent] = useState(0)
+
   const getEmissionSource = async () => {
     try {
       const response = await fetch('http://localhost:8000/emission_source')
       if (response.ok) {
         const data = await response.json()
         setEmissionSources(data.emission_sources)
+        setTotalEmissionEquivalent(data.total_emission_equivalent)
       } else {
         console.log(response.status)
       }
@@ -127,19 +130,24 @@ const Tabs = () => {
   //   }
   // }
 
+  // 表格數據
   const tableData = emission_sources
     .map((source) => {
       // Check if activity_data is empty
       const isActivityDataEmpty = !source.activity_data || source.activity_data.length === 0
 
       // If activity_data is empty, set default values for its fields
-      const activityData = isActivityDataEmpty
-        ? [
-            {
-              data_type: '',
-            },
-          ]
-        : source.activity_data
+      const activityData = isActivityDataEmpty ? [{ data_type: '' }] : source.activity_data
+
+      const gasTypes = source.gas_types
+        ? source.gas_types.split(',').map((gasId) => gas_type_map[parseInt(gasId)]) // 轉換為氣體名稱
+        : []
+
+      // Make sure emissionFactors is an array
+      const emissionFactors = Array.isArray(source.emission_factors) ? source.emission_factors : []
+
+      // 排放量&排放當量
+      const emissionsList = Array.isArray(source.emissions) ? source.emissions : []
 
       return activityData.map((activity) => {
         // 活動數據種類等級
@@ -174,13 +182,14 @@ const Tabs = () => {
         // 評分區間範圍
         const manage3 =
           manage1 === '' ? '' : manage1 < 10 ? '1' : manage1 < 19 ? '2' : manage1 >= 27 ? '3' : '-'
-        // 係數種類等級
+        // 單一排放源占排放總量比(%)
         const manage2 = ''
         // 排放量占比加權平均
         const manage4 =
           manage1 === '' || manage2 === ''
             ? ''
             : (parseFloat(manage2) * parseFloat(manage1)).toFixed(2)
+
         return {
           status: 'completed',
           process: process_code_Map[source.process_code],
@@ -202,6 +211,20 @@ const Tabs = () => {
             manage2, // 單一排放源站排放總量比
             manage3, // 評分區間範圍
             manage4, // 排放量佔比加權平均
+            emiCoeList: gasTypes.map((gasType, index) => {
+              // Get the emission factor for this index, or use a default empty object if it doesn't exist
+              const emissionFactor = emissionFactors[index] || {}
+              const emissionData = emissionsList.find((e) => e.gas_type === index + 1) || {} // 依gas_type對應emissions
+
+              return {
+                gasType,
+                emiCoeType: emissionFactor.factor_type || '1', // Default to '1' (預設)
+                emiCoeNum: emissionFactor.factor || 0, // Default to 0
+                emiCoeGWP: emissionFactor.GWP || 1, // Default GWP to 1
+                emissions: emissionData.emissions || 0,
+                emissionEquivalent: emissionData.emission_equivalent || 0,
+              }
+            }),
           },
         }
       })
@@ -485,7 +508,33 @@ const Tabs = () => {
                     </div>
                     <div>
                       <span>單一排放源占排放總量比(%):</span>
-                      <p>{selectedRowData.manage2}</p>
+                      <p>
+                        {/* {selectedRowData.manage2} */}
+                        {(() => {
+                          const totalEmissions =
+                            selectedRowData?.emiCoeList?.reduce(
+                              (sum, emiCoe) => sum + emiCoe.emissionEquivalent,
+                              0,
+                            ) || 0
+
+                          let result = '' // 單一排放源排放當量小計
+
+                          if (selectedRowData?.is_bioenergy) {
+                            const firstGasType = selectedRowData.emiCoeList?.[0]?.gasType
+                            if (firstGasType === 'CO2') {
+                              result = selectedRowData.emiCoeList
+                                .slice(1)
+                                .reduce((sum, emiCoe) => sum + emiCoe.emissionEquivalent, 0)
+                                .toFixed(5)
+                            }
+                          } else {
+                            result = totalEmissions !== 0 ? totalEmissions.toFixed(5) : ''
+                          }
+                          return result !== ''
+                            ? ((result / totalEmissionEquivalent) * 100).toFixed(2) + '%'
+                            : ''
+                        })()}
+                      </p>
                     </div>
                     <div>
                       <span>評分區間範圍:</span>
