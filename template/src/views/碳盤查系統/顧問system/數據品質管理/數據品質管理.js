@@ -53,83 +53,6 @@ const Tabs = () => {
     getEmissionSource()
   }, [])
 
-  // const generateDetails = (sourceId) => {
-  //   switch (sourceId) {
-  //     case 2:
-  //       return {
-  //         matCode: '170006',
-  //         matName: '柴油',
-  //         matClassLevel: '2',
-  //         matBelType: '有進行外部校正或有多組數據茲佐證者',
-  //         matBelLevel: '1',
-  //         matInfo: '',
-  //         matUnit: '',
-  //         sourceClass: '範疇1',
-  //         sourceType: '移動',
-  //         emiCoeClass: '5國家排放係數',
-  //         emiLevel: '3',
-  //         manage1: '6',
-  //         manage2: '',
-  //         manage3: '3',
-  //         manage4: '',
-  //       }
-  //     case 3:
-  //       return {
-  //         matCode: '170001',
-  //         matName: '車用汽油',
-  //         matClassLevel: '2',
-  //         matBelType: '有進行外部校正或有多組數據茲佐證者',
-  //         matBelLevel: '1',
-  //         matInfo: '',
-  //         matUnit: '',
-  //         sourceClass: '範疇1',
-  //         sourceType: '移動',
-  //         emiCoeClass: '5國家排放係數',
-  //         emiLevel: '3',
-  //         manage1: '6',
-  //         manage2: '',
-  //         manage3: '3',
-  //         manage4: '',
-  //       }
-  //     case 4:
-  //       return {
-  //         matCode: 'GG1814',
-  //         matName: '冷媒－R410a，R32/125（50/50）',
-  //         matClassLevel: '3',
-  //         matBelType: '未進行儀器校正或未進行紀錄彙整者',
-  //         matBelLevel: '3',
-  //         matInfo: '',
-  //         matUnit: '',
-  //         sourceClass: '範疇1',
-  //         sourceType: '逸散',
-  //         emiCoeClass: '5國家排放係數',
-  //         emiLevel: '3',
-  //         manage1: '27',
-  //         manage2: '',
-  //         manage3: '3',
-  //         manage4: '',
-  //       }
-  //     case 6:
-  //       return {
-  //         matCode: '350099',
-  //         matName: '其他電力',
-  //         matClassLevel: '1',
-  //         matBelType: '有進行外部校正或有多組數據茲佐證者',
-  //         matBelLevel: '1',
-  //         matInfo: '',
-  //         matUnit: '',
-  //         sourceClass: '範疇2',
-  //         sourceType: '外購電力',
-  //         emiCoeClass: '5國家排放係數',
-  //         emiLevel: '3',
-  //         manage1: '3',
-  //         manage2: '',
-  //         manage3: '1',
-  //         manage4: '',
-  //       }
-  //   }
-  // }
-
   // 表格數據
   const tableData = emission_sources
     .map((source) => {
@@ -182,13 +105,6 @@ const Tabs = () => {
         // 評分區間範圍
         const manage3 =
           manage1 === '' ? '' : manage1 < 10 ? '1' : manage1 < 19 ? '2' : manage1 >= 27 ? '3' : '-'
-        // 單一排放源占排放總量比(%)
-        const manage2 = ''
-        // 排放量占比加權平均
-        const manage4 =
-          manage1 === '' || manage2 === ''
-            ? ''
-            : (parseFloat(manage2) * parseFloat(manage1)).toFixed(2)
 
         return {
           status: 'completed',
@@ -208,20 +124,11 @@ const Tabs = () => {
             emiCoeClass: '5國家排放係數',
             emiLevel,
             manage1, // 單一排放源數據誤差等級
-            manage2, // 單一排放源站排放總量比
             manage3, // 評分區間範圍
-            manage4, // 排放量佔比加權平均
             emiCoeList: gasTypes.map((gasType, index) => {
-              // Get the emission factor for this index, or use a default empty object if it doesn't exist
-              const emissionFactor = emissionFactors[index] || {}
               const emissionData = emissionsList.find((e) => e.gas_type === index + 1) || {} // 依gas_type對應emissions
-
               return {
                 gasType,
-                emiCoeType: emissionFactor.factor_type || '1', // Default to '1' (預設)
-                emiCoeNum: emissionFactor.factor || 0, // Default to 0
-                emiCoeGWP: emissionFactor.GWP || 1, // Default GWP to 1
-                emissions: emissionData.emissions || 0,
                 emissionEquivalent: emissionData.emission_equivalent || 0,
               }
             }),
@@ -509,7 +416,6 @@ const Tabs = () => {
                     <div>
                       <span>單一排放源占排放總量比(%):</span>
                       <p>
-                        {/* {selectedRowData.manage2} */}
                         {(() => {
                           const totalEmissions =
                             selectedRowData?.emiCoeList?.reduce(
@@ -517,7 +423,7 @@ const Tabs = () => {
                               0,
                             ) || 0
 
-                          let result = '' // 單一排放源排放當量小計
+                          let result = '' // 定量盤查-單一排放源排放當量小計
 
                           if (selectedRowData?.is_bioenergy) {
                             const firstGasType = selectedRowData.emiCoeList?.[0]?.gasType
@@ -530,8 +436,14 @@ const Tabs = () => {
                           } else {
                             result = totalEmissions !== 0 ? totalEmissions.toFixed(5) : ''
                           }
-                          return result !== ''
-                            ? ((result / totalEmissionEquivalent) * 100).toFixed(2) + '%'
+
+                          const percentageResult =
+                            result !== ''
+                              ? ((result / totalEmissionEquivalent) * 100).toFixed(2) + '%'
+                              : ''
+
+                          return percentageResult !== ''
+                            ? ((result / totalEmissionEquivalent) * 100).toFixed(4) + '%'
                             : ''
                         })()}
                       </p>
@@ -542,7 +454,49 @@ const Tabs = () => {
                     </div>
                     <div>
                       <span>排放量占比加權平均:</span>
-                      <p>{selectedRowData.manage4}</p>
+                      <p>
+                        {(() => {
+                          const totalEmissions =
+                            selectedRowData?.emiCoeList?.reduce(
+                              (sum, emiCoe) => sum + emiCoe.emissionEquivalent,
+                              0,
+                            ) || 0
+
+                          let result = '' // 定量盤查-單一排放源排放當量小計
+
+                          if (selectedRowData?.is_bioenergy) {
+                            const firstGasType = selectedRowData.emiCoeList?.[0]?.gasType
+                            if (firstGasType === 'CO2') {
+                              result = selectedRowData.emiCoeList
+                                .slice(1)
+                                .reduce((sum, emiCoe) => sum + emiCoe.emissionEquivalent, 0)
+                                .toFixed(5)
+                            }
+                          } else {
+                            result = totalEmissions !== 0 ? totalEmissions.toFixed(5) : ''
+                          }
+
+                          const percentageResult =
+                            result !== ''
+                              ? ((result / totalEmissionEquivalent) * 100).toFixed(2) + '%'
+                              : ''
+
+                          const singleEmissionPercentage =
+                            percentageResult !== ''
+                              ? (result / totalEmissionEquivalent).toFixed(4)
+                              : ''
+
+                          if (selectedRowData.manage1 == '') {
+                            return ''
+                          } else {
+                            if (singleEmissionPercentage == '') {
+                              return ''
+                            } else {
+                              return (singleEmissionPercentage * selectedRowData.manage1).toFixed(2)
+                            }
+                          }
+                        })()}
+                      </p>
                     </div>
                   </div>
                 </div>
