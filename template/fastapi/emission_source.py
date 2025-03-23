@@ -54,6 +54,13 @@ def read_emission_source():
     if conn:
         cursor = conn.cursor()
         try:
+            # 查詢 七種溫室氣體年總排放當量
+            total_emission_equivalent_query = """
+                SELECT SUM(emission_equivalent) FROM Quantitative_Inventory
+            """
+            cursor.execute(total_emission_equivalent_query)
+            total_emission_equivalent = cursor.fetchone()[0] or 0
+
             # 查詢每個fuel_code對應之氣體類型
             gas_type_query = """
                 SELECT fuel_code, STRING_AGG(gas_type, ', ') AS gas_types
@@ -136,6 +143,19 @@ def read_emission_source():
                         for activity in activity_data_records
                     ]
 
+                    # 查詢source_id對應之排放量&排放當量
+                    emissions_query = "SELECT gas_type, emissions, emission_equivalent FROM Quantitative_Inventory WHERE source_id = ?"
+                    cursor.execute(emissions_query, (record[0],))
+                    emissions_records = cursor.fetchall()
+                    emissions_list = [
+                        {
+                            "gas_type": emissions[0],
+                            "emissions": emissions[1],
+                            "emission_equivalent": emissions[2]
+                        }
+                        for emissions in emissions_records
+                    ]
+
                     result.append({
                         "source_id": record[0],
                         "process_code": record[1],
@@ -155,9 +175,10 @@ def read_emission_source():
                         "remark": record[15],
                         "gas_types": gas_types,
                         "emission_factors": emission_factors,
-                        "activity_data": activity_data_list
+                        "activity_data": activity_data_list,
+                        "emissions": emissions_list
                     }) 
-                return {"emission_sources": result}  
+                return {"emission_sources": result,  "total_emission_equivalent": total_emission_equivalent}  
             else:
                 # Raise a 404 error if user not found
                 raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Emission_Source not found")

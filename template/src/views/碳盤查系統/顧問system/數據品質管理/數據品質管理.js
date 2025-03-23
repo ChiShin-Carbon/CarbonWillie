@@ -198,10 +198,10 @@ const Tabs = () => {
             sourceType: emission_pattern_Map[source.emission_category][source.emission_pattern - 1],
             emiCoeClass: '5國家排放係數',
             emiLevel,
-            manage1,
-            manage2,
-            manage3,
-            manage4,
+            manage1, // 單一排放源數據誤差等級
+            manage2, // 單一排放源站排放總量比
+            manage3, // 評分區間範圍
+            manage4, // 排放量佔比加權平均
           },
         }
       })

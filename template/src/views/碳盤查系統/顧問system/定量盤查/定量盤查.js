@@ -30,14 +30,16 @@ import {
 const Tabs = () => {
   // 設定 state 來儲存選擇的行數據，初始值為 null
   const [selectedRowData, setSelectedRowData] = useState(null)
-
   const [emission_sources, setEmissionSources] = useState([])
+  const [totalEmissionEquivalent, setTotalEmissionEquivalent] = useState(0)
+
   const getEmissionSource = async () => {
     try {
       const response = await fetch('http://localhost:8000/emission_source')
       if (response.ok) {
         const data = await response.json()
         setEmissionSources(data.emission_sources)
+        setTotalEmissionEquivalent(data.total_emission_equivalent)
       } else {
         console.log(response.status)
       }
@@ -68,6 +70,9 @@ const Tabs = () => {
       // Make sure emissionFactors is an array
       const emissionFactors = Array.isArray(source.emission_factors) ? source.emission_factors : []
 
+      // 排放量&排放當量
+      const emissionsList = Array.isArray(source.emissions) ? source.emissions : []
+
       return activityData.map((activity) => ({
         status: 'completed',
         process: process_code_Map[source.process_code],
@@ -80,6 +85,7 @@ const Tabs = () => {
           emiCoeList: gasTypes.map((gasType, index) => {
             // Get the emission factor for this index, or use a default empty object if it doesn't exist
             const emissionFactor = emissionFactors[index] || {}
+            const emissionData = emissionsList.find((e) => e.gas_type === index + 1) || {} // 依gas_type對應emissions
 
             return {
               gasType,
@@ -89,10 +95,11 @@ const Tabs = () => {
               emiCoeUnit: `${gasType}/${activity_data_unit_map[activity.activity_data_unit]}`,
               emiCoeClass: '5國家排放係數',
               emiCoeGWP: emissionFactor.GWP || 1, // Default GWP to 1
+              emissions: emissionData.emissions || 0,
+              emissionEquivalent: emissionData.emission_equivalent || 0,
             }
           }),
-          other1: source.is_bioenergy,
-          other2: source.is_bioenergy,
+          is_bioenergy: source.is_bioenergy,
           other3: '',
         },
       }))
@@ -362,7 +369,7 @@ const Tabs = () => {
                             </div>
                             <div>
                               <span>排放量(公噸/年):</span>
-                              <p>{(selectedRowData.activity / 1000) * emiCoe.emiCoeNum}</p>
+                              <p>{emiCoe.emissions}</p>
                             </div>
                             <div>
                               <span>GWP:</span>
@@ -370,11 +377,7 @@ const Tabs = () => {
                             </div>
                             <div>
                               <span>排放當量(公噸CO2e/年):</span>
-                              <p>
-                                {(selectedRowData.activity / 1000) *
-                                  emiCoe.emiCoeNum *
-                                  emiCoe.emiCoeGWP}
-                              </p>
+                              <p>{emiCoe.emissionEquivalent}</p>
                             </div>
                           </div>
                           <hr />
@@ -392,34 +395,22 @@ const Tabs = () => {
                       <span>單一排放源排放當量小計(CO2e公噸/年):</span>
                       <p>
                         {(() => {
-                          const totalEmissions = selectedRowData.emiCoeList
-                            ? selectedRowData.emiCoeList.reduce((sum, emiCoe) => {
-                                return (
-                                  sum +
-                                  (selectedRowData.activity / 1000) *
-                                    emiCoe.emiCoeNum *
-                                    emiCoe.emiCoeGWP
-                                )
-                              }, 0)
-                            : 0
+                          const totalEmissions =
+                            selectedRowData?.emiCoeList?.reduce(
+                              (sum, emiCoe) => sum + emiCoe.emissionEquivalent,
+                              0,
+                            ) || 0
 
-                          if (selectedRowData.other1) {
+                          if (selectedRowData?.is_bioenergy) {
                             const firstGasType = selectedRowData.emiCoeList?.[0]?.gasType
                             if (firstGasType === 'CO2') {
-                              return selectedRowData.emiCoeList.slice(1).reduce((sum, emiCoe) => {
-                                return (
-                                  sum +
-                                  (selectedRowData.activity / 1000) *
-                                    emiCoe.emiCoeNum *
-                                    emiCoe.emiCoeGWP
-                                )
-                              }, 0)
-                            } else {
-                              return totalEmissions
+                              return selectedRowData.emiCoeList
+                                .slice(1)
+                                .reduce((sum, emiCoe) => sum + emiCoe.emissionEquivalent, 0)
+                                .toFixed(5)
                             }
-                          } else {
-                            return totalEmissions !== 0 ? totalEmissions.toFixed(4) : ''
                           }
+                          return totalEmissions !== 0 ? totalEmissions.toFixed(4) : ''
                         })()}
                       </p>
                     </div>
@@ -427,7 +418,7 @@ const Tabs = () => {
                       <span>單一排放源生質燃料之CO2排放當量小計(CO2e公噸/年):</span>
                       <p>
                         {(() => {
-                          if (selectedRowData.other2) {
+                          if (selectedRowData.is_bioenergy) {
                             const firstGasType = selectedRowData.emiCoeList?.[0]?.gasType
                             if (firstGasType === 'CO2') {
                               const firstEmission = selectedRowData.emiCoeList?.[0]
@@ -435,7 +426,7 @@ const Tabs = () => {
                                 (selectedRowData.activity / 1000) *
                                 firstEmission.emiCoeNum *
                                 firstEmission.emiCoeGWP
-                              ).toFixed(2)
+                              ).toFixed(5)
                             } else {
                               return ''
                             }
@@ -447,8 +438,19 @@ const Tabs = () => {
                     </div>
                     <div>
                       <span>單一排放源占排放總量比(%):</span>
-                      {/* 單一排放源排放當量小計/七種溫室氣體年總排放當量 */}
-                      <p>{selectedRowData.other3}</p>
+                      <p>
+                        {/* 單一排放源排放當量小計/七種溫室氣體年總排放當量 */}
+                        {(() => {
+                          const totalEmissions =
+                            selectedRowData?.emiCoeList?.reduce(
+                              (sum, emiCoe) => sum + emiCoe.emissionEquivalent,
+                              0,
+                            ) || 0
+                          return totalEmissionEquivalent > 0
+                            ? ((totalEmissions / totalEmissionEquivalent) * 100).toFixed(2) + '%'
+                            : ''
+                        })()}
+                      </p>
                     </div>
                   </div>
                 </div>
