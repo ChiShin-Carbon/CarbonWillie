@@ -100,7 +100,6 @@ const Tabs = () => {
             }
           }),
           is_bioenergy: source.is_bioenergy,
-          other3: '',
         },
       }))
     })
@@ -410,7 +409,7 @@ const Tabs = () => {
                                 .toFixed(5)
                             }
                           }
-                          return totalEmissions !== 0 ? totalEmissions.toFixed(4) : ''
+                          return totalEmissions !== 0 ? totalEmissions.toFixed(5) : ''
                         })()}
                       </p>
                     </div>
@@ -439,15 +438,28 @@ const Tabs = () => {
                     <div>
                       <span>單一排放源占排放總量比(%):</span>
                       <p>
-                        {/* 單一排放源排放當量小計/七種溫室氣體年總排放當量 */}
                         {(() => {
                           const totalEmissions =
                             selectedRowData?.emiCoeList?.reduce(
                               (sum, emiCoe) => sum + emiCoe.emissionEquivalent,
                               0,
                             ) || 0
-                          return totalEmissionEquivalent > 0
-                            ? ((totalEmissions / totalEmissionEquivalent) * 100).toFixed(2) + '%'
+
+                          let result = '' // 單一排放源排放當量小計
+
+                          if (selectedRowData?.is_bioenergy) {
+                            const firstGasType = selectedRowData.emiCoeList?.[0]?.gasType
+                            if (firstGasType === 'CO2') {
+                              result = selectedRowData.emiCoeList
+                                .slice(1)
+                                .reduce((sum, emiCoe) => sum + emiCoe.emissionEquivalent, 0)
+                                .toFixed(5)
+                            }
+                          } else {
+                            result = totalEmissions !== 0 ? totalEmissions.toFixed(5) : ''
+                          }
+                          return result !== ''
+                            ? ((result / totalEmissionEquivalent) * 100).toFixed(2) + '%'
                             : ''
                         })()}
                       </p>
