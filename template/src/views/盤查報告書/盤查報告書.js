@@ -18,7 +18,7 @@ import 'primeicons/primeicons.css';                        // 图标样式
 
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faFileExport } from '@fortawesome/free-solid-svg-icons';
+import { faFileExport, faEye, faFileArrowUp } from '@fortawesome/free-solid-svg-icons';
 
 import { Viewer, Worker, SpecialZoomLevel } from '@react-pdf-viewer/core';
 import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
@@ -33,16 +33,18 @@ const Tabs = () => {
     const [activeSection, setActiveSection] = useState(null); // 用來追踪當前選中的章節
 
     const handleDownload = () => {
-        // Specify the file URL and file name
-        const fileUrl = 'src/assets/files/啟新-2024溫室氣體盤查報告書_V1.docx';
-        const fileName = '啟新-2024溫室氣體盤查報告書_V1.docx';
+        if (!pdfFile) return;
 
-        // Create a temporary anchor element
+        // 儲存 pdfFile 至變數 A
+        const A = pdfFile;
+
+        // 將 A 路徑的最後部分 .pdf 拆解並改成 .docx
+        const downloadPath = A.replace(/\.pdf$/, '.docx');
+
+        // 建立 <a> 元素來觸發下載
         const link = document.createElement('a');
-        link.href = fileUrl;
-        link.download = fileName;
-
-        // Append to the document, trigger the download, and remove it
+        link.href = downloadPath;  // 使用修改後的路徑
+        link.download = downloadPath.split('/').pop();  // 使用新的檔名，這裡會抓取路徑最後的部分
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -116,7 +118,7 @@ const Tabs = () => {
     const [years, setYears] = useState([]); // 存放年份
     const [selectedYear, setSelectedYear] = useState(""); // 選擇的年份
     const [versions, setVersions] = useState([]); // 存放該年份的版本
-    const [selectedVersion, setSelectedVersion] = useState("0"); // 預設選擇系統原始生成版本
+    const [selectedVersion, setSelectedVersion] = useState(""); // 預設為「未選擇版本」
 
     const [uploadInfo, setUploadInfo] = useState("");
 
@@ -187,6 +189,12 @@ const Tabs = () => {
 
     // 產出報告按鈕事件
     const handleGenerateReport = async () => {
+        if (selectedVersion === "") {
+            setPdfFile(""); // 清空 PDF 預覽
+            setUploadInfo(""); // 清空資訊
+            return;
+        }
+
         try {
             const response = await fetch(`http://127.0.0.1:8000/report_file/${selectedYear}/${selectedVersion}`, {
                 method: "GET",
@@ -203,12 +211,60 @@ const Tabs = () => {
                     const departmentName = departmentMap[data.department] || "未知部門";
                     setUploadInfo(`${departmentName} - ${data.username} ${data.uploaded_at}`);
                 }
-                console.log()
             } else {
                 console.log(`Error fetching report file: ${response.status}`);
             }
         } catch (error) {
             console.error("Error fetching report file:", error);
+        }
+    };
+
+    //////////////////////////////////上傳檔案API/////////////////////////////
+    const [file, setFile] = useState(null); // 上傳的檔案
+    const [errorMessage, setErrorMessage] = useState(""); // 用於顯示錯誤訊息
+
+
+
+    // 處理檔案選擇
+    const handleFileChange = (event) => {
+        const selectedFile = event.target.files[0];
+        if (selectedFile) {
+            // 檢查檔案格式
+            if (selectedFile.type !== "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
+                setErrorMessage("請上傳word檔案(.docx)");
+                setFile(null); // 重置檔案
+            } else {
+                setErrorMessage(""); // 清除錯誤訊息
+                setFile(selectedFile);
+            }
+        }
+    };
+    // 上傳檔案
+    const handleUpload = async () => {
+        if (!file) {
+            setErrorMessage("請選擇檔案!");
+            return;
+        }
+        try {
+            const formData = new FormData();
+            formData.append('user_id', 1); // 假設使用者 ID 為 1
+            formData.append('year', selectedYear);
+            formData.append('file', file);
+
+            const response = await fetch("http://127.0.0.1:8000/upload_report/", {
+                method: "POST",
+                body: formData,
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                alert("檔案上傳成功!");
+                console.log("檔案上傳成功:", data);
+            } else {
+                console.log(`Error uploading file: ${response.status}`);
+            }
+        } catch (error) {
+            console.error("Error uploading file:", error);
         }
     };
 
@@ -232,6 +288,7 @@ const Tabs = () => {
                             選擇版本
                         </strong>
                         <select value={selectedVersion} onChange={(e) => setSelectedVersion(e.target.value)}>
+                            <option value="">未選擇版本</option> {/* 新增預設選項 */}
                             {versions.map(({ version }) => (
                                 <option key={version} value={version}>
                                     {version === 0 ? "系統原始生成版本" : `版本 ${version}`}
@@ -241,7 +298,17 @@ const Tabs = () => {
                     </div>
                 </div>
                 <div className={styles.buttonRight}>
-                    <button onClick={handleGenerateReport}>產出報告</button>
+                    <button onClick={handleGenerateReport}><FontAwesomeIcon icon={faEye} /> 顯示報告</button>
+
+                    <div>
+                        <strong>選擇檔案</strong>
+                        <input type="file" onChange={handleFileChange} />
+                        {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+                    </div>
+
+                    <div>
+                        <button onClick={handleUpload}>上傳編修後檔案</button>
+                    </div>
                 </div>
             </div>
             <div className="system-titlediv">
@@ -258,7 +325,7 @@ const Tabs = () => {
                     <span style={{ color: 'gray', fontWeight: 'bold' }}>
                         {uploadInfo ? `該版本上傳資訊 : ${uploadInfo}` : ""}
                     </span>
-                    <button className={styles.save}>上傳編修後檔案</button>
+
                 </div>
 
             </div>
@@ -308,9 +375,11 @@ const Tabs = () => {
                         )}
                     </div>
                     <div className={styles.export}>
-                        <button onClick={handleDownload}>
-                            <FontAwesomeIcon icon={faFileExport} /> 匯出該版本報告
-                        </button>
+                        {pdfFile && (
+                            <button onClick={handleDownload}>
+                                <FontAwesomeIcon icon={faFileExport} /> 匯出該版本報告
+                            </button>
+                        )}
 
                     </div>
 

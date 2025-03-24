@@ -18,7 +18,7 @@ class ReportFileResponse(BaseModel):
     username: Optional[str] = None
     department: Optional[int] = None
 
-@report_router.get("/baseline_years", response_model=List[BaselineYearResponse])
+@report_router.get("/baseline_years", response_model=List[dict])
 def get_baseline_years():
     conn = connectDB()
     if not conn:
@@ -26,14 +26,15 @@ def get_baseline_years():
     
     cursor = conn.cursor()
     try:
-        cursor.execute("SELECT cfv_start_date FROM Baseline")
+        cursor.execute("SELECT DISTINCT year FROM Report_Baseline ORDER BY year DESC")
         results = cursor.fetchall()
-        conn.close()
         
-        years = [{"year": row[0].year} for row in results if row[0]]
+        years = [{"year": row[0]} for row in results if row[0]]
         return years
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"查詢發生錯誤: {e}")
+    finally:
+        conn.close()
 
 @report_router.get("/report_versions/{year}", response_model=List[ReportVersionResponse])
 def get_report_versions(year: int):
