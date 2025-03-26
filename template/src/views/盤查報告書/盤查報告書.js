@@ -119,7 +119,7 @@ const Tabs = () => {
     const [selectedYear, setSelectedYear] = useState(""); // 選擇的年份
     const [versions, setVersions] = useState([]); // 存放該年份的版本
     const [selectedVersion, setSelectedVersion] = useState(""); // 預設為「未選擇版本」
-
+    const [reportTitle, setReportTitle] = useState("");
     const [uploadInfo, setUploadInfo] = useState("");
 
     // 獲取年份列表
@@ -192,6 +192,7 @@ const Tabs = () => {
         if (selectedVersion === "") {
             setPdfFile(""); // 清空 PDF 預覽
             setUploadInfo(""); // 清空資訊
+            setReportTitle(""); // 清空標題
             return;
         }
 
@@ -204,6 +205,9 @@ const Tabs = () => {
             if (response.ok) {
                 const data = await response.json();
                 setPdfFile(data.file_path); // 設定 PDF 文件路徑
+
+                const versionText = selectedVersion === "0" ? "系統原始生成版本" : `版本 ${selectedVersion}`;
+                setReportTitle(`${selectedYear} 盤查報告 - ${versionText}`);
 
                 if (selectedVersion === "0") {
                     setUploadInfo(`系統生成之初始檔案 ${data.uploaded_at}`);
@@ -221,7 +225,6 @@ const Tabs = () => {
 
     //////////////////////////////////上傳檔案API/////////////////////////////
     const [file, setFile] = useState(null); // 上傳的檔案
-    const [errorMessage, setErrorMessage] = useState(""); // 用於顯示錯誤訊息
 
 
 
@@ -231,10 +234,9 @@ const Tabs = () => {
         if (selectedFile) {
             // 檢查檔案格式
             if (selectedFile.type !== "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
-                setErrorMessage("請上傳word檔案(.docx)");
+                alert("請上傳word檔案(.docx)!");
                 setFile(null); // 重置檔案
             } else {
-                setErrorMessage(""); // 清除錯誤訊息
                 setFile(selectedFile);
             }
         }
@@ -242,7 +244,7 @@ const Tabs = () => {
     // 上傳檔案
     const handleUpload = async () => {
         if (!file) {
-            setErrorMessage("請選擇檔案!");
+            alert("請選擇檔案!")
             return;
         }
         try {
@@ -296,25 +298,22 @@ const Tabs = () => {
                             ))}
                         </select>
                     </div>
+                    <button onClick={handleGenerateReport}><FontAwesomeIcon icon={faEye} /> 顯示報告</button>
                 </div>
                 <div className={styles.buttonRight}>
-                    <button onClick={handleGenerateReport}><FontAwesomeIcon icon={faEye} /> 顯示報告</button>
-
                     <div>
                         <strong>選擇檔案</strong>
                         <input type="file" onChange={handleFileChange} />
-                        {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
                     </div>
 
-                    <div>
-                        <button onClick={handleUpload}>上傳編修後檔案</button>
-                    </div>
+                    <button onClick={handleUpload}><FontAwesomeIcon icon={faFileArrowUp} /> 上傳編修後檔案</button>
+
                 </div>
             </div>
             <div className="system-titlediv">
                 <div>
-                    <h4 className="system-title">xx2024盤查報告</h4>
-                    <hr className="system-hr"></hr>
+                    <h4 className="system-title">{reportTitle || "請選擇報告後顯示"}</h4>
+                    <hr className="system-hr" style={{width:'360px'}}></hr>
                 </div>
                 <div className={styles.titleRight}>
                     {/* <select>
