@@ -5,18 +5,30 @@
     height: 50px;
     display: flex;
     align-items: center;
+
 }
+
 
 .tabsLeft {
     display: flex;
     gap: 30px;
     /* 調整tabs之間的距離 */
+    align-items: center;
 }
 
 .buttonRight {
+    display: flex;
+    gap: 30px;
     margin-left: auto;
     /* 將按鈕推到右側 */
     margin-right: 10px;
+    align-items: center;
+}
+
+.buttonRight input{
+    height: 30px;
+    border-radius: 5px;
+   
 }
 
 .tabsLeft strong {
@@ -31,7 +43,7 @@
     padding-right: 10px;
 }
 
-.buttonRight button {
+.systemTablist button {
     background-color: #9D6B6B;
     border-radius: 30px;
     color: white;
@@ -40,11 +52,13 @@
     font-weight: bold;
     box-shadow: 0 1px 5px rgb(94, 94, 94);
     transition: 0.5s;
+    margin-left: 15px;
 }
 
 .buttonRight button:hover {
     background-color: #7b5555;
 }
+
 
 .titleRight {
     display: flex;

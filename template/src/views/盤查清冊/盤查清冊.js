@@ -24,7 +24,7 @@ import { ClassTwo } from './類別二.js';
 import { ClassThree } from './類別三.js';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons';
+import { faArrowRightFromBracket,faFileExport, faEye, faFileArrowUp } from '@fortawesome/free-solid-svg-icons';
 
 
 const Tabs = () => {
@@ -40,30 +40,33 @@ const Tabs = () => {
                             選擇年分
                         </strong>
                         <select>
-                            <option>2025</option>
-                            <option value="1">2024</option>
-                            <option value="2">2023</option>
-                            <option value="3">2022</option>
+                            <option value="">2024</option> {/* 新增預設選項 */}
                         </select>
                     </div>
                     <div>
                         <strong>
-                            選擇計畫
+                            選擇版本
                         </strong>
                         <select>
-                            <option>xx2024盤查清冊</option>
-                            <option value="1">xx2023盤查清冊</option>
-                            <option value="2">xx2022盤查清冊</option>
+                            <option value="">版本1</option> {/* 新增預設選項 */}
+
                         </select>
                     </div>
+                    <button><FontAwesomeIcon icon={faEye} /> 顯示清冊</button>
                 </div>
                 <div className={styles.buttonRight}>
-                    <button>產出清冊</button>
+                    <div>
+                        <strong>選擇檔案</strong>
+                        <input type="file" />
+                    </div>
+
+                    <button><FontAwesomeIcon icon={faFileArrowUp} /> 上傳編修後檔案</button>
+
                 </div>
             </div>
             <div className="system-titlediv">
                 <div>
-                    <h4 className="system-title">xx2024盤查清冊</h4>
+                    <h4 className="system-title">2024盤查清冊</h4>
                     <hr className="system-hr"></hr>
                 </div>
                 <div className={styles.titleRight}>
@@ -72,7 +75,7 @@ const Tabs = () => {
                         <option value="1">編輯中</option>
                     </select>
                     <button className={styles.save}>儲存</button> */}
-                    <span style={{ color: 'gray', fontWeight: 'bold' }}>最後上傳資訊 : XX部門-蔡沂庭 2024/12/2 23:59:23</span>
+                    <span style={{ color: 'gray', fontWeight: 'bold' }}>最後上傳資訊 : 資訊部門-蔡沂庭 2024/12/02 23:59:23</span>
                     <button className={styles.save}>上傳編修後檔案</button>
                 </div>
 

@@ -81,6 +81,7 @@ from 盤查報告書.上傳報告書 import report_upload_router
 
 
 
+from 盤查清冊.zGetExcel import inventory_router
 
 
 
@@ -269,6 +270,12 @@ app.include_router(word_ai)
 app.include_router(word_bug)
 app.include_router(report_router)
 app.include_router(report_upload_router)
+
+
+
+app.include_router(inventory_router)
+
+
 
 
 
