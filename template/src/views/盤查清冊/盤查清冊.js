@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React, { useRef, useEffect } from 'react'
 import { useState } from 'react';
 
 
@@ -24,12 +24,125 @@ import { ClassTwo } from './類別二.js';
 import { ClassThree } from './類別三.js';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowRightFromBracket,faFileExport, faEye, faFileArrowUp } from '@fortawesome/free-solid-svg-icons';
+import { faArrowRightFromBracket, faFileExport, faEye, faFileArrowUp } from '@fortawesome/free-solid-svg-icons';
 
 
 const Tabs = () => {
 
     const [activeTab, setActiveTab] = useState('tab1') // 記錄當前活動的分頁
+
+
+    // 存放從API獲取的數據
+    const [years, setYears] = useState([]); // 存放年份
+    const [selectedYear, setSelectedYear] = useState(""); // 選擇的年份
+    const [versions, setVersions] = useState([]); // 存放該年份的版本
+    const [selectedVersion, setSelectedVersion] = useState(""); // 預設為「未選擇版本」
+    const [inventoryTitle, setInventoryTitle] = useState("");
+    const [uploadInfo, setUploadInfo] = useState("");
+    const [file, setFile] = useState(null); // 上傳的檔案
+    const [excelFile, setExcelFile] = useState(""); // Excel 檔案路徑
+
+    // 獲取年份列表
+    const fetchBaselineYears = async () => {
+        try {
+            const response = await fetch("http://127.0.0.1:8000/inventory_baseline_years", {
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setYears(data.map(item => item.year)); // 提取年份
+                if (data.length > 0) {
+                    setSelectedYear(data[0].year); // 預設選中第一個年份
+                }
+            } else {
+                console.log(`Error fetching years: ${response.status}`);
+            }
+        } catch (error) {
+            console.error("Error fetching baseline years:", error);
+        }
+    };
+
+    // 獲取該年份的版本列表
+    const fetchInventoryVersions = async (year) => {
+        try {
+            const response = await fetch(`http://127.0.0.1:8000/inventory_versions/${year}`, {
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                const versionOptions = [{ version: 0 }, ...data]; // 加入「系統原始生成版本」
+                setVersions(versionOptions);
+            } else {
+                console.log(`Error fetching versions: ${response.status}`);
+            }
+        } catch (error) {
+            console.error("Error fetching inventory versions:", error);
+        }
+    };
+
+    // 當元件加載時請求年份
+    useEffect(() => {
+        fetchBaselineYears();
+    }, []);
+
+    // 當選擇的年份變更時，請求對應的版本
+    useEffect(() => {
+        if (selectedYear) {
+            fetchInventoryVersions(selectedYear);
+        }
+    }, [selectedYear]);
+
+    const departmentMap = {
+        1: "管理部門",
+        2: "資訊部門",
+        3: "業務部門",
+        4: "門診部門",
+        5: "健檢部門",
+        6: "檢驗部門",
+        7: "其他",
+    };
+
+    // 顯示清冊按鈕事件
+    const handleShowInventory = async () => {
+        if (selectedVersion === "") {
+            setExcelFile(""); // 清空 Excel 預覽
+            setUploadInfo(""); // 清空資訊
+            setInventoryTitle(""); // 清空標題
+            return;
+        }
+
+        try {
+            const response = await fetch(`http://127.0.0.1:8000/inventory_file/${selectedYear}/${selectedVersion}`, {
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log("從後端接收到的清冊資料:", data);
+                setExcelFile(data.file_path); // 設定 Excel 文件路徑
+
+                const versionText = selectedVersion === "0" ? "系統原始生成版本" : `版本 ${selectedVersion}`;
+                setInventoryTitle(`${selectedYear} 盤查清冊 - ${versionText}`);
+
+                if (selectedVersion === "0") {
+                    setUploadInfo(`系統生成之初始檔案 ${data.uploaded_at}`);
+                } else {
+                    const departmentName = departmentMap[data.department] || "未知部門";
+                    setUploadInfo(`${departmentName} - ${data.username} ${data.uploaded_at}`);
+                }
+            } else {
+                console.log(`Error fetching inventory file: ${response.status}`);
+            }
+        } catch (error) {
+            console.error("Error fetching inventory file:", error);
+        }
+    };
+
 
     return (
         <main>
@@ -39,20 +152,35 @@ const Tabs = () => {
                         <strong>
                             選擇年分
                         </strong>
-                        <select>
-                            <option value="">2024</option> {/* 新增預設選項 */}
+                        <select
+                            value={selectedYear}
+                            onChange={(e) => setSelectedYear(e.target.value)}
+                        >
+                            {years.map((year) => (
+                                <option key={year} value={year}>{year}</option>
+                            ))}
                         </select>
                     </div>
                     <div>
                         <strong>
                             選擇版本
                         </strong>
-                        <select>
-                            <option value="">版本1</option> {/* 新增預設選項 */}
-
+                        <select
+                            value={selectedVersion}
+                            onChange={(e) => setSelectedVersion(e.target.value)}
+                        >
+                            <option value="">未選擇版本</option>
+                            {versions.map(({ version }) => (
+                                <option key={version} value={version}>
+                                    {version === 0 ? "系統原始生成版本" : `版本 ${version}`}
+                                </option>
+                            ))}
                         </select>
                     </div>
-                    <button><FontAwesomeIcon icon={faEye} /> 顯示清冊</button>
+                    <button onClick={handleShowInventory}>
+                        <FontAwesomeIcon icon={faEye} /> 顯示清冊
+                    </button>
+
                 </div>
                 <div className={styles.buttonRight}>
                     <div>
@@ -66,17 +194,13 @@ const Tabs = () => {
             </div>
             <div className="system-titlediv">
                 <div>
-                    <h4 className="system-title">2024盤查清冊</h4>
-                    <hr className="system-hr"></hr>
+                    <h4 className="system-title">{inventoryTitle || "請選擇清冊後顯示"}</h4>
+                    <hr className="system-hr" style={{width:'360px'}}></hr>
                 </div>
                 <div className={styles.titleRight}>
-                    {/* <select>
-                        <option>編輯完成</option>
-                        <option value="1">編輯中</option>
-                    </select>
-                    <button className={styles.save}>儲存</button> */}
-                    <span style={{ color: 'gray', fontWeight: 'bold' }}>最後上傳資訊 : 資訊部門-蔡沂庭 2024/12/02 23:59:23</span>
-                    <button className={styles.save}>上傳編修後檔案</button>
+                    <span style={{ color: 'gray', fontWeight: 'bold' }}>
+                        {uploadInfo ? `該版本上傳資訊 : ${uploadInfo}` : ""}
+                    </span>
                 </div>
 
             </div>
