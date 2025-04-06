@@ -29,133 +29,134 @@ import {
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 
 const getAdminNavItems = () => {
-  if (window.sessionStorage.getItem("role") == "false") {
-    return [
-      {
-        component: CNavTitle,
-        name: '管理者頁面',
-      },
-      {
-        component: CNavItem,
-        name: '企業與使用者列表',
-        to: '/管理者/企業列表',
-        icon: <CIcon icon={cilStorage} customClassName="nav-icon" />,
-      },
-      {
-        component: CNavItem,
-        name: '顧問列表',
-        to: '/管理者/顧問列表',
-        icon: <CIcon icon={cilHandshake} customClassName="nav-icon" />,
-      },
-    ];
-  }
-  return [];
+  return [
+    {
+      component: CNavTitle,
+      name: '管理者頁面',
+    },
+    {
+      component: CNavItem,
+      name: '企業與使用者列表',
+      to: '/管理者/企業列表',
+      icon: <CIcon icon={cilStorage} customClassName="nav-icon" />,
+    },
+    {
+      component: CNavItem,
+      name: '顧問列表',
+      to: '/管理者/顧問列表',
+      icon: <CIcon icon={cilHandshake} customClassName="nav-icon" />,
+    },
+  ];
 };
 
-const _nav = [
-  // {
+const getNormalNavItems = () => {
+  return [
+    {
+      component: CNavItem,
+      name: '首頁',
+      to: '/theme/home',
+      icon: <CIcon icon={cilHome} customClassName="nav-icon" />,
+    },
+    {
+      component: CNavGroup,
+      name: '碳盤查系統',
+      to: '/碳盤查系統',
+      icon: <CIcon icon={cilPencil} customClassName="nav-icon" />,
+      items: [
+        {
+          component: CNavItem,
+          name: '碳盤查–組織內',
+          to: '/碳盤查系統/system',
+        },
+        {
+          component: CNavItem,
+          name: '碳盤查–顧問',
+          to: '/碳盤查系統/顧問system/排放源鑑別',
+        },
+      ],
+    },
+    {
+      component: CNavItem,
+      name: '盤查結果查詢',
+      to: '/theme/search',
+      icon: <CIcon icon={cilSearch} customClassName="nav-icon" />,
+    },
+    {
+      component: CNavGroup,
+      name: '碳盤查文件',
+      to: '/碳盤查文件',
+      icon: <CIcon icon={cilBook} customClassName="nav-icon" />,
+      items: [
+        {
+          component: CNavItem,
+          name: '盤查報告書',
+          to: '/盤查報告書',
+        },
+        {
+          component: CNavItem,
+          name: '盤查清冊',
+          to: '/盤查清冊',
+        },
+      ],
+    },
+    {
+      component: CNavItem,
+      name: '碳費資訊',
+      to: '/theme/carbon_fee',
+      icon: <CIcon icon={cilCash} customClassName="nav-icon" />,
+    },
+    {
+      component: CNavItem,
+      name: '排放係數_GWP值',
+      to: '/theme/carbon_factor',
+      icon: <CIcon icon={cilList} customClassName="nav-icon" />,
+    },
+    {
+      component: CNavItem,
+      name: 'try',
+      to: '/theme/try_411402601',
+      icon: <CIcon icon={cilGroup} customClassName="nav-icon" />,
+    },
+    {
+      component: CNavItem,
+      name: '常見問題',
+      to: '/theme/qa',
+      icon: <CIcon icon={cilSatelite} customClassName="nav-icon" />,
+    },
+    {
+      component: CNavTitle,
+      name: '帳號管理',
+    },
+    {
+      component: CNavItem,
+      name: '個人資料',
+      to: '/theme/user_info',
+      icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
+    },
+    {
+      component: CNavItem,
+      name: '企業資料',
+      to: '/theme/company_info',
+      icon: <CIcon icon={cilBuilding} customClassName="nav-icon" />,
+    },
+  ];
+};
+
+const _nav = window.sessionStorage.getItem("role") == 0 ? getAdminNavItems() : getNormalNavItems();
+
+export default _nav;
+
+
+   // {
   //   component: CNavTitle,
   //   name: 'Theme',
   // },
-  {
-    component: CNavItem,
-    name: '首頁',
-    to: '/theme/home',
-    icon: <CIcon icon={cilHome} customClassName="nav-icon" />,
-  },
   // {
   //   component: CNavItem,
   //   name: '碳盤查系統',
   //   to: '/theme/system',
   //   icon: <CIcon icon={cilPencil} customClassName="nav-icon" />,
   // },
-  {
-    component: CNavGroup,
-    name: '碳盤查系統',
-    to: '/碳盤查系統',
-    icon: <CIcon icon={cilPencil} customClassName="nav-icon" />,
-    items: [
-      {
-        component: CNavItem,
-        name: '碳盤查–組織內',
-        to: '/碳盤查系統/system',
-      },
-      {
-        component: CNavItem,
-        name: '碳盤查–顧問',
-        to: '/碳盤查系統/顧問system/排放源鑑別',
-      },
-    ],
-  },
-  {
-    component: CNavItem,
-    name: '盤查結果查詢',
-    to: '/theme/search',
-    icon: <CIcon icon={cilSearch} customClassName="nav-icon" />,
-  },
-  {
-    component: CNavGroup,
-    name: '碳盤查文件',
-    to: '/碳盤查文件',
-    icon: <CIcon icon={cilBook} customClassName="nav-icon" />,
-    items: [
-      {
-        component: CNavItem,
-        name: '盤查報告書',
-        to: '/盤查報告書',
-      },
-      {
-        component: CNavItem,
-        name: '盤查清冊',
-        to: '/盤查清冊',
-      },
-    ],
-  },
-  {
-    component: CNavItem,
-    name: '碳費資訊',
-    to: '/theme/carbon_fee',
-    icon: <CIcon icon={cilCash} customClassName="nav-icon" />,
-  },
-
-  {
-    component: CNavItem,
-    name: '排放係數_GWP值',
-    to: '/theme/carbon_factor',
-    icon: <CIcon icon={cilList} customClassName="nav-icon" />,
-  },
-
-  {
-    component: CNavItem,
-    name: 'try',
-    to: '/theme/try_411402601',
-    icon: <CIcon icon={cilGroup} customClassName="nav-icon" />,
-  },
-  {
-    component: CNavItem,
-    name: '常見問題',
-    to: '/theme/qa',
-    icon: <CIcon icon={cilSatelite} customClassName="nav-icon" />,
-  },
-
-  {
-    component: CNavTitle,
-    name: '帳號管理',
-  },
-  {
-    component: CNavItem,
-    name: '個人資料',
-    to: '/theme/user_info',
-    icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
-  },
-  {
-    component: CNavItem,
-    name: '企業資料',
-    to: '/theme/company_info',
-    icon: <CIcon icon={cilBuilding} customClassName="nav-icon" />,
-  },
-
-  ...getAdminNavItems(),
 
   // {
   //   component: CNavTitle,
@@ -444,6 +445,3 @@ const _nav = [
   //   href: 'https://coreui.io/react/docs/templates/installation/',
   //   icon: <CIcon icon={cilDescription} customClassName="nav-icon" />,
   // },
-]
-
-export default _nav

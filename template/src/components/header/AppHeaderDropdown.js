@@ -92,14 +92,14 @@ const AppHeaderDropdown = () => {
     window.sessionStorage.removeItem('user_id');
     window.sessionStorage.removeItem('username');
     window.sessionStorage.removeItem('address');
-    
+
     // Redirect to login page
     window.location.href = '/#/Login';
-  
+
     // Force reload to ensure app initializes fresh
     window.location.reload();
   };
-  
+
 
   const setdept = () => {
     if (departmentID === 1) {
@@ -156,17 +156,20 @@ const AppHeaderDropdown = () => {
       <CDropdownMenu className="pt-0" placement="bottom-end">
         <CDropdownHeader className="bg-body-secondary fw-semibold mb-2">Account</CDropdownHeader>
         <div className={styles.profile}>
-          {role ? (
+          {role == 0 ? (
+            <div>管理員</div>
+          ) : role == 1 ? (
+            <div>顧問</div>
+          ) : (
             <>
               <div>{org_name}</div>
               <div>{department}</div>
               <div>{position}</div>
             </>
-          ) : (
-            <div>顧問</div>
           )}
           <div>{name}</div>
         </div>
+
 
         {/* <CDropdownItem href="#">
           <CIcon icon={cilBell} className="me-2" />
@@ -223,7 +226,7 @@ const AppHeaderDropdown = () => {
         </CDropdownItem> */}
         <CDropdownDivider />
         <CDropdownItem href="#" onClick={handleLogout}>
-        <CIcon icon={cilAccountLogout} className="me-2" />
+          <CIcon icon={cilAccountLogout} className="me-2" />
           登出
         </CDropdownItem>
       </CDropdownMenu>
