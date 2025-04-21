@@ -30,6 +30,7 @@ import '@react-pdf-viewer/default-layout/lib/styles/index.css';
 
 
 const Tabs = () => {
+
     const [activeSection, setActiveSection] = useState(null); // 用來追踪當前選中的章節
 
     const handleDownload = () => {
@@ -244,12 +245,15 @@ const Tabs = () => {
     // 上傳檔案
     const handleUpload = async () => {
         if (!file) {
-            alert("請選擇檔案!")
+            alert("請選擇檔案!");
             return;
         }
+
         try {
+            alert("上傳中請稍等..."); // Step 1: 上傳前顯示
+
             const formData = new FormData();
-            formData.append('user_id', 1); // 假設使用者 ID 為 1
+            formData.append('user_id', window.sessionStorage.getItem("user_id")); // 假設使用者 ID 為 1
             formData.append('year', selectedYear);
             formData.append('file', file);
 
@@ -260,13 +264,17 @@ const Tabs = () => {
 
             if (response.ok) {
                 const data = await response.json();
-                alert("檔案上傳成功!");
                 console.log("檔案上傳成功:", data);
+
+                alert("檔案上傳成功!"); // Step 2: 成功後提示
+                location.reload();       // Step 3: 使用者按下「確定」後重新整理頁面
             } else {
                 console.log(`Error uploading file: ${response.status}`);
+                alert("上傳失敗，請稍後再試");
             }
         } catch (error) {
             console.error("Error uploading file:", error);
+            alert("上傳過程發生錯誤，請稍後再試");
         }
     };
 
@@ -313,7 +321,7 @@ const Tabs = () => {
             <div className="system-titlediv">
                 <div>
                     <h4 className="system-title">{reportTitle || "請選擇報告後顯示"}</h4>
-                    <hr className="system-hr" style={{width:'360px'}}></hr>
+                    <hr className="system-hr" style={{ width: '360px' }}></hr>
                 </div>
                 <div className={styles.titleRight}>
                     {/* <select>

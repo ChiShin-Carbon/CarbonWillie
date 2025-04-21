@@ -33,27 +33,69 @@ export const Division= () => {
                         <th>電子郵件</th>
                         <th>電話及分機號碼</th>
                         <th>平台帳號</th>
-                        <th>平台密碼</th>
-                        <th>平台權限</th>
                         <th>備註</th>
                     </tr>
                 </CTableHead>
                 <CTableBody className={styles.tableBody}>
                     <tr>
                         <td>類別一-公務車</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td>管理部門</td>
+                        <td>Cindy</td>
+                        <td>cindy367@gmail.com</td>
+                        <td>0908554321</td>
+                        <td>cindy</td>
                         <td></td>
                     </tr>
                     <tr>
-                        <td>類別一-公務車</td>
+                        <td>類別一-滅火器</td>
                         <td></td>
                         <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr><tr>
+                        <td>類別一-工作時數(員工)</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr><tr>
+                        <td>類別一-工作時數(非員工)</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr><tr>
+                        <td>類別一-冷媒</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr><tr>
+                        <td>類別一-廠內機具</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr><tr>
+                        <td>類別一-緊急發電機</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr><tr>
+                        <td>類別二-電力使用量</td>
                         <td></td>
                         <td></td>
                         <td></td>
@@ -68,22 +110,8 @@ export const Division= () => {
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td></td>
-                        <td></td>
                     </tr><tr>
-                        <td>類別一-公務車</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr><tr>
-                        <td>類別一-公務車</td>
-                        <td></td>
-                        <td></td>
+                        <td>類別三-員工通勤</td>
                         <td></td>
                         <td></td>
                         <td></td>
@@ -98,8 +126,6 @@ export const Division= () => {
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td></td>
-                        <td></td>
                     </tr><tr>
                         <td>類別一-公務車</td>
                         <td></td>
@@ -108,62 +134,8 @@ export const Division= () => {
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td></td>
-                        <td></td>
                     </tr><tr>
                         <td>類別一-公務車</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr><tr>
-                        <td>類別一-公務車</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr><tr>
-                        <td>類別一-公務車</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr><tr>
-                        <td>類別一-公務車</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr><tr>
-                        <td>類別一-公務車</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr><tr>
-                        <td>類別一-公務車</td>
-                        <td></td>
-                        <td></td>
                         <td></td>
                         <td></td>
                         <td></td>
