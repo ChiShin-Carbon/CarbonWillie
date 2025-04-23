@@ -291,20 +291,24 @@ const Tabs = () => {
                             </div>
                           </div>
 
-                          <div style={{ textAlign: 'right' }}>
-                            <FontAwesomeIcon
-                              icon={faPenToSquare}
-                              className={styles.iconPen}
-                              onClick={() =>
-                                handleOpenEditModal(record.table_name, record.usernames)
-                              }
-                            />
-                            <FontAwesomeIcon
-                              icon={faTrashCan}
-                              className={styles.iconTrash}
-                              onClick={() => openDeleteModal(record.table_name)}
-                            />
-                          </div>
+                          {window.sessionStorage.getItem("position") == 1 ? (
+                            <div style={{ textAlign: 'right' }}>
+                              <FontAwesomeIcon
+                                icon={faPenToSquare}
+                                className={styles.iconPen}
+                                onClick={() =>
+                                  handleOpenEditModal(record.table_name, record.usernames)
+                                }
+                              />
+                              <FontAwesomeIcon
+                                icon={faTrashCan}
+                                className={styles.iconTrash}
+                                onClick={() => openDeleteModal(record.table_name)}
+                              />
+                            </div>
+                          ) : null}
+
+
                         </div>
                       </CAccordionBody>
                     </CAccordionItem>
@@ -360,21 +364,23 @@ const Tabs = () => {
                               <span>{record.usernames.檢驗部門}</span>
                             </div>
                           </div>
+                          {window.sessionStorage.getItem("position") == 1 ? (
+                            <div style={{ textAlign: 'right' }}>
+                              <FontAwesomeIcon
+                                icon={faPenToSquare}
+                                className={styles.iconPen}
+                                onClick={() =>
+                                  handleOpenEditModal(record.table_name, record.usernames)
+                                }
+                              />
+                              <FontAwesomeIcon
+                                icon={faTrashCan}
+                                className={styles.iconTrash}
+                                onClick={() => openDeleteModal(record.table_name)}
+                              />
+                            </div>
+                          ) : null}
 
-                          <div style={{ textAlign: 'right' }}>
-                            <FontAwesomeIcon
-                              icon={faPenToSquare}
-                              className={styles.iconPen}
-                              onClick={() =>
-                                handleOpenEditModal(record.table_name, record.usernames)
-                              }
-                            />
-                            <FontAwesomeIcon
-                              icon={faTrashCan}
-                              className={styles.iconTrash}
-                              onClick={() => openDeleteModal(record.table_name)}
-                            />
-                          </div>
                         </div>
                       </CAccordionBody>
                     </CAccordionItem>
@@ -430,20 +436,24 @@ const Tabs = () => {
                             </div>
                           </div>
 
-                          <div style={{ textAlign: 'right' }}>
-                            <FontAwesomeIcon
-                              icon={faPenToSquare}
-                              className={styles.iconPen}
-                              onClick={() =>
-                                handleOpenEditModal(record.table_name, record.usernames)
-                              }
-                            />
-                            <FontAwesomeIcon
-                              icon={faTrashCan}
-                              className={styles.iconTrash}
-                              onClick={() => openDeleteModal(record.table_name)}
-                            />
-                          </div>
+                          {window.sessionStorage.getItem("position") == 1 ? (
+                            <div style={{ textAlign: 'right' }}>
+                              <FontAwesomeIcon
+                                icon={faPenToSquare}
+                                className={styles.iconPen}
+                                onClick={() =>
+                                  handleOpenEditModal(record.table_name, record.usernames)
+                                }
+                              />
+                              <FontAwesomeIcon
+                                icon={faTrashCan}
+                                className={styles.iconTrash}
+                                onClick={() => openDeleteModal(record.table_name)}
+                              />
+                            </div>
+                          ) : null}
+
+
                         </div>
                       </CAccordionBody>
                     </CAccordionItem>
