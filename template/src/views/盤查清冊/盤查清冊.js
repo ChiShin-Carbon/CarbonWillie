@@ -1,7 +1,6 @@
 import React, { useRef, useEffect } from 'react'
 import { useState } from 'react';
 
-
 import {
     CRow, CCol, CCard, CCardBody, CCardHeader, CFormSelect, CTab, CTabContent, CTabList, CTabPanel, CTabs, CForm, CFormLabel, CFormInput, CFormTextarea, CFormCheck,
     CCardSubtitle, CCardText, CCardTitle, CButton,
@@ -28,21 +27,16 @@ import { faArrowRightFromBracket, faFileExport, faEye, faFileArrowUp } from '@fo
 
 
 const Tabs = () => {
-
     const [activeTab, setActiveTab] = useState('tab1') // 記錄當前活動的分頁
-
 
     // 存放從API獲取的數據
     const [years, setYears] = useState([]); // 存放年份
     const [selectedYear, setSelectedYear] = useState(""); // 選擇的年份
-    /* 註解掉版本相關變數
-    const [versions, setVersions] = useState([]); // 存放該年份的版本
-    const [selectedVersion, setSelectedVersion] = useState(""); // 預設為「未選擇版本」
-    */
+    const [displayedYear, setDisplayedYear] = useState(""); // 目前顯示的年份
     const [inventoryTitle, setInventoryTitle] = useState("");
     const [uploadInfo, setUploadInfo] = useState("");
-
     const [excelFile, setExcelFile] = useState(""); // Excel 檔案路徑
+    const [inventoryDisplayed, setInventoryDisplayed] = useState(false); // 追蹤是否顯示清冊
 
     // 獲取年份列表
     const fetchBaselineYears = async () => {
@@ -71,42 +65,12 @@ const Tabs = () => {
         fetchBaselineYears();
     }, []);
 
-    /* 註解掉版本獲取的 useEffect
-    // 當選擇的年份變更時，請求對應的版本
-    useEffect(() => {
-        if (selectedYear) {
-            fetchInventoryVersions(selectedYear);
-        }
-    }, [selectedYear]);
-    */
-
-    /* 註解掉部門映射資訊，因為不再使用版本相關的上傳者資訊
-    const departmentMap = {
-        1: "管理部門",
-        2: "資訊部門",
-        3: "業務部門",
-        4: "門診部門",
-        5: "健檢部門",
-        6: "檢驗部門",
-        7: "其他",
-    };
-    */
-
     // 顯示清冊按鈕事件
     const handleShowInventory = async () => {
         if (!selectedYear) {
             alert("請選擇年份!");
             return;
         }
-
-        /* 註解掉版本檢查
-        if (selectedVersion === "") {
-            setExcelFile(""); // 清空 Excel 預覽
-            setUploadInfo(""); // 清空資訊
-            setInventoryTitle(""); // 清空標題
-            return;
-        }
-        */
 
         try {
             const response = await fetch(`http://127.0.0.1:8000/inventory_file/${selectedYear}`, {
@@ -118,24 +82,10 @@ const Tabs = () => {
                 const data = await response.json();
                 console.log("從後端接收到的清冊資料:", data);
                 setExcelFile(data.file_path); // 設定 Excel 文件路徑
-
-                // 修改標題顯示，移除版本信息
                 setInventoryTitle(`${selectedYear} 盤查清冊`);
-
-                // 修改上傳信息顯示，只顯示建立時間
                 setUploadInfo(`系統生成檔案 ${data.created_at || '未知時間'}`);
-
-                /* 註解掉版本判斷
-                const versionText = selectedVersion === "0" ? "系統原始生成版本" : `版本 ${selectedVersion}`;
-                setInventoryTitle(`${selectedYear} 盤查清冊 - ${versionText}`);
-
-                if (selectedVersion === "0") {
-                    setUploadInfo(`系統生成之初始檔案 ${data.uploaded_at}`);
-                } else {
-                    const departmentName = departmentMap[data.department] || "未知部門";
-                    setUploadInfo(`${departmentName} - ${data.username} ${data.uploaded_at}`);
-                }
-                */
+                setInventoryDisplayed(true); // 設置已顯示清冊狀態為 true
+                setDisplayedYear(selectedYear); // 設置當前顯示的年份
             } else {
                 console.log(`Error fetching inventory file: ${response.status}`);
                 alert("獲取清冊失敗，請稍後再試");
@@ -171,10 +121,10 @@ const Tabs = () => {
         const selectedFile = event.target.files[0];
         if (selectedFile) {
             // 修改檢查邏輯為 Excel 檔案
-            const isExcel = 
+            const isExcel =
                 selectedFile.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" || // .xlsx
                 selectedFile.type === "application/vnd.ms-excel"; // .xls
-            
+
             if (!isExcel) {
                 alert("請上傳 Excel 檔案 (.xlsx 或 .xls)!");
                 setFile(null); // 重置檔案
@@ -219,7 +169,20 @@ const Tabs = () => {
         }
     };
 
-
+    // 渲染未選擇年份或尚未顯示清冊時的提示元件
+    const NotSelectedYearMessage = () => (
+        <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '200px',
+            fontSize: '18px',
+            color: '#666',
+            fontWeight: 'bold'
+        }}>
+            請先選擇要查看的年份!
+        </div>
+    );
 
     return (
         <main>
@@ -242,33 +205,12 @@ const Tabs = () => {
                         <strong>
                             選擇版本
                         </strong>
-                        {/* <select
-                            value={selectedVersion}
-                            onChange={(e) => setSelectedVersion(e.target.value)}
-                        >
-                            <option value="">未選擇版本</option>
-                            {versions.map(({ version }) => (
-                                <option key={version} value={version}>
-                                    {version === 0 ? "系統原始生成版本" : `版本 ${version}`}
-                                </option>
-                            ))}
-                        </select> */}
                         <select disabled>
                             <option>系統原始生成版本</option>
                         </select>
-                    </div> 
-                   
-
+                    </div>
                 </div>
                 <div className={styles.buttonRight}>
-                    {/* 註解掉檔案上傳區域
-                    <div>
-                        <strong>選擇檔案</strong>
-                        <input type="file" onChange={handleFileChange} />
-                    </div>
-
-                    <button onClick={handleUpload}><FontAwesomeIcon icon={faFileArrowUp} /> 上傳編修後檔案</button> 
-                    */}
                     <button onClick={handleShowInventory}>
                         <FontAwesomeIcon icon={faEye} /> 顯示清冊
                     </button>
@@ -284,7 +226,6 @@ const Tabs = () => {
                         {uploadInfo ? `檔案資訊 : ${uploadInfo}` : ""}
                     </span>
                 </div>
-
             </div>
 
             <CNav variant="tabs" className="card-header-tabs">
@@ -336,17 +277,28 @@ const Tabs = () => {
 
             <div className={styles.body}>
                 <div className={styles.bodyMain}>
-                    {/* 內容 */}
-                    {activeTab === 'tab1' && <Division />}
-                    {activeTab === 'tab2' && <ClassOne />}
-                    {activeTab === 'tab3' && <ClassTwo />}
-                    {activeTab === 'tab4' && <ClassThree />}
+                    {/* 內容 - 根據是否顯示清冊決定顯示內容或提示 */}
+                    {!inventoryDisplayed ? (
+                        <NotSelectedYearMessage />
+                    ) : (
+                        <>
+                            {activeTab === 'tab1' && <Division year={displayedYear} />}
+                            {activeTab === 'tab2' && <ClassOne year={displayedYear} />}
+                            {activeTab === 'tab3' && <ClassTwo year={displayedYear} />}
+                            {activeTab === 'tab4' && <ClassThree year={displayedYear} />}
+                        </>
+                    )}
                 </div>
                 {/* 按鈕固定在底部 */}
                 <div className={styles.bodyBottom}>
-                    <button onClick={handleDownload}>
-                        <FontAwesomeIcon icon={faArrowRightFromBracket} /> 匯出清冊
-                    </button>
+                    {!inventoryDisplayed ? (
+                        <></>
+                    ) : (
+                        <button onClick={handleDownload}>
+                            <FontAwesomeIcon icon={faArrowRightFromBracket} /> 匯出清冊
+                        </button>
+                    )}
+
                 </div>
             </div>
 

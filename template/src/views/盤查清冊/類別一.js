@@ -28,7 +28,7 @@ import { Refrigerant } from './各表格檔案/冷媒.js';
 import { Machinery } from './各表格檔案/廠內機具.js';
 import { EmergencyGenerator } from './各表格檔案/緊急發電機.js';
 
-export const ClassOne = () => {
+export const ClassOne = ({ year }) => {
     const [activeTab, setActiveTab] = useState('tab1') // 記錄當前活動的分頁
 
     return (
@@ -81,38 +81,38 @@ export const ClassOne = () => {
             <div>
                 {activeTab === 'tab1' && (
                     <>
-                        <Vehicle />
+                        <Vehicle year={year} />
                     </>
                 )}
                 {activeTab === 'tab2' && (
                     <>
-                        <FireExtinguisher />
+                        <FireExtinguisher year={year} />
                     </>
                 )}
 
                 {activeTab === 'tab3' && (
                     <>
-                        <Employee />
+                        <Employee year={year} />
                     </>
                 )}
                 {activeTab === 'tab4' && (
                     <>
-                        <NonEmployee />
+                        <NonEmployee year={year} />
                     </>
                 )}
                 {activeTab === 'tab5' && (
                     <>
-                        <Refrigerant />
+                        <Refrigerant year={year} />
                     </>
                 )}
                 {activeTab === 'tab6' && (
                     <>
-                        <Machinery />
+                        <Machinery year={year} />
                     </>
                 )}
                 {activeTab === 'tab7' && (
                     <>
-                        <EmergencyGenerator />
+                        <EmergencyGenerator year={year} />
                     </>
                 )}
             </div>
