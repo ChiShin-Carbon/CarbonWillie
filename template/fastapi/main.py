@@ -84,6 +84,8 @@ from 盤查報告書.上傳報告書 import report_upload_router
 from 盤查清冊.zGetExcel import inventory_router
 from 盤查清冊.上傳清冊 import inventory_upload_router
 
+from 盤查清冊.各table.vehicle import get_vehicle
+
 
 
 
@@ -278,6 +280,9 @@ app.include_router(report_upload_router)
 
 app.include_router(inventory_router)
 app.include_router(inventory_upload_router)
+
+app.include_router(get_vehicle)
+
 
 
 
