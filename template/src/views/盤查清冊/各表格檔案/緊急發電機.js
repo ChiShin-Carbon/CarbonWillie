@@ -20,7 +20,43 @@ import {
 } from '@coreui/react'
 import styles from '../../../scss/盤查清冊.module.css'
 
-export const EmergencyGenerator = () => {
+export const EmergencyGenerator = ({ year }) => {
+    const [generatorData, setGeneratorData] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+
+    // 當年份變更時獲取資料
+    useEffect(() => {
+        if (!year) return;
+
+        const fetchGeneratorData = async () => {
+            setLoading(true);
+            setError(null);
+
+            try {
+                const response = await fetch(`http://127.0.0.1:8000/generator_data_by_year/${year}`, {
+                    method: "GET",
+                    headers: { "Content-Type": "application/json" },
+                });
+
+                if (!response.ok) {
+                    throw new Error(`獲取資料失敗：${response.status}`);
+                }
+
+                const data = await response.json();
+                setGeneratorData(data);
+            } catch (err) {
+                console.error("獲取緊急發電機資料發生錯誤:", err);
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchGeneratorData();
+    }, [year]);
+
+    if (loading) return <div>載入資料中...</div>;
 
     return (
         <div>
@@ -34,15 +70,22 @@ export const EmergencyGenerator = () => {
                     </tr>
                 </CTableHead>
                 <CTableBody className={styles.tableBody}>
-                    <tr>
-                        <td>123</td>
-                        <td>123</td>
-                        <td>123</td>
-                        <td>123</td>
-                    </tr>
+                    {generatorData.length > 0 ? (
+                        generatorData.map((item, index) => (
+                            <tr key={index}>
+                                <td>{item.doc_date}</td>
+                                <td>{item.doc_number}</td>
+                                <td>{item.usage}</td>
+                                <td>{item.remark || '-'}</td>
+                            </tr>
+                        ))
+                    ) : (
+                        <tr>
+                            <td colSpan="4" style={{ textAlign: 'center' }}>此年份無緊急發電機資料</td>
+                        </tr>
+                    )}
                 </CTableBody>
             </CTable>
-
         </div>
     )
 }

@@ -80,7 +80,7 @@ export const Employee = ({ year }) => {
                     {employeeData.length > 0 ? (
                         employeeData.map((item, index) => (
                             <tr key={index}>
-                                <td>{item.period_date}</td>
+                                <td>{item.month}</td>
                                 <td>{item.employee_number}</td>
                                 <td>{item.daily_hours}</td>
                                 <td>{item.workday}</td>

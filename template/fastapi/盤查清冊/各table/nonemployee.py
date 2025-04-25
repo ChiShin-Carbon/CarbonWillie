@@ -4,23 +4,17 @@ from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime, date
 
-get_employee = APIRouter(tags=["Inventory API"])
+get_nonemployee = APIRouter(tags=["Inventory API"])
 
-class EmployeeData(BaseModel):
-    month: str  # 改為只顯示月份部分
-    employee_number: int
-    daily_hours: int
-    workday: int
-    overtime: Optional[float] = None
-    sick_leave: Optional[float] = None
-    personal_leave: Optional[float] = None
-    business_trip: Optional[float] = None
-    wedding_and_funeral: Optional[float] = None
-    special_leave: Optional[float] = None
+class NonEmployeeData(BaseModel):
+    month: str  # 只存月份部分
+    nonemployee_number: int
+    total_hours: int
+    total_days: int
     remark: Optional[str] = None
 
-@get_employee.get("/employee_data_by_year/{year}", response_model=List[EmployeeData])
-def get_employee_data_by_year(year: int):
+@get_nonemployee.get("/nonemployee_data_by_year/{year}", response_model=List[NonEmployeeData])
+def get_nonemployee_data_by_year(year: int):
     conn = connectDB()
     if not conn:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="無法連接到資料庫")
@@ -31,10 +25,8 @@ def get_employee_data_by_year(year: int):
         year_pattern = f"{year}-%"
         
         cursor.execute("""
-            SELECT period_date, employee_number, daily_hours, workday, 
-                   overtime, sick_leave, personal_leave, business_trip, 
-                   wedding_and_funeral, special_leave, remark 
-            FROM Employee 
+            SELECT period_date, nonemployee_number, total_hours, total_days, remark 
+            FROM NonEmployee 
             WHERE period_date LIKE ? 
             ORDER BY period_date DESC
         """, (year_pattern,))
@@ -42,12 +34,11 @@ def get_employee_data_by_year(year: int):
         results = cursor.fetchall()
         
         if not results:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"找不到{year}年的員工資料")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"找不到{year}年的非員工資料")
         
-        employee_data = []
+        nonemployee_data = []
         for row in results:
-            period_date, employee_number, daily_hours, workday, overtime, sick_leave, \
-            personal_leave, business_trip, wedding_and_funeral, special_leave, remark = row
+            period_date, nonemployee_number, total_hours, total_days, remark = row
             
             # 從日期中提取月份部分
             month = None
@@ -62,22 +53,16 @@ def get_employee_data_by_year(year: int):
             if not month:
                 month = "未知"
             
-            employee_data.append({
+            nonemployee_data.append({
                 "month": month,
-                "employee_number": employee_number,
-                "daily_hours": daily_hours,
-                "workday": workday,
-                "overtime": overtime,
-                "sick_leave": sick_leave,
-                "personal_leave": personal_leave,
-                "business_trip": business_trip,
-                "wedding_and_funeral": wedding_and_funeral,
-                "special_leave": special_leave,
+                "nonemployee_number": nonemployee_number,
+                "total_hours": total_hours,
+                "total_days": total_days,
                 "remark": remark
             })
         
         # 先轉換成字典，再讓 FastAPI 處理轉換成 Pydantic 模型
-        return [EmployeeData(**item) for item in employee_data]
+        return [NonEmployeeData(**item) for item in nonemployee_data]
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"查詢發生錯誤: {e}")
     finally:

@@ -86,7 +86,12 @@ from 盤查清冊.上傳清冊 import inventory_upload_router
 
 from 盤查清冊.各table.vehicle import get_vehicle
 from 盤查清冊.各table.employee import get_employee
+from 盤查清冊.各table.nonemployee import get_nonemployee
+from 盤查清冊.各table.machinery import get_machinery
 from 盤查清冊.各table.fire_extinguisher import get_fire_extinguisher
+from 盤查清冊.各table.emergency_generator import get_generator
+
+
 
 
 
@@ -290,7 +295,9 @@ app.include_router(inventory_upload_router)
 app.include_router(get_vehicle)
 app.include_router(get_employee)
 app.include_router(get_fire_extinguisher)
-
+app.include_router(get_nonemployee)
+app.include_router(get_machinery)
+app.include_router(get_generator)
 
 
 
