@@ -63,7 +63,7 @@ export const Vehicle = ({ year }) => {
     }, [year]);
 
     if (loading) return <div>載入資料中...</div>;
-    if (error) return <div>發生錯誤: {error}</div>;
+    
 
     return (
         <div>

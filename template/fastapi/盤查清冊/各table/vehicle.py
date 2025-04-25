@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime, date
 
-get_vehicle = APIRouter(tags=["Vehicle API"])
+get_vehicle = APIRouter(tags=["Inventory API"])
 
 class VehicleData(BaseModel):
     doc_date: str

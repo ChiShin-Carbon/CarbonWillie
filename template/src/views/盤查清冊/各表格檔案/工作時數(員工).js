@@ -20,7 +20,43 @@ import {
 } from '@coreui/react'
 import styles from '../../../scss/盤查清冊.module.css'
 
-export const Employee = () => {
+export const Employee = ({ year }) => {
+    const [employeeData, setEmployeeData] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+
+    // 當年份變更時獲取資料
+    useEffect(() => {
+        if (!year) return;
+
+        const fetchEmployeeData = async () => {
+            setLoading(true);
+            setError(null);
+
+            try {
+                const response = await fetch(`http://127.0.0.1:8000/employee_data_by_year/${year}`, {
+                    method: "GET",
+                    headers: { "Content-Type": "application/json" },
+                });
+
+                if (!response.ok) {
+                    throw new Error(`獲取資料失敗：${response.status}`);
+                }
+
+                const data = await response.json();
+                setEmployeeData(data);
+            } catch (err) {
+                console.error("獲取員工資料發生錯誤:", err);
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchEmployeeData();
+    }, [year]);
+
+    if (loading) return <div>載入資料中...</div>;
 
     return (
         <div>
@@ -41,22 +77,29 @@ export const Employee = () => {
                     </tr>
                 </CTableHead>
                 <CTableBody className={styles.tableBody}>
-                    <tr>
-                        <td>123</td>
-                        <td>123</td>
-                        <td>123</td>
-                        <td>123</td>
-                        <td>123</td>
-                        <td>123</td>
-                        <td>123</td>
-                        <td>123</td>
-                        <td>123</td>
-                        <td>123</td>
-                        <td>123</td>
-                    </tr>
+                    {employeeData.length > 0 ? (
+                        employeeData.map((item, index) => (
+                            <tr key={index}>
+                                <td>{item.period_date}</td>
+                                <td>{item.employee_number}</td>
+                                <td>{item.daily_hours}</td>
+                                <td>{item.workday}</td>
+                                <td>{item.overtime || '-'}</td>
+                                <td>{item.sick_leave || '-'}</td>
+                                <td>{item.personal_leave || '-'}</td>
+                                <td>{item.business_trip || '-'}</td>
+                                <td>{item.wedding_and_funeral || '-'}</td>
+                                <td>{item.special_leave || '-'}</td>
+                                <td>{item.remark || '-'}</td>
+                            </tr>
+                        ))
+                    ) : (
+                        <tr>
+                            <td colSpan="11" style={{ textAlign: 'center' }}>此年份無員工資料</td>
+                        </tr>
+                    )}
                 </CTableBody>
             </CTable>
-
         </div>
     )
 }
