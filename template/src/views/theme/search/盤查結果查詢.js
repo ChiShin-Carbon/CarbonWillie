@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   CRow,
   CCol,
@@ -54,6 +54,25 @@ const Tabs = () => {
     verticalAlign: 'middle',
     height: '40px',
   } // table_th設定
+
+  const [Electricity_Usage, setActivityData] = useState('')
+  const getResult = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/result')
+      if (response.ok) {
+        const data = await response.json()
+        setActivityData(data.result.Electricity_Usage)
+      } else {
+        console.log(response.status)
+      }
+    } catch (error) {
+      console.error('Error:', error)
+    }
+  }
+
+  useEffect(() => {
+    getResult()
+  }, [])
 
   return (
     <CRow>
@@ -232,7 +251,7 @@ const Tabs = () => {
                         >
                           <b>電力</b>
                         </td>
-                        <td style={cellStyle}>399.5016</td>
+                        <td style={cellStyle}>{Electricity_Usage}</td>
                         <td style={cellStyle}>-----</td>
                         <td style={cellStyle}>-----</td>
                         <td style={cellStyle}>-----</td>
@@ -617,7 +636,9 @@ const Tabs = () => {
                         <td style={cellStyle} colSpan={2} rowSpan={2}>
                           197.7533
                         </td>
-                        <td style={cellStyle} rowSpan={2}>244.774</td>
+                        <td style={cellStyle} rowSpan={2}>
+                          244.774
+                        </td>
                       </tr>
                       <tr>
                         <td style={cellStyle}>0.0125</td>
@@ -648,7 +669,9 @@ const Tabs = () => {
                         <td style={cellStyle} colSpan={2} rowSpan={2}>
                           80.79%
                         </td>
-                        <td style={cellStyle} rowSpan={2}>100%</td>
+                        <td style={cellStyle} rowSpan={2}>
+                          100%
+                        </td>
                       </tr>
                       <tr>
                         <td style={cellStyle}>0.01%</td>
