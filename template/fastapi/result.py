@@ -36,10 +36,10 @@ def read_result():
             # 排放當量
             query_result = """
                 SELECT
-                    -- (1) 總和
+                    -- (1) 總排放當量
                     SUM(qi.emission_equivalent) AS total_emission_equivalent,
 
-                    -- (2) 按 gas_type 分類加總
+                    -- (2) 全廠 七大溫室氣體排放當量
                     SUM(CASE WHEN qi.gas_type = 1 THEN qi.emission_equivalent ELSE 0 END) AS CO2_emission_equivalent,
                     SUM(CASE WHEN qi.gas_type = 2 THEN qi.emission_equivalent ELSE 0 END) AS CH4_emission_equivalent,
                     SUM(CASE WHEN qi.gas_type = 3 THEN qi.emission_equivalent ELSE 0 END) AS N2O_emission_equivalent,
@@ -48,16 +48,25 @@ def read_result():
                     SUM(CASE WHEN qi.gas_type = 6 THEN qi.emission_equivalent ELSE 0 END) AS SF6_emission_equivalent,
                     SUM(CASE WHEN qi.gas_type = 7 THEN qi.emission_equivalent ELSE 0 END) AS NF3_emission_equivalent,
 
-                    -- (3) emission_category=1 加總
+                    -- (3) 範疇一 總排放當量
                     SUM(CASE WHEN es.emission_category = 1 THEN qi.emission_equivalent ELSE 0 END) AS category1_total_emission_equivalent,
 
-                    -- (4) emission_category=1 且按 emission_pattern 分類加總
-                    SUM(CASE WHEN es.emission_category = 1 AND es.emission_pattern = 1 THEN qi.emission_equivalent ELSE 0 END) AS 固定排放_emission_equivalent,
-                    SUM(CASE WHEN es.emission_category = 1 AND es.emission_pattern = 2 THEN qi.emission_equivalent ELSE 0 END) AS 移動排放_emission_equivalent,
-                    SUM(CASE WHEN es.emission_category = 1 AND es.emission_pattern = 3 THEN qi.emission_equivalent ELSE 0 END) AS 製程排放_emission_equivalent,
-                    SUM(CASE WHEN es.emission_category = 1 AND es.emission_pattern = 4 THEN qi.emission_equivalent ELSE 0 END) AS 逸散排放_emission_equivalent,
+                    -- (4) 範疇一 七大溫室氣體排放當量
+                    SUM(CASE WHEN es.emission_category = 1 AND qi.gas_type = 1 THEN qi.emission_equivalent ELSE 0 END) AS category1_CO2_emission_equivalent,
+                    SUM(CASE WHEN es.emission_category = 1 AND qi.gas_type = 2 THEN qi.emission_equivalent ELSE 0 END) AS category1_CH4_emission_equivalent,
+                    SUM(CASE WHEN es.emission_category = 1 AND qi.gas_type = 3 THEN qi.emission_equivalent ELSE 0 END) AS category1_N2O_emission_equivalent,
+                    SUM(CASE WHEN es.emission_category = 1 AND qi.gas_type = 4 THEN qi.emission_equivalent ELSE 0 END) AS category1_HFCS_emission_equivalent,
+                    SUM(CASE WHEN es.emission_category = 1 AND qi.gas_type = 5 THEN qi.emission_equivalent ELSE 0 END) AS category1_PFCS_emission_equivalent,
+                    SUM(CASE WHEN es.emission_category = 1 AND qi.gas_type = 6 THEN qi.emission_equivalent ELSE 0 END) AS category1_SF6_emission_equivalent,
+                    SUM(CASE WHEN es.emission_category = 1 AND qi.gas_type = 7 THEN qi.emission_equivalent ELSE 0 END) AS category1_NF3_emission_equivalent,
 
-                    -- (5) emission_category=2 加總
+                    -- (5) 範疇一 排放形式排放量
+                    SUM(CASE WHEN es.emission_category = 1 AND es.emission_pattern = 1 THEN qi.emission_equivalent ELSE 0 END) AS stationary_emission_equivalent,
+                    SUM(CASE WHEN es.emission_category = 1 AND es.emission_pattern = 2 THEN qi.emission_equivalent ELSE 0 END) AS mobile_emission_equivalent,
+                    SUM(CASE WHEN es.emission_category = 1 AND es.emission_pattern = 3 THEN qi.emission_equivalent ELSE 0 END) AS process_emission_equivalent,
+                    SUM(CASE WHEN es.emission_category = 1 AND es.emission_pattern = 4 THEN qi.emission_equivalent ELSE 0 END) AS fugitive_emission_equivalent,
+
+                    -- (6) 範疇二 總排放當量
                     SUM(CASE WHEN es.emission_category = 2 THEN qi.emission_equivalent ELSE 0 END) AS category2_total_emission_equivalent
 
                 FROM Quantitative_inventory qi
@@ -77,11 +86,18 @@ def read_result():
                     "SF6_emission_equivalent": result_record[6],
                     "NF3_emission_equivalent": result_record[7],
                     "category1_total_emission_equivalent": result_record[8], #範疇一
-                    "stationary_emission_equivalent": result_record[9], #固定排放
-                    "mobile_emission_equivalent": result_record[10], #移動排放
-                    "process_emission_equivalent": result_record[11], # 製程排放
-                    "fugitive_emission_equivalent": result_record[12], #逸散排放
-                    "category2_total_emission_equivalent": result_record[13], #範疇二
+                    "category1_CO2_emission_equivalent": result_record[9],
+                    "category1_CH4_emission_equivalent": result_record[10],
+                    "category1_N2O_emission_equivalent": result_record[11],
+                    "category1_HFCS_emission_equivalent": result_record[12],
+                    "category1_PFCS_emission_equivalent": result_record[13],
+                    "category1_SF6_emission_equivalent": result_record[14],
+                    "category1_NF3_emission_equivalent": result_record[15],
+                    "stationary_emission_equivalent": result_record[16], #固定排放
+                    "mobile_emission_equivalent": result_record[17], #移動排放
+                    "process_emission_equivalent": result_record[18], # 製程排放
+                    "fugitive_emission_equivalent": result_record[19], #逸散排放
+                    "category2_total_emission_equivalent": result_record[20], #範疇二
                 }
             else:
                 quantitative_inventory = {}

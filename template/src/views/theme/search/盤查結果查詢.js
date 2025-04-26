@@ -55,7 +55,7 @@ const Tabs = () => {
     height: '40px',
   } // table_th設定
 
-  const fields = [
+  const gas_emission_equivalent = [
     'CO2_emission_equivalent',
     'CH4_emission_equivalent',
     'N2O_emission_equivalent',
@@ -64,6 +64,17 @@ const Tabs = () => {
     'SF6_emission_equivalent',
     'NF3_emission_equivalent',
     'total_emission_equivalent',
+  ]
+
+  const category1_gas_emission_equivalent = [
+    'category1_CO2_emission_equivalent',
+    'category1_CH4_emission_equivalent',
+    'category1_N2O_emission_equivalent',
+    'category1_HFCS_emission_equivalent',
+    'category1_PFCS_emission_equivalent',
+    'category1_SF6_emission_equivalent',
+    'category1_NF3_emission_equivalent',
+    'category1_total_emission_equivalent',
   ]
 
   const [electricityUsage, setElectricityUsage] = useState('')
@@ -372,11 +383,11 @@ const Tabs = () => {
                             (公噸CO2e/年)
                           </b>
                         </td>
-                        {fields.map((field, index) => (
+                        {gas_emission_equivalent.map((gas, index) => (
                           <td key={index} style={cellStyle}>
-                            {quantitativeInventory[field] === 0
+                            {quantitativeInventory[gas] === 0
                               ? '-----'
-                              : quantitativeInventory[field]}
+                              : quantitativeInventory[gas]}
                           </td>
                         ))}
                         <td style={cellStyle}>-----</td>
@@ -397,15 +408,15 @@ const Tabs = () => {
                             (%)
                           </b>
                         </td>
-                        {fields.map((field, index) => (
+                        {gas_emission_equivalent.map((gas, index) => (
                           <td key={index} style={cellStyle}>
                             {quantitativeInventory.total_emission_equivalent
-                              ? quantitativeInventory[field] === 0
+                              ? quantitativeInventory[gas] === 0
                                 ? '-----'
-                                : field === 'total_emission_equivalent'
+                                : gas === 'total_emission_equivalent'
                                   ? '100.00%'
                                   : (
-                                      (quantitativeInventory[field] /
+                                      (quantitativeInventory[gas] /
                                         quantitativeInventory.total_emission_equivalent) *
                                       100
                                     ).toFixed(2) + '%'
@@ -514,14 +525,13 @@ const Tabs = () => {
                             (公噸CO2e/年)
                           </b>
                         </td>
-                        <td style={cellStyle}>9.7499</td>
-                        <td style={cellStyle}>5.3158</td>
-                        <td style={cellStyle}>0.3044</td>
-                        <td style={cellStyle}>31.6505</td>
-                        <td style={cellStyle}>-----</td>
-                        <td style={cellStyle}>-----</td>
-                        <td style={cellStyle}>-----</td>
-                        <td style={cellStyle}>47.021</td>
+                        {category1_gas_emission_equivalent.map((category1_gas, index) => (
+                          <td key={index} style={cellStyle}>
+                            {quantitativeInventory[category1_gas] === 0
+                              ? '-----'
+                              : quantitativeInventory[category1_gas]}
+                          </td>
+                        ))}
                         {/* <td style={cellStyle}></td> */}
                       </tr>
                       <tr>
@@ -540,14 +550,21 @@ const Tabs = () => {
                             (%)
                           </b>
                         </td>
-                        <td style={cellStyle}>20.74%</td>
-                        <td style={cellStyle}>11.31%</td>
-                        <td style={cellStyle}>0.65%</td>
-                        <td style={cellStyle}>67.31%</td>
-                        <td style={cellStyle}>-----</td>
-                        <td style={cellStyle}>-----</td>
-                        <td style={cellStyle}>-----</td>
-                        <td style={cellStyle}>100.00%</td>
+                        {category1_gas_emission_equivalent.map((category1_gas, index) => (
+                          <td key={index} style={cellStyle}>
+                            {quantitativeInventory.total_emission_equivalent
+                              ? quantitativeInventory[category1_gas] === 0
+                                ? '-----'
+                                : category1_gas === 'category1_total_emission_equivalent'
+                                  ? '100.00%'
+                                  : (
+                                      (quantitativeInventory[category1_gas] /
+                                        quantitativeInventory.total_emission_equivalent) *
+                                      100
+                                    ).toFixed(2) + '%'
+                              : '0.00%'}
+                          </td>
+                        ))}
                         {/* <td style={cellStyle}></td> */}
                       </tr>
                     </tbody>
