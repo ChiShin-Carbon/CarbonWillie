@@ -16,7 +16,8 @@ import styles from '../../../../scss/顧問system.module.css'
 import { Link } from 'react-router-dom'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCircleCheck, faCircleXmark } from '@fortawesome/free-solid-svg-icons'
+import { faCircleCheck, faCircleXmark, faCircleInfo } from '@fortawesome/free-solid-svg-icons'
+import { Tooltip } from 'react-tooltip'
 
 import { process_code_Map, device_code_Map, fuel_code_Map, gas_type_map } from '../EmissionSource'
 
@@ -51,7 +52,7 @@ const Tabs = () => {
 
       // If activity_data is empty, set default values for its fields
       const activityData = isActivityDataEmpty
-        ? [{ activity_data: '', activity_data_unit: '' }]
+        ? [{ activity_data: '', activity_data_unit: '', save_unit: '', data_type: '' }]
         : source.activity_data
 
       const gasTypes = source.gas_types
@@ -68,8 +69,8 @@ const Tabs = () => {
         details: {
           act95down: '',
           act95up: '',
-          actSource: '',
-          actUnit: '',
+          actSource: activity.data_source || '',
+          actUnit: activity.save_unit || '',
           green: gasTypes,
           greenList: gasTypes.map((gasType, index) => {
             const activityData = parseFloat(activity.activity_data)
@@ -245,7 +246,26 @@ const Tabs = () => {
                 </div> */}
                 <div className={styles.block}>
                   <div className={styles.blockHead}>
-                    <h5>活動數據之不確定性</h5>
+                    <h5>
+                      活動數據之不確定性
+                      <span
+                        style={{ marginLeft: '8px', position: 'relative', display: 'inline-block' }}
+                      >
+                        <FontAwesomeIcon
+                          icon={faCircleInfo}
+                          style={{ fontSize: '18px', cursor: 'pointer' }}
+                          data-tooltip-id="info-tooltip"
+                        />
+                        <Tooltip
+                          id="info-tooltip"
+                          place="right"
+                          effect="solid"
+                          style={{ fontSize: '14px', padding: '6px 10px' }}
+                        >
+                          ± 誤差值（%）× 擴充係數 = ± 誤差值（%）× 2
+                        </Tooltip>
+                      </span>
+                    </h5>
                   </div>
                   <div className={styles.blockBody}>
                     <div>

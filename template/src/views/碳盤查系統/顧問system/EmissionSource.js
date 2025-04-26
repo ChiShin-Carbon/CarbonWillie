@@ -89,6 +89,7 @@ export const getSourcePower = (source) => {
   return ''
 }
 
+// 七大溫室氣體
 export const gas_type_map = {
   1: 'CO2',
   2: 'CH4',
