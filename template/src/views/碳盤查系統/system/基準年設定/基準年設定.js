@@ -147,7 +147,7 @@ const Tabs = () => {
               setAddModalVisible(false)
             }
           } else {
-            alert('現有基準年正在進行中，且輸入期間不符')
+            alert('現有基準年正在進行中')
           }
         } else {
           console.log(response.status)
