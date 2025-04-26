@@ -55,13 +55,16 @@ const Tabs = () => {
     height: '40px',
   } // table_th設定
 
-  const [Electricity_Usage, setActivityData] = useState('')
+  const [electricityUsage, setElectricityUsage] = useState('')
+  const [quantitativeInventory, setQuantitativeInventory] = useState({})
+
   const getResult = async () => {
     try {
       const response = await fetch('http://localhost:8000/result')
       if (response.ok) {
         const data = await response.json()
-        setActivityData(data.result.Electricity_Usage)
+        setElectricityUsage(data.result.Electricity_Usage)
+        setQuantitativeInventory(data.result.Quantitative_Inventory)
       } else {
         console.log(response.status)
       }
@@ -251,7 +254,7 @@ const Tabs = () => {
                         >
                           <b>電力</b>
                         </td>
-                        <td style={cellStyle}>{Electricity_Usage}</td>
+                        <td style={cellStyle}>{electricityUsage}</td>
                         <td style={cellStyle}>-----</td>
                         <td style={cellStyle}>-----</td>
                         <td style={cellStyle}>-----</td>
@@ -358,14 +361,46 @@ const Tabs = () => {
                             (公噸CO2e/年)
                           </b>
                         </td>
-                        <td style={cellStyle}>207.5032</td>
-                        <td style={cellStyle}>5.3158</td>
-                        <td style={cellStyle}>0.3044</td>
-                        <td style={cellStyle}>31.6505</td>
-                        <td style={cellStyle}>-----</td>
-                        <td style={cellStyle}>-----</td>
-                        <td style={cellStyle}>-----</td>
-                        <td style={cellStyle}>244.774</td>
+                        <td style={cellStyle}>
+                          {quantitativeInventory.CO2_emission_equivalent === 0
+                            ? '-----'
+                            : quantitativeInventory.CO2_emission_equivalent}
+                        </td>
+                        <td style={cellStyle}>
+                          {quantitativeInventory.CH4_emission_equivalent === 0
+                            ? '-----'
+                            : quantitativeInventory.CH4_emission_equivalent}
+                        </td>
+                        <td style={cellStyle}>
+                          {quantitativeInventory.N2O_emission_equivalent === 0
+                            ? '-----'
+                            : quantitativeInventory.N2O_emission_equivalent}
+                        </td>
+                        <td style={cellStyle}>
+                          {quantitativeInventory.HFCS_emission_equivalent === 0
+                            ? '-----'
+                            : quantitativeInventory.HFCS_emission_equivalent}
+                        </td>
+                        <td style={cellStyle}>
+                          {quantitativeInventory.PFCS_emission_equivalent === 0
+                            ? '-----'
+                            : quantitativeInventory.PFCS_emission_equivalent}
+                        </td>
+                        <td style={cellStyle}>
+                          {quantitativeInventory.SF6_emission_equivalent === 0
+                            ? '-----'
+                            : quantitativeInventory.SF6_emission_equivalent}
+                        </td>
+                        <td style={cellStyle}>
+                          {quantitativeInventory.NF3_emission_equivalent === 0
+                            ? '-----'
+                            : quantitativeInventory.NF3_emission_equivalent}
+                        </td>
+                        <td style={cellStyle}>
+                          {quantitativeInventory.total_emission_equivalent === 0
+                            ? '-----'
+                            : quantitativeInventory.total_emission_equivalent}
+                        </td>
                         <td style={cellStyle}>-----</td>
                       </tr>
                       <tr>
@@ -384,14 +419,78 @@ const Tabs = () => {
                             (%)
                           </b>
                         </td>
-                        <td style={cellStyle}>84.77%</td>
-                        <td style={cellStyle}>2.17%</td>
-                        <td style={cellStyle}>0.12%</td>
-                        <td style={cellStyle}>12.93%</td>
-                        <td style={cellStyle}>-----</td>
-                        <td style={cellStyle}>-----</td>
-                        <td style={cellStyle}>-----</td>
-                        <td style={cellStyle}>100.00%</td>
+                        <td style={cellStyle}>
+                          {quantitativeInventory.total_emission_equivalent
+                            ? (
+                                (quantitativeInventory.CO2_emission_equivalent /
+                                  quantitativeInventory.total_emission_equivalent) *
+                                100
+                              ).toFixed(2) + '%'
+                            : '0.00%'}
+                        </td>
+                        <td style={cellStyle}>
+                          {quantitativeInventory.total_emission_equivalent
+                            ? (
+                                (quantitativeInventory.CH4_emission_equivalent /
+                                  quantitativeInventory.total_emission_equivalent) *
+                                100
+                              ).toFixed(2) + '%'
+                            : '0.00%'}
+                        </td>
+                        <td style={cellStyle}>
+                          {quantitativeInventory.total_emission_equivalent
+                            ? (
+                                (quantitativeInventory.N2O_emission_equivalent /
+                                  quantitativeInventory.total_emission_equivalent) *
+                                100
+                              ).toFixed(2) + '%'
+                            : '0.00%'}
+                        </td>
+                        <td style={cellStyle}>
+                          {quantitativeInventory.total_emission_equivalent
+                            ? (
+                                (quantitativeInventory.HFCS_emission_equivalent /
+                                  quantitativeInventory.total_emission_equivalent) *
+                                100
+                              ).toFixed(2) + '%'
+                            : '0.00%'}
+                        </td>
+                        <td style={cellStyle}>
+                          {quantitativeInventory.total_emission_equivalent
+                            ? (
+                                (quantitativeInventory.PFCS_emission_equivalent /
+                                  quantitativeInventory.total_emission_equivalent) *
+                                100
+                              ).toFixed(2) + '%'
+                            : '0.00%'}
+                        </td>
+                        <td style={cellStyle}>
+                          {quantitativeInventory.total_emission_equivalent
+                            ? (
+                                (quantitativeInventory.SF6_emission_equivalent /
+                                  quantitativeInventory.total_emission_equivalent) *
+                                100
+                              ).toFixed(2) + '%'
+                            : '0.00%'}
+                        </td>
+                        <td style={cellStyle}>
+                          {quantitativeInventory.total_emission_equivalent
+                            ? (
+                                (quantitativeInventory.NF3_emission_equivalent /
+                                  quantitativeInventory.total_emission_equivalent) *
+                                100
+                              ).toFixed(2) + '%'
+                            : '0.00%'}
+                        </td>
+                        <td style={cellStyle}>
+                          {quantitativeInventory.total_emission_equivalent
+                            ? (
+                                (quantitativeInventory.total_emission_equivalent /
+                                  quantitativeInventory.total_emission_equivalent) *
+                                100
+                              ).toFixed(2) + '%'
+                            : '0.00%'}
+                        </td>
                         <td style={cellStyle}>-----</td>
                       </tr>
                     </tbody>
