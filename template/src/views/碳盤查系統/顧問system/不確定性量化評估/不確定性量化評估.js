@@ -21,6 +21,8 @@ import { Tooltip } from 'react-tooltip'
 
 import { process_code_Map, device_code_Map, fuel_code_Map, gas_type_map } from '../EmissionSource'
 
+import { UpNav } from '../upNav'
+
 const Tabs = () => {
   // 設定 state 來儲存選擇的行數據，初始值為 null
   const [selectedRowData, setSelectedRowData] = useState(null)
@@ -108,40 +110,7 @@ const Tabs = () => {
 
   return (
     <main>
-      <CTabs activeItemKey={1}>
-        <CTabList variant="underline-border" className="system-tablist">
-          <Link to="/碳盤查系統/顧問system/排放源鑑別" className="system-tablist-link">
-            <CTab aria-controls="tab1" itemKey={3} className="system-tablist-choose">
-              排放源鑑別
-            </CTab>
-          </Link>
-          <Link to="/碳盤查系統/顧問system/活動數據" className="system-tablist-link">
-            <CTab aria-controls="tab3" itemKey={4} className="system-tablist-choose">
-              活動數據
-            </CTab>
-          </Link>
-          <Link to="/碳盤查系統/顧問system/定量盤查" className="system-tablist-link">
-            <CTab aria-controls="tab3" itemKey={6} className="system-tablist-choose">
-              定量盤查
-            </CTab>
-          </Link>
-          <Link to="/碳盤查系統/顧問system/數據品質管理" className="system-tablist-link">
-            <CTab aria-controls="tab3" itemKey={5} className="system-tablist-choose">
-              數據品質管理
-            </CTab>
-          </Link>
-          <Link to="." className="system-tablist-link">
-            <CTab aria-controls="tab3" itemKey={1} className="system-tablist-choose">
-              不確定性量化評估
-            </CTab>
-          </Link>
-          {/* <Link to="/碳盤查系統/顧問system/全廠電力蒸汽供需情況 " className="system-tablist-link">
-            <CTab aria-controls="tab3" itemKey={2} className="system-tablist-choose">
-              全廠電力蒸汽供需情況
-            </CTab>
-          </Link> */}
-        </CTabList>
-      </CTabs>
+      <UpNav />
 
       <div className="system-titlediv">
         <div>
@@ -156,7 +125,6 @@ const Tabs = () => {
             <CTable hover className={styles.table}>
               <CTableHead className={styles.tableHead}>
                 <tr>
-                  <th style={{ width: '15%' }}>填寫進度</th>
                   <th>製程</th>
                   <th>設備</th>
                   <th>原燃物料或產品</th>
@@ -165,14 +133,7 @@ const Tabs = () => {
               <CTableBody className={styles.tableBody}>
                 {tableData.map((row, index) => (
                   <tr key={index} onClick={() => handleRowClick(row)}>
-                    <td>
-                      <FontAwesomeIcon
-                        icon={row.status === 'completed' ? faCircleCheck : faCircleXmark}
-                        className={
-                          row.status === 'completed' ? styles.iconCorrect : styles.iconWrong
-                        }
-                      />
-                    </td>
+                    
                     <td>{row.process}</td>
                     <td>{row.equipment}</td>
                     <td>{row.material}</td>
@@ -182,9 +143,6 @@ const Tabs = () => {
             </CTable>
           </div>
 
-          <div className={styles.submitTable}>
-            <button className={styles.button}>全部完成</button>
-          </div>
         </CCard>
 
         <CCard className={styles.card}>

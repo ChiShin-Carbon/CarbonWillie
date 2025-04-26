@@ -16,6 +16,7 @@ import { Link } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleCheck, faCircleXmark, faPenToSquare, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 
+import { UpNav } from '../upNav'
 
 
 const Tabs = () => {
@@ -28,29 +29,7 @@ const Tabs = () => {
 
     return (
         <main>
-            <CTabs activeItemKey={1}>
-                <CTabList variant="underline-border" className="system-tablist">
-                    <Link to="/碳盤查系統/顧問system/排放源鑑別" className="system-tablist-link">
-                        <CTab aria-controls="tab1" itemKey={2}  className="system-tablist-choose">排放源鑑別</CTab>
-                    </Link>
-                    <Link to="/碳盤查系統/顧問system/活動數據" className="system-tablist-link">
-                        <CTab aria-controls="tab3" itemKey={3}  className="system-tablist-choose">活動數據</CTab>
-                    </Link>
-                    <Link to="/碳盤查系統/顧問system/定量盤查" className="system-tablist-link">
-                        <CTab aria-controls="tab3" itemKey={4}  className="system-tablist-choose">定量盤查</CTab>
-                    </Link>
-                    <Link to="/碳盤查系統/顧問system/數據品質管理" className="system-tablist-link">
-                        <CTab aria-controls="tab3" itemKey={5} className="system-tablist-choose">數據品質管理</CTab>
-                    </Link>
-                    <Link to="/碳盤查系統/顧問system/不確定性量化評估" className="system-tablist-link">
-                        <CTab aria-controls="tab3" itemKey={6} className="system-tablist-choose">不確定性量化評估</CTab>
-                    </Link>
-                    <Link to="." className="system-tablist-link">
-                        <CTab aria-controls="tab3" itemKey={1} className="system-tablist-choose">全廠電力蒸汽供需情況 </CTab>
-                    </Link>
-
-                </CTabList>
-            </CTabs>
+            <Nav/>
 
             <div className="system-titlediv">
                 <div>

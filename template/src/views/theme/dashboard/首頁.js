@@ -27,7 +27,7 @@ import {
     CChartRadar,
 } from '@coreui/react-chartjs'
 import '../../../scss/個人&企業資料.css';
-import styles from  '../../../scss/首頁.module.css';
+import styles from '../../../scss/首頁.module.css';
 import { MultiSelect } from 'primereact/multiselect'; // Import PrimeReact MultiSelect
 import 'primereact/resources/themes/saga-blue/theme.css'; // PrimeReact CSS (如果還沒引入)
 import 'primereact/resources/primereact.min.css';
@@ -58,9 +58,9 @@ const Charts = () => {
                     <div className={styles.tabsLeft}>
                         <span>歡迎回來 {username}</span>
                     </div>
-                    <div className={styles.buttonRight}>
+                    {/* <div className={styles.buttonRight}>
                         <button>開始盤查</button>
-                    </div>
+                    </div> */}
                 </div>
             </div>
 
