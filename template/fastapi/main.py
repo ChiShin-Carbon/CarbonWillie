@@ -90,6 +90,13 @@ from 盤查清冊.各table.nonemployee import get_nonemployee
 from 盤查清冊.各table.machinery import get_machinery
 from 盤查清冊.各table.fire_extinguisher import get_fire_extinguisher
 from 盤查清冊.各table.emergency_generator import get_generator
+from 盤查清冊.各table.commute import get_commute
+from 盤查清冊.各table.businesstrip import get_businesstrip
+from 盤查清冊.各table.operationalwaste import get_operational_waste
+from 盤查清冊.各table.sellingwaste import get_selling_waste
+
+
+
 
 
 
@@ -298,6 +305,11 @@ app.include_router(get_fire_extinguisher)
 app.include_router(get_nonemployee)
 app.include_router(get_machinery)
 app.include_router(get_generator)
+app.include_router(get_commute)
+app.include_router(get_businesstrip)
+app.include_router(get_operational_waste)
+app.include_router(get_selling_waste)
+
 
 
 

@@ -26,7 +26,7 @@ import { OperationalWaste } from './各表格檔案/營運產生廢棄物.js';
 import { SellingWaste } from './各表格檔案/銷售產品的廢棄物.js';
 
 
-export const ClassThree = () => {
+export const ClassThree = ({ year }) => {
     const [activeTab, setActiveTab] = useState('tab1') // 記錄當前活動的分頁
 
     return (
@@ -62,23 +62,23 @@ export const ClassThree = () => {
             <div>
                 {activeTab === 'tab1' && (
                     <>
-                        <Commuting/>
+                        <Commuting year={year}/>
                     </>
                 )}
                 {activeTab === 'tab2' && (
                     <>
-                        <BusinessTrip />
+                        <BusinessTrip year={year} />
                     </>
                 )}
 
                 {activeTab === 'tab3' && (
                     <>
-                        <OperationalWaste />
+                        <OperationalWaste year={year} />
                     </>
                 )}
                 {activeTab === 'tab4' && (
                     <>
-                        <SellingWaste />
+                        <SellingWaste  year={year}/>
                     </>
                 )}
             </div>
