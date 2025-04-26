@@ -16,9 +16,14 @@ async def insert_authorized_user(
     if conn:
         cursor = conn.cursor()
         try:
+            # 先查詢 Baseline 資料表中最大的 baseline_id
+            cursor.execute("SELECT MAX(baseline_id) FROM Baseline")
+            result = cursor.fetchone()
+            max_baseline_id = result[0] if result[0] is not None else 0
+            
             query = """
-                INSERT INTO Authorized_Table (user_id, table_name, is_done, completed_at,review)
-                VALUES (?, ?, ?, ?,1)
+                INSERT INTO Authorized_Table (user_id, table_name, is_done, completed_at, review, baseline_id)
+                VALUES (?, ?, ?, ?, 1, ?)
             """
             for i in range(len(user_ids)):
                 values = (
@@ -26,10 +31,11 @@ async def insert_authorized_user(
                     table_names[i],
                     is_done_list[i] if is_done_list else 0,
                     completed_at_list[i] if completed_at_list else None,
+                    max_baseline_id,  # 添加最新的 baseline_id
                 )
                 cursor.execute(query, values)
             conn.commit()
-            return {"status": "success", "message": "Records inserted successfully"}
+            return {"status": "success", "message": "Records inserted successfully", "baseline_id": max_baseline_id}
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Database insert error: {e}")
         finally:

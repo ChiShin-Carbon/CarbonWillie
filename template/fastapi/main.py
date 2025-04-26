@@ -98,6 +98,7 @@ from 盤查清冊.各table.commute import get_commute
 from 盤查清冊.各table.businesstrip import get_businesstrip
 from 盤查清冊.各table.operationalwaste import get_operational_waste
 from 盤查清冊.各table.sellingwaste import get_selling_waste
+from 盤查清冊.各table.authorizedtable import get_authorized_users
 
 
 
@@ -314,6 +315,8 @@ app.include_router(get_commute)
 app.include_router(get_businesstrip)
 app.include_router(get_operational_waste)
 app.include_router(get_selling_waste)
+app.include_router(get_authorized_users)
+
 
 
 
