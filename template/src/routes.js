@@ -14,6 +14,8 @@ const 首頁 = React.lazy(() => import('./views/theme/dashboard/首頁'))
 
 //碳盤查系統
 
+const 基準年設定= React.lazy(() => import('./views/碳盤查系統/system/基準年設定/基準年設定'))
+
 const 碳盤查系統 = React.lazy(() => import('./views/碳盤查系統/system/碳盤查系統'))
 const 活動數據盤點 = React.lazy(() => import('./views/碳盤查系統/system/活動數據盤點/活動數據盤點'))
 const 活動數據分配 = React.lazy(() => import('./views/碳盤查系統/system/活動數據分配/活動數據分配'))
@@ -102,6 +104,7 @@ const routes = [
   { path: '/theme/carbon_factor', name: '排放係數_GWP值', element: 排放係數_GWP值 },
   //碳盤查系統
   { path: '/碳盤查系統/system', name: '碳盤查系統', element: 碳盤查系統 },
+  { path: '/碳盤查系統/system/基準年設定', name: '基準年設定', element: 基準年設定 },
   { path: '/碳盤查系統/system/活動數據盤點', name: '活動數據盤點', element: 活動數據盤點 },
   { path: '/碳盤查系統/system/活動數據分配', name: '活動數據分配', element: 活動數據分配 },
   { path: '/碳盤查系統/system/盤查進度管理', name: '盤查進度管理', element: 盤查進度管理 },

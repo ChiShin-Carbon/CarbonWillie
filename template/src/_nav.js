@@ -66,7 +66,7 @@ const getNormalNavItems = () => {
         {
           component: CNavItem,
           name: '碳盤查–組織內',
-          to: '/碳盤查系統/system',
+          to: '/碳盤查系統/system/基準年設定',
         },
         {
           component: CNavItem,
