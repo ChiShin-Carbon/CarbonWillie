@@ -57,7 +57,11 @@ from Nonemployee import NonEmployee
 from insert.insert_nonemployee import insert_nonemployee
 from insert.insert_Extinguisher_FillRec import insert_extinguisher_fill
 
+# 盤查登錄表單
 from emission_source import emission_source
+
+# 盤查結果
+from result import result
 
 from 管理者.adminCompany import adminCompany
 from 管理者.insert_adminCompany import insert_adminCompany
@@ -226,6 +230,7 @@ app.include_router(NonEmployee)
 app.include_router(insert_nonemployee)
 app.include_router(langchaingpt)
 app.include_router(emission_source)
+app.include_router(result)
 app.include_router(news)
 
 app.include_router(adminCompany)
