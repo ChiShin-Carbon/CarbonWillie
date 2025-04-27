@@ -573,7 +573,7 @@ const Tabs = () => {
                 </CCardBody>
               </CCard>
               <br></br>
-              {/* 類別一及類別二排放形式排放量統計表 */}
+              {/* 範疇一及範疇二排放形式排放量統計表 */}
               <CCard style={{ width: '100%' }}>
                 <CCardTitle>
                   <div style={{ display: 'flex', flexDireaction: 'row' }}>
@@ -622,13 +622,13 @@ const Tabs = () => {
                       <tr>
                         <th scope="col" style={cellStyle} rowSpan={2}></th>
                         <th scope="col" style={cellStyle} colSpan={4}>
-                          類別1
+                          範疇1
                         </th>
                         <th scope="col" style={cellStyle} colSpan={2}>
-                          類別2
+                          範疇2
                         </th>
                         <th scope="col" style={cellStyle} colSpan={2} rowSpan={2}>
-                          類別一及類別二排放量
+                          範疇一及範疇二排放量
                         </th>
                       </tr>
                       <tr>
@@ -668,20 +668,29 @@ const Tabs = () => {
                           </b>
                         </td>
                         <td style={cellStyle} colSpan={4}>
-                          47.0206
+                          {quantitativeInventory.category1_total_emission_equivalent}
                         </td>
                         <td style={cellStyle} colSpan={2} rowSpan={2}>
-                          197.7533
+                          {quantitativeInventory.category2_total_emission_equivalent}
                         </td>
                         <td style={cellStyle} rowSpan={2}>
-                          244.774
+                          {quantitativeInventory.category1_total_emission_equivalent +
+                            quantitativeInventory.category2_total_emission_equivalent}
                         </td>
                       </tr>
                       <tr>
-                        <td style={cellStyle}>0.0125</td>
-                        <td style={cellStyle}>0.0000</td>
-                        <td style={cellStyle}>10.0595</td>
-                        <td style={cellStyle}>36.9486</td>
+                        <td style={cellStyle}>
+                          {quantitativeInventory.stationary_emission_equivalent}
+                        </td>
+                        <td style={cellStyle}>
+                          {quantitativeInventory.mobile_emission_equivalent}
+                        </td>
+                        <td style={cellStyle}>
+                          {quantitativeInventory.process_emission_equivalent}
+                        </td>
+                        <td style={cellStyle}>
+                          {quantitativeInventory.fugitive_emission_equivalent}
+                        </td>
                       </tr>
                       <tr>
                         <td
@@ -701,20 +710,77 @@ const Tabs = () => {
                           </b>
                         </td>
                         <td style={cellStyle} colSpan={4}>
-                          19.21%
+                          {quantitativeInventory.category1_total_emission_equivalent +
+                          quantitativeInventory.category2_total_emission_equivalent
+                            ? (
+                                (quantitativeInventory.category1_total_emission_equivalent /
+                                  (quantitativeInventory.category1_total_emission_equivalent +
+                                    quantitativeInventory.category2_total_emission_equivalent)) *
+                                100
+                              ).toFixed(2) + '%'
+                            : '-'}
                         </td>
                         <td style={cellStyle} colSpan={2} rowSpan={2}>
-                          80.79%
+                          {quantitativeInventory.category1_total_emission_equivalent +
+                          quantitativeInventory.category2_total_emission_equivalent
+                            ? (
+                                (quantitativeInventory.category2_total_emission_equivalent /
+                                  (quantitativeInventory.category1_total_emission_equivalent +
+                                    quantitativeInventory.category2_total_emission_equivalent)) *
+                                100
+                              ).toFixed(2) + '%'
+                            : '-'}
                         </td>
                         <td style={cellStyle} rowSpan={2}>
-                          100%
+                          {quantitativeInventory.category1_total_emission_equivalent +
+                          quantitativeInventory.category2_total_emission_equivalent
+                            ? (
+                                ((quantitativeInventory.category1_total_emission_equivalent +
+                                  quantitativeInventory.category2_total_emission_equivalent) /
+                                  (quantitativeInventory.category1_total_emission_equivalent +
+                                    quantitativeInventory.category2_total_emission_equivalent)) *
+                                100
+                              ).toFixed(2) + '%'
+                            : '-'}
                         </td>
                       </tr>
                       <tr>
-                        <td style={cellStyle}>0.01%</td>
-                        <td style={cellStyle}>0.00%</td>
-                        <td style={cellStyle}>4.11%</td>
-                        <td style={cellStyle}>15.09%</td>
+                        <td style={cellStyle}>
+                          {quantitativeInventory.category1_total_emission_equivalent
+                            ? (
+                                (quantitativeInventory.stationary_emission_equivalent /
+                                  quantitativeInventory.category1_total_emission_equivalent) *
+                                100
+                              ).toFixed(2) + '%'
+                            : '-'}
+                        </td>
+                        <td style={cellStyle}>
+                          {quantitativeInventory.category1_total_emission_equivalent
+                            ? (
+                                (quantitativeInventory.mobile_emission_equivalent /
+                                  quantitativeInventory.category1_total_emission_equivalent) *
+                                100
+                              ).toFixed(2) + '%'
+                            : '-'}
+                        </td>
+                        <td style={cellStyle}>
+                          {quantitativeInventory.category1_total_emission_equivalent
+                            ? (
+                                (quantitativeInventory.process_emission_equivalent /
+                                  quantitativeInventory.category1_total_emission_equivalent) *
+                                100
+                              ).toFixed(2) + '%'
+                            : '-'}
+                        </td>
+                        <td style={cellStyle}>
+                          {quantitativeInventory.category1_total_emission_equivalent
+                            ? (
+                                (quantitativeInventory.fugitive_emission_equivalent /
+                                  quantitativeInventory.category1_total_emission_equivalent) *
+                                100
+                              ).toFixed(2) + '%'
+                            : '-'}
+                        </td>
                       </tr>
                     </tbody>
                   </table>
