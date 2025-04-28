@@ -1,11 +1,31 @@
+# How to Start
+
 ```shell
 cd template
 ```
-只有第一次要install
+
 ```shell
 npm install
 ```
+
+```shell
+cd fastapi
+```
+
+```shell
+pip install -r requirements.txt
+```
+
+```shell
+uvicorn main:app --reload
+```
+
+這邊再開一個terminal
+
+```shell
+cd template
+```
+
 ```shell
 npm start
 ```
-123456
