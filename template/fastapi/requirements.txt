@@ -30,3 +30,4 @@ transformers
 serpapi
 google-search-results
 opencv-python
+docx2pdf

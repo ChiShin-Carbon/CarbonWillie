@@ -33,6 +33,33 @@ export const Vehicle = ({refreshVehicleData}) => {
   const [selectedVehicleId, setSelectedVehicleId] = useState(null) // State to store selected vehicle ID
   const [isLoading, setIsLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
+  const [userPosition, setUserPosition] = useState(null)
+  const [cfvStartDate, setCfvStartDate] = useState(null)  // State for baseline start date
+  const [cfvEndDate, setCfvEndDate] = useState(null)  // State for baseline end date
+  
+  // Get user position from sessionStorage
+  useEffect(() => {
+    const position = window.sessionStorage.getItem('position')
+    setUserPosition(position ? parseInt(position) : null)
+  }, [])
+
+  // Function to fetch baseline data
+  const getBaseline = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/baseline');
+      if (response.ok) {
+        const data = await response.json();
+        setCfvStartDate(data.baseline.cfv_start_date);
+        setCfvEndDate(data.baseline.cfv_end_date);
+      } else {
+        console.log(response.status);
+        setErrorMessage('無法取得基準期間資料');
+      }
+    } catch (error) {
+      console.error('Error fetching baseline:', error);
+      setErrorMessage('取得基準期間資料時發生錯誤');
+    }
+  };
 
   const deleteVehicle = async (vehicle_id) => {
     if (!window.confirm('確定要刪除這筆資料嗎？')) {
@@ -77,12 +104,24 @@ export const Vehicle = ({refreshVehicleData}) => {
     }
   };
 
-  // Local fetch function
+  // Modified fetch function to include baseline period filter
   const fetchVehicleData = async () => {
     setIsLoading(true);
     try {
       const data = await getVehicleData();
-      if (data) {
+      if (data && cfvStartDate && cfvEndDate) {
+        // Filter the data based on baseline period
+        const startDate = new Date(cfvStartDate);
+        const endDate = new Date(cfvEndDate);
+        
+        const filteredData = data.filter(vehicle => {
+          const docDate = new Date(vehicle.Doc_date);
+          return docDate >= startDate && docDate <= endDate;
+        });
+        
+        setVehicles(filteredData);
+      } else if (data) {
+        // If no baseline dates available yet, show all data
         setVehicles(data);
       }
     } catch (error) {
@@ -93,10 +132,18 @@ export const Vehicle = ({refreshVehicleData}) => {
     }
   };
 
-  // Fetch vehicle data on component mount
+  // Fetch baseline data on component mount
+  useEffect(() => {
+    getBaseline();
+  }, []);
+
+  // Fetch vehicle data when baseline dates change
   useEffect(() => {
     fetchVehicleData();
-  }, []);
+  }, [cfvStartDate, cfvEndDate]);
+
+  // Check if user has permission to edit/delete
+  const hasEditPermission = userPosition !== 1;
 
   return (
     <div>
@@ -124,7 +171,7 @@ export const Vehicle = ({refreshVehicleData}) => {
               <th>備註</th>
               <th>圖片</th>
               <th>最近編輯</th>
-              <th>操作</th>
+              {hasEditPermission && <th>操作</th>}
             </tr>
           </CTableHead>
           <CTableBody className={styles.activityTableBody}>
@@ -151,38 +198,42 @@ export const Vehicle = ({refreshVehicleData}) => {
                     <br />
                     {vehicle.edit_time}
                   </td>
-                  <td>
-                    <FontAwesomeIcon
-                      icon={faPenToSquare}
-                      className={styles.iconPen}
-                      onClick={() => {
-                        setSelectedVehicleId(vehicle.vehicle_id);
-                        setEditModalVisible(true);
-                      }}
-                    />
-                    <FontAwesomeIcon
-                      icon={faTrashCan}
-                      className={styles.iconTrash}
-                      onClick={() => {
-                        deleteVehicle(vehicle.vehicle_id);
-                      }}
-                    />
-                  </td>
+                  {hasEditPermission && (
+                    <td>
+                      <FontAwesomeIcon
+                        icon={faPenToSquare}
+                        className={styles.iconPen}
+                        onClick={() => {
+                          setSelectedVehicleId(vehicle.vehicle_id);
+                          setEditModalVisible(true);
+                        }}
+                      />
+                      <FontAwesomeIcon
+                        icon={faTrashCan}
+                        className={styles.iconTrash}
+                        onClick={() => {
+                          deleteVehicle(vehicle.vehicle_id);
+                        }}
+                      />
+                    </td>
+                  )}
                 </tr>
               ))
             ) : (
-              <tr><td colSpan="9">目前沒有公務車資料</td></tr>
+              <tr><td colSpan={hasEditPermission ? "9" : "8"}>目前沒有符合基準期間的公務車資料</td></tr>
             )}
           </CTableBody>
         </CTable>
       )}
       
-      <EditModal
-        isEditModalVisible={isEditModalVisible}
-        setEditModalVisible={setEditModalVisible}
-        selectedVehicleId={selectedVehicleId}
-        refreshVehicleData={() => fetchVehicleData()}
-      />
+      {hasEditPermission && (
+        <EditModal
+          isEditModalVisible={isEditModalVisible}
+          setEditModalVisible={setEditModalVisible}
+          selectedVehicleId={selectedVehicleId}
+          refreshVehicleData={() => fetchVehicleData()}
+        />
+      )}
     </div>
   )
 }

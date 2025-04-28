@@ -18,13 +18,58 @@ export const BusinessTrip = ({refreshBusinessTripData}) => {
     const [selectedbusiness, setSelectedbusiness] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+    const [userPosition, setUserPosition] = useState(null);
+    const [cfvStartDate, setCfvStartDate] = useState(null);  // State for baseline start date
+    const [cfvEndDate, setCfvEndDate] = useState(null);  // State for baseline end date
+    
+    // Get user position from sessionStorage
+    useEffect(() => {
+        const position = window.sessionStorage.getItem('position');
+        setUserPosition(position ? parseInt(position) : null);
+    }, []);
+    
+    // Check if user has permission to edit/delete
+    const hasEditPermission = userPosition !== 1;
 
-    // Function to fetch business trip data
+    // Function to fetch baseline data
+    const getBaseline = async () => {
+        try {
+            const response = await fetch('http://localhost:8000/baseline');
+            if (response.ok) {
+                const data = await response.json();
+                setCfvStartDate(data.baseline.cfv_start_date);
+                setCfvEndDate(data.baseline.cfv_end_date);
+            } else {
+                console.log(response.status);
+                setErrorMessage('無法取得基準期間資料');
+            }
+        } catch (error) {
+            console.error('Error fetching baseline:', error);
+            setErrorMessage('取得基準期間資料時發生錯誤');
+        }
+    };
+
+    // Function to fetch business trip data with baseline period filter
     const fetchBusinessTripData = async () => {
         setIsLoading(true);
         try {
             const data = await getBusiness_TripData();
-            if (data) {
+            if (data && cfvStartDate && cfvEndDate) {
+                // Filter data based on baseline period
+                const startDate = new Date(cfvStartDate);
+                const endDate = new Date(cfvEndDate);
+                
+                const filteredData = data.filter(trip => {
+                    // We're using edit_time as the date field to filter
+                    // If there's a more appropriate date field for business trips,
+                    // it should be used instead
+                    const recordDate = new Date(trip.edit_time);
+                    return recordDate >= startDate && recordDate <= endDate;
+                });
+                
+                setBT(filteredData);
+            } else if (data) {
+                // If no baseline dates available yet, show all data
                 setBT(data);
             }
         } catch (error) {
@@ -35,10 +80,15 @@ export const BusinessTrip = ({refreshBusinessTripData}) => {
         }
     };
 
-    // Fetch business trip data on component mount
+    // Fetch baseline data on component mount
+    useEffect(() => {
+        getBaseline();
+    }, []);
+
+    // Fetch business trip data when baseline dates change
     useEffect(() => {
         fetchBusinessTripData();
-    }, []);
+    }, [cfvStartDate, cfvEndDate]);
 
     // Function to delete a business trip record
     const deleteBusinessTrip = async (business_id) => {
@@ -108,7 +158,7 @@ export const BusinessTrip = ({refreshBusinessTripData}) => {
                             <th>備註</th>
                             <th>圖片</th>
                             <th>最近編輯</th>
-                            <th>操作</th>
+                            {hasEditPermission && <th>操作</th>}
                         </tr>
                     </CTableHead>
                     <CTableBody className={styles.activityTableBody}>
@@ -140,38 +190,42 @@ export const BusinessTrip = ({refreshBusinessTripData}) => {
                                             hour12: false
                                         })}
                                     </td>
-                                    <td>
-                                        <FontAwesomeIcon 
-                                            icon={faPenToSquare} 
-                                            className={styles.iconPen} 
-                                            onClick={() => {
-                                                setEditModalVisible(true);
-                                                setSelectedbusiness(Business_Trip.business_id);
-                                            }} 
-                                        />
-                                        <FontAwesomeIcon 
-                                            icon={faTrashCan} 
-                                            className={styles.iconTrash} 
-                                            onClick={() => deleteBusinessTrip(Business_Trip.business_id)}
-                                        />
-                                    </td>
+                                    {hasEditPermission && (
+                                        <td>
+                                            <FontAwesomeIcon 
+                                                icon={faPenToSquare} 
+                                                className={styles.iconPen} 
+                                                onClick={() => {
+                                                    setEditModalVisible(true);
+                                                    setSelectedbusiness(Business_Trip.business_id);
+                                                }} 
+                                            />
+                                            <FontAwesomeIcon 
+                                                icon={faTrashCan} 
+                                                className={styles.iconTrash} 
+                                                onClick={() => deleteBusinessTrip(Business_Trip.business_id)}
+                                            />
+                                        </td>
+                                    )}
                                 </tr>
                             ))
                         ) : (
                             <tr>
-                                <td colSpan="7" className={styles.noData}>目前沒有商務旅行資料</td>
+                                <td colSpan={hasEditPermission ? "7" : "6"} className={styles.noData}>目前沒有符合基準期間的商務旅行資料</td>
                             </tr>
                         )}
                     </CTableBody>
                 </CTable>
             )}
             
-            <EditModal
-                isEditModalVisible={isEditModalVisible}
-                setEditModalVisible={setEditModalVisible}
-                selectedbusiness={selectedbusiness}
-                refreshBusinessTripData={refreshBusinessTripData || fetchBusinessTripData}
-            />
+            {hasEditPermission && (
+                <EditModal
+                    isEditModalVisible={isEditModalVisible}
+                    setEditModalVisible={setEditModalVisible}
+                    selectedbusiness={selectedbusiness}
+                    refreshBusinessTripData={refreshBusinessTripData || fetchBusinessTripData}
+                />
+            )}
         </div>
     );
 };

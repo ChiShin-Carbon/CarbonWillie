@@ -111,6 +111,10 @@ const Tabs = () => {
   const [authorizedTables, setAuthorizedTables] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [userId, setUserId] = useState(null)
+  const [userPosition, setUserPosition] = useState(null)
+  
+  // Check if user has permission to add/edit/delete
+  const hasEditPermission = userPosition !== '1'
   
   const {
     vehicle,
@@ -143,11 +147,14 @@ const Tabs = () => {
   useEffect(() => {
     // Get user ID from localStorage
     const storedUserId = window.sessionStorage.getItem('user_id');
+    const storedUserPosition = window.sessionStorage.getItem('position');
+    
     if (storedUserId) {
       const parsedUserId = parseInt(storedUserId, 10);
       setUserId(parsedUserId);
+      setUserPosition(storedUserPosition);
       
-      // Fetch authorized tables from API
+      // Fetch authorized tables from API (still needed for non-admin users)
       fetchAuthorizedTables(parsedUserId);
     } else {
       console.error('User ID not found in sessionStorage');
@@ -192,6 +199,10 @@ const Tabs = () => {
 
   // Check if a function/table is authorized for the current user
   const isAuthorized = (functionName) => {
+    // If Position is 1 (admin), grant access to all tables
+    if (userPosition === '1') return true;
+    
+    // For other Positions, check authorized tables
     if (!authorizedTables.length) return false;
     
     // Convert function name to Chinese title
@@ -481,12 +492,14 @@ const Tabs = () => {
             <>
               <div className={styles.activityCardHead}>
                 <div className={styles.activityCardHeadTitle}>{currentTitle}</div>
-                <button
-                  className={styles.activityAddButton}
-                  onClick={() => setAddModalVisible(true)}
-                >
-                  新增
-                </button>
+                {hasEditPermission && (
+                  <button
+                    className={styles.activityAddButton}
+                    onClick={() => setAddModalVisible(true)}
+                  >
+                    新增
+                  </button>
+                )}
               </div>
               <div className={styles.activityCardBody}>
                 {currentFunction === 'Vehicle' &&
@@ -568,9 +581,11 @@ const Tabs = () => {
             </>
           ) : (
             <div className={styles.noChoose}>
-              {authorizedTables.length > 0 
-                ? '請選擇一個您有權限的項目!'
-                : '您目前沒有任何授權項目。請聯繫管理員獲取權限。'}
+              {userPosition === '1' 
+                ? '請選擇一個項目!'
+                : authorizedTables.length > 0 
+                  ? '請選擇一個您有權限的項目!'
+                  : '您目前沒有任何授權項目。請聯繫管理員獲取權限。'}
             </div>
           )}
         </CCard>
@@ -598,7 +613,7 @@ const Tabs = () => {
         </CCard>
       </div>
 
-      {renderModalComponent()}
+      {hasEditPermission && renderModalComponent()}
     </main>
   )
 }

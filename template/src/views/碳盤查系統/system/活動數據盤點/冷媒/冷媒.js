@@ -44,6 +44,18 @@ export const Refrigerant = ({refreshRefrigerantData}) => {
   const [selectedRef, setSelectedRef] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
+  const [userPosition, setUserPosition] = useState(null)
+  const [cfvStartDate, setCfvStartDate] = useState(null)  // State for baseline start date
+  const [cfvEndDate, setCfvEndDate] = useState(null)  // State for baseline end date
+  
+  // Get user position from sessionStorage
+  useEffect(() => {
+    const position = window.sessionStorage.getItem('position')
+    setUserPosition(position ? parseInt(position) : null)
+  }, [])
+
+  // Check if user has permission to edit/delete/add
+  const hasEditPermission = userPosition !== 1;
 
   const device_type_Map = {
     1: '冰箱',
@@ -79,12 +91,53 @@ export const Refrigerant = ({refreshRefrigerantData}) => {
     17: '其他',
   }
 
-  // Function to fetch refrigerant data
+  // Function to fetch baseline data
+  const getBaseline = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/baseline');
+      if (response.ok) {
+        const data = await response.json();
+        setCfvStartDate(data.baseline.cfv_start_date);
+        setCfvEndDate(data.baseline.cfv_end_date);
+      } else {
+        console.log(response.status);
+        setErrorMessage('無法取得基準期間資料');
+      }
+    } catch (error) {
+      console.error('Error fetching baseline:', error);
+      setErrorMessage('取得基準期間資料時發生錯誤');
+    }
+  };
+
+  // Function to fetch refrigerant data with baseline period filter
   const fetchRefrigerantData = async () => {
     setIsLoading(true);
     try {
       const data = await getRefrigerantData();
-      if (data) {
+      if (data && cfvStartDate && cfvEndDate) {
+        // Apply baseline period filter to fill records within each refrigerant
+        const startDate = new Date(cfvStartDate);
+        const endDate = new Date(cfvEndDate);
+        
+        const filteredData = data.map(refrigerant => {
+          // Filter fill records that fall within the baseline period
+          if (refrigerant.fillrec && refrigerant.fillrec.length > 0) {
+            const filteredFillrec = refrigerant.fillrec.filter(fill => {
+              const docDate = new Date(fill.Doc_date);
+              return docDate >= startDate && docDate <= endDate;
+            });
+            
+            return {
+              ...refrigerant,
+              fillrec: filteredFillrec
+            };
+          }
+          return refrigerant;
+        });
+        
+        setRefrigerants(filteredData);
+      } else if (data) {
+        // If no baseline dates are available yet, show all data
         setRefrigerants(data);
       }
     } catch (error) {
@@ -108,10 +161,15 @@ export const Refrigerant = ({refreshRefrigerantData}) => {
 
   const [refrigerants, setRefrigerants] = useState([]) // State to hold fetched refrigerant data
 
-  // Fetch data on component mount
+  // Fetch baseline data on component mount
+  useEffect(() => {
+    getBaseline();
+  }, []);
+
+  // Fetch refrigerant data when baseline dates change
   useEffect(() => {
     fetchRefrigerantData();
-  }, []);
+  }, [cfvStartDate, cfvEndDate]);
 
   // Function to delete a refrigerant record
   const deleteRefrigerant = async (refrigerant_id) => {
@@ -233,7 +291,7 @@ export const Refrigerant = ({refreshRefrigerantData}) => {
               <th>備註</th>
               <th>圖片</th>
               <th>最近編輯</th>
-              <th>操作</th>
+              {hasEditPermission && <th>操作</th>}
             </tr>
           </CTableHead>
           <CTableBody className={styles.activityTableBody}>
@@ -267,38 +325,42 @@ export const Refrigerant = ({refreshRefrigerantData}) => {
                         hour12: false
                       })}
                     </td>
-                    <td>
-                      <FontAwesomeIcon
-                        icon={faPenToSquare}
-                        className={styles.iconPen}
-                        onClick={(e) => {
-                          e.stopPropagation(); // Prevent row toggle when clicking the edit icon
-                          setEditModalVisible(true);
-                          setSelectedRef(refrigerant.refrigerant_id);
-                        }}
-                      />
-                      <FontAwesomeIcon
-                        icon={faTrashCan}
-                        className={styles.iconTrash}
-                        onClick={(e) => {
-                          e.stopPropagation(); // Prevent row toggle when clicking the trash icon
-                          deleteRefrigerant(refrigerant.refrigerant_id);
-                        }}
-                      />
-                    </td>
+                    {hasEditPermission && (
+                      <td>
+                        <FontAwesomeIcon
+                          icon={faPenToSquare}
+                          className={styles.iconPen}
+                          onClick={(e) => {
+                            e.stopPropagation(); // Prevent row toggle when clicking the edit icon
+                            setEditModalVisible(true);
+                            setSelectedRef(refrigerant.refrigerant_id);
+                          }}
+                        />
+                        <FontAwesomeIcon
+                          icon={faTrashCan}
+                          className={styles.iconTrash}
+                          onClick={(e) => {
+                            e.stopPropagation(); // Prevent row toggle when clicking the trash icon
+                            deleteRefrigerant(refrigerant.refrigerant_id);
+                          }}
+                        />
+                      </td>
+                    )}
                   </tr>
                   {selectedRow === refrigerant_id && (
                     <tr>
-                      <td colSpan="7">
+                      <td colSpan={hasEditPermission ? "7" : "6"}>
                         <div className={styles.expandedContent}>
                           <div className={styles.fill}>
                             <div>填充紀錄</div>
-                            <button onClick={() => {
-                              setAddFillModalVisible(true);
-                              const selectedRefId = refrigerant.refrigerant_id;
-                              setSelectedRefId(selectedRefId);
-                              console.log(selectedRefId);
-                            }}>新增</button>
+                            {hasEditPermission && (
+                              <button onClick={() => {
+                                setAddFillModalVisible(true);
+                                const selectedRefId = refrigerant.refrigerant_id;
+                                setSelectedRefId(selectedRefId);
+                                console.log(selectedRefId);
+                              }}>新增</button>
+                            )}
                           </div>
                           <table>
                             {refrigerant.fillrec && refrigerant.fillrec.length > 0 ? (
@@ -312,7 +374,7 @@ export const Refrigerant = ({refreshRefrigerantData}) => {
                                     <th>備註</th>
                                     <th>圖片</th>
                                     <th>最近編輯</th>
-                                    <th>操作</th>
+                                    {hasEditPermission && <th>操作</th>}
                                   </tr>
                                 </thead>
                                 <tbody>
@@ -345,33 +407,35 @@ export const Refrigerant = ({refreshRefrigerantData}) => {
                                           hour12: false
                                         })}
                                       </td>
-                                      <td>
-                                        <FontAwesomeIcon
-                                          icon={faPenToSquare}
-                                          className={styles.iconPen}
-                                          onClick={(e) => {
-                                            e.stopPropagation(); // Prevent row toggle
-                                            setEditFillModalVisible(true);
-                                            setSelectedFillId(fill.fillrec_id);
-                                          }}
-                                        />
-                                        <FontAwesomeIcon
-                                          icon={faTrashCan}
-                                          className={styles.iconTrash}
-                                          onClick={(e) => {
-                                            e.stopPropagation(); // Prevent row toggle
-                                            deleteFill(fill.fillrec_id);
-                                          }}
-                                        />
-                                      </td>
+                                      {hasEditPermission && (
+                                        <td>
+                                          <FontAwesomeIcon
+                                            icon={faPenToSquare}
+                                            className={styles.iconPen}
+                                            onClick={(e) => {
+                                              e.stopPropagation(); // Prevent row toggle
+                                              setEditFillModalVisible(true);
+                                              setSelectedFillId(fill.fillrec_id);
+                                            }}
+                                          />
+                                          <FontAwesomeIcon
+                                            icon={faTrashCan}
+                                            className={styles.iconTrash}
+                                            onClick={(e) => {
+                                              e.stopPropagation(); // Prevent row toggle
+                                              deleteFill(fill.fillrec_id);
+                                            }}
+                                          />
+                                        </td>
+                                      )}
                                     </tr>
                                   ))}
                                 </tbody>
                               </>
                             ) : (
                               <tr>
-                                <td colSpan="8" style={{ textAlign: 'center', padding: '10px' }}>
-                                  沒有填充記錄
+                                <td colSpan={hasEditPermission ? "8" : "7"} style={{ textAlign: 'center', padding: '10px' }}>
+                                  沒有符合基準期間的填充記錄
                                 </td>
                               </tr>
                             )}
@@ -384,35 +448,39 @@ export const Refrigerant = ({refreshRefrigerantData}) => {
               ))
             ) : (
               <tr>
-                <td colSpan="7" className="text-center">目前沒有冷媒資料</td>
+                <td colSpan={hasEditPermission ? "7" : "6"} className="text-center">目前沒有冷媒資料</td>
               </tr>
             )}
           </CTableBody>
         </CTable>
       )}
       
-      <EditModal
-        isEditModalVisible={isEditModalVisible}
-        setEditModalVisible={setEditModalVisible}
-        currentFunction={currentFunction}
-        selectedRef={selectedRef}
-        refreshRefrigerantData={refreshRefrigerantData || fetchRefrigerantData}
-      />
+      {hasEditPermission && (
+        <>
+          <EditModal
+            isEditModalVisible={isEditModalVisible}
+            setEditModalVisible={setEditModalVisible}
+            currentFunction={currentFunction}
+            selectedRef={selectedRef}
+            refreshRefrigerantData={refreshRefrigerantData || fetchRefrigerantData}
+          />
 
-      {/* 填充新增編輯modal */}
-      <AddFillModal
-        isAddFillModalVisible={isAddFillModalVisible}
-        setAddFillModalVisible={setAddFillModalVisible}
-        selectedRefId={selectedRefId}
-        refreshRefrigerantData={refreshRefrigerantData || fetchRefrigerantData}
-      />
+          {/* 填充新增編輯modal */}
+          <AddFillModal
+            isAddFillModalVisible={isAddFillModalVisible}
+            setAddFillModalVisible={setAddFillModalVisible}
+            selectedRefId={selectedRefId}
+            refreshRefrigerantData={refreshRefrigerantData || fetchRefrigerantData}
+          />
 
-      <EditFillModal
-        isEditFillModalVisible={isEditFillModalVisible}
-        setEditFillModalVisible={setEditFillModalVisible}
-        selectedFillId={selectedFillId}
-        refreshRefrigerantData={refreshRefrigerantData || fetchRefrigerantData}
-      />
+          <EditFillModal
+            isEditFillModalVisible={isEditFillModalVisible}
+            setEditFillModalVisible={setEditFillModalVisible}
+            selectedFillId={selectedFillId}
+            refreshRefrigerantData={refreshRefrigerantData || fetchRefrigerantData}
+          />
+        </>
+      )}
     </div>
   )
 }

@@ -40,6 +40,18 @@ export const FireExtinguisher = ({refreshFireExtinguisherData}) => {
   const [selectedExtinguisherId, setSelectedExtinguisherId] = useState(null) // Store selected extinguisher for fill
   const [isLoading, setIsLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
+  const [userPosition, setUserPosition] = useState(null)
+  const [cfvStartDate, setCfvStartDate] = useState(null) // State for baseline start date
+  const [cfvEndDate, setCfvEndDate] = useState(null) // State for baseline end date
+  
+  // Get user position from sessionStorage
+  useEffect(() => {
+    const position = window.sessionStorage.getItem('position')
+    setUserPosition(position ? parseInt(position) : null)
+  }, [])
+  
+  // Check if user has permission to edit/delete
+  const hasEditPermission = userPosition !== 1
 
   const ingredientMap = {
     1: 'CO2', // Replace with actual ingredient names
@@ -53,12 +65,53 @@ export const FireExtinguisher = ({refreshFireExtinguisherData}) => {
 
   const [extinguishers, setExtinguishers] = useState([]) // State to hold fetched extinguisher data
 
-  // Function to fetch extinguisher data
+  // Function to fetch baseline data
+  const getBaseline = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/baseline');
+      if (response.ok) {
+        const data = await response.json();
+        setCfvStartDate(data.baseline.cfv_start_date);
+        setCfvEndDate(data.baseline.cfv_end_date);
+      } else {
+        console.log(response.status);
+        setErrorMessage('無法取得基準期間資料');
+      }
+    } catch (error) {
+      console.error('Error fetching baseline:', error);
+      setErrorMessage('取得基準期間資料時發生錯誤');
+    }
+  };
+
+  // Function to fetch extinguisher data with baseline period filter
   const fetchExtinguisherData = async () => {
     setIsLoading(true);
     try {
       const data = await getExtinguisherData();
-      if (data) {
+      if (data && cfvStartDate && cfvEndDate) {
+        // Apply baseline period filter to fill records within each extinguisher
+        const startDate = new Date(cfvStartDate);
+        const endDate = new Date(cfvEndDate);
+        
+        const filteredData = data.map(extinguisher => {
+          // Filter fill records that fall within the baseline period
+          if (extinguisher.fillrec && extinguisher.fillrec.length > 0) {
+            const filteredFillrec = extinguisher.fillrec.filter(fill => {
+              const docDate = new Date(fill.Doc_date);
+              return docDate >= startDate && docDate <= endDate;
+            });
+            
+            return {
+              ...extinguisher,
+              fillrec: filteredFillrec
+            };
+          }
+          return extinguisher;
+        });
+        
+        setExtinguishers(filteredData);
+      } else if (data) {
+        // If no baseline dates available yet, show all data
         setExtinguishers(data);
       }
     } catch (error) {
@@ -69,10 +122,15 @@ export const FireExtinguisher = ({refreshFireExtinguisherData}) => {
     }
   };
 
-  // Fetch data on component mount
+  // Fetch baseline data on component mount
+  useEffect(() => {
+    getBaseline();
+  }, []);
+
+  // Fetch extinguisher data when baseline dates change
   useEffect(() => {
     fetchExtinguisherData();
-  }, []);
+  }, [cfvStartDate, cfvEndDate]);
 
   // Function to delete an extinguisher record
   const deleteExtinguisher = async (extinguisher_id) => {
@@ -195,7 +253,7 @@ export const FireExtinguisher = ({refreshFireExtinguisherData}) => {
               <th>備註</th>
               <th>圖片</th>
               <th>最近編輯</th>
-              <th>操作</th>
+              {hasEditPermission && <th>操作</th>}
             </tr>
           </CTableHead>
           <CTableBody className={styles.activityTableBody}>
@@ -221,41 +279,45 @@ export const FireExtinguisher = ({refreshFireExtinguisherData}) => {
                       <br />
                       {extinguisher.edit_time}
                     </td>
-                    <td>
-                      <FontAwesomeIcon
-                        icon={faPenToSquare}
-                        className={styles.iconPen}
-                        onClick={(e) => {
-                          e.stopPropagation(); // Prevent row toggle
-                          setEditModalVisible(true);
-                          setSelectedExtinguisher(extinguisher.extinguisher_id);
-                        }}
-                      />
-                      <FontAwesomeIcon 
-                        icon={faTrashCan} 
-                        className={styles.iconTrash} 
-                        onClick={(e) => {
-                          e.stopPropagation(); // Prevent row toggle
-                          deleteExtinguisher(extinguisher.extinguisher_id);
-                        }}
-                      />
-                    </td>
+                    {hasEditPermission && (
+                      <td>
+                        <FontAwesomeIcon
+                          icon={faPenToSquare}
+                          className={styles.iconPen}
+                          onClick={(e) => {
+                            e.stopPropagation(); // Prevent row toggle
+                            setEditModalVisible(true);
+                            setSelectedExtinguisher(extinguisher.extinguisher_id);
+                          }}
+                        />
+                        <FontAwesomeIcon 
+                          icon={faTrashCan} 
+                          className={styles.iconTrash} 
+                          onClick={(e) => {
+                            e.stopPropagation(); // Prevent row toggle
+                            deleteExtinguisher(extinguisher.extinguisher_id);
+                          }}
+                        />
+                      </td>
+                    )}
                   </tr>
                   {selectedRow === extinguisher_id && (
                     <tr>
-                      <td colSpan="9">
+                      <td colSpan={hasEditPermission ? "7" : "6"}>
                         <div className={styles.expandedContent}>
                           {/* 在展開的區塊中放置你需要的內容 */}
                           <div className={styles.fill}>
                             <div>填充紀錄</div>
-                            <button
-                              onClick={() => {
-                                setAddFillModalVisible(true);
-                                const extinguisherId = extinguisher.extinguisher_id; // Capture the ID directly
-                                setSelectedExtinguisherId(extinguisherId);
-                                console.log(extinguisherId); // Log the correct ID
-                              }}
-                            >新增</button>
+                            {hasEditPermission && (
+                              <button
+                                onClick={() => {
+                                  setAddFillModalVisible(true);
+                                  const extinguisherId = extinguisher.extinguisher_id; // Capture the ID directly
+                                  setSelectedExtinguisherId(extinguisherId);
+                                  console.log(extinguisherId); // Log the correct ID
+                                }}
+                              >新增</button>
+                            )}
                           </div>
                           <table>
                             {extinguisher.fillrec && extinguisher.fillrec.length > 0 ? (
@@ -268,7 +330,7 @@ export const FireExtinguisher = ({refreshFireExtinguisherData}) => {
                                     <th>備註</th>
                                     <th>圖片</th>
                                     <th>最近編輯</th>
-                                    <th>操作</th>
+                                    {hasEditPermission && <th>操作</th>}
                                   </tr>
                                 </thead>
                                 <tbody>
@@ -292,31 +354,33 @@ export const FireExtinguisher = ({refreshFireExtinguisherData}) => {
                                         <br />
                                         {fill.fillrec_edit_time}
                                       </td>
-                                      <td>
-                                        <FontAwesomeIcon
-                                          icon={faPenToSquare}
-                                          className={styles.iconPen}
-                                          onClick={() => {
-                                            setEditFillModalVisible(true);
-                                            setSelectedFill(fill.fillrec_id);
-                                          }}
-                                        />
-                                        <FontAwesomeIcon 
-                                          icon={faTrashCan} 
-                                          className={styles.iconTrash}
-                                          onClick={() => {
-                                            deleteFill(fill.fillrec_id);
-                                          }}
-                                        />
-                                      </td>
+                                      {hasEditPermission && (
+                                        <td>
+                                          <FontAwesomeIcon
+                                            icon={faPenToSquare}
+                                            className={styles.iconPen}
+                                            onClick={() => {
+                                              setEditFillModalVisible(true);
+                                              setSelectedFill(fill.fillrec_id);
+                                            }}
+                                          />
+                                          <FontAwesomeIcon 
+                                            icon={faTrashCan} 
+                                            className={styles.iconTrash}
+                                            onClick={() => {
+                                              deleteFill(fill.fillrec_id);
+                                            }}
+                                          />
+                                        </td>
+                                      )}
                                     </tr>
                                   ))}
                                 </tbody>
                               </>
                             ) : (
                               <tr>
-                                <td colSpan="7" style={{ textAlign: 'center', padding: '10px' }}>
-                                  沒有填充記錄
+                                <td colSpan={hasEditPermission ? "7" : "6"} style={{ textAlign: 'center', padding: '10px' }}>
+                                  沒有符合基準期間的填充記錄
                                 </td>
                               </tr>
                             )}
@@ -329,7 +393,7 @@ export const FireExtinguisher = ({refreshFireExtinguisherData}) => {
               ))
             ) : (
               <tr>
-                <td colSpan="7" style={{ textAlign: 'center', padding: '20px' }}>
+                <td colSpan={hasEditPermission ? "7" : "6"} style={{ textAlign: 'center', padding: '20px' }}>
                   沒有滅火器活動數據
                 </td>
               </tr>
@@ -338,27 +402,31 @@ export const FireExtinguisher = ({refreshFireExtinguisherData}) => {
         </CTable>
       )}
       
-      <EditModal
-        isEditModalVisible={isEditModalVisible}
-        setEditModalVisible={setEditModalVisible}
-        selectedExtinguisher={selectedExtinguisher}
-        refreshFireExtinguisherData={refreshFireExtinguisherData || fetchExtinguisherData}
-      />
+      {hasEditPermission && (
+        <>
+          <EditModal
+            isEditModalVisible={isEditModalVisible}
+            setEditModalVisible={setEditModalVisible}
+            selectedExtinguisher={selectedExtinguisher}
+            refreshFireExtinguisherData={refreshFireExtinguisherData || fetchExtinguisherData}
+          />
 
-      {/* 填充新增編輯modal */}
-      <AddFillModal
-        isAddFillModalVisible={isAddFillModalVisible}
-        setAddFillModalVisible={setAddFillModalVisible}
-        selectedExtinguisherId={selectedExtinguisherId}
-        refreshFireExtinguisherData={refreshFireExtinguisherData || fetchExtinguisherData}
-      />
+          {/* 填充新增編輯modal */}
+          <AddFillModal
+            isAddFillModalVisible={isAddFillModalVisible}
+            setAddFillModalVisible={setAddFillModalVisible}
+            selectedExtinguisherId={selectedExtinguisherId}
+            refreshFireExtinguisherData={refreshFireExtinguisherData || fetchExtinguisherData}
+          />
 
-      <EditFillModal
-        isEditFillModalVisible={isEditFillModalVisible}
-        setEditFillModalVisible={setEditFillModalVisible}
-        selectedFill={selectedFill}
-        refreshFireExtinguisherData={refreshFireExtinguisherData || fetchExtinguisherData}
-      />
+          <EditFillModal
+            isEditFillModalVisible={isEditFillModalVisible}
+            setEditFillModalVisible={setEditFillModalVisible}
+            selectedFill={selectedFill}
+            refreshFireExtinguisherData={refreshFireExtinguisherData || fetchExtinguisherData}
+          />
+        </>
+      )}
     </div>
   )
 }

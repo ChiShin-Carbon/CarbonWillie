@@ -41,8 +41,38 @@ export const Electricity = ({ refreshElectricityData }) => {
   const [selectedElectricityId, setSelectedElectricityId] = useState(null) // Store selected electricity for fill
   const [isLoading, setIsLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
+  const [userPosition, setUserPosition] = useState(null)
+  const [cfvStartDate, setCfvStartDate] = useState(null) // State for baseline start date
+  const [cfvEndDate, setCfvEndDate] = useState(null) // State for baseline end date
+  
+  // Get user position from sessionStorage
+  useEffect(() => {
+    const position = window.sessionStorage.getItem('position')
+    setUserPosition(position ? parseInt(position) : null)
+  }, [])
+  
+  // Check if user has permission to edit/delete
+  const hasEditPermission = userPosition !== 1
 
   const [electricities, setElectricities] = useState([]) // State to hold fetched electricity data
+
+  // Function to fetch baseline data
+  const getBaseline = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/baseline');
+      if (response.ok) {
+        const data = await response.json();
+        setCfvStartDate(data.baseline.cfv_start_date);
+        setCfvEndDate(data.baseline.cfv_end_date);
+      } else {
+        console.log(response.status);
+        setErrorMessage('無法取得基準期間資料');
+      }
+    } catch (error) {
+      console.error('Error fetching baseline:', error);
+      setErrorMessage('取得基準期間資料時發生錯誤');
+    }
+  };
 
   const deleteElectricity = async (electricity_id) => {
     try {
@@ -100,12 +130,42 @@ export const Electricity = ({ refreshElectricityData }) => {
     }
   };
 
-  // Function to fetch electricity data
+  // Function to fetch electricity data with baseline period filter
   const fetchElectricityData = async () => {
     setIsLoading(true);
     try {
       const data = await getElectricityData();
-      if (data) {
+      if (data && cfvStartDate && cfvEndDate) {
+        // Apply baseline period filter to fill records within each electricity
+        const startDate = new Date(cfvStartDate);
+        const endDate = new Date(cfvEndDate);
+        
+        const filteredData = data.map(electricity => {
+          // Filter fill records that fall within the baseline period
+          if (electricity.fillrec && electricity.fillrec.length > 0) {
+            const filteredFillrec = electricity.fillrec.filter(fill => {
+              // For electricity records, we'll filter by Doc_date (receipt month)
+              // Assuming Doc_date is in format YYYY-MM
+              const parts = fill.Doc_date.split('-');
+              if (parts.length >= 2) {
+                // Create a date for the 1st of the month
+                const docDate = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, 1);
+                return docDate >= startDate && docDate <= endDate;
+              }
+              return false;
+            });
+            
+            return {
+              ...electricity,
+              fillrec: filteredFillrec
+            };
+          }
+          return electricity;
+        });
+        
+        setElectricities(filteredData);
+      } else if (data) {
+        // If no baseline dates available yet, show all data
         setElectricities(data);
       }
     } catch (error) {
@@ -116,10 +176,15 @@ export const Electricity = ({ refreshElectricityData }) => {
     }
   };
 
-  // Fetch electricity data on component mount
+  // Fetch baseline data on component mount
+  useEffect(() => {
+    getBaseline();
+  }, []);
+
+  // Fetch electricity data when baseline dates change
   useEffect(() => {
     fetchElectricityData();
-  }, []);
+  }, [cfvStartDate, cfvEndDate]);
 
   // Function to delete an electricity record
   const handleDeleteElectricity = async (electricity_id) => {
@@ -223,7 +288,7 @@ export const Electricity = ({ refreshElectricityData }) => {
               <th>電號</th>
               <th>備註</th>
               <th>最近編輯</th>
-              <th>操作</th>
+              {hasEditPermission && <th>操作</th>}
             </tr>
           </CTableHead>
           <CTableBody className={styles.activityTableBody}>
@@ -238,40 +303,44 @@ export const Electricity = ({ refreshElectricityData }) => {
                       <br />
                       {electricity.edit_time}
                     </td>
-                    <td>
-                      <FontAwesomeIcon
-                        icon={faPenToSquare}
-                        className={styles.iconPen}
-                        onClick={(e) => {
-                          e.stopPropagation(); // Prevent row toggle
-                          setEditModalVisible(true);
-                          setSelectedElectricity(electricity.electricity_id);
-                        }}
-                      />
-                      <FontAwesomeIcon
-                        icon={faTrashCan}
-                        className={styles.iconTrash}
-                        onClick={(e) => {
-                          e.stopPropagation(); // Prevent row toggle
-                          handleDeleteElectricity(electricity.electricity_id);
-                        }}
-                      />
-                    </td>
+                    {hasEditPermission && (
+                      <td>
+                        <FontAwesomeIcon
+                          icon={faPenToSquare}
+                          className={styles.iconPen}
+                          onClick={(e) => {
+                            e.stopPropagation(); // Prevent row toggle
+                            setEditModalVisible(true);
+                            setSelectedElectricity(electricity.electricity_id);
+                          }}
+                        />
+                        <FontAwesomeIcon
+                          icon={faTrashCan}
+                          className={styles.iconTrash}
+                          onClick={(e) => {
+                            e.stopPropagation(); // Prevent row toggle
+                            handleDeleteElectricity(electricity.electricity_id);
+                          }}
+                        />
+                      </td>
+                    )}
                   </tr>
                   {selectedRow === index && (
                     <tr>
-                      <td colSpan="4">
+                      <td colSpan={hasEditPermission ? "4" : "3"}>
                         <div className={styles.expandedContent}>
                           <div className={styles.fill}>
                             <div>電力使用紀錄</div>
-                            <button
-                              onClick={() => {
-                                setAddFillModalVisible(true);
-                                setSelectedElectricityId(electricity.electricity_id);
-                              }}
-                            >
-                              新增
-                            </button>
+                            {hasEditPermission && (
+                              <button
+                                onClick={() => {
+                                  setAddFillModalVisible(true);
+                                  setSelectedElectricityId(electricity.electricity_id);
+                                }}
+                              >
+                                新增
+                              </button>
+                            )}
                           </div>
                           <table>
                             {electricity.fillrec && electricity.fillrec.length > 0 ? (
@@ -288,7 +357,7 @@ export const Electricity = ({ refreshElectricityData }) => {
                                     <th>備註</th>
                                     <th>圖片</th>
                                     <th>最近編輯</th>
-                                    <th>操作</th>
+                                    {hasEditPermission && <th>操作</th>}
                                   </tr>
                                 </thead>
                                 <tbody>
@@ -316,31 +385,33 @@ export const Electricity = ({ refreshElectricityData }) => {
                                         <br />
                                         {fill.usage_edit_time}
                                       </td>
-                                      <td>
-                                        <FontAwesomeIcon
-                                          icon={faPenToSquare}
-                                          className={styles.iconPen}
-                                          onClick={() => {
-                                            setEditFillModalVisible(true);
-                                            setSelectedFill(fill.usage_id);
-                                          }}
-                                        />
-                                        <FontAwesomeIcon
-                                          icon={faTrashCan}
-                                          className={styles.iconTrash}
-                                          onClick={() => {
-                                            handleDeleteFill(fill.usage_id);
-                                          }}
-                                        />
-                                      </td>
+                                      {hasEditPermission && (
+                                        <td>
+                                          <FontAwesomeIcon
+                                            icon={faPenToSquare}
+                                            className={styles.iconPen}
+                                            onClick={() => {
+                                              setEditFillModalVisible(true);
+                                              setSelectedFill(fill.usage_id);
+                                            }}
+                                          />
+                                          <FontAwesomeIcon
+                                            icon={faTrashCan}
+                                            className={styles.iconTrash}
+                                            onClick={() => {
+                                              handleDeleteFill(fill.usage_id);
+                                            }}
+                                          />
+                                        </td>
+                                      )}
                                     </tr>
                                   ))}
                                 </tbody>
                               </>
                             ) : (
                               <tr>
-                                <td colSpan="11" style={{ textAlign: 'center', padding: '10px' }}>
-                                  沒有電力使用記錄
+                                <td colSpan={hasEditPermission ? "11" : "10"} style={{ textAlign: 'center', padding: '10px' }}>
+                                  沒有符合基準期間的電力使用記錄
                                 </td>
                               </tr>
                             )}
@@ -353,7 +424,7 @@ export const Electricity = ({ refreshElectricityData }) => {
               ))
             ) : (
               <tr>
-                <td colSpan="4" style={{ textAlign: 'center', padding: '20px' }}>
+                <td colSpan={hasEditPermission ? "4" : "3"} style={{ textAlign: 'center', padding: '20px' }}>
                   沒有用電活動數據
                 </td>
               </tr>
@@ -362,27 +433,31 @@ export const Electricity = ({ refreshElectricityData }) => {
         </CTable>
       )}
 
-      <EditModal
-        isEditModalVisible={isEditModalVisible}
-        setEditModalVisible={setEditModalVisible}
-        selectedElectricity={selectedElectricity}
-        refreshElectricityData={refreshElectricityData || fetchElectricityData}
-      />
+      {hasEditPermission && (
+        <>
+          <EditModal
+            isEditModalVisible={isEditModalVisible}
+            setEditModalVisible={setEditModalVisible}
+            selectedElectricity={selectedElectricity}
+            refreshElectricityData={refreshElectricityData || fetchElectricityData}
+          />
 
-      {/* 填充新增編輯modal */}
-      <AddFillModal
-        isAddFillModalVisible={isAddFillModalVisible}
-        setAddFillModalVisible={setAddFillModalVisible}
-        selectedElectricityId={selectedElectricityId}
-        refreshElectricityData={refreshElectricityData || fetchElectricityData}
-      />
+          {/* 填充新增編輯modal */}
+          <AddFillModal
+            isAddFillModalVisible={isAddFillModalVisible}
+            setAddFillModalVisible={setAddFillModalVisible}
+            selectedElectricityId={selectedElectricityId}
+            refreshElectricityData={refreshElectricityData || fetchElectricityData}
+          />
 
-      <EditFillModal
-        isEditFillModalVisible={isEditFillModalVisible}
-        setEditFillModalVisible={setEditFillModalVisible}
-        selectedFill={selectedFill}
-        refreshElectricityData={refreshElectricityData || fetchElectricityData}
-      />
+          <EditFillModal
+            isEditFillModalVisible={isEditFillModalVisible}
+            setEditFillModalVisible={setEditFillModalVisible}
+            selectedFill={selectedFill}
+            refreshElectricityData={refreshElectricityData || fetchElectricityData}
+          />
+        </>
+      )}
     </div>
   )
 }
