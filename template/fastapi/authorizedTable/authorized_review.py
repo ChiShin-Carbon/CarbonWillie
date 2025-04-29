@@ -11,6 +11,7 @@ authorized_review = APIRouter()
 class AuthorizedRecord(BaseModel):
     authorized_record_id: int
     user_id: int
+    baseline_id: int
     table_name: str
     is_done: bool
     completed_at: Optional[datetime]  # Allows datetime or None for NULL
@@ -32,6 +33,7 @@ def get_authorized_records():
                 SELECT 
                     a.authorized_record_id,
                     a.user_id,
+                    a.baseline_id,
                     a.table_name,
                     a.is_done,
                     a.completed_at,
@@ -50,12 +52,13 @@ def get_authorized_records():
                     AuthorizedRecord(
                         authorized_record_id=record[0],
                         user_id=record[1],
-                        table_name=record[2],
-                        is_done=record[3],
-                        completed_at=record[4].strftime("%Y-%m-%d %H:%M:%S") if isinstance(record[4], datetime) else record[4],
-                        review=record[5],
-                        username=record[6],
-                        department=record[7]
+                        baseline_id=record[2],
+                        table_name=record[3],
+                        is_done=record[4],
+                        completed_at=record[5].strftime("%Y-%m-%d %H:%M:%S") if isinstance(record[5], datetime) else record[5],
+                        review=record[6],
+                        username=record[7],
+                        department=record[8]
                     )
                     for record in records
                 ]

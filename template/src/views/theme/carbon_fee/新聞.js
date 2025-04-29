@@ -18,24 +18,13 @@ import styles from '../../../scss/盤查結果查詢.module.css'
 
 const 新聞 = () => {
     //新聞const
-      const [news, setNews] = useState([]) // 定義狀態變數
-      const [query, setQuery] = useState('碳費') // 預設搜尋關鍵字
-      const [searchInput, setSearchInput] = useState('') // 儲存搜尋框的暫存值
-      const [loading, setLoading] = useState(false) // 加載狀態
-      const [summary, setSummary] = useState('') //摘要總結
-    //搜尋
-    //   const handleSearchInput = (e) => {
-    //     setSearchInput(e.target.value) // 更新輸入框的值
-    //   }
-    //   const handleSearch = () => {
-    //     setQuery(searchInput) // 將暫存的搜尋框值設定到 query
-    //   }
-    //   const handleKeyDown = (e) => {
-    //     if (e.key === 'Enter') {
-    //       e.preventDefault() // 防止表單默認提交行為
-    //       handleSearch() // 呼叫搜尋函數
-    //     }
-    //   }
+        const [news, setNews] = useState([]) // 定義狀態變數
+        const [query, setQuery] = useState('碳費') // 預設搜尋關鍵字
+        const [searchInput, setSearchInput] = useState('') // 儲存搜尋框的暫存值
+        const [loading, setLoading] = useState(false) // 加載狀態
+        const [summary, setSummary] = useState('') //摘要總結
+        const [newsUpdate, setNewsUpdate] = useState('') //摘要總結
+
     // 碳費百科
         // Carbon Price定義(from WorldBank) 20140603
         const carbonfee1 = () => {
@@ -93,6 +82,13 @@ const 新聞 = () => {
                         setNews(data.news);
                         console.log('Updated news state:', data.news); // 確認狀態是否更新
                         setSummary(data.news[0].news_summary || "摘要不可用");      
+                        // 多個天數的部分
+                        const newsDate = new Date(data.news[0].today_news_date); // 取得資料庫中的日期
+                        const todayDate = new Date(); // 取得今天的日期
+                        const timeDiff = Math.floor((todayDate - newsDate) / (1000 * 3600 * 24)); // 計算天數差異
+                        if(timeDiff!=0){setNewsUpdate(`${timeDiff} 天前`);}
+                        else if(timeDiff==0){setNewsUpdate('今天');}
+                        
                     } else {
                         // 若無新聞，生成並儲存
                         await fetchNewsAndGenerateSummary();
@@ -144,6 +140,7 @@ const 新聞 = () => {
                             news_url: article.url,
                             news_summary: summaryResult, // 針對每條新聞保存摘要
                             news_date: article.publishedAt || new Date().toISOString().split('T')[0], // 改用正確屬性//article.news_date || new Date().toISOString().split('T')[0], // 使用新聞發布日期
+                            today_news_date: newsUpdate,
                         });
                     });
                 } catch (error) {
@@ -230,22 +227,27 @@ const 新聞 = () => {
     <CCard style={{ width: '100%' }}>
     <CCardTitle>
         <div style={{ display: 'flex', flexDirection: 'row' }}>
-        <div
-            style={{
-            fontWeight: 'bold',
-            fontSize: '1.5rem',
-            color: 'white',
-            backgroundColor: '#00a000',
-            borderTopLeftRadius: '5px',
-            borderBottomRightRadius: '20px',
-            display: 'flex',
-            alignItems: 'center',
-            padding: '10px 40px',
-            }}
-        >
-            {/* 根據搜尋內容動態顯示標題 */}
-            {query || '搜尋結果'}新聞
-        </div>
+            <div
+                style={{
+                fontWeight: 'bold',
+                fontSize: '1.5rem',
+                color: 'white',
+                backgroundColor: '#00a000',
+                borderTopLeftRadius: '5px',
+                borderBottomRightRadius: '20px',
+                display: 'flex',
+                alignItems: 'center',
+                padding: '10px 40px',
+                }}
+            >
+                {/* 根據搜尋內容動態顯示標題 */}
+                {query || '搜尋結果'}新聞
+            </div>
+
+            <span style={{ fontWeight: 'bold', color: 'gray', fontSize: '1rem', marginLeft: '10px' ,marginTop:'20px'}}>
+                更新時間: {newsUpdate}
+            </span>
+            
         </div>
     </CCardTitle>
     <CCardBody>
@@ -261,7 +263,6 @@ const 新聞 = () => {
             ) : news.length === 0 ? ( // 如果篩選後的新聞數量為 0
                 <center>
                 <p>暫無新聞!</p>
-                <p>可搜尋關鍵字!</p>
                 </center>
             ) : (
                 news
