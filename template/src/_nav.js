@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import CIcon from '@coreui/icons-react'
 import {
   cilBell,
@@ -27,6 +27,53 @@ import {
   cilBook,
 } from '@coreui/icons'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
+import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
+
+// Fixed component that checks baseline status and uses React Router navigation
+const CarbonInventoryNavItem = (props) => {
+  const [targetPath, setTargetPath] = useState('/碳盤查系統/system/');
+  const navigate = useNavigate();
+  
+  // Function to determine the correct path
+  const checkBaselineStatus = () => {
+    axios.get('http://localhost:8000/baseline')
+      .then(response => {
+        console.log("API Response:", response.data);
+        
+        if (response.data && 
+            response.data.baseline && 
+            response.data.baseline.is_completed === 0) {
+          // If is_completed is 0, set path to settings page
+          setTargetPath('/碳盤查系統/system/基準年設定');
+        } else {
+          // Otherwise set path to main page
+          setTargetPath('/碳盤查系統/system/');
+        }
+      })
+      .catch(error => {
+        console.error("Error checking baseline:", error);
+        // Default to main page if there's an error
+        setTargetPath('/碳盤查系統/system/');
+      });
+  };
+  
+  // Check baseline status when component mounts
+  useEffect(() => {
+    checkBaselineStatus();
+  }, []);
+  
+  const handleClick = (e) => {
+    e.preventDefault(); // Prevent default navigation
+    
+    // Use React Router navigation instead of window.location.href
+    navigate(targetPath);
+  };
+  
+  return (
+    <CNavItem {...props} onClick={handleClick} to={targetPath} />
+  );
+};
 
 const getAdminNavItems = () => {
   return [
@@ -64,9 +111,9 @@ const getNormalNavItems = () => {
       icon: <CIcon icon={cilPencil} customClassName="nav-icon" />,
       items: [
         {
-          component: CNavItem,
+          component: CarbonInventoryNavItem,
           name: '碳盤查–組織內',
-          to: '/碳盤查系統/system/基準年設定',
+          // The 'to' prop will be set within the CarbonInventoryNavItem component
         },
         {
           component: CNavItem,
@@ -127,7 +174,6 @@ const getNormalNavItems = () => {
       component: CNavTitle,
       name: '帳號管理',
     },
-    
     {
       component: CNavItem,
       name: '個人資料',
@@ -143,306 +189,17 @@ const getNormalNavItems = () => {
   ];
 };
 
-const _nav = window.sessionStorage.getItem("role") == 0 ? getAdminNavItems() : getNormalNavItems();
+// Use a function to determine the navigation items to avoid potential issues with sessionStorage
+// not being available during server-side rendering
+const getNavItems = () => {
+  try {
+    return window.sessionStorage.getItem("role") == 0 ? getAdminNavItems() : getNormalNavItems();
+  } catch (error) {
+    console.error("Error accessing sessionStorage:", error);
+    return getNormalNavItems(); // Default to normal navigation if there's an error
+  }
+};
+
+const _nav = getNavItems();
 
 export default _nav;
-
-
-   // {
-  //   component: CNavTitle,
-  //   name: 'Theme',
-  // },
-  // {
-  //   component: CNavItem,
-  //   name: '碳盤查系統',
-  //   to: '/theme/system',
-  //   icon: <CIcon icon={cilPencil} customClassName="nav-icon" />,
-  // },
-
-  // {
-  //   component: CNavTitle,
-  //   name: 'Components',
-  // },
-  // {
-  //   component: CNavItem,
-  //   name: 'Login',
-  //   to: '/login',
-  // },
-  // {
-  //   component: CNavGroup,
-  //   name: 'Base',
-  //   to: '/base',
-  //   icon: <CIcon icon={cilPuzzle} customClassName="nav-icon" />,
-  //   items: [
-  //     {
-  //       component: CNavItem,
-  //       name: 'Accordion',
-  //       to: '/base/accordion',
-  //     },
-  //     {
-  //       component: CNavItem,
-  //       name: 'Breadcrumb',
-  //       to: '/base/breadcrumbs',
-  //     },
-  //     {
-  //       component: CNavItem,
-  //       name: 'Cards',
-  //       to: '/base/cards',
-  //     },
-  //     {
-  //       component: CNavItem,
-  //       name: 'Carousel',
-  //       to: '/base/carousels',
-  //     },
-  //     {
-  //       component: CNavItem,
-  //       name: 'Collapse',
-  //       to: '/base/collapses',
-  //     },
-  //     {
-  //       component: CNavItem,
-  //       name: 'List group',
-  //       to: '/base/list-groups',
-  //     },
-  //     {
-  //       component: CNavItem,
-  //       name: 'Navs & Tabs',
-  //       to: '/base/navs',
-  //     },
-  //     {
-  //       component: CNavItem,
-  //       name: 'Pagination',
-  //       to: '/base/paginations',
-  //     },
-  //     {
-  //       component: CNavItem,
-  //       name: 'Placeholders',
-  //       to: '/base/placeholders',
-  //     },
-  //     {
-  //       component: CNavItem,
-  //       name: 'Popovers',
-  //       to: '/base/popovers',
-  //     },
-  //     {
-  //       component: CNavItem,
-  //       name: 'Progress',
-  //       to: '/base/progress',
-  //     },
-  //     {
-  //       component: CNavItem,
-  //       name: 'Spinners',
-  //       to: '/base/spinners',
-  //     },
-  //     {
-  //       component: CNavItem,
-  //       name: 'Tables',
-  //       to: '/base/tables',
-  //     },
-  //     {
-  //       component: CNavItem,
-  //       name: 'Tabs',
-  //       to: '/base/tabs',
-  //     },
-  //     {
-  //       component: CNavItem,
-  //       name: 'Tooltips',
-  //       to: '/base/tooltips',
-  //     },
-  //   ],
-  // },
-  // {
-  //   component: CNavGroup,
-  //   name: 'Buttons',
-  //   to: '/buttons',
-  //   icon: <CIcon icon={cilCursor} customClassName="nav-icon" />,
-  //   items: [
-  //     {
-  //       component: CNavItem,
-  //       name: 'Buttons',
-  //       to: '/buttons/buttons',
-  //     },
-  //     {
-  //       component: CNavItem,
-  //       name: 'Buttons groups',
-  //       to: '/buttons/button-groups',
-  //     },
-  //     {
-  //       component: CNavItem,
-  //       name: 'Dropdowns',
-  //       to: '/buttons/dropdowns',
-  //     },
-  //   ],
-  // },
-  // {
-  //   component: CNavGroup,
-  //   name: 'Forms',
-  //   icon: <CIcon icon={cilNotes} customClassName="nav-icon" />,
-  //   items: [
-  //     {
-  //       component: CNavItem,
-  //       name: 'Form Control',
-  //       to: '/forms/form-control',
-  //     },
-  //     {
-  //       component: CNavItem,
-  //       name: 'Select',
-  //       to: '/forms/select',
-  //     },
-  //     {
-  //       component: CNavItem,
-  //       name: 'Checks & Radios',
-  //       to: '/forms/checks-radios',
-  //     },
-  //     {
-  //       component: CNavItem,
-  //       name: 'Range',
-  //       to: '/forms/range',
-  //     },
-  //     {
-  //       component: CNavItem,
-  //       name: 'Input Group',
-  //       to: '/forms/input-group',
-  //     },
-  //     {
-  //       component: CNavItem,
-  //       name: 'Floating Labels',
-  //       to: '/forms/floating-labels',
-  //     },
-  //     {
-  //       component: CNavItem,
-  //       name: 'Layout',
-  //       to: '/forms/layout',
-  //     },
-  //     {
-  //       component: CNavItem,
-  //       name: 'Validation',
-  //       to: '/forms/validation',
-  //     },
-  //   ],
-  // },
-  // {
-  //   component: CNavItem,
-  //   name: 'Charts',
-  //   to: '/charts',
-  //   icon: <CIcon icon={cilChartPie} customClassName="nav-icon" />,
-  // },
-  // {
-  //   component: CNavGroup,
-  //   name: 'Icons',
-  //   icon: <CIcon icon={cilStar} customClassName="nav-icon" />,
-  //   items: [
-  //     {
-  //       component: CNavItem,
-  //       name: 'CoreUI Free',
-  //       to: '/icons/coreui-icons',
-  //       badge: {
-  //         color: 'success',
-  //         text: 'NEW',
-  //       },
-  //     },
-  //     {
-  //       component: CNavItem,
-  //       name: 'CoreUI Flags',
-  //       to: '/icons/flags',
-  //     },
-  //     {
-  //       component: CNavItem,
-  //       name: 'CoreUI Brands',
-  //       to: '/icons/brands',
-  //     },
-  //   ],
-  // },
-  // {
-  //   component: CNavGroup,
-  //   name: 'Notifications',
-  //   icon: <CIcon icon={cilBell} customClassName="nav-icon" />,
-  //   items: [
-  //     {
-  //       component: CNavItem,
-  //       name: 'Alerts',
-  //       to: '/notifications/alerts',
-  //     },
-  //     {
-  //       component: CNavItem,
-  //       name: 'Badges',
-  //       to: '/notifications/badges',
-  //     },
-  //     {
-  //       component: CNavItem,
-  //       name: 'Modal',
-  //       to: '/notifications/modals',
-  //     },
-  //     {
-  //       component: CNavItem,
-  //       name: 'Toasts',
-  //       to: '/notifications/toasts',
-  //     },
-  //   ],
-  // },
-  // {
-  //   component: CNavItem,
-  //   name: 'Widgets',
-  //   to: '/widgets',
-  //   icon: <CIcon icon={cilCalculator} customClassName="nav-icon" />,
-  //   badge: {
-  //     color: 'info',
-  //     text: 'NEW',
-  //   },
-  // },
-  // {
-  //   component: CNavItem,
-  //   name: 'Dashboard',
-  //   to: '/dashboard',
-  //   icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
-  //   badge: {
-  //     color: 'info',
-  //     text: 'NEW',
-  //   },
-  // },
-
-  // {
-  //   component: CNavItem,
-  //   name: 'Colors',
-  //   to: '/theme/colors',
-  //   icon: <CIcon icon={cilDrop} customClassName="nav-icon" />,
-  // },
-  // {
-  //   component: CNavItem,
-  //   name: 'Typography',
-  //   to: '/theme/typography',
-  //   icon: <CIcon icon={cilPencil} customClassName="nav-icon" />,
-  // },
-
-  // {
-  //   component: CNavTitle,
-  //   name: 'Extras',
-  // },
-  // {
-  //   component: CNavGroup,
-  //   name: 'Pages',
-  //   icon: <CIcon icon={cilStar} customClassName="nav-icon" />,
-  //   items: [
-  //     {
-  //       component: CNavItem,
-  //       name: 'Register',
-  //       to: '/register',
-  //     },
-  //     {
-  //       component: CNavItem,
-  //       name: 'Error 404',
-  //       to: '/404',
-  //     },
-  //     {
-  //       component: CNavItem,
-  //       name: 'Error 500',
-  //       to: '/500',
-  //     },
-  //   ],
-  // },
-  // {
-  //   component: CNavItem,
-  //   name: 'Docs',
-  //   href: 'https://coreui.io/react/docs/templates/installation/',
-  //   icon: <CIcon icon={cilDescription} customClassName="nav-icon" />,
-  // },

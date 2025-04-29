@@ -12,10 +12,11 @@ const 排放係數_GWP值 = React.lazy(() => import('./views/theme/carbon_factor
 const 常見問題 = React.lazy(() => import('./views/theme/qa/常見問題'))
 const 首頁 = React.lazy(() => import('./views/theme/dashboard/首頁'))
 
+// Import the CarbonInventoryRedirect component
+const CarbonInventoryRedirect = React.lazy(() => import('./components/CarbonInventoryRedirect'))
+
 //碳盤查系統
-
 const 基準年設定= React.lazy(() => import('./views/碳盤查系統/system/基準年設定/基準年設定'))
-
 const 碳盤查系統 = React.lazy(() => import('./views/碳盤查系統/system/碳盤查系統'))
 const 活動數據盤點 = React.lazy(() => import('./views/碳盤查系統/system/活動數據盤點/活動數據盤點'))
 const 活動數據分配 = React.lazy(() => import('./views/碳盤查系統/system/活動數據分配/活動數據分配'))
@@ -102,12 +103,15 @@ const routes = [
   { path: '/theme/search', name: '盤查結果查詢', element: 盤查結果查詢 },
   { path: '/theme/carbon_fee', name: '碳費資訊', element: 碳費資訊 },
   { path: '/theme/carbon_factor', name: '排放係數_GWP值', element: 排放係數_GWP值 },
-  //碳盤查系統
+  
+  //碳盤查系統 - Add the redirect component and main route
+  { path: '/碳盤查系統', name: '碳盤查系統', element: CarbonInventoryRedirect },
   { path: '/碳盤查系統/system', name: '碳盤查系統', element: 碳盤查系統 },
   { path: '/碳盤查系統/system/基準年設定', name: '基準年設定', element: 基準年設定 },
   { path: '/碳盤查系統/system/活動數據盤點', name: '活動數據盤點', element: 活動數據盤點 },
   { path: '/碳盤查系統/system/活動數據分配', name: '活動數據分配', element: 活動數據分配 },
   { path: '/碳盤查系統/system/盤查進度管理', name: '盤查進度管理', element: 盤查進度管理 },
+  
   //碳盤查系統顧問
   { path: '/碳盤查系統/顧問system/排放源鑑別', name: '活排放源鑑別', element: 排放源鑑別 },
   { path: '/碳盤查系統/顧問system/活動數據', name: '活動數據', element: 活動數據 },
@@ -115,12 +119,14 @@ const routes = [
   { path: '/碳盤查系統/顧問system/定量盤查', name: '定量盤查', element: 定量盤查 },
   { path: '/碳盤查系統/顧問system/不確定性量化評估', name: '不確定性量化評估', element: 不確定性量化評估 },
   { path: '/碳盤查系統/顧問system/數據品質管理', name: '數據品質管理', element: 數據品質管理 },
+  
   //盤查報告書
   { path: '/盤查報告書', name: '盤查報告書', element: 盤查報告書 },
   { path: '/test報告書', name: 'test盤告書', element: test報告書 },
 
   //盤查清冊
   { path: '/盤查清冊', name: '盤查清冊', element: 盤查清冊 },
+  
   //管理者
   { path: '/管理者/企業列表', name: '企業列表', element: 企業列表 },
   { path: '/管理者/使用者列表', name: '使用者列表', element: 使用者列表 },
