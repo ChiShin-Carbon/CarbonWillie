@@ -111,10 +111,10 @@ const Tabs = () => {
             </strong>
             <CCol style={{ justifyContent: 'left', alignItems: 'center', padding: '0' }}>
               <CFormSelect style={{ width: '120px' }}>
-                <option>2025</option>
-                <option value="1">2024</option>
-                <option value="2">2023</option>
-                <option value="3">2022</option>
+                <option>2024</option>
+                <option value="1">2023</option>
+                <option value="2">2022</option>
+                <option value="3">2021</option>
               </CFormSelect>
             </CCol>
           </div>
@@ -126,10 +126,10 @@ const Tabs = () => {
             </strong>
             <CCol style={{ justifyContent: 'left', alignItems: 'center', padding: '0' }}>
               <CFormSelect style={{ width: '180px' }}>
-                <option>xx2025盤查報告</option>
-                <option value="1">xx2024盤查報告</option>
-                <option value="2">xx2023盤查報告</option>
-                <option value="3">xx2022盤查報告</option>
+                <option>2024盤查報告</option>
+                <option value="1">2023盤查報告</option>
+                <option value="2">2022盤查報告</option>
+                <option value="3">2021盤查報告</option>
               </CFormSelect>
             </CCol>
           </div>
@@ -177,7 +177,7 @@ const Tabs = () => {
               <div className={styles.titleContainer}>
                 <div className={styles.leftItem}>
                   <div>
-                    <strong>xx2024盤查報告</strong>
+                    <strong>2024盤查報告</strong>
                   </div>
                   <div>
                     <CFormSelect size="sm" className={styles.input}>
@@ -1003,7 +1003,7 @@ const Tabs = () => {
               <div className={styles.titleContainer}>
                 <div className={styles.leftItem}>
                   <div>
-                    <strong>xx2024盤查報告</strong>
+                    <strong>2024盤查報告</strong>
                   </div>
                   <div>
                     <CFormSelect size="sm" className={styles.input}>
@@ -1076,7 +1076,11 @@ const Tabs = () => {
                             labels: ['範疇一', '範疇二', '範疇三'],
                             datasets: [
                               {
-                                data: [7, 1, 4],
+                                data: [
+                                  quantitativeInventory.category1_total_emission_equivalent,
+                                  quantitativeInventory.category2_total_emission_equivalent,
+                                  0,
+                                ],
                                 backgroundColor: ['#d882c0', '#FFB3FF', '#FFB6C1'],
                                 hoverBackgroundColor: ['#d882c0', '#FFB3FF', '#FFB6C1'],
                               },
@@ -1174,7 +1178,11 @@ const Tabs = () => {
                             datasets: [
                               {
                                 backgroundColor: ['#d882c0', '#FFB3FF', '#FFB6C1'],
-                                data: [19.21, 80.79, 0],
+                                data: [
+                                  quantitativeInventory.category1_total_emission_equivalent,
+                                  quantitativeInventory.category2_total_emission_equivalent,
+                                  0,
+                                ],
                               },
                             ],
                           }}
@@ -1206,7 +1214,10 @@ const Tabs = () => {
                             fontWeight: 'bold',
                           }}
                         >
-                          96.54
+                          {(
+                            quantitativeInventory.category1_total_emission_equivalent +
+                            quantitativeInventory.category2_total_emission_equivalent
+                          ).toFixed(5)}
                         </div>
                       </div>
                       {/* 自定義圖例 */}
@@ -1227,7 +1238,19 @@ const Tabs = () => {
                               marginRight: '10px',
                             }}
                           ></div>
-                          <span>範疇一 - 47.0206 (19.21%)</span>
+                          <span>
+                            範疇一 - {quantitativeInventory.category1_total_emission_equivalent} (
+                            {quantitativeInventory.category1_total_emission_equivalent +
+                            quantitativeInventory.category2_total_emission_equivalent
+                              ? (
+                                  (quantitativeInventory.category1_total_emission_equivalent /
+                                    (quantitativeInventory.category1_total_emission_equivalent +
+                                      quantitativeInventory.category2_total_emission_equivalent)) *
+                                  100
+                                ).toFixed(2) + '%'
+                              : '-'}
+                            )
+                          </span>
                         </div>
                         <div
                           style={{
@@ -1245,7 +1268,19 @@ const Tabs = () => {
                               marginRight: '10px',
                             }}
                           ></div>
-                          <span>範疇二 - 197.7533 (80.79%)</span>
+                          <span>
+                            範疇二 - {quantitativeInventory.category2_total_emission_equivalent} (
+                            {quantitativeInventory.category1_total_emission_equivalent +
+                            quantitativeInventory.category2_total_emission_equivalent
+                              ? (
+                                  (quantitativeInventory.category2_total_emission_equivalent /
+                                    (quantitativeInventory.category1_total_emission_equivalent +
+                                      quantitativeInventory.category2_total_emission_equivalent)) *
+                                  100
+                                ).toFixed(2) + '%'
+                              : '-'}
+                            )
+                          </span>
                         </div>
                         <div
                           style={{
@@ -1317,7 +1352,11 @@ const Tabs = () => {
                             datasets: [
                               {
                                 backgroundColor: ['#d882c0', '#FFB3FF', '#FFB6C1'],
-                                data: [47.0206, 197.7533, 0],
+                                data: [
+                                  quantitativeInventory.category1_total_emission_equivalent,
+                                  quantitativeInventory.category2_total_emission_equivalent,
+                                  0,
+                                ],
                               },
                             ],
                           }}
@@ -1408,7 +1447,11 @@ const Tabs = () => {
                             datasets: [
                               {
                                 backgroundColor: ['#d882c0', '#FFB3FF', '#FFB6C1'],
-                                data: [7, 1, 4],
+                                data: [
+                                  quantitativeInventory.category1_total_emission_equivalent,
+                                  quantitativeInventory.category2_total_emission_equivalent,
+                                  0,
+                                ],
                               },
                             ],
                           }}
