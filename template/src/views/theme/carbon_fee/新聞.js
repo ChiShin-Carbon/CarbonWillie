@@ -86,7 +86,9 @@ const 新聞 = () => {
                         const newsDate = new Date(data.news[0].today_news_date); // 取得資料庫中的日期
                         const todayDate = new Date(); // 取得今天的日期
                         const timeDiff = Math.floor((todayDate - newsDate) / (1000 * 3600 * 24)); // 計算天數差異
-                        setNewsUpdate(timeDiff);
+                        if(timeDiff!=0){setNewsUpdate(`${timeDiff} 天前`);}
+                        else if(timeDiff==0){setNewsUpdate('今天');}
+                        
                     } else {
                         // 若無新聞，生成並儲存
                         await fetchNewsAndGenerateSummary();
@@ -243,7 +245,7 @@ const 新聞 = () => {
             </div>
 
             <span style={{ fontWeight: 'bold', color: 'gray', fontSize: '1rem', marginLeft: '10px' ,marginTop:'20px'}}>
-                更新時間: {newsUpdate} 天前
+                更新時間: {newsUpdate}
             </span>
             
         </div>
