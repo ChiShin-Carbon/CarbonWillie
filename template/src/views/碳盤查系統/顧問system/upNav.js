@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
     CRow, CCol, CCard, CFormSelect, CTab, CTabList, CTabs,
     CTable, CTableBody, CTableHead, CModal, CModalHeader, CModalBody, CModalFooter, CModalTitle, CButton, CFormCheck
@@ -11,7 +10,7 @@ import { cilDataTransferDown } from '@coreui/icons'
 import '../../../scss/碳盤查系統.css'
 import styles from '../../../scss/顧問system.module.css'
 
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -20,8 +19,67 @@ import { faCircleCheck, faCircleXmark, faPenToSquare, faTrashCan } from '@fortaw
 
 
 export const UpNav = () => {
-
     const [visible, setVisible] = useState(false)
+    const [baselineId, setBaselineId] = useState(null)
+    const [isLoading, setIsLoading] = useState(false)
+    const navigate = useNavigate()
+
+    // Fetch the latest baseline ID when component mounts
+    useEffect(() => {
+        const fetchBaselineId = async () => {
+            try {
+                const response = await fetch('http://localhost:8000/baseline')
+                if (response.ok) {
+                    const data = await response.json()
+                    setBaselineId(data.baseline.baseline_id)
+                } else {
+                    console.error('Failed to fetch baseline:', response.status)
+                }
+            } catch (error) {
+                console.error('Error fetching baseline:', error)
+            }
+        }
+
+        fetchBaselineId()
+    }, [])
+
+    // Handle completion of baseline
+    const handleCompleteBaseline = async () => {
+        if (!baselineId) {
+            console.error('No baseline ID available')
+            return
+        }
+
+        setIsLoading(true)
+        try {
+            const response = await fetch(`http://localhost:8000/baseline/${baselineId}/complete`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    is_completed: true
+                }),
+            })
+
+            if (response.ok) {
+                console.log('Baseline marked as complete')
+                setVisible(false)
+                
+                // Reload the page or navigate to update navigation
+                window.location.reload() // This will reload the page to reflect the new navigation state
+                // Alternatively, you could navigate to a different route:
+                // navigate('/碳盤查系統/system/')
+            } else {
+                console.error('Failed to update baseline completion status:', response.status)
+            }
+        } catch (error) {
+            console.error('Error updating baseline completion status:', error)
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
     return (
         <main>
             <CTabs activeItemKey={1}>
@@ -70,14 +128,17 @@ export const UpNav = () => {
                     <CButton className="modalbutton1" onClick={() => setVisible(false)}>
                         取消
                     </CButton>
-                    <CButton className="modalbutton2">完成</CButton>
+                    <CButton 
+                        className="modalbutton2" 
+                        onClick={handleCompleteBaseline}
+                        disabled={isLoading}
+                    >
+                        {isLoading ? '處理中...' : '完成'}
+                    </CButton>
                 </CModalFooter>
             </CModal>
 
         </main>
-
-
     );
 }
 export default UpNav;
-

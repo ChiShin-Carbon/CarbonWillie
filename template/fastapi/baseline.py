@@ -12,6 +12,9 @@ class Baseline(BaseModel):
     cfv_start_date: datetime
     cfv_end_date: datetime
 
+class BaselineCompletion(BaseModel):
+    is_completed: bool
+
 # 編輯基準年
 @baseline.put("/baseline/{baseline_id}")
 def update_baseline(baseline_id: int, baseline: Baseline):
@@ -84,5 +87,28 @@ def read_baseline():
         
         except Exception as e:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error reading baseline credentials: {e}")
+    else:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Could not connect to the database.")
+
+# 更新基準年完成狀態
+@baseline.put("/baseline/{baseline_id}/complete")
+def update_baseline_completion(baseline_id: int, completion: BaselineCompletion):
+    conn = connectDB()
+    if conn:
+        cursor = conn.cursor()
+        try:
+            query = """
+                UPDATE Baseline
+                SET is_completed = ?, edit_time = GETDATE()
+                WHERE baseline_id = ?
+            """
+            cursor.execute(query, (completion.is_completed, baseline_id))
+            conn.commit()
+            conn.close()
+            return {"message": "Baseline completion status updated successfully"}
+        
+        except Exception as e:
+            conn.rollback()
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error updating baseline completion status: {e}")
     else:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Could not connect to the database.")
