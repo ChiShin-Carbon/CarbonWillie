@@ -1,13 +1,27 @@
-from openpyxl import Workbook
 from openpyxl.utils import get_column_letter
 import requests
 import style  # 樣式模組
 
-# 設定年份
-year = 2024
-api_url = f"http://localhost:8000/vehicle_data_by_year/{year}"  # 依實際 API 位址修改
+# API端點常數
+API_BASE_URL = "http://localhost:8000"
+
+def get_vehicle_data(year):
+    """從API獲取指定年份的車輛資料"""
+    try:
+        api_url = f"{API_BASE_URL}/vehicle_data_by_year/{year}"
+        response = requests.get(api_url)
+        
+        if response.status_code == 200:
+            return response.json()
+        else:
+            print(f"獲取車輛資料失敗，狀態碼: {response.status_code}，錯誤訊息: {response.text}")
+            return None
+    except Exception as e:
+        print(f"連接車輛API時發生錯誤: {e}")
+        return None
 
 def create_sheet1(wb, data):
+    """建立公務車(汽油)工作表"""
     sheet_name = "類別一-公務車(汽油)"
     ws = wb.create_sheet(title=sheet_name)
 
@@ -44,20 +58,3 @@ def create_sheet1(wb, data):
     for col_idx, col_cells in enumerate(ws.columns, start=1):
         max_length = max((len(str(cell.value)) if cell.value else 0) for cell in col_cells)
         ws.column_dimensions[get_column_letter(col_idx)].width = (max_length + 4) * 1.2
-
-
-# 主程式區塊
-response = requests.get(api_url)
-
-if response.status_code == 200:
-    data = response.json()
-
-    wb = Workbook()
-    wb.remove(wb.active)  # 移除預設工作表
-    create_sheet1(wb, data)
-
-    output_filename = "sh1test_api.xlsx"
-    wb.save(output_filename)
-    print(f"Excel 檔案已生成: {output_filename}")
-else:
-    print(f"API 請求失敗，狀態碼: {response.status_code}，錯誤訊息: {response.text}")
