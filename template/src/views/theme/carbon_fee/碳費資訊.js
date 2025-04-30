@@ -80,6 +80,27 @@ const Tabs = () => {
   const [visible2, setVisible2] = useState(false) // 削減率計算公式model
   const [visible3, setVisible3] = useState(false) // 削減率計算公式model
 
+  const [quantitativeInventory, setQuantitativeInventory] = useState({})
+
+  const getResult = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/result')
+      if (response.ok) {
+        const data = await response.json()
+        setElectricityUsage(data.result.Electricity_Usage)
+        setQuantitativeInventory(data.result.Quantitative_Inventory)
+      } else {
+        console.log(response.status)
+      }
+    } catch (error) {
+      console.error('Error:', error)
+    }
+  }
+
+  useEffect(() => {
+    getResult()
+  }, [])
+
   return (
     <CRow>
       <div className={styles.systemTablist}>
@@ -108,9 +129,9 @@ const Tabs = () => {
             <CCol style={{ justifyContent: 'left', alignItems: 'center', padding: '0' }}>
               <CFormSelect style={{ width: '90px' }}>
                 <option>台灣</option>
-                <option value="1">歐盟</option>
+                {/* <option value="1">歐盟</option>
                 <option value="2">xx2023盤查報告</option>
-                <option value="3">xx2022盤查報告</option>
+                <option value="3">xx2022盤查報告</option> */}
               </CFormSelect>
             </CCol>
           </div>
@@ -170,7 +191,7 @@ const Tabs = () => {
               <div className={styles.titleContainer}>
                 <div className={styles.leftItem}>
                   <div>
-                    <strong>xx2024碳費計算</strong>
+                    <strong>2024碳費計算</strong>
                   </div>
                   <div>
                     <CFormSelect size="sm" className={styles.input}>
@@ -269,11 +290,29 @@ const Tabs = () => {
                         <td style={{ border: '1px solid white' }}>
                           <b>總排放量</b>
                         </td>
-                        <td style={cellStyle}>244.774</td>
+                        <td style={cellStyle}>{quantitativeInventory.total_emission_equivalent}</td>
                         <td style={cellStyle}>100%</td>
-                        <td style={cellStyle}>{(244.744 * 300 * 1).toLocaleString()}</td>
-                        <td style={cellStyle}>{(244.744 * 100 * 1).toLocaleString()}</td>
-                        <td style={cellStyle}>{(244.744 * 50 * 1).toLocaleString()}</td>
+                        <td style={cellStyle}>
+                          {(
+                            quantitativeInventory.total_emission_equivalent *
+                            300 *
+                            1
+                          ).toLocaleString()}
+                        </td>
+                        <td style={cellStyle}>
+                          {(
+                            quantitativeInventory.total_emission_equivalent *
+                            100 *
+                            1
+                          ).toLocaleString()}
+                        </td>
+                        <td style={cellStyle}>
+                          {(
+                            quantitativeInventory.total_emission_equivalent *
+                            50 *
+                            1
+                          ).toLocaleString()}
+                        </td>
                       </tr>
                       <tr>
                         <td style={{ border: '1px solid white' }}>
@@ -286,11 +325,41 @@ const Tabs = () => {
                             </div>
                           </b>
                         </td>
-                        <td style={cellStyle}>47.0206</td>
-                        <td style={cellStyle}>19.21%</td>
-                        <td style={cellStyle}>{(47.0206 * 300 * 1).toLocaleString()}</td>
-                        <td style={cellStyle}>{(47.0206 * 100 * 1).toLocaleString()}</td>
-                        <td style={cellStyle}>{(47.0206 * 50 * 1).toLocaleString()}</td>
+                        <td style={cellStyle}>
+                          {quantitativeInventory.category1_total_emission_equivalent}
+                        </td>
+                        <td style={cellStyle}>
+                          {quantitativeInventory.category1_total_emission_equivalent +
+                          quantitativeInventory.category2_total_emission_equivalent
+                            ? (
+                                (quantitativeInventory.category1_total_emission_equivalent /
+                                  (quantitativeInventory.category1_total_emission_equivalent +
+                                    quantitativeInventory.category2_total_emission_equivalent)) *
+                                100
+                              ).toFixed(2) + '%'
+                            : '-'}
+                        </td>
+                        <td style={cellStyle}>
+                          {(
+                            quantitativeInventory.category1_total_emission_equivalent *
+                            300 *
+                            1
+                          ).toLocaleString()}
+                        </td>
+                        <td style={cellStyle}>
+                          {(
+                            quantitativeInventory.category1_total_emission_equivalent *
+                            100 *
+                            1
+                          ).toLocaleString()}
+                        </td>
+                        <td style={cellStyle}>
+                          {(
+                            quantitativeInventory.category1_total_emission_equivalent *
+                            50 *
+                            1
+                          ).toLocaleString()}
+                        </td>
                       </tr>
                       <tr>
                         <td style={{ border: '1px solid white' }}>
@@ -303,11 +372,41 @@ const Tabs = () => {
                             </div>
                           </b>
                         </td>
-                        <td style={cellStyle}>197.7533</td>
-                        <td style={cellStyle}>80.79%</td>
-                        <td style={cellStyle}>{(197.7533 * 300 * 1).toLocaleString()}</td>
-                        <td style={cellStyle}>{(197.7533 * 100 * 1).toLocaleString()}</td>
-                        <td style={cellStyle}>{(197.7533 * 50 * 1).toLocaleString()}</td>
+                        <td style={cellStyle}>
+                          {quantitativeInventory.category2_total_emission_equivalent}
+                        </td>
+                        <td style={cellStyle}>
+                          {quantitativeInventory.category1_total_emission_equivalent +
+                          quantitativeInventory.category2_total_emission_equivalent
+                            ? (
+                                (quantitativeInventory.category2_total_emission_equivalent /
+                                  (quantitativeInventory.category1_total_emission_equivalent +
+                                    quantitativeInventory.category2_total_emission_equivalent)) *
+                                100
+                              ).toFixed(2) + '%'
+                            : '-'}
+                        </td>
+                        <td style={cellStyle}>
+                          {(
+                            quantitativeInventory.category2_total_emission_equivalent *
+                            300 *
+                            1
+                          ).toLocaleString()}
+                        </td>
+                        <td style={cellStyle}>
+                          {(
+                            quantitativeInventory.category2_total_emission_equivalent *
+                            100 *
+                            1
+                          ).toLocaleString()}
+                        </td>
+                        <td style={cellStyle}>
+                          {(
+                            quantitativeInventory.category2_total_emission_equivalent *
+                            50 *
+                            1
+                          ).toLocaleString()}
+                        </td>
                       </tr>
                       <tr>
                         <td style={{ border: '1px solid white' }}>
@@ -369,16 +468,32 @@ const Tabs = () => {
                     </CButton>
                     <CModal visible={visible1} onClose={() => setVisible1(false)}>
                       <CModalHeader>
-                        <CModalTitle><b>技術標竿指定削減率</b></CModalTitle>
+                        <CModalTitle>
+                          <b>技術標竿指定削減率</b>
+                        </CModalTitle>
                       </CModalHeader>
-                      <CModalBody><ul>
-                                  <li>以<b>107~111年為基準年</b>，考量各排放源排放形式，包括燃料種類、製程、電力使用等訂定減量目標，適用<b>優惠費率B</b>。
-                                  <br/><font style={{backgroundColor:'#DCDCDC'}}>削減率 = [(基準年-當年分) / 基準年]*100%</font><br/>
-                                  </li>
-                                  <li>目標年溫室氣體年排放量削減率相對基準年應達6%。<br></br>
-                                  <font style={{backgroundColor:'#DCDCDC'}}>目標年溫室氣體排放量 = [基準年固定燃料燃燒溫室氣體年排放量*(1-削減率)]+[基準年製程溫室氣體年排放量*(1-削減率)]
-                                      +[基準年使用電力之溫室氣體年排放量*(1-削減率)]+[逸散及移動排放源基準年溫室氣體年排放量]</font><br/>
-                                  </li></ul>
+                      <CModalBody>
+                        <ul>
+                          <li>
+                            以<b>107~111年為基準年</b>
+                            ，考量各排放源排放形式，包括燃料種類、製程、電力使用等訂定減量目標，適用
+                            <b>優惠費率B</b>。
+                            <br />
+                            <font style={{ backgroundColor: '#DCDCDC' }}>
+                              削減率 = [(基準年-當年分) / 基準年]*100%
+                            </font>
+                            <br />
+                          </li>
+                          <li>
+                            目標年溫室氣體年排放量削減率相對基準年應達6%。<br></br>
+                            <font style={{ backgroundColor: '#DCDCDC' }}>
+                              目標年溫室氣體排放量 =
+                              [基準年固定燃料燃燒溫室氣體年排放量*(1-削減率)]+[基準年製程溫室氣體年排放量*(1-削減率)]
+                              +[基準年使用電力之溫室氣體年排放量*(1-削減率)]+[逸散及移動排放源基準年溫室氣體年排放量]
+                            </font>
+                            <br />
+                          </li>
+                        </ul>
                       </CModalBody>
                       <CModalFooter>
                         <CButton color="secondary" onClick={() => setVisible1(false)}>
@@ -442,8 +557,12 @@ const Tabs = () => {
                         >
                           <b>使用電力間接排放</b>
                         </td>
-                        <td style={cellStyle}>197.7533</td>
-                        <td style={cellStyle}>197.7533</td>
+                        <td style={cellStyle}>
+                          {quantitativeInventory.category2_total_emission_equivalent}
+                        </td>
+                        <td style={cellStyle}>
+                          {quantitativeInventory.category2_total_emission_equivalent}
+                        </td>
                         <td style={cellStyle}>0%</td>
                         <td style={cellStyle}>
                           <b>6%</b>
@@ -517,15 +636,30 @@ const Tabs = () => {
                     </CButton>
                     <CModal visible={visible2} onClose={() => setVisible2(false)}>
                       <CModalHeader>
-                        <CModalTitle><b>行業別指定削減率</b></CModalTitle>
+                        <CModalTitle>
+                          <b>行業別指定削減率</b>
+                        </CModalTitle>
                       </CModalHeader>
-                      <CModalBody><ul>
-                                  <li>以<b>110年為基準年</b>，此目標參酌國際間科技基礎減量目標(SBT)訂定，適用<b>優惠費率A</b>。
-                                  <br/><font style={{backgroundColor:'#DCDCDC'}}>削減率 = [(基準年-當年分) / 基準年]*100%</font><br/>
-                                  </li>
-                                  <li>目標年訂為119年，目標年溫室氣體年排放量削減率相對基準年應達42%。<br/>
-                                  <font style={{backgroundColor:'#DCDCDC'}}>目標年溫室氣體排放量 = 基準年溫室氣體年排放量*(1-削減率)</font><br/>
-                                  </li></ul>
+                      <CModalBody>
+                        <ul>
+                          <li>
+                            以<b>110年為基準年</b>，此目標參酌國際間科技基礎減量目標(SBT)訂定，適用
+                            <b>優惠費率A</b>。
+                            <br />
+                            <font style={{ backgroundColor: '#DCDCDC' }}>
+                              削減率 = [(基準年-當年分) / 基準年]*100%
+                            </font>
+                            <br />
+                          </li>
+                          <li>
+                            目標年訂為119年，目標年溫室氣體年排放量削減率相對基準年應達42%。
+                            <br />
+                            <font style={{ backgroundColor: '#DCDCDC' }}>
+                              目標年溫室氣體排放量 = 基準年溫室氣體年排放量*(1-削減率)
+                            </font>
+                            <br />
+                          </li>
+                        </ul>
                       </CModalBody>
                       <CModalFooter>
                         <CButton color="secondary" onClick={() => setVisible2(false)}>
@@ -589,8 +723,8 @@ const Tabs = () => {
                         >
                           <b>其他行業別</b>
                         </td>
-                        <td style={cellStyle}>244.744</td>
-                        <td style={cellStyle}>244.744</td>
+                        <td style={cellStyle}>{quantitativeInventory.total_emission_equivalent}</td>
+                        <td style={cellStyle}>{quantitativeInventory.total_emission_equivalent}</td>
                         <td style={cellStyle}>0%</td>
                         <td style={cellStyle}>
                           <b>42%</b>
@@ -759,15 +893,29 @@ const Tabs = () => {
                     </CButton>
                     <CModal visible={visible3} onClose={() => setVisible3(false)}>
                       <CModalHeader>
-                        <CModalTitle><b>碳費&排放當量</b></CModalTitle>
+                        <CModalTitle>
+                          <b>碳費&排放當量</b>
+                        </CModalTitle>
                       </CModalHeader>
-                      <CModalBody><ul><li>
-                                  <font style={{backgroundColor:'#DCDCDC'}}>碳費 = 收費排放量*徵收費率</font>
-                                  </li>
-                                  <li><font style={{backgroundColor:'#DCDCDC'}}>收費排放量 = [年排放當量-K值]*排放量調整係數</font>
-                                  <br/><b>非高碳洩漏風險者K值為25,000公噸</b>；高碳洩漏風險者K值為0公噸二氧化碳當量。<br/>
-                                  <b>非高碳洩漏風險者的排放量調整係數為0</b>；高碳洩漏風險行業在初期適用0.2的排放量調整係數，第二期與第三期分別為0.4和0.6​。
-                                  </li></ul>
+                      <CModalBody>
+                        <ul>
+                          <li>
+                            <font style={{ backgroundColor: '#DCDCDC' }}>
+                              碳費 = 收費排放量*徵收費率
+                            </font>
+                          </li>
+                          <li>
+                            <font style={{ backgroundColor: '#DCDCDC' }}>
+                              收費排放量 = [年排放當量-K值]*排放量調整係數
+                            </font>
+                            <br />
+                            <b>非高碳洩漏風險者K值為25,000公噸</b>
+                            ；高碳洩漏風險者K值為0公噸二氧化碳當量。
+                            <br />
+                            <b>非高碳洩漏風險者的排放量調整係數為0</b>
+                            ；高碳洩漏風險行業在初期適用0.2的排放量調整係數，第二期與第三期分別為0.4和0.6​。
+                          </li>
+                        </ul>
                       </CModalBody>
                       <CModalFooter>
                         <CButton color="secondary" onClick={() => setVisible3(false)}>
@@ -907,10 +1055,9 @@ const Tabs = () => {
               <br></br>
             </>
           )}
-          
+
           {/* 碳費新聞 */}
           {activeTab === 'tab3' && <NEWS />}
-
         </div>
       </CCol>
     </CRow>
