@@ -22,6 +22,10 @@ import { useEffect, useState } from 'react'
 import LocationForm from './locationform'
 
 const Tabs = () => {
+
+  console.log(window.sessionStorage.getItem("department"))
+
+
   const [businessID, setBusinessID] = useState('')
   const [registration_number, setRegistrationNumber] = useState('')
   const [org_name, setOrgName] = useState('')
@@ -298,6 +302,24 @@ const Tabs = () => {
     setIA()
   }, [inspection_agencyID])
 
+  /////////////////////////////////////////////////////////////////////
+
+  // User role and position state
+  const [userRole, setUserRole] = useState(null)
+  const [userPosition, setUserPosition] = useState(null)
+  const [hasEditAccess, setHasEditAccess] = useState(false)
+  useEffect(() => {
+    const role = window.sessionStorage.getItem("role")
+    const position = window.sessionStorage.getItem("position")
+
+    setUserRole(role ? parseInt(role) : null)
+    setUserPosition(position ? parseInt(position) : null)
+
+    // Determine if user has edit access based on role and position
+    const canEdit = (position === "1" && role === "2")
+    setHasEditAccess(canEdit)
+  }, [])
+
   return (
     <CRow>
       <CCol xs={12}>
@@ -306,12 +328,16 @@ const Tabs = () => {
             <CTab aria-controls="home-tab-pane" itemKey={1}>
               企業資料
             </CTab>
-            <CTab aria-controls="profile-tab-pane" itemKey={2}>
-              修改企業資料
-            </CTab>
-            <CTab aria-controls="profile-tab-pane" itemKey={3}>
-              修改盤查資訊
-            </CTab>
+            {hasEditAccess && (
+              <>
+                <CTab aria-controls="profile-tab-pane" itemKey={2}>
+                  修改企業資料
+                </CTab>
+                <CTab aria-controls="profile-tab-pane" itemKey={3}>
+                  修改盤查資訊
+                </CTab>
+              </>
+            )}
           </CTabList>
           <CTabContent>
             <CTabPanel className="py-3" aria-labelledby="home-tab-pane" itemKey={1}>

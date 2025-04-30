@@ -137,6 +137,10 @@ async def handle_answer_intent(client, user_message):
     # Initialize and prepare vector store
     vectorstore = prepare_vectorstore()
     
+    # Detect user language
+    language = detect_user_language(client, user_message)
+    print(f"Detected language: {language}")
+    
     # 1. Retrieve top-k chunks
     top_chunks = retrieve_top_k_chunks(vectorstore, user_message, k=7)
     print(f"Step1: Retrieved top 7 chunks, number of chunks: {len(top_chunks)}")
@@ -145,11 +149,41 @@ async def handle_answer_intent(client, user_message):
     final_chunks = await select_best_chunks_async(client, user_message, top_chunks, top_n=3)
     print(f"Step2: Selected top 3 chunks based on pointwise scoring")
 
-    # 3. Summarize selected chunks
-    final_answer = summarize_chunks(client, user_message, final_chunks)
+    # 3. Summarize selected chunks with detected language
+    final_answer = summarize_chunks(client, user_message, final_chunks, language=language)
 
     return {"response": final_answer}
 
+
+def detect_user_language(client, user_message):
+    """Detect the user's language from their message."""
+    # Use a language detection prompt with the OpenAI API
+    language_detection = client.chat.completions.create(
+        model="gpt-4o",
+        temperature=0,
+        messages=[
+            {"role": "system", "content": """
+            Detect the language of the user's message and respond with only the language code.
+            Use standard language codes like:
+            - 'en' for English
+            - 'zh-tw' for Traditional Chinese
+            - 'ja' for Japanese
+            - etc.
+            
+            Only return the language code, no other text.
+            """},
+            {"role": "user", "content": user_message}
+        ]
+    )
+    
+    language_code = language_detection.choices[0].message.content.strip().lower()
+    
+    # Validate language code (basic validation)
+    if not language_code or len(language_code) > 10:
+        # Default to English if detection fails
+        return "en"
+    
+    return language_code
 
 def prepare_vectorstore():
     """Prepare and return the vector store for RAG."""
@@ -339,7 +373,7 @@ def summarize_chunks(client, query, chunks, language=None):
         client: OpenAI client
         query (str): The user's question
         chunks (list): List of relevant text segments
-        language (str, optional): Preferred language code (e.g., 'en', 'zh-tw')
+        language (str, optional): Preferred language code (e.g., 'en', 'zh-tw') according to user's language
             
     Returns:
         str: Summarized response based on the chunks

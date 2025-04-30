@@ -93,6 +93,12 @@ const getAdminNavItems = () => {
       to: '/管理者/顧問列表',
       icon: <CIcon icon={cilHandshake} customClassName="nav-icon" />,
     },
+    {
+      component: CNavItem,
+      name: '排放係數_GWP值',
+      to: '/theme/carbon_factor',
+      icon: <CIcon icon={cilList} customClassName="nav-icon" />,
+    }
   ];
 };
 
@@ -158,12 +164,12 @@ const getNormalNavItems = () => {
       to: '/theme/carbon_factor',
       icon: <CIcon icon={cilList} customClassName="nav-icon" />,
     },
-    {
-      component: CNavItem,
-      name: 'try',
-      to: '/theme/try_411402601',
-      icon: <CIcon icon={cilGroup} customClassName="nav-icon" />,
-    },
+    // {
+    //   component: CNavItem,
+    //   name: 'try',
+    //   to: '/theme/try_411402601',
+    //   icon: <CIcon icon={cilGroup} customClassName="nav-icon" />,
+    // },
     {
       component: CNavItem,
       name: '常見問題',
