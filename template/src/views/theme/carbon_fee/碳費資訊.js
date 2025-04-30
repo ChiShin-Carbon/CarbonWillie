@@ -80,6 +80,7 @@ const Tabs = () => {
   const [visible2, setVisible2] = useState(false) // 削減率計算公式model
   const [visible3, setVisible3] = useState(false) // 削減率計算公式model
 
+  const [electricityUsage, setElectricityUsage] = useState('')
   const [quantitativeInventory, setQuantitativeInventory] = useState({})
 
   const getResult = async () => {

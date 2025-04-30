@@ -65,7 +65,7 @@ const CarbonInventoryFlow = () => {
       title: '進行數據填寫',
       description: '各主管根據分配到的項目進行新增數據與修改',
       role: '組織主管群',
-      isActive: false,
+      isActive: true,
       isCompleted: false,
     },
     {
@@ -73,7 +73,7 @@ const CarbonInventoryFlow = () => {
       title: '確認進度',
       description: '確認被指派到的主管群填寫是否完成',
       role: '組織負責人',
-      isActive: false,
+      isActive: true,
       isCompleted: false,
     },
     {
@@ -81,7 +81,7 @@ const CarbonInventoryFlow = () => {
       title: '數值確認與維護',
       description: '進行',
       role: '顧問',
-      isActive: false,
+      isActive: true,
       isCompleted: false,
     },
     {
@@ -89,7 +89,7 @@ const CarbonInventoryFlow = () => {
       title: '完成整個盤點',
       description: '確認完所有數值後進行最終的完成盤查確認',
       role: '顧問',
-      isActive: false,
+      isActive: true,
       isCompleted: false,
     },
     {
@@ -97,7 +97,7 @@ const CarbonInventoryFlow = () => {
       title: '產出結果與報告',
       description: '產出本年度盤查結果數據與圖表，以及生成報告與清冊',
       role: '系統',
-      isActive: false,
+      isActive: true,
       isCompleted: false,
     },
   ]
@@ -300,10 +300,10 @@ const CarbonInventoryFlow = () => {
           </p>
         </CModalBody>
         <CModalFooter>
-          <CButton color="secondary" onClick={() => setShowModal(false)}>
+          <CButton className="modalbutton1" onClick={() => setShowModal(false)}>
             取消
           </CButton>
-          <CButton color="primary" onClick={createNewBaseline} disabled={loading}>
+          <CButton className="modalbutton2" onClick={createNewBaseline} disabled={loading}>
             {loading ? <CSpinner size="sm" /> : '確認'}
           </CButton>
         </CModalFooter>
