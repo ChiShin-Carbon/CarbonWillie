@@ -36,26 +36,39 @@ def main():
         # 匯入車輛資料模組
         import vehicle_sheet
         vehicle_data = vehicle_sheet.get_vehicle_data(year)
-        if vehicle_data:
-            vehicle_sheet.create_sheet1(wb, vehicle_data)
-        else:
-            print(f"無法獲取 {year} 年的車輛資料")
+        vehicle_sheet.create_sheet1(wb, vehicle_data)
+        print(f"已生成車輛資料作表")
         
         # 匯入員工資料模組
         import employee_sheet
         employee_data = employee_sheet.get_employee_data(year)
-        if employee_data:
-            employee_sheet.create_work_hours_sheet(wb, employee_data)
-        else:
-            print(f"無法獲取 {year} 年的員工資料")
+        employee_sheet.create_work_hours_sheet(wb, employee_data)
+        print(f"已生成員工資料作表")
         
-        # # 匯入非員工資料模組
-        # import nonemployee_module
-        # nonemployee_data = nonemployee_module.get_nonemployee_data(year)
-        # if nonemployee_data:
-        #     nonemployee_module.create_nonemployee_work_hours_sheet(wb, nonemployee_data)
-        # else:
-        #     print(f"無法獲取 {year} 年的非員工資料")
+        # 匯入非員工資料模組
+        import nonemployee_sheet
+        nonemployee_data = nonemployee_sheet.get_nonemployee_data(year)
+        nonemployee_sheet.create_nonemployee_work_hours_sheet(wb, nonemployee_data)
+        print(f"已生成非員工資料作表")
+
+        # 匯入滅火器資料模組
+        import fireextinguisher_sheet
+        fireextinguisher_data = fireextinguisher_sheet.get_fireextinguisher_data()
+        fireextinguisher_sheet.create_fire_extinguisher_sheet(wb, fireextinguisher_data)
+        print(f"已生成滅火器工作表")
+
+
+
+
+
+
+        # 匯入員工通勤資料模組
+        import commute_sheet
+        commute_data = commute_sheet.get_commute_data(year)
+        # 不需要檢查commute_data是否為None，直接傳入create_commute_sheet
+        commute_sheet.create_commute_sheet(wb, commute_data)
+        print(f"已生成員工通勤工作表")
+        
         
         # 儲存 Excel 檔案
         output_filename = f"碳盤查基準活動數據清冊_{year}.xlsx"

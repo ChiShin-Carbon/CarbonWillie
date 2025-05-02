@@ -40,17 +40,31 @@ def create_sheet1(wb, data):
         cell = ws.cell(row=3, column=col_idx, value=header)
         cell.fill = style.gray_fill
 
-    # 寫入 API 資料
+    # 寫入資料或產生空行
+    row_start = 4
     oil_map = {0: "車用汽油", 1: "車用柴油"}
-    for i, item in enumerate(data, start=4):
-        ws.cell(row=i, column=1, value=item['doc_date'])  # 發票日期
-        ws.cell(row=i, column=2, value=oil_map.get(item['oil_species'], "未知"))  # 油種
-        ws.cell(row=i, column=3, value="公升")  # 單位
-        ws.cell(row=i, column=4, value=item['liters'])  # 公升數
-        ws.cell(row=i, column=5, value=item.get('remark', ''))  # 備註
+    
+    if data and len(data) > 0:
+        # 如果有資料，則填入資料
+        for i, item in enumerate(data, start=row_start):
+            ws.cell(row=i, column=1, value=item['doc_date'])  # 發票日期
+            ws.cell(row=i, column=2, value=oil_map.get(item['oil_species'], "未知"))  # 油種
+            ws.cell(row=i, column=3, value="公升")  # 單位
+            ws.cell(row=i, column=4, value=item['liters'])  # 公升數
+            ws.cell(row=i, column=5, value=item.get('remark', ''))  # 備註
+        row_end = row_start + len(data) - 1
+    else:
+        # 如果沒有資料或API連線失敗，生成5個空行
+        for row_idx in range(row_start, row_start + 5):
+            ws.cell(row=row_idx, column=1, value="")
+            ws.cell(row=row_idx, column=2, value="")
+            ws.cell(row=row_idx, column=3, value="")
+            ws.cell(row=row_idx, column=4, value="")
+            ws.cell(row=row_idx, column=5, value="")
+        row_end = row_start + 4  # 5個空行，末尾行編號為初始行+4
 
     # 套用框線
-    for row in ws.iter_rows(min_row=3, max_row=len(data)+3, min_col=1, max_col=5):
+    for row in ws.iter_rows(min_row=3, max_row=row_end, min_col=1, max_col=5):
         for cell in row:
             cell.border = style.black_border
 
