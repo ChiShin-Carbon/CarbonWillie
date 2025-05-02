@@ -57,6 +57,11 @@ def main():
         fireextinguisher_sheet.create_fire_extinguisher_sheet(wb, fireextinguisher_data)
         print(f"已生成滅火器工作表")
 
+        # 匯入廠內機具資料模組
+        import machinery_sheet
+        machinery_data = machinery_sheet.get_machinery_data(year)
+        machinery_sheet.create_internal_machinery_sheet(wb, machinery_data)
+        print(f"已生成廠內機具工作表")
 
 
 
