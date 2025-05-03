@@ -34,45 +34,57 @@ def main():
         
         # 匯入各模組並使用年份參數建立工作表
         # 匯入車輛資料模組
-        import vehicle_sheet
-        vehicle_data = vehicle_sheet.get_vehicle_data(year)
-        vehicle_sheet.create_sheet1(wb, vehicle_data)
-        print(f"已生成車輛資料作表")
+        # import vehicle_sheet
+        # vehicle_data = vehicle_sheet.get_vehicle_data(year)
+        # vehicle_sheet.create_sheet1(wb, vehicle_data)
+        # print(f"已生成車輛資料作表")
         
-        # 匯入員工資料模組
-        import employee_sheet
-        employee_data = employee_sheet.get_employee_data(year)
-        employee_sheet.create_work_hours_sheet(wb, employee_data)
-        print(f"已生成員工資料作表")
+        # # 匯入員工資料模組
+        # import employee_sheet
+        # employee_data = employee_sheet.get_employee_data(year)
+        # employee_sheet.create_work_hours_sheet(wb, employee_data)
+        # print(f"已生成員工資料作表")
         
-        # 匯入非員工資料模組
-        import nonemployee_sheet
-        nonemployee_data = nonemployee_sheet.get_nonemployee_data(year)
-        nonemployee_sheet.create_nonemployee_work_hours_sheet(wb, nonemployee_data)
-        print(f"已生成非員工資料作表")
+        # # 匯入非員工資料模組
+        # import nonemployee_sheet
+        # nonemployee_data = nonemployee_sheet.get_nonemployee_data(year)
+        # nonemployee_sheet.create_nonemployee_work_hours_sheet(wb, nonemployee_data)
+        # print(f"已生成非員工資料作表")
 
-        # 匯入滅火器資料模組
-        import fireextinguisher_sheet
-        fireextinguisher_data = fireextinguisher_sheet.get_fireextinguisher_data()
-        fireextinguisher_sheet.create_fire_extinguisher_sheet(wb, fireextinguisher_data)
-        print(f"已生成滅火器工作表")
+        # # 匯入滅火器資料模組
+        # import fireextinguisher_sheet
+        # fireextinguisher_data = fireextinguisher_sheet.get_fireextinguisher_data()
+        # fireextinguisher_sheet.create_fire_extinguisher_sheet(wb, fireextinguisher_data)
+        # print(f"已生成滅火器工作表")
 
-        # 匯入廠內機具資料模組
-        import machinery_sheet
-        machinery_data = machinery_sheet.get_machinery_data(year)
-        machinery_sheet.create_internal_machinery_sheet(wb, machinery_data)
-        print(f"已生成廠內機具工作表")
+        # # 匯入廠內機具資料模組
+        # import machinery_sheet
+        # machinery_data = machinery_sheet.get_machinery_data(year)
+        # machinery_sheet.create_internal_machinery_sheet(wb, machinery_data)
+        # print(f"已生成廠內機具工作表")
+
+        # 匯入緊急發電機資料模組
+        import emergencygenerator_sheet
+        generator_data = emergencygenerator_sheet.get_generator_data(year)
+        emergencygenerator_sheet.create_emergency_generator_sheet(wb, generator_data)
+        print(f"已生成緊急發電機作表")
 
 
 
 
 
-        # 匯入員工通勤資料模組
-        import commute_sheet
-        commute_data = commute_sheet.get_commute_data(year)
-        # 不需要檢查commute_data是否為None，直接傳入create_commute_sheet
-        commute_sheet.create_commute_sheet(wb, commute_data)
-        print(f"已生成員工通勤工作表")
+        # # 匯入員工通勤資料模組
+        # import commute_sheet
+        # commute_data = commute_sheet.get_commute_data(year)
+        # # 不需要檢查commute_data是否為None，直接傳入create_commute_sheet
+        # commute_sheet.create_commute_sheet(wb, commute_data)
+        # print(f"已生成員工通勤工作表")
+
+        # 匯入商務旅行資料模組
+        # import businesstrip_sheet
+        # businesstrip_data = businesstrip_sheet.get_businesstrip_data(year)
+        # businesstrip_sheet.create_businesstrip_sheet(wb, businesstrip_data)
+        # print(f"已生成商務旅行作表")
         
         
         # 儲存 Excel 檔案
