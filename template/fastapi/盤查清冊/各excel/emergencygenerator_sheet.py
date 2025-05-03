@@ -8,35 +8,7 @@ import requests
 API_BASE_URL = "http://localhost:8000"
 
 def get_generator_data(year):
-    """從API獲取指定年份的緊急發電機資料"""
     try:
-        # 確保year是有效的值且能轉換為整數
-        if year is not None:
-            # 處理各種可能的類型
-            if isinstance(year, dict):
-                # 如果是字典，嘗試取出年份相關的值
-                # 常見的情況可能是 {'year': 2023} 或類似的格式
-                # 嘗試幾種可能的鍵名
-                for key in ['year', 'Year', 'value', 'id', 'date']:
-                    if key in year and year[key] is not None:
-                        year = year[key]
-                        break
-                # 如果沒有找到有效的鍵，使用字典的第一個值
-                if isinstance(year, dict) and year:
-                    year = next(iter(year.values()))
-            elif isinstance(year, list) and len(year) > 0:
-                # 如果是列表，取第一個元素
-                year = year[0]
-            
-            # 最終轉換為整數
-            if isinstance(year, (str, int, float)):
-                year = int(year)
-            else:
-                # 如果轉換失敗，印出詳細資訊並返回None
-                print(f"無法將 year 參數 ({type(year)}: {year}) 轉換為整數")
-                return None
-        
-        # 構建API URL並發送請求
         api_url = f"{API_BASE_URL}/generator_data_by_year/{year}"
         response = requests.get(api_url)
 
@@ -47,13 +19,19 @@ def get_generator_data(year):
             return None
         else:
             print(f"獲取緊急發電機資料失敗，狀態碼: {response.status_code}，錯誤訊息: {response.text}")
-            return None
             
     except Exception as e:
         print(f"連接緊急發電機API時發生錯誤: {e}")
         return None
 
-def create_emergency_generator_sheet(wb, year=None):
+
+
+
+def create_emergency_generator_sheet(wb, data=None):
+    # 如果沒有提供資料，就使用空資料
+    if data is None:
+        data = []
+
     """建立 '類別一-緊急發電機' 工作表"""
     sheet_name = "類別一-緊急發電機"
     ws = wb.create_sheet(title=sheet_name)
@@ -69,11 +47,6 @@ def create_emergency_generator_sheet(wb, year=None):
     for col_idx, header in enumerate(headers, start=1):
         cell = ws.cell(row=2, column=col_idx, value=header)
         cell.fill = style.gray_fill  # 灰色背景
-
-    # 嘗試從API獲取數據
-    data = None
-    if year is not None:
-        data = get_generator_data(year)
     
     # 填入數據
     row_start = 3  # 從第三行開始寫入資料

@@ -24,7 +24,7 @@ def main():
     wb.remove(wb.active)  # 移除預設的工作表
     
     # 建立各個工作表
-    # sheetdevision.create_sheetdevision(wb)   #分工說明表
+    sheetdevision.create_sheetdevision(wb)   #分工說明表
     # sheet1.create_sheet1(wb)   #類別一-公務車(汽油)
     # sheet2.create_sheet2(wb)   #類別一-公務車(柴油)
     # sheet3.create_fire_extinguisher_sheet(wb)   #類別一-滅火器
@@ -42,7 +42,7 @@ def main():
     # sheet15.create_indirect_steam_sheet(wb)   #類別二-間接蒸氣(汽電共生廠有做溫室氣體盤查)
     # sheet16.create_non_indirect_steam_sheet(wb)  #類別二-間接蒸氣(汽電共生廠沒有做溫室氣體盤查)
     # sheet17.create_other_category2_sheet(wb)   #類別二-間接蒸氣(汽電共生廠有做溫室氣體盤查)
-    # sheet18.create_sheet18(wb)
+    sheet18.create_sheet18(wb)
 
 
     # 儲存 Excel 檔案

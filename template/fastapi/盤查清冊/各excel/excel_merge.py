@@ -31,6 +31,12 @@ def main():
     try:
         wb = Workbook()
         wb.remove(wb.active)  # 移除預設的工作表
+
+        # 匯入分工說明表模組
+        import devision
+        devision_data = devision.get_authorized_users_data(year)
+        devision.create_sheetdevision(wb, devision_data)
+        print(f"已生成分工說明表作表")
         
         # 匯入各模組並使用年份參數建立工作表
         # 匯入車輛資料模組
@@ -64,10 +70,10 @@ def main():
         # print(f"已生成廠內機具工作表")
 
         # 匯入緊急發電機資料模組
-        import emergencygenerator_sheet
-        generator_data = emergencygenerator_sheet.get_generator_data(year)
-        emergencygenerator_sheet.create_emergency_generator_sheet(wb, generator_data)
-        print(f"已生成緊急發電機作表")
+        # import emergencygenerator_sheet
+        # generator_data = emergencygenerator_sheet.get_generator_data(year)
+        # emergencygenerator_sheet.create_emergency_generator_sheet(wb, generator_data)
+        # print(f"已生成緊急發電機作表")
 
 
 
@@ -85,6 +91,19 @@ def main():
         # businesstrip_data = businesstrip_sheet.get_businesstrip_data(year)
         # businesstrip_sheet.create_businesstrip_sheet(wb, businesstrip_data)
         # print(f"已生成商務旅行作表")
+
+        # #營運產生的廢棄物資料模組
+        # import operationalwaste_sheet
+        # operationalwaste_data = operationalwaste_sheet.get_operational_waste_data(year)
+        # operationalwaste_sheet.create_operational_waste_sheet(wb, operationalwaste_data)
+        # print(f"已生成營運產生廢棄物作表")
+        
+        #匯入售產品的廢棄物資料模組
+        # import sellingwaste_sheet
+        # sellingwaste_data = sellingwaste_sheet.get_selling_waste_data(year)
+        # sellingwaste_sheet.create_sellingwaste_sheet(wb, sellingwaste_data)
+        # print(f"已生成銷售產品的廢棄物作表")
+
         
         
         # 儲存 Excel 檔案

@@ -3,17 +3,17 @@ from openpyxl.worksheet.worksheet import Worksheet
 import style  # 引入樣式模組
 
 def create_sheet18(wb):
-    sheet_name = "類別三-員工通勤"
+    sheet_name = "類別三-銷售產品的廢棄物"
     ws = wb.create_sheet(title=sheet_name)
 
     # 合併標題列
-    ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=4)
-    merged_cell = ws.cell(row=1, column=1, value="員工通勤")
+    ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=2)
+    merged_cell = ws.cell(row=1, column=1, value="銷售產品的廢棄物")
     merged_cell.alignment = style.center_alignment
     merged_cell.fill = style.yellow_fill  # 標題背景色
 
     # 定義表頭
-    headers = ['交通方式', '公里數', '油種', '備註']
+    headers = ['廢棄物項目', '備註']
     for col_idx, header in enumerate(headers, start=1):
         cell = ws.cell(row=2, column=col_idx, value=header)
         cell.fill = style.gray_fill  # 表頭背景色
@@ -25,22 +25,22 @@ def create_sheet18(wb):
 
     # 填入數據
     data = [
-        {'nonemployee_number': 23, 'total_hours': 8,  'remark': 'none'},
-        {'nonemployee_number': 23, 'total_hours': 8,  'remark': 'none'},
-        {'nonemployee_number': 22, 'total_hours': 8,  'remark': 'none'},
-        {'nonemployee_number': 22, 'total_hours': 8,  'remark': 'none'},
-        {'nonemployee_number': 24, 'total_hours': 8,  'remark': 'none'},
-        {'nonemployee_number': 23, 'total_hours': 8,  'remark': 'none'},
-        {'nonemployee_number': 24, 'total_hours': 8,  'remark': 'none'},
-        {'nonemployee_number': 24, 'total_hours': 8,  'remark': 'none'},
-        {'nonemployee_number': 23, 'total_hours': 8,  'remark': 'none'},
-        {'nonemployee_number': 23, 'total_hours': 8,  'remark': 'none'},
-        {'nonemployee_number': 25, 'total_hours': 8,  'remark': 'none'},
-        {'nonemployee_number': 25, 'total_hours': 8,  'remark': 'none'},
+        {'nonemployee_number': 23, 'remark': 'none'},
+        {'nonemployee_number': 23, 'remark': 'none'},
+        {'nonemployee_number': 22, 'remark': 'none'},
+        {'nonemployee_number': 22, 'remark': 'none'},
+        {'nonemployee_number': 24, 'remark': 'none'},
+        {'nonemployee_number': 23, 'remark': 'none'},
+        {'nonemployee_number': 24, 'remark': 'none'},
+        {'nonemployee_number': 24, 'remark': 'none'},
+        {'nonemployee_number': 23, 'remark': 'none'},
+        {'nonemployee_number': 23, 'remark': 'none'},
+        {'nonemployee_number': 25, 'remark': 'none'},
+        {'nonemployee_number': 25, 'remark': 'none'},
     ]
 
     for row_idx, entry in enumerate(data, start=3):
-        for col_idx, key in enumerate(['nonemployee_number', 'total_hours', 'remark'], start=2):
+        for col_idx, key in enumerate(['nonemployee_number', 'remark'], start=2):
             ws.cell(row=row_idx, column=col_idx, value=entry[key])
 
 
