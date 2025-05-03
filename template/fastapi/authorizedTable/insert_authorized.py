@@ -53,10 +53,25 @@ async def delete_authorized_table_name(table_name: str):
     if conn:
         cursor = conn.cursor()
         try:
-            query = "DELETE FROM Authorized_Table WHERE table_name = ?"
-            cursor.execute(query, (table_name,))
+            # 查詢最大 baseline_id
+            cursor.execute("SELECT MAX(baseline_id) FROM Baseline")
+            max_baseline_id = cursor.fetchone()[0]
+
+            if max_baseline_id is None:
+                raise HTTPException(status_code=404, detail="No baseline records found")
+
+            # 刪除該 baseline_id 對應 table_name 的資料
+            query = "DELETE FROM Authorized_Table WHERE table_name = ? AND baseline_id = ?"
+            cursor.execute(query, (table_name, max_baseline_id))
             conn.commit()
-            return {"status": "success", "message": f"Records with table_name '{table_name}' deleted successfully"}
+
+            if cursor.rowcount == 0:
+                raise HTTPException(status_code=404, detail=f"No matching records found in table '{table_name}' with baseline_id {max_baseline_id}")
+
+            return {
+                "status": "success",
+                "message": f"Records with table_name '{table_name}' and baseline_id {max_baseline_id} deleted successfully"
+            }
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Database delete error: {e}")
         finally:
