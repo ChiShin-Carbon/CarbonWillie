@@ -1,7 +1,7 @@
 from openpyxl.utils import get_column_letter
 from openpyxl.worksheet.worksheet import Worksheet
 import requests
-import style  # 引入樣式模組
+from . import style  # 引入樣式模組
 
 # API端點常數
 API_BASE_URL = "http://localhost:8000"
@@ -30,7 +30,7 @@ def create_sellingwaste_sheet(wb, data=None):
     """
     # 如果沒有提供資料，則從API獲取
     if data is None:
-        data = get_selling_waste_data()
+        data = []
     
     sheet_name = "類別三-銷售產品的廢棄物"
     ws = wb.create_sheet(title=sheet_name)

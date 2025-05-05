@@ -2,7 +2,7 @@ from openpyxl import Workbook
 from openpyxl.utils import get_column_letter
 from openpyxl.worksheet.worksheet import Worksheet
 import requests
-import style  # 引入樣式模組
+from . import style  # 引入樣式模組
 
 # 設定年份
 # API端點常數

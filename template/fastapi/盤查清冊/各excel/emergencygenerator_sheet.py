@@ -1,7 +1,7 @@
 from openpyxl import Workbook
 from openpyxl.utils import get_column_letter
 from openpyxl.styles import Alignment, PatternFill, Border, Side
-import style  # 引入樣式模組
+from . import style  # 引入樣式模組
 import requests
 
 # API端點常數
