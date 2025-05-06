@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import {
     CRow, CCol, CCard, CFormSelect, CTab, CTabList, CTabs,
     CTable, CTableBody, CTableHead, CModal, CModalHeader, CModalBody, CModalFooter, CModalTitle, CButton, CFormCheck
-    , CForm, CFormLabel, CFormInput, CFormTextarea,
+    , CForm, CFormLabel, CFormInput, CFormTextarea
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilDataTransferDown } from '@coreui/icons'
@@ -12,11 +12,8 @@ import styles from '../../../scss/顧問system.module.css'
 
 import { Link, useNavigate } from 'react-router-dom'
 
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleCheck, faCircleXmark, faPenToSquare, faTrashCan } from '@fortawesome/free-solid-svg-icons';
-
-
 
 export const UpNav = () => {
     const [visible, setVisible] = useState(false)
@@ -43,15 +40,45 @@ export const UpNav = () => {
         fetchBaselineId()
     }, [])
 
+    // Generate inventory excel
+    const generateInventoryExcel = async () => {
+        try {
+            const response = await fetch('http://localhost:8000/generate_inventory_excel', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+
+            const data = await response.json()
+            
+            if (response.ok) {
+                console.log('Excel generation initiated:', data)
+                return true
+            } else {
+                console.error('Failed to generate Excel:', data.message)
+                return false
+            }
+        } catch (error) {
+            console.error('Error generating inventory Excel:', error)
+            return false
+        }
+    }
+
     // Handle completion of baseline
     const handleCompleteBaseline = async () => {
         if (!baselineId) {
             console.error('No baseline ID available')
+            console.log("沒有可用的基準年ID", "danger")
             return
         }
 
         setIsLoading(true)
         try {
+            // First generate the inventory excel
+            const excelGenerated = await generateInventoryExcel()
+            
+            // Then mark the baseline as complete
             const response = await fetch(`http://localhost:8000/baseline/${baselineId}/complete`, {
                 method: 'PUT',
                 headers: {
@@ -64,17 +91,16 @@ export const UpNav = () => {
 
             if (response.ok) {
                 console.log('Baseline marked as complete')
+                console.log("盤查已標記為完成" + (excelGenerated ? "，盤查清冊生成中" : ""))
                 setVisible(false)
-                
-                // Reload the page or navigate to update navigation
-                window.location.reload() // This will reload the page to reflect the new navigation state
-                // Alternatively, you could navigate to a different route:
-                // navigate('/碳盤查系統/system/')
+               
             } else {
                 console.error('Failed to update baseline completion status:', response.status)
+                console.log("更新基準年完成狀態失敗", "danger")
             }
         } catch (error) {
             console.error('Error updating baseline completion status:', error)
+            console.log(`處理過程中發生錯誤: ${error.message}`, "danger")
         } finally {
             setIsLoading(false)
         }
@@ -101,9 +127,6 @@ export const UpNav = () => {
                             <Link to="/碳盤查系統/顧問system/不確定性量化評估" className="system-tablist-link">
                                 <CTab aria-controls="tab3" itemKey={6} className="system-tablist-choose">不確定性量化評估</CTab>
                             </Link>
-                            {/* <Link to="." className="system-tablist-link">
-                    <CTab aria-controls="tab3" itemKey={1} className="system-tablist-choose">全廠電力蒸汽供需情況 </CTab>
-                </Link> */}
                         </div>
 
                         <div className={styles.tabsRight}>
@@ -112,7 +135,6 @@ export const UpNav = () => {
                         </div>
                     </div>
                 </CTabList>
-
             </CTabs>
 
             <CModal
@@ -123,7 +145,7 @@ export const UpNav = () => {
                 <CModalHeader>
                     <CModalTitle id="LiveDemoExampleLabel"><b>注意!</b></CModalTitle>
                 </CModalHeader>
-                <CModalBody>確認將完成本年度的盤查嗎?</CModalBody>
+                <CModalBody>確認將完成本年度的盤查嗎? 同時將生成盤查清冊Excel檔案。</CModalBody>
                 <CModalFooter>
                     <CButton className="modalbutton1" onClick={() => setVisible(false)}>
                         取消
