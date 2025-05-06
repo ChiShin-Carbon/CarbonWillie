@@ -103,7 +103,17 @@ const getAdminNavItems = () => {
 };
 
 const getNormalNavItems = () => {
-  return [
+  // Try to get the user's role from sessionStorage
+  let userRole;
+  try {
+    userRole = parseInt(window.sessionStorage.getItem("role"));
+  } catch (error) {
+    console.error("Error accessing sessionStorage for role:", error);
+    userRole = null;
+  }
+
+  // Base navigation items
+  const navItems = [
     {
       component: CNavItem,
       name: '首頁',
@@ -120,11 +130,6 @@ const getNormalNavItems = () => {
           component: CarbonInventoryNavItem,
           name: '碳盤查–組織內',
           // The 'to' prop will be set within the CarbonInventoryNavItem component
-        },
-        {
-          component: CNavItem,
-          name: '碳盤查–顧問',
-          to: '/碳盤查系統/顧問system/排放源鑑別',
         },
       ],
     },
@@ -193,6 +198,21 @@ const getNormalNavItems = () => {
       icon: <CIcon icon={cilBuilding} customClassName="nav-icon" />,
     },
   ];
+
+  // Add the "碳盤查–顧問" item only if user role is 1
+  if (userRole === 1) {
+    // Find the "碳盤查系統" group
+    const carbonSystemGroup = navItems.find(item => item.name === '碳盤查系統');
+    if (carbonSystemGroup && carbonSystemGroup.items) {
+      carbonSystemGroup.items.push({
+        component: CNavItem,
+        name: '碳盤查–顧問',
+        to: '/碳盤查系統/顧問system/排放源鑑別',
+      });
+    }
+  }
+
+  return navItems;
 };
 
 // Use a function to determine the navigation items to avoid potential issues with sessionStorage
