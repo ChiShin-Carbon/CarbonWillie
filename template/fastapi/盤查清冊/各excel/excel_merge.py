@@ -26,6 +26,15 @@ class GenerateExcelResponse(BaseModel):
     file_path: Optional[str] = None
     year: Optional[int] = None
 
+# 檢查文件狀態回應模型
+class CheckExcelStatusResponse(BaseModel):
+    exists: bool
+    message: str
+    file_path: Optional[str] = None
+
+# 用於追蹤正在生成的Excel檔案
+excel_generation_tasks = {}
+
 # 獲取基準年份的函數
 def get_baseline_year():
     """從資料庫獲取最新的基準年份"""
@@ -147,14 +156,31 @@ def generate_excel_file(year: int):
         output_path = os.path.join(UPLOAD_FOLDER, output_filename)
         wb.save(output_path)
         
+        # 更新任務狀態為完成
+        excel_generation_tasks[year] = {
+            "status": "completed",
+            "file_path": output_path
+        }
+        
         return output_path
     except Exception as e:
+        # 更新任務狀態為失敗
+        excel_generation_tasks[year] = {
+            "status": "failed",
+            "error": str(e)
+        }
         error_msg = f"生成Excel檔案時發生錯誤: {e}\n{traceback.format_exc()}"
         raise Exception(error_msg)
 
 # 非同步任務處理函數
 def process_excel_generation(year: int):
     try:
+        # 更新任務狀態為進行中
+        excel_generation_tasks[year] = {
+            "status": "processing",
+            "file_path": None
+        }
+        
         output_path = generate_excel_file(year)
         print(f"Excel 檔案已成功生成: {output_path}")
     except Exception as e:
@@ -204,3 +230,61 @@ async def generate_inventory_excel(background_tasks: BackgroundTasks):
             }
         )
 
+# 新增一個API端點用於檢查Excel檔案是否生成完成
+@excel_generator_router.get("/check_excel_status/{year}", response_model=CheckExcelStatusResponse)
+async def check_excel_status(year: int):
+    """
+    檢查指定年份的Excel檔案是否已生成完成
+    """
+    try:
+        # 檢查任務狀態
+        if year in excel_generation_tasks:
+            task_info = excel_generation_tasks[year]
+            
+            if task_info["status"] == "completed":
+                return {
+                    "exists": True,
+                    "message": f"{year}年度盤查清冊已成功生成",
+                    "file_path": task_info["file_path"]
+                }
+            elif task_info["status"] == "failed":
+                return {
+                    "exists": False,
+                    "message": f"{year}年度盤查清冊生成失敗: {task_info.get('error', '未知錯誤')}",
+                    "file_path": None
+                }
+            else:  # processing
+                return {
+                    "exists": False,
+                    "message": f"{year}年度盤查清冊正在生成中",
+                    "file_path": None
+                }
+        
+        # 如果沒有任務記錄，檢查文件是否存在
+        output_filename = f"{year}盤查清冊.xlsx"
+        output_path = os.path.join(UPLOAD_FOLDER, output_filename)
+        
+        if os.path.exists(output_path):
+            # 文件存在但沒有任務記錄，可能是之前生成的
+            return {
+                "exists": True,
+                "message": f"{year}年度盤查清冊已存在",
+                "file_path": output_path
+            }
+        else:
+            # 文件不存在且沒有任務記錄
+            return {
+                "exists": False,
+                "message": f"{year}年度盤查清冊尚未生成",
+                "file_path": None
+            }
+    
+    except Exception as e:
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={
+                "exists": False,
+                "message": f"檢查Excel檔案狀態時發生錯誤: {str(e)}",
+                "file_path": None
+            }
+        )
