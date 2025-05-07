@@ -67,9 +67,9 @@ import { SellingWasteAdd } from './銷售產品的廢棄物/新增Modal.js'
 
 import { useRefreshData } from './refreshdata.js'
 
-import 'primereact/resources/themes/saga-blue/theme.css' 
-import 'primereact/resources/primereact.min.css' 
-import 'primeicons/primeicons.css' 
+import 'primereact/resources/themes/saga-blue/theme.css'
+import 'primereact/resources/primereact.min.css'
+import 'primeicons/primeicons.css'
 
 import styles from '../../../../scss/活動數據盤點.module.css'
 
@@ -112,10 +112,11 @@ const Tabs = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [userId, setUserId] = useState(null)
   const [userPosition, setUserPosition] = useState(null)
-  
+  const [userRole, setUserRole] = useState(null)
+
   // Check if user has permission to add/edit/delete
-  const hasEditPermission = userPosition !== '1'
-  
+  const hasEditPermission = userPosition === '3'
+
   const {
     vehicle,
     extinguishers,
@@ -143,25 +144,32 @@ const Tabs = () => {
     refreshSellingWasteData
   } = useRefreshData();
 
-  // Fetch user ID and authorized tables on component mount
-  useEffect(() => {
-    // Get user ID from localStorage
-    const storedUserId = window.sessionStorage.getItem('user_id');
-    const storedUserPosition = window.sessionStorage.getItem('position');
-    
-    if (storedUserId) {
-      const parsedUserId = parseInt(storedUserId, 10);
-      setUserId(parsedUserId);
-      setUserPosition(storedUserPosition);
-      
-      // Fetch authorized tables from API (still needed for non-admin users)
-      fetchAuthorizedTables(parsedUserId);
-    } else {
-      console.error('User ID not found in sessionStorage');
-      setIsLoading(false);
-    }
-  }, []);
+// Fetch user ID and authorized tables on component mount
+useEffect(() => {
+  // Get user ID from localStorage
+  const storedUserId = window.sessionStorage.getItem('user_id');
+  const storedUserPosition = window.sessionStorage.getItem('position');
+  const rawStoredUserRole = window.sessionStorage.getItem('role');
   
+  // Properly process the role value to treat "false" as admin (0)
+  const storedUserRole = (rawStoredUserRole === '0' || rawStoredUserRole === 'false') ? '0' : '1';
+  
+  console.log('Raw role from sessionStorage:', rawStoredUserRole);
+  console.log('Processed role:', storedUserRole);
+  
+  if (storedUserId) {
+    const parsedUserId = parseInt(storedUserId, 10);
+    setUserId(parsedUserId);
+    setUserPosition(storedUserPosition);
+    setUserRole(storedUserRole); // Set the processed role value
+    
+    // Fetch authorized tables from API (still needed for non-admin users)
+    fetchAuthorizedTables(parsedUserId);
+  } else {
+    console.error('User ID not found in sessionStorage');
+    setIsLoading(false);
+  }
+}, []);
   // Function to fetch authorized tables from the API
   const fetchAuthorizedTables = async () => {
     try {
@@ -174,17 +182,17 @@ const Tabs = () => {
       const response = await fetch("http://localhost:8000/authorized-tables", {
         method: "POST",
         body: form
-    });
+      });
 
-      
+
       // Check if the request was successful
       if (!response.ok) {
         throw new Error(`Error: ${response.status} - ${response.statusText}`);
       }
-      
+
       // Parse the JSON response
       const data = await response.json();
-      
+
       // Update state with the fetched data
       setAuthorizedTables(data);
       console.log('Authorized tables loaded:', data);
@@ -198,17 +206,19 @@ const Tabs = () => {
   };
 
   // Check if a function/table is authorized for the current user
-  const isAuthorized = (functionName) => {
-    // If Position is 1 (admin), grant access to all tables
-    if (userPosition === '1') return true;
-    
-    // For other Positions, check authorized tables
-    if (!authorizedTables.length) return false;
-    
-    // Convert function name to Chinese title
-    const chineseTitle = functionTitlesMap[functionName];
-    return authorizedTables.some(table => table.table_name === chineseTitle);
-  };
+  // Check if a function/table is authorized for the current user
+// Check if a function/table is authorized for the current user
+const isAuthorized = (functionName) => {
+  // If Position is 1 (admin), grant access to all tables
+  if (userPosition === '1' || userRole === '0' || userRole === 'false') return true;
+  // For other Positions, check authorized tables
+  if (!authorizedTables.length) return false;
+
+  // Convert function name to Chinese title
+  const chineseTitle = functionTitlesMap[functionName];
+  return authorizedTables.some(table => table.table_name === chineseTitle);
+};
+
 
   // Handle clicking on a function item
   const handleFunctionChange = (func, title) => {
@@ -233,8 +243,8 @@ const Tabs = () => {
     refreshMachineryData();
     refreshEmergency_GeneratorData();
   }, [
-    refreshVehicleData, refreshFireExtinguisherData, refreshEmployeeData, 
-    refreshNonEmployeeData, refreshRefrigerantData, refreshMachineryData, 
+    refreshVehicleData, refreshFireExtinguisherData, refreshEmployeeData,
+    refreshNonEmployeeData, refreshRefrigerantData, refreshMachineryData,
     refreshEmergency_GeneratorData, refreshCommuteData, refreshBusinessTripData,
     refreshWasteData, refreshSellingWasteData, refreshElectricityData
   ]);
@@ -252,18 +262,18 @@ const Tabs = () => {
       setRefreshKey(prevKey => prevKey + 1);
     }
   }, [refrigerants]);
-  
+
   // Update status in Authorized_Table when a table is completed
   const updateTableStatus = async (functionName, isDone) => {
     // Find the authorized_record_id for the current function
     const tableName = functionTitlesMap[functionName];
     const authorizedItem = authorizedTables.find(item => item.table_name === tableName);
-    
+
     if (!authorizedItem) {
       console.error(`No authorized record found for ${tableName}`);
       return;
     }
-    
+
     try {
       const response = await fetch(`/authorized-tables/${authorizedItem.authorized_record_id}`, {
         method: 'PUT',
@@ -272,14 +282,14 @@ const Tabs = () => {
         },
         body: JSON.stringify({ is_done: isDone }),
       });
-      
+
       if (!response.ok) {
         throw new Error(`Error: ${response.status} - ${response.statusText}`);
       }
-      
+
       // Refresh the authorized tables after update
       fetchAuthorizedTables(userId);
-      
+
       console.log(`Status updated for ${tableName}: ${isDone ? 'Completed' : 'Incomplete'}`);
     } catch (error) {
       console.error('Error updating table status:', error);
@@ -424,7 +434,7 @@ const Tabs = () => {
                    ${currentFunction === functionName ? styles.navContentChoose : ''} 
                    ${!isAuthorizedItem ? styles.navContentDisabled : ''}`}
         onClick={() => isAuthorizedItem && handleFunctionChange(functionName, title)}
-        style={{ 
+        style={{
           cursor: isAuthorizedItem ? 'pointer' : 'not-allowed',
           opacity: isAuthorizedItem ? 1 : 0.5
         }}
@@ -477,7 +487,7 @@ const Tabs = () => {
           <hr className="system-hr"></hr>
         </div>
         {currentFunction && (
-          <button 
+          <button
             className="system-save"
             onClick={() => updateTableStatus(currentFunction, true)}
           >
@@ -581,11 +591,9 @@ const Tabs = () => {
             </>
           ) : (
             <div className={styles.noChoose}>
-              {userPosition === '1' 
-                ? '請選擇一個項目!'
-                : authorizedTables.length > 0 
-                  ? '請選擇一個您有權限的項目!'
-                  : '您目前沒有任何授權項目。請聯繫管理員獲取權限。'}
+              {!(userPosition === '1' || userRole === '0' || userRole === 'false') && authorizedTables.length === 0
+                ? '您目前沒有任何授權項目。請聯繫管理員獲取權限。'
+                : '請選擇一個項目!'}
             </div>
           )}
         </CCard>

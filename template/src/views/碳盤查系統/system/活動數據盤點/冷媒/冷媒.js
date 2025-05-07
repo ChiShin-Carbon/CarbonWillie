@@ -55,7 +55,7 @@ export const Refrigerant = ({refreshRefrigerantData}) => {
   }, [])
 
   // Check if user has permission to edit/delete/add
-  const hasEditPermission = userPosition !== 1;
+  const hasEditPermission = userPosition === 3;
 
   const device_type_Map = {
     1: '冰箱',

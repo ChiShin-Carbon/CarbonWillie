@@ -143,7 +143,7 @@ export const Vehicle = ({refreshVehicleData}) => {
   }, [cfvStartDate, cfvEndDate]);
 
   // Check if user has permission to edit/delete
-  const hasEditPermission = userPosition !== 1;
+  const hasEditPermission = userPosition === 3;
 
   return (
     <div>

@@ -52,7 +52,7 @@ export const Electricity = ({ refreshElectricityData }) => {
   }, [])
   
   // Check if user has permission to edit/delete
-  const hasEditPermission = userPosition !== 1
+  const hasEditPermission = userPosition === 3;
 
   const [electricities, setElectricities] = useState([]) // State to hold fetched electricity data
 

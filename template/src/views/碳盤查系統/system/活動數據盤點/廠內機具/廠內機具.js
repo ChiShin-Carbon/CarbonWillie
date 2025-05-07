@@ -29,7 +29,7 @@ export const Machinery = ({refreshMachineryData}) => {
     }, []);
     
     // Check if user has permission to edit/delete
-    const hasEditPermission = userPosition !== 1;
+    const hasEditPermission = userPosition === 3;
 
     // Function to fetch baseline data
     const getBaseline = async () => {

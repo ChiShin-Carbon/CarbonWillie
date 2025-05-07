@@ -51,7 +51,7 @@ export const FireExtinguisher = ({refreshFireExtinguisherData}) => {
   }, [])
   
   // Check if user has permission to edit/delete
-  const hasEditPermission = userPosition !== 1
+  const hasEditPermission = userPosition === 3;
 
   const ingredientMap = {
     1: 'CO2', // Replace with actual ingredient names
