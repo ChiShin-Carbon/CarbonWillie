@@ -103,13 +103,7 @@ const getAdminNavItems = () => {
 };
 
 const getNormalNavItems = () => {
-  let userRole = 0;
-  
-  try {
-    userRole = parseInt(window.sessionStorage.getItem("role"));
-  } catch (error) {
-    console.error("Error parsing role from sessionStorage:", error);
-  }
+
   
   // 建立基本導航選項
   const normalNavItems = [
@@ -199,7 +193,7 @@ const getNormalNavItems = () => {
   ];
   
   // 只在 role=1 時，添加「碳盤查–顧問」選項
-  if (userRole === 1) {
+  if (window.sessionStorage.getItem("role") == 1) {
     // 找到「碳盤查系統」選項
     const carbonSystemGroup = normalNavItems.find(item => item.name === '碳盤查系統');
     if (carbonSystemGroup && carbonSystemGroup.items) {

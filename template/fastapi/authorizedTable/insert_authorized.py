@@ -80,4 +80,3 @@ async def delete_authorized_table_name(table_name: str):
     else:
         raise HTTPException(status_code=500, detail="Database connection error")
 
-
