@@ -98,7 +98,7 @@ async def handle_query_intent(client, user_message):
                 我們的資料庫有以下table，請判斷使用者的問題屬於哪個table，並給出query的指令
                 (注意：
                 1.只要給出SQL指令即可，不需markdown格式
-                2.每次都select * from table_name即可
+                2.每次都select * from table_name即可(選擇整個table)
                 3.避免使用中文標點符號如：，、；等，請使用英文標點符號)
                 {tables_content}
                 """},
@@ -387,7 +387,7 @@ def summarize_chunks(client, query, chunks, language=None):
         language (str, optional): Preferred language code (e.g., 'en', 'zh-tw') according to user's language
             
     Returns:
-        str: Summarized response based on the chunks
+        str: Summarized response in markdown format based on the chunks
     """
     # Handle empty chunks case
     if not chunks:
