@@ -88,18 +88,41 @@ const AppHeaderDropdown = () => {
   }
 
   const handleLogout = () => {
-    // Clear session storage
-    window.sessionStorage.removeItem('user_id');
-    window.sessionStorage.removeItem('username');
-    window.sessionStorage.removeItem('address');
-
-    // Redirect to login page
-    window.location.href = '/#/Login';
-
-    // Force reload to ensure app initializes fresh
-    window.location.reload();
+    try {
+      // Clear all possible storage types
+      // Session storage
+      window.sessionStorage.clear();
+      
+      // Local storage (in case you store anything there)
+      window.localStorage.clear();
+      
+      // Clear cookies (for cookie-based authentication)
+      document.cookie.split(";").forEach((cookie) => {
+        const eqPos = cookie.indexOf("=");
+        const name = eqPos > -1 ? cookie.substring(0, eqPos).trim() : cookie.trim();
+        document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+      });
+      
+      // If you're using JWT tokens or other auth mechanisms stored elsewhere, clear those too
+      
+      // Force redirect to login page
+      window.location.replace('/#/Login');
+      
+      // In case the redirect doesn't work for some reason, force a full page reload
+      setTimeout(() => {
+        window.location.href = '/#/Login';
+        window.location.reload(true); // true forces reload from server, not cache
+      }, 100);
+      
+      console.log("Logout successful");
+    } catch (error) {
+      console.error("Logout failed:", error);
+      alert("Logout failed. Please try again or close your browser.");
+      
+      // Last resort - try simple redirect
+      window.location.href = '/#/Login';
+    }
   };
-
 
   const setdept = () => {
     if (departmentID === 1) {
