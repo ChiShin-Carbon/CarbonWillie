@@ -1,53 +1,61 @@
-import React, { useRef, useEffect, useState } from 'react'
-
+import React, { useState, useEffect } from 'react'
 import {
-  CRow,
-  CCol,
   CCard,
-  CTab,
-  CTabList,
+  CCardBody,
+  CCol,
+  CForm,
+  CFormInput,
+  CRow,
+  CFormSelect,
+  CTable,
+  CTableBody,
+  CTableDataCell,
+  CTableHead,
+  CTableHeaderCell,
+  CTableRow,
+  CFormCheck,
+  CInputGroup,
+  CInputGroupText,
   CTabs,
+  CTabList,
+  CTab,
   CButton,
-  CAccordion,
-  CAccordionItem,
-  CAccordionHeader,
-  CAccordionBody,
-  CModal,
-  CModalHeader,
-  CModalBody,
-  CModalFooter,
-  CModalTitle,
+  CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle
 } from '@coreui/react'
-
+import { Link } from 'react-router-dom'
+import CIcon from '@coreui/icons-react'
+import '../../../../scss/盤查進度管理.css'
 import '../../../../scss/碳盤查系統.css'
 import styles from '../../../../scss/活動數據盤點.module.css'
-import { Link } from 'react-router-dom'
-
-import 'primereact/resources/themes/saga-blue/theme.css' // 主题样式
-import 'primereact/resources/primereact.min.css' // 核心 CSS
-import 'primeicons/primeicons.css' // 图标样式
-
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPenToSquare, faTrashCan } from '@fortawesome/free-solid-svg-icons'
-
-import AddModal from './新增Modal' // Import the AddModal component
-import EditModal from './編輯Modal'
+import EditSuccessModal from './審核成功Modal.js'
+import EditFalseModal from './審核失敗Modal.js'
+import { cilCheckAlt, cilX } from '@coreui/icons'
 
 const Tabs = () => {
-  const addModalRef = useRef()
-  const handleOpenAddModal = () => {
-    addModalRef.current.openModal()
-  }
-  const editModalRef = useRef()
-  const handleOpenEditModal = (tableName, usernames) => {
-    editModalRef.current.openModal(tableName, usernames)
-  }
+  const [isTrueModalOpen, setTrueIsModalOpen] = useState(null)
+  const [isFalseModalOpen, setFalseIsModalOpen] = useState(null)
 
-  // 設定用來儲存授權記錄的狀態
-  const [authorizedRecords, setAuthorizedRecords] = useState([])
-  const [uniqueTableNames, setUniqueTableNames] = useState([]) // 用來儲存去重后的table_name
-  const [errorMessage, setErrorMessage] = useState('') // 添加錯誤訊息狀態
-  
+  const [searchInput, setSearchInput] = useState('') // 存放輸入框的臨時搜尋值
+  const [searchValue, setSearchValue] = useState('') // 觸發搜尋的值
+  const [selectedFeedback, setSelectedFeedback] = useState('') // 資料回報狀態
+  const [tableData, setTableData] = useState([]) // 新增狀態來存放從後端獲取的資料
+  const [authorizedID, setAuthorizedID] = useState([]) // 新增來存放從後端獲取的資料
+
+  const formatDate = (isoDate) => {
+    if (!isoDate) {
+      return ''; // 如果 isoDate 为 null 或 undefined，则返回空字符串
+    }
+    const date = new Date(isoDate);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // 月份从0开始，需要+1
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    return `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
+  };
+
+  // 呼叫 API 獲取資料
   const getAuthorizedRecords = async () => {
     try {
       const response = await fetch('http://localhost:8000/authorizedTable', {
@@ -56,42 +64,31 @@ const Tabs = () => {
           'Content-Type': 'application/json',
         },
       })
-      
-      if (!response.ok) {
-        const errorData = await response.json()
-        console.log(response.status)
-        setErrorMessage(`Error: ${errorData.detail || 'Unknown error'}`)
-        return // 如果請求不成功，直接返回
-      }
-      
       const data = await response.json()
       
-      // 获取所有的 table_name 并去重
-      const tableNames = data.map((record) => record.table_name)
-      const uniqueTableNames = [...new Set(tableNames)] // 去重
-      setUniqueTableNames(uniqueTableNames) // 存储去重后的table_name
-
-      // 將每個記錄的 departmentID 轉換為部門名稱
-      const recordsWithDepartments = data.map((record) => ({
-        ...record,
-        department: getDepartmentName(record.department), // 使用函數獲取部門名稱
-      }))
-      setAuthorizedRecords(recordsWithDepartments)
-      setErrorMessage('') // 成功時清除錯誤訊息
+      // Ensure data is an array before setting state
+      if (Array.isArray(data)) {
+        setTableData(data) // Set table data only if it's an array
+      } else if (data && Array.isArray(data.data)) {
+        // Handle case where API returns { data: [...] }
+        setTableData(data.data)
+      } else {
+        console.error('API did not return an array:', data)
+        setTableData([]) // Set to empty array as fallback
+      }
     } catch (error) {
-      console.error('Error fetching authorized records:', error)
-      setErrorMessage('Error fetching authorized records')
-      // 發生錯誤時，確保將資料設為空陣列，而不是保留舊資料
-      setAuthorizedRecords([])
-      setUniqueTableNames([])
+      console.error('Error fetching data:', error)
+      setTableData([]) // Set to empty array on error
     }
   }
   
+
+  // 使用 useEffect 在組件加載時呼叫 API
   useEffect(() => {
     getAuthorizedRecords()
   }, [])
 
-  // 將部門ID轉換為部門名稱的函數
+  // 定義部門轉換函數
   const getDepartmentName = (departmentID) => {
     switch (departmentID) {
       case 1:
@@ -110,119 +107,80 @@ const Tabs = () => {
         return '其他'
     }
   }
-  
-  // 分类表名对应的范围
-  const categoryMapping = {
-    範疇一: [
-      '公務車',
-      '滅火器',
-      '工作時數(員工)',
-      '工作時數(非員工)',
-      '冷媒',
-      '廠內機具',
-      '緊急發電機',
-    ],
-    範疇二: ['電力使用量'],
-    範疇三: ['員工通勤', '商務旅行', '營運產生廢棄物', '銷售產品的廢棄物'],
-  }
 
-  // 用来追踪每个表名对应的记录
-  const recordMap = {}
-
-  // 遍历授权记录以合并相同 table_name 的记录
-  authorizedRecords.forEach((record) => {
-    const { table_name, username, department } = record
-
-    // 确定记录属于哪个範疇
-    for (const [category, tables] of Object.entries(categoryMapping)) {
-      if (tables.includes(table_name)) {
-        if (!recordMap[table_name]) {
-          recordMap[table_name] = {
-            category,
-            usernames: {
-              管理部門: '無',
-              資訊部門: '無',
-              業務部門: '無',
-              門診部門: '無',
-              健檢部門: '無',
-              檢驗部門: '無',
-            },
-          }
-        }
-        // 更新用户名
-        recordMap[table_name].usernames[department] = username || '無'
-        break
-      }
-    }
-  })
-
-  // 将 recordMap 转换为数组以用于渲染
-  const uniqueRecords = Object.entries(recordMap).map(([table_name, record]) => ({
-    table_name,
-    ...record,
-  }))
-
-  // 定義一個回調函數來刷新授權記錄
-  const refreshAuthorizedRecords = () => {
-    getAuthorizedRecords()
-  }
-
-  ///////////////////////////////刪除////////////////////////////////////////////////
-  const deleteRecordByTableName = async (table_name) => {
-    try {
-      const response = await fetch(`http://localhost:8000/delete_authorized/${table_name}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json()
-        console.error('Failed to delete record:', errorData.detail || 'Unknown error')
-        return false
-      }
-      
-      const result = await response.json()
-      console.log(result.message)
-      // Refresh records after deletion
-      refreshAuthorizedRecords()
-      return true
-    } catch (error) {
-      console.error('Error deleting record:', error)
-      return false
+  // 定義審核轉換函數
+  const getReview = (reviewID) => {
+    switch (reviewID) {
+      case 1:
+        return '尚未審核'
+      case 2:
+        return '已審核-審核成功'
+      case 3:
+        return '已審核-審核失敗'
+      default:
+        return '其他'
     }
   }
 
-  const [isDeleteModalVisible, setDeleteModalVisible] = useState(false)
-  const [selectedTableName, setSelectedTableName] = useState(null)
+  // 過濾後的表格資料，排除 status 欄位的搜尋
+  const filteredData = Array.isArray(tableData) 
+  ? tableData.filter(
+      (row) =>
+        (row.table_name?.includes(searchValue) ||
+          row.username?.includes(searchValue) ||
+          row.authorized_record_id ||
+          getDepartmentName(row.department)?.includes(searchValue) ||
+          getReview(row.review)?.includes(searchValue)
+        ) &&
+        (selectedFeedback === '' || (row.review === 1 ? '尚未審核' : '已審核') === selectedFeedback)
+    )
+  : [];
 
-  const openDeleteModal = (tableName) => {
-    setSelectedTableName(tableName)
-    setDeleteModalVisible(true)
+  // handleSearchInput 處理輸入框變化
+  const handleSearchInput = (e) => {
+    setSearchInput(e.target.value) // 更新輸入框的值
   }
 
-  // 刪除紀錄的函數
-  const deleteAndClose = async (tableName) => {
-    const success = await deleteRecordByTableName(tableName)
-    if (success) {
-      setDeleteModalVisible(false) // 關閉 Modal
+  // handleSearch 按下按鈕時觸發
+  const handleSearch = () => {
+    setSearchValue(searchInput) // 將輸入框的值更新到 searchValue
+    console.log('搜尋結果:', searchInput) // 偵錯用
+  }
+
+  // 監聽鍵盤事件以判斷是否按下 Enter 鍵
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault() // 防止表單默認提交行為
+      handleSearch() // 呼叫搜尋函數
     }
   }
+
+  // handleFeedbackChange 函數處理下拉選單變化
+  const handleFeedbackChange = (e) => {
+    setSelectedFeedback(e.target.value)
+  }
+
+  const handleComplete = () => {
+    if (selectedItems.length === 0) {
+      setShowAlert(true);
+      return;
+    }
+    setShowModal(true);
+  };
 
   return (
-    <main>
+    <CRow>
       <CTabs activeItemKey={1}>
         <CTabList variant="underline-border" className="system-tablist">
           <div className={styles.tabsContainer}>
             <div className={styles.tabsLeft}>
-              <Link to="/碳盤查系統/system/基準年設定" className="system-tablist-link">
+              <Link to="/碳盤查系統/system" className="system-tablist-link">
                 <CTab aria-controls="tab1" itemKey={3} className="system-tablist-choose">
                   基準年&邊界設定
                 </CTab>
               </Link>
-              <Link to="." className="system-tablist-link">
-                <CTab aria-controls="tab3" itemKey={1} className="system-tablist-choose">
+              <Link to="/碳盤查系統/system/活動數據分配" className="system-tablist-link">
+                <CTab aria-controls="tab3" itemKey={4} className="system-tablist-choose">
                   活動數據分配
                 </CTab>
               </Link>
@@ -233,8 +191,8 @@ const Tabs = () => {
               </Link>
             </div>
             <div className={styles.tabsRight}>
-              <Link to="/碳盤查系統/system/盤查進度管理" className="system-tablist-link">
-                <CTab aria-controls="tab3" itemKey={5} className="system-tablist-choose">
+              <Link to="." className="system-tablist-link">
+                <CTab aria-controls="tab3" itemKey={1} className="system-tablist-choose">
                   盤查進度管理
                 </CTab>
               </Link>
@@ -245,268 +203,152 @@ const Tabs = () => {
 
       <div className="system-titlediv">
         <div>
-          <h4 className="system-title">活動數據分配</h4>
+          <h4 className="system-title">盤查進度管理</h4>
           <hr className="system-hr"></hr>
         </div>
       </div>
-      
-      {errorMessage && (
-        <div className="alert alert-danger" role="alert">
-          {errorMessage}
+      <CCol xs={12}>
+        <div className="d-flex align-items-center">
+          <CCol sm={8}>
+            <CInputGroup>
+              <CInputGroupText
+                style={{
+                  borderRadius: '25px 0 0 25px',
+                  padding: '0.5rem',
+                  backgroundColor: 'white',
+                }}
+              >
+                <i className="pi pi-search" />
+              </CInputGroupText>
+              <CFormInput
+                type="search"
+                placeholder="Search"
+                aria-label="Search"
+                onChange={handleSearchInput}
+                onKeyDown={handleKeyDown}
+              />
+              <CButton
+                type="button"
+                color="secondary"
+                variant="outline"
+                onClick={handleSearch}
+                style={{ borderRadius: '0 25px 25px 0' }}
+              >
+                <i className="pi pi-search" />
+              </CButton>
+            </CInputGroup>
+          </CCol>
+          <CCol sm={1}></CCol>
+          <CCol sm={3}>
+            <CFormSelect
+              aria-label="Default select example"
+              style={{ borderRadius: '25px' }}
+              onChange={handleFeedbackChange}
+            >
+              <option value="">資料回報狀態</option>
+              <option value="已審核">已審核</option>
+              <option value="尚未審核">尚未審核</option>
+            </CFormSelect>
+          </CCol>
         </div>
-      )}
-      
-      <CCard className={`mb-4 ${styles.activityCard2}`}>
-        <div>
-          <div className={styles.activityCard2Head}>
-            <strong className={styles.activityCard2HeadTitle}>範疇一</strong>
-            {window.sessionStorage.getItem("position") == 1 ? (
-              <button className={styles.activityAddButton} onClick={handleOpenAddModal}>
-                新增
-              </button>
-            ) : null}
-          </div>
+      </CCol>
+      <CRow>
+        <br />
+      </CRow>
+      <CCol xs={12}>
+        <CCard className="mb-4">
+          <CCardBody>
+            <CForm>
+              <CTable>
+                <CTableHead color="light">
+                  <CTableRow>
+                    {/* <CTableHeaderCell scope="col">勾選</CTableHeaderCell> */}
+                    <CTableHeaderCell scope="col">排放源項目</CTableHeaderCell>
+                    <CTableHeaderCell scope="col">填寫單位</CTableHeaderCell>
+                    <CTableHeaderCell scope="col">負責人</CTableHeaderCell>
+                    <CTableHeaderCell scope="col">資料蒐集完成日</CTableHeaderCell>
+                    <CTableHeaderCell scope="col">狀態</CTableHeaderCell>
+                    <CTableHeaderCell scope="col">資料回報狀態</CTableHeaderCell>
+                  </CTableRow>
+                </CTableHead>
+                <CTableBody>
+                  {filteredData.length > 0 ? (
+                    filteredData.map((row, index) => (
+                      <CTableRow key={index}>
+                        {/* 勾選 
+                        <CTableDataCell>
+                          <CFormCheck style={{ borderColor: 'black' }} />
+                        </CTableDataCell>*/}
+                        {/* 排放源項目 */}{/*測試用 {row.review} */}
+                        <CTableDataCell>{row.table_name}</CTableDataCell>
+                        {/* 顯示部門名稱 */}
+                        <CTableDataCell>{getDepartmentName(row.department)}</CTableDataCell>
+                        {/* 負責人 */}
+                        <CTableDataCell>{row.username}</CTableDataCell>
+                        {/* 資料蒐集完成日 */}
+                        <CTableDataCell>{formatDate(row.completed_at)}</CTableDataCell>
+                        {/* 狀態 */}
+                        <CTableDataCell>
+                          {row.is_done ? (
+                            <div className="check_icon">
+                              <CIcon icon={cilCheckAlt} className="check" />
+                            </div>
+                          ) : (
+                            <div className="x_icon">
+                              <CIcon icon={cilX} className="x" />
+                            </div>
+                          )}
+                        </CTableDataCell>
+                        {/* 回報狀態 */}
+                        <CTableDataCell>
 
-          <div className={styles.activityCardBody2}>
-            <div className={styles.activityAccordionDiv}>
-              {uniqueRecords
-                .filter((record) => categoryMapping['範疇一'].includes(record.table_name)) // 確保範疇一的項目
-                .map((record) => (
-                  <CAccordion key={record.table_name} className={styles.activityAccordion}>
-                    <CAccordionItem
-                      itemKey={record.table_name}
-                      className={styles.activityAccordionItem}
-                    >
-                      <CAccordionHeader>{record.table_name}</CAccordionHeader>
-                      <CAccordionBody>
-                        <div className={styles.AccordionBodyItem}>
-                          <h6>各部門填寫人</h6>
-                          <hr />
-                          <div className={styles.departmentList}>
-                            <div className={styles.departmentItem}>
-                              <span>管理部門:</span>
-                              <span>{record.usernames.管理部門}</span>
-                            </div>
-                            <div className={styles.departmentItem}>
-                              <span>資訊部門:</span>
-                              <span>{record.usernames.資訊部門}</span>
-                            </div>
-                            <div className={styles.departmentItem}>
-                              <span>業務部門:</span>
-                              <span>{record.usernames.業務部門}</span>
-                            </div>
-                            <div className={styles.departmentItem}>
-                              <span>門診部門:</span>
-                              <span>{record.usernames.門診部門}</span>
-                            </div>
-                            <div className={styles.departmentItem}>
-                              <span>健檢部門:</span>
-                              <span>{record.usernames.健檢部門}</span>
-                            </div>
-                            <div className={styles.departmentItem}>
-                              <span>檢驗部門:</span>
-                              <span>{record.usernames.檢驗部門}</span>
-                            </div>
-                          </div>
+                          {/* 正式的 */}
+                          {row.is_done ? (
+                              row.review === 1 ? (
+                                <>
+                                  <button className={styles.aza1} style={{ marginRight: '10px' }} onClick={() => setTrueIsModalOpen(row.authorized_record_id)}>
+                                    審核成功
+                                  </button>
+                                  <button className={styles.aza2} onClick={() => setFalseIsModalOpen(row.authorized_record_id)}>
+                                    審核失敗
+                                  </button>
+                                  <EditSuccessModal isOpen={isTrueModalOpen === row.authorized_record_id} onClose={() => setTrueIsModalOpen(null)} authorizedRecordId={row.authorized_record_id} refreshData={getAuthorizedRecords}/>
+                                  <EditFalseModal isOpen={isFalseModalOpen === row.authorized_record_id} onClose={() => setFalseIsModalOpen(null)} authorizedRecordId={row.authorized_record_id} refreshData={getAuthorizedRecords}/>
+                                </>
+                              ) : row.review === 2 ? (
+                                <button className={styles.aza1}>審核成功</button>
+                              ) : row.review === 3 ? (
+                                <button className={styles.aza2}>審核失敗</button>
+                              ) : (
+                                getReview(row.review)
+                              )
+                            ) : (
+                              <button className={styles.aza3}>尚未完成</button>
+                            )
+                          }
 
-                          {window.sessionStorage.getItem("position") == 1 ? (
-                            <div style={{ textAlign: 'right' }}>
-                              <FontAwesomeIcon
-                                icon={faPenToSquare}
-                                className={styles.iconPen}
-                                onClick={() =>
-                                  handleOpenEditModal(record.table_name, record.usernames)
-                                }
-                              />
-                              <FontAwesomeIcon
-                                icon={faTrashCan}
-                                className={styles.iconTrash}
-                                onClick={() => openDeleteModal(record.table_name)}
-                              />
-                            </div>
-                          ) : null}
-                        </div>
-                      </CAccordionBody>
-                    </CAccordionItem>
-                  </CAccordion>
-                ))}
-            </div>
-          </div>
-        </div>
-
-        <div>
-          <div className={styles.activityCard2Head}>
-            <strong className={styles.activityCard2HeadTitle}>範疇二</strong>
-          </div>
-
-          <div className={styles.activityCardBody2}>
-            <div className={styles.activityAccordionDiv}>
-              {uniqueRecords
-                .filter((record) => categoryMapping['範疇二'].includes(record.table_name)) // 根據範疇二的記錄進行過濾
-                .map((record) => (
-                  <CAccordion key={record.table_name} className={styles.activityAccordion}>
-                    <CAccordionItem
-                      itemKey={record.table_name}
-                      className={styles.activityAccordionItem}
-                    >
-                      <CAccordionHeader>{record.table_name}</CAccordionHeader>
-                      <CAccordionBody>
-                        <div className={styles.AccordionBodyItem}>
-                          <h6>各部門填寫人</h6>
-                          <hr />
-                          <div className={styles.departmentList}>
-                            <div className={styles.departmentItem}>
-                              <span>管理部門:</span>
-                              <span>{record.usernames.管理部門}</span>
-                            </div>
-                            <div className={styles.departmentItem}>
-                              <span>資訊部門:</span>
-                              <span>{record.usernames.資訊部門}</span>
-                            </div>
-                            <div className={styles.departmentItem}>
-                              <span>業務部門:</span>
-                              <span>{record.usernames.業務部門}</span>
-                            </div>
-                            <div className={styles.departmentItem}>
-                              <span>門診部門:</span>
-                              <span>{record.usernames.門診部門}</span>
-                            </div>
-                            <div className={styles.departmentItem}>
-                              <span>健檢部門:</span>
-                              <span>{record.usernames.健檢部門}</span>
-                            </div>
-                            <div className={styles.departmentItem}>
-                              <span>檢驗部門:</span>
-                              <span>{record.usernames.檢驗部門}</span>
-                            </div>
-                          </div>
-                          {window.sessionStorage.getItem("position") == 1 ? (
-                            <div style={{ textAlign: 'right' }}>
-                              <FontAwesomeIcon
-                                icon={faPenToSquare}
-                                className={styles.iconPen}
-                                onClick={() =>
-                                  handleOpenEditModal(record.table_name, record.usernames)
-                                }
-                              />
-                              <FontAwesomeIcon
-                                icon={faTrashCan}
-                                className={styles.iconTrash}
-                                onClick={() => openDeleteModal(record.table_name)}
-                              />
-                            </div>
-                          ) : null}
-                        </div>
-                      </CAccordionBody>
-                    </CAccordionItem>
-                  </CAccordion>
-                ))}
-            </div>
-          </div>
-        </div>
-
-        <div>
-          <div className={styles.activityCard2Head}>
-            <strong className={styles.activityCard2HeadTitle}>範疇三</strong>
-          </div>
-          <div className={styles.activityCardBody2}>
-            <div className={styles.activityAccordionDiv}>
-              {uniqueRecords
-                .filter((record) => categoryMapping['範疇三'].includes(record.table_name)) // 根據範疇三的記錄過濾
-                .map((record) => (
-                  <CAccordion key={record.table_name} className={styles.activityAccordion}>
-                    <CAccordionItem
-                      itemKey={record.table_name}
-                      className={styles.activityAccordionItem}
-                    >
-                      <CAccordionHeader>{record.table_name}</CAccordionHeader>
-                      <CAccordionBody>
-                        <div className={styles.AccordionBodyItem}>
-                          <h6>各部門填寫人</h6>
-                          <hr />
-                          <div className={styles.departmentList}>
-                            <div className={styles.departmentItem}>
-                              <span>管理部門:</span>
-                              <span>{record.usernames.管理部門}</span>
-                            </div>
-                            <div className={styles.departmentItem}>
-                              <span>資訊部門:</span>
-                              <span>{record.usernames.資訊部門}</span>
-                            </div>
-                            <div className={styles.departmentItem}>
-                              <span>業務部門:</span>
-                              <span>{record.usernames.業務部門}</span>
-                            </div>
-                            <div className={styles.departmentItem}>
-                              <span>門診部門:</span>
-                              <span>{record.usernames.門診部門}</span>
-                            </div>
-                            <div className={styles.departmentItem}>
-                              <span>健檢部門:</span>
-                              <span>{record.usernames.健檢部門}</span>
-                            </div>
-                            <div className={styles.departmentItem}>
-                              <span>檢驗部門:</span>
-                              <span>{record.usernames.檢驗部門}</span>
-                            </div>
-                          </div>
-
-                          {window.sessionStorage.getItem("position") == 1 ? (
-                            <div style={{ textAlign: 'right' }}>
-                              <FontAwesomeIcon
-                                icon={faPenToSquare}
-                                className={styles.iconPen}
-                                onClick={() =>
-                                  handleOpenEditModal(record.table_name, record.usernames)
-                                }
-                              />
-                              <FontAwesomeIcon
-                                icon={faTrashCan}
-                                className={styles.iconTrash}
-                                onClick={() => openDeleteModal(record.table_name)}
-                              />
-                            </div>
-                          ) : null}
-                        </div>
-                      </CAccordionBody>
-                    </CAccordionItem>
-                  </CAccordion>
-                ))}
-            </div>
-          </div>
-        </div>
-      </CCard>
-
-      <CModal
-        backdrop="static"
-        visible={isDeleteModalVisible}
-        onClose={() => setDeleteModalVisible(false)}
-        aria-labelledby="StaticBackdropExampleLabel3"
-      >
-        <CModalHeader>
-          <CModalTitle id="StaticBackdropExampleLabel3">
-            <b>提醒</b>
-          </CModalTitle>
-        </CModalHeader>
-        <CModalBody>確定要刪除該項目嗎?</CModalBody>
-        <CModalFooter>
-          <CButton className="modalbutton1" onClick={() => setDeleteModalVisible(false)}>
-            取消
-          </CButton>
-          <CButton className="modalbutton2" onClick={() => deleteAndClose(selectedTableName)}>
-            確認
-          </CButton>
-        </CModalFooter>
-      </CModal>
-
-      <AddModal
-        ref={addModalRef}
-        onSuccess={refreshAuthorizedRecords}
-        uniqueTableNames={uniqueTableNames}
-      />
-      <EditModal ref={editModalRef} onSuccess={refreshAuthorizedRecords} />
-    </main>
+                        </CTableDataCell>
+                      </CTableRow>
+                    ))
+                  ) : (
+                    <CTableRow>
+                      <CTableDataCell colSpan="9" className="text-center">
+                        沒有找到符合條件的資料
+                      </CTableDataCell>
+                    </CTableRow>
+                  )
+                  }
+                </CTableBody>
+              </CTable>
+              {/* 盤點完成button */}
+              {/* <div style={{ textAlign: 'center' }}>
+                <button className={styles.complete} onClick={() => setVisible(!visible)}>盤點完成</button>
+              </div> */}
+            </CForm>
+          </CCardBody>
+        </CCard>
+      </CCol>
+    </CRow>
   )
 }
-
 export default Tabs
