@@ -89,48 +89,59 @@ async def handle_query_intent(client, user_message):
     """Handle database query intent."""
     tables_content = get_tables_content()
     
-    # Generate SQL query
-    query_intent = client.chat.completions.create(
-        model="gpt-4o",
-        messages=[
-            {"role": "system", "content": f"""
-            我們的資料庫有以下table，請判斷使用者的問題屬於哪個table，並給出query的指令
-            (注意：
-            1.只要給出SQL指令即可，不需markdown格式
-            2.每次都select * from table_name即可)
-            {tables_content}
-            """},
-            {"role": "user", "content": user_message},
-        ]
-    )
+    try:
+        # Generate SQL query
+        query_intent = client.chat.completions.create(
+            model="gpt-4o",
+            messages=[
+                {"role": "system", "content": f"""
+                我們的資料庫有以下table，請判斷使用者的問題屬於哪個table，並給出query的指令
+                (注意：
+                1.只要給出SQL指令即可，不需markdown格式
+                2.每次都select * from table_name即可
+                3.避免使用中文標點符號如：，、；等，請使用英文標點符號)
+                {tables_content}
+                """},
+                {"role": "user", "content": user_message},
+            ]
+        )
 
-    # Execute database query
-    conn = connectDB()
-    if conn:
-        try:
-            cursor = conn.cursor()
-            cursor.execute(query_intent.choices[0].message.content)
-            records = cursor.fetchall()
-            
-            # Generate response based on query results
-            result = client.chat.completions.create(
-                model="gpt-4o",
-                messages=[
-                    {"role": "system", "content": f"""
-                    依據{user_message}在{records}中尋找使用者要的資料並回覆，如果沒特別要求就回覆所有資料
-                    """},
-                ]
-            )
-            
-            result_message = result.choices[0].message.content
-            print(result_message)
-            return {"response": result_message}
-        finally:
-            conn.close()
-    else:
-        print("Could not connect to the database.")
-        return {"response": "Could not connect to the database."}
-
+        # Sanitize the SQL query - replace Chinese punctuation with English
+        sql_query = query_intent.choices[0].message.content
+        sql_query = sql_query.replace('，', ',').replace('；', ';').replace('：', ':')
+        
+        # Execute database query
+        conn = connectDB()
+        if conn:
+            try:
+                cursor = conn.cursor()
+                cursor.execute(sql_query)
+                records = cursor.fetchall()
+                
+                # Generate response based on query results
+                result = client.chat.completions.create(
+                    model="gpt-4o",
+                    messages=[
+                        {"role": "system", "content": f"""
+                        依據{user_message}在{records}中尋找使用者要的資料並回覆，如果沒特別要求就回覆所有資料
+                        """},
+                    ]
+                )
+                
+                result_message = result.choices[0].message.content
+                print(result_message)
+                return {"response": result_message}
+            except Exception as e:
+                print(f"Database execution error: {e}")
+                return {"response": "抱歉，碳智郎僅能回答資料庫中和碳盤查相關的問題"}
+            finally:
+                conn.close()
+        else:
+            print("Could not connect to the database.")
+            return {"response": "抱歉，碳智郎僅能回答資料庫中和碳盤查相關的問題"}
+    except Exception as e:
+        print(f"Error in handling query intent: {e}")
+        return {"response": "抱歉，碳智郎僅能回答資料庫中和碳盤查相關的問題"}
 
 async def handle_answer_intent(client, user_message):
     """Handle RAG-based answer intent using PDF documents."""
