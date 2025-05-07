@@ -144,32 +144,33 @@ const Tabs = () => {
     refreshSellingWasteData
   } = useRefreshData();
 
-// Fetch user ID and authorized tables on component mount
-useEffect(() => {
-  // Get user ID from localStorage
-  const storedUserId = window.sessionStorage.getItem('user_id');
-  const storedUserPosition = window.sessionStorage.getItem('position');
-  const rawStoredUserRole = window.sessionStorage.getItem('role');
-  
-  // Properly process the role value to treat "false" as admin (0)
-  const storedUserRole = (rawStoredUserRole === '0' || rawStoredUserRole === 'false') ? '0' : '1';
-  
-  console.log('Raw role from sessionStorage:', rawStoredUserRole);
-  console.log('Processed role:', storedUserRole);
-  
-  if (storedUserId) {
-    const parsedUserId = parseInt(storedUserId, 10);
-    setUserId(parsedUserId);
-    setUserPosition(storedUserPosition);
-    setUserRole(storedUserRole); // Set the processed role value
+  // Fetch user ID and authorized tables on component mount
+  useEffect(() => {
+    // Get user ID from localStorage
+    const storedUserId = window.sessionStorage.getItem('user_id');
+    const storedUserPosition = window.sessionStorage.getItem('position');
+    const rawStoredUserRole = window.sessionStorage.getItem('role');
     
-    // Fetch authorized tables from API (still needed for non-admin users)
-    fetchAuthorizedTables(parsedUserId);
-  } else {
-    console.error('User ID not found in sessionStorage');
-    setIsLoading(false);
-  }
-}, []);
+    // Properly process the role value to treat "false" as admin (1)
+    // Note the change here - now we're treating "false" as '1' instead of '0'
+    const storedUserRole = (rawStoredUserRole === '1' || rawStoredUserRole === 'false') ? '1' : '0';
+    
+    console.log('Raw role from sessionStorage:', rawStoredUserRole);
+    console.log('Processed role:', storedUserRole);
+    
+    if (storedUserId) {
+      const parsedUserId = parseInt(storedUserId, 10);
+      setUserId(parsedUserId);
+      setUserPosition(storedUserPosition);
+      setUserRole(storedUserRole); // Set the processed role value
+      
+      // Fetch authorized tables from API (still needed for non-admin users)
+      fetchAuthorizedTables(parsedUserId);
+    } else {
+      console.error('User ID not found in sessionStorage');
+      setIsLoading(false);
+    }
+  }, []);
   // Function to fetch authorized tables from the API
   const fetchAuthorizedTables = async () => {
     try {
@@ -207,17 +208,17 @@ useEffect(() => {
 
   // Check if a function/table is authorized for the current user
   // Check if a function/table is authorized for the current user
-// Check if a function/table is authorized for the current user
-const isAuthorized = (functionName) => {
-  // If Position is 1 (admin), grant access to all tables
-  if (userPosition === '1' || userRole === '0' || userRole === 'false') return true;
-  // For other Positions, check authorized tables
-  if (!authorizedTables.length) return false;
+  // Check if a function/table is authorized for the current user
+  const isAuthorized = (functionName) => {
+    // If Position is 1 (admin), grant access to all tables
+    if (userPosition === '1' || userRole === '1' || userRole === 'true') return true;
+    // For other Positions, check authorized tables
+    if (!authorizedTables.length) return false;
 
-  // Convert function name to Chinese title
-  const chineseTitle = functionTitlesMap[functionName];
-  return authorizedTables.some(table => table.table_name === chineseTitle);
-};
+    // Convert function name to Chinese title
+    const chineseTitle = functionTitlesMap[functionName];
+    return authorizedTables.some(table => table.table_name === chineseTitle);
+  };
 
 
   // Handle clicking on a function item
@@ -591,7 +592,7 @@ const isAuthorized = (functionName) => {
             </>
           ) : (
             <div className={styles.noChoose}>
-              {!(userPosition === '1' || userRole === '0' || userRole === 'false') && authorizedTables.length === 0
+              {!(userPosition === '1' || userRole === '1') && authorizedTables.length === 0
                 ? '您目前沒有任何授權項目。請聯繫管理員獲取權限。'
                 : '請選擇一個項目!'}
             </div>
