@@ -1,5 +1,4 @@
-import React, { useRef, useEffect } from 'react'
-import { useState } from 'react'
+import React, { useRef, useEffect, useState } from 'react'
 
 import {
   CRow,
@@ -47,6 +46,8 @@ const Tabs = () => {
   // 設定用來儲存授權記錄的狀態
   const [authorizedRecords, setAuthorizedRecords] = useState([])
   const [uniqueTableNames, setUniqueTableNames] = useState([]) // 用來儲存去重后的table_name
+  const [errorMessage, setErrorMessage] = useState('') // 添加錯誤訊息狀態
+  
   const getAuthorizedRecords = async () => {
     try {
       const response = await fetch('http://localhost:8000/authorizedTable', {
@@ -55,29 +56,37 @@ const Tabs = () => {
           'Content-Type': 'application/json',
         },
       })
-      const data = await response.json()
-
-      if (response.ok) {
-        // 获取所有的 table_name 并去重
-        const tableNames = data.map((record) => record.table_name)
-        const uniqueTableNames = [...new Set(tableNames)] // 去重
-        setUniqueTableNames(uniqueTableNames) // 存储去重后的table_name
-
-        // 將每個記錄的 departmentID 轉換為部門名稱
-        const recordsWithDepartments = data.map((record) => ({
-          ...record,
-          department: getDepartmentName(record.department), // 使用函數獲取部門名稱
-        }))
-        setAuthorizedRecords(recordsWithDepartments)
-      } else {
+      
+      if (!response.ok) {
+        const errorData = await response.json()
         console.log(response.status)
-        setErrorMessage(`Error: ${data.detail}`)
+        setErrorMessage(`Error: ${errorData.detail || 'Unknown error'}`)
+        return // 如果請求不成功，直接返回
       }
+      
+      const data = await response.json()
+      
+      // 获取所有的 table_name 并去重
+      const tableNames = data.map((record) => record.table_name)
+      const uniqueTableNames = [...new Set(tableNames)] // 去重
+      setUniqueTableNames(uniqueTableNames) // 存储去重后的table_name
+
+      // 將每個記錄的 departmentID 轉換為部門名稱
+      const recordsWithDepartments = data.map((record) => ({
+        ...record,
+        department: getDepartmentName(record.department), // 使用函數獲取部門名稱
+      }))
+      setAuthorizedRecords(recordsWithDepartments)
+      setErrorMessage('') // 成功時清除錯誤訊息
     } catch (error) {
       console.error('Error fetching authorized records:', error)
       setErrorMessage('Error fetching authorized records')
+      // 發生錯誤時，確保將資料設為空陣列，而不是保留舊資料
+      setAuthorizedRecords([])
+      setUniqueTableNames([])
     }
   }
+  
   useEffect(() => {
     getAuthorizedRecords()
   }, [])
@@ -101,6 +110,7 @@ const Tabs = () => {
         return '其他'
     }
   }
+  
   // 分类表名对应的范围
   const categoryMapping = {
     範疇一: [
@@ -157,10 +167,6 @@ const Tabs = () => {
     getAuthorizedRecords()
   }
 
-  useEffect(() => {
-    getAuthorizedRecords()
-  }, [])
-
   ///////////////////////////////刪除////////////////////////////////////////////////
   const deleteRecordByTableName = async (table_name) => {
     try {
@@ -171,16 +177,20 @@ const Tabs = () => {
         },
       })
 
-      const result = await response.json()
-      if (response.ok) {
-        console.log(result.message)
-        // Refresh records after deletion
-        refreshAuthorizedRecords()
-      } else {
-        console.error('Failed to delete record:', result.detail)
+      if (!response.ok) {
+        const errorData = await response.json()
+        console.error('Failed to delete record:', errorData.detail || 'Unknown error')
+        return false
       }
+      
+      const result = await response.json()
+      console.log(result.message)
+      // Refresh records after deletion
+      refreshAuthorizedRecords()
+      return true
     } catch (error) {
       console.error('Error deleting record:', error)
+      return false
     }
   }
 
@@ -193,9 +203,11 @@ const Tabs = () => {
   }
 
   // 刪除紀錄的函數
-  const deleteAndClose = (tableName) => {
-    deleteRecordByTableName(tableName)
-    setDeleteModalVisible(false) // 關閉 Modal
+  const deleteAndClose = async (tableName) => {
+    const success = await deleteRecordByTableName(tableName)
+    if (success) {
+      setDeleteModalVisible(false) // 關閉 Modal
+    }
   }
 
   return (
@@ -236,8 +248,14 @@ const Tabs = () => {
           <h4 className="system-title">活動數據分配</h4>
           <hr className="system-hr"></hr>
         </div>
-        {/* <button className="system-save">儲存</button> */}
       </div>
+      
+      {errorMessage && (
+        <div className="alert alert-danger" role="alert">
+          {errorMessage}
+        </div>
+      )}
+      
       <CCard className={`mb-4 ${styles.activityCard2}`}>
         <div>
           <div className={styles.activityCard2Head}>
@@ -307,8 +325,6 @@ const Tabs = () => {
                               />
                             </div>
                           ) : null}
-
-
                         </div>
                       </CAccordionBody>
                     </CAccordionItem>
@@ -380,7 +396,6 @@ const Tabs = () => {
                               />
                             </div>
                           ) : null}
-
                         </div>
                       </CAccordionBody>
                     </CAccordionItem>
@@ -452,8 +467,6 @@ const Tabs = () => {
                               />
                             </div>
                           ) : null}
-
-
                         </div>
                       </CAccordionBody>
                     </CAccordionItem>
