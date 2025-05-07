@@ -1,33 +1,37 @@
 from openpyxl.utils import get_column_letter
+from openpyxl.worksheet.worksheet import Worksheet
 import requests
 from . import style  # 引入樣式模組
 
 # API端點常數
 API_BASE_URL = "http://localhost:8000"
 
-def get_commute_data(year):
-    """從API獲取指定年份的員工通勤資料"""
+def get_businesstrip_data(year):
+    """從API獲取指定年份的商務旅行資料"""
     try:
-        api_url = f"{API_BASE_URL}/commute_data_by_year/{year}"
-        response = requests.get(api_url)
+        # 確保year是整數
+        year = int(year) if year is not None else None
         
+        api_url = f"{API_BASE_URL}/businesstrip_data_by_year/{year}"
+        response = requests.get(api_url)
+
         if response.status_code == 200:
             return response.json()
         else:
-            print(f"獲取通勤資料失敗，狀態碼: {response.status_code}，錯誤訊息: {response.text}")
+            print(f"獲取商務旅行資料失敗，狀態碼: {response.status_code}，錯誤訊息: {response.text}")
             return None
     except Exception as e:
-        print(f"連接通勤API時發生錯誤: {e}")
+        print(f"連接商務旅行API時發生錯誤: {e}")
         return None
 
-def create_commute_sheet(wb, data):
-    """建立 '類別三-員工通勤' 工作表"""
-    sheet_name = "類別三-員工通勤"
+def create_businesstrip_sheet(wb, data=None):
+    """建立 '類別三-商務旅行' 工作表"""
+    sheet_name = "類別三-商務旅行"
     ws = wb.create_sheet(title=sheet_name)
 
     # 合併標題列
     ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=4)
-    merged_cell = ws.cell(row=1, column=1, value="員工通勤")
+    merged_cell = ws.cell(row=1, column=1, value="商務旅行")
     merged_cell.alignment = style.center_alignment
     merged_cell.fill = style.yellow_fill  # 標題背景色
 
@@ -45,7 +49,9 @@ def create_commute_sheet(wb, data):
         4: "捷運",
         5: "火車",
         6: "高鐵",
-        7: "客運"
+        7: "客運",
+        8: "飛機",
+        9: "輪船"
     }
     
     # 油種對應表

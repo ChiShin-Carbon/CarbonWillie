@@ -294,6 +294,7 @@ const Tabs = () => {
                         <td style={cellStyle}>{quantitativeInventory.total_emission_equivalent}</td>
                         <td style={cellStyle}>100%</td>
                         <td style={cellStyle}>
+                          $
                           {(
                             quantitativeInventory.total_emission_equivalent *
                             300 *
@@ -301,6 +302,7 @@ const Tabs = () => {
                           ).toLocaleString()}
                         </td>
                         <td style={cellStyle}>
+                          $
                           {(
                             quantitativeInventory.total_emission_equivalent *
                             100 *
@@ -308,6 +310,7 @@ const Tabs = () => {
                           ).toLocaleString()}
                         </td>
                         <td style={cellStyle}>
+                          $
                           {(
                             quantitativeInventory.total_emission_equivalent *
                             50 *
@@ -341,6 +344,7 @@ const Tabs = () => {
                             : '-'}
                         </td>
                         <td style={cellStyle}>
+                          $
                           {(
                             quantitativeInventory.category1_total_emission_equivalent *
                             300 *
@@ -348,6 +352,7 @@ const Tabs = () => {
                           ).toLocaleString()}
                         </td>
                         <td style={cellStyle}>
+                          $
                           {(
                             quantitativeInventory.category1_total_emission_equivalent *
                             100 *
@@ -355,6 +360,7 @@ const Tabs = () => {
                           ).toLocaleString()}
                         </td>
                         <td style={cellStyle}>
+                          $
                           {(
                             quantitativeInventory.category1_total_emission_equivalent *
                             50 *
@@ -388,6 +394,7 @@ const Tabs = () => {
                             : '-'}
                         </td>
                         <td style={cellStyle}>
+                          $
                           {(
                             quantitativeInventory.category2_total_emission_equivalent *
                             300 *
@@ -395,6 +402,7 @@ const Tabs = () => {
                           ).toLocaleString()}
                         </td>
                         <td style={cellStyle}>
+                          $
                           {(
                             quantitativeInventory.category2_total_emission_equivalent *
                             100 *
@@ -402,6 +410,7 @@ const Tabs = () => {
                           ).toLocaleString()}
                         </td>
                         <td style={cellStyle}>
+                          $
                           {(
                             quantitativeInventory.category2_total_emission_equivalent *
                             50 *

@@ -101,6 +101,9 @@ from 盤查清冊.各table.sellingwaste import get_selling_waste
 from 盤查清冊.各table.authorizedtable import get_authorized_users
 from 盤查清冊.各excel.getyear import latest_baseline_router
 
+from 盤查清冊.各excel.excel_merge import excel_generator_router 
+
+
 
 
 
@@ -317,6 +320,12 @@ app.include_router(get_businesstrip)
 app.include_router(get_operational_waste)
 app.include_router(get_selling_waste)
 app.include_router(get_authorized_users)
+
+
+app.include_router(excel_generator_router)
+
+
+
 
 app.include_router(latest_baseline_router)
 

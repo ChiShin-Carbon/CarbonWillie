@@ -1,76 +1,64 @@
 from openpyxl.utils import get_column_letter
+from openpyxl.worksheet.worksheet import Worksheet
 import requests
 from . import style  # 引入樣式模組
 
 # API端點常數
 API_BASE_URL = "http://localhost:8000"
 
-def get_commute_data(year):
-    """從API獲取指定年份的員工通勤資料"""
+def get_selling_waste_data(year):
+    """從API獲取2024年的銷售產品廢棄物資料"""
     try:
-        api_url = f"{API_BASE_URL}/commute_data_by_year/{year}"
+        api_url = f"{API_BASE_URL}/selling_waste_data_by_year/{year}"
         response = requests.get(api_url)
         
         if response.status_code == 200:
             return response.json()
         else:
-            print(f"獲取通勤資料失敗，狀態碼: {response.status_code}，錯誤訊息: {response.text}")
+            print(f"獲取銷售產品廢棄物資料失敗，狀態碼: {response.status_code}，錯誤訊息: {response.text}")
             return None
     except Exception as e:
-        print(f"連接通勤API時發生錯誤: {e}")
+        print(f"連接銷售產品廢棄物API時發生錯誤: {e}")
         return None
 
-def create_commute_sheet(wb, data):
-    """建立 '類別三-員工通勤' 工作表"""
-    sheet_name = "類別三-員工通勤"
+def create_sellingwaste_sheet(wb, data=None):
+    """建立 '類別三-銷售產品的廢棄物' 工作表
+    
+    參數:
+    wb -- openpyxl Workbook物件
+    data -- 銷售產品廢棄物資料列表，若為None則會使用API查詢資料
+    """
+    # 如果沒有提供資料，則從API獲取
+    if data is None:
+        data = []
+    
+    sheet_name = "類別三-銷售產品的廢棄物"
     ws = wb.create_sheet(title=sheet_name)
 
     # 合併標題列
-    ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=4)
-    merged_cell = ws.cell(row=1, column=1, value="員工通勤")
+    ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=2)
+    merged_cell = ws.cell(row=1, column=1, value="銷售產品的廢棄物")
     merged_cell.alignment = style.center_alignment
     merged_cell.fill = style.yellow_fill  # 標題背景色
 
     # 定義表頭
-    headers = ['交通方式', '公里數', '油種', '備註']
+    headers = ['廢棄物項目', '備註']
     for col_idx, header in enumerate(headers, start=1):
         cell = ws.cell(row=2, column=col_idx, value=header)
         cell.fill = style.gray_fill  # 表頭背景色
 
-    # 交通方式對應表
-    transportation_map = {
-        1: "汽車",
-        2: "機車",
-        3: "公車",
-        4: "捷運",
-        5: "火車",
-        6: "高鐵",
-        7: "客運"
-    }
-    
-    # 油種對應表
-    oil_species_map = {
-        1: "無",
-        2: "汽油",
-        3: "柴油"
-    }
-    
     # 如果有資料，則填入資料；如果沒有資料，則生成5個空行
     row_start = 3
     if data and len(data) > 0:
         for row_idx, item in enumerate(data, start=row_start):
-            ws.cell(row=row_idx, column=1, value=transportation_map.get(item['transportation'], "未知"))
-            ws.cell(row=row_idx, column=2, value=item['kilometers'])
-            ws.cell(row=row_idx, column=3, value=oil_species_map.get(item['oil_species'], "未知"))
-            ws.cell(row=row_idx, column=4, value=item.get('remark', ''))
+            ws.cell(row=row_idx, column=1, value=item['waste_item'])
+            ws.cell(row=row_idx, column=2, value=item.get('remark', ''))
         row_end = row_start + len(data) - 1
     else:
         # 如果沒有資料或API連線失敗，生成5個空行
         for row_idx in range(row_start, row_start + 5):
             ws.cell(row=row_idx, column=1, value="")
             ws.cell(row=row_idx, column=2, value="")
-            ws.cell(row=row_idx, column=3, value="")
-            ws.cell(row=row_idx, column=4, value="")
         row_end = row_start + 4  # 5個空行，末尾行編號為初始行+4
 
     # 套用黑色邊框
