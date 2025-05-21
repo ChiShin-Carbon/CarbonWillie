@@ -136,7 +136,7 @@ const EditModal = ({
         // Auto hide after 5 seconds
         setTimeout(() => {
             setShowAlert(false);
-        }, 5000);
+        }, 15000);
     };
 
     // Process image with OCR

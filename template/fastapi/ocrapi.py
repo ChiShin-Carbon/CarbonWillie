@@ -7,13 +7,13 @@ import openai
 from dotenv import load_dotenv
 import os
 import torch
-import pytesseract
 import re
 import logging
 import warnings
 from transformers import logging as transformers_logging
 import numpy as np
 import cv2
+import json
 
 
 # Set logging level to ERROR to suppress warnings and info messages
@@ -60,37 +60,38 @@ def preprocess_image(pil_img):
     Returns:
         PIL Image: Optimized image for OCR with better speed
     """
-    # Convert PIL to OpenCV format
-    img = np.array(pil_img)
-    img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
-    
-    # 1. Resize the image to a reasonable fixed size for faster processing
-    # Using a more moderate size to balance accuracy and speed
-    target_width = 800
-    h, w = img.shape[:2]
-    scale = target_width / w
-    new_height = int(h * scale)
-    img = cv2.resize(img, (target_width, new_height), interpolation=cv2.INTER_AREA)
-    
-    # 2. Convert to grayscale
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    
-    # 3. Apply adaptive thresholding with larger block size for speed
-    binary = cv2.adaptiveThreshold(
-        gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 15, 2
-    )
-    
-    # Skip the morphological operations to save time
-    
-    # Skip the expensive denoising step
-    
-    # 4. Convert back to PIL format
-    enhanced_img = Image.fromarray(binary)
-    
-    # 5. Sharpen the image (keeping only the most effective enhancement)
-    enhanced_img = enhanced_img.filter(ImageFilter.SHARPEN)
-    
-    return enhanced_img
+    try:
+        # Convert PIL to OpenCV format
+        img = np.array(pil_img)
+        img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+        
+        # 1. Resize the image to a reasonable fixed size for faster processing
+        # Using a more moderate size to balance accuracy and speed
+        target_width = 800
+        h, w = img.shape[:2]
+        scale = target_width / w
+        new_height = int(h * scale)
+        img = cv2.resize(img, (target_width, new_height), interpolation=cv2.INTER_AREA)
+        
+        # 2. Convert to grayscale
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        
+        # 3. Apply adaptive thresholding with larger block size for speed
+        binary = cv2.adaptiveThreshold(
+            gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 15, 2
+        )
+        
+        # 4. Convert back to PIL format
+        enhanced_img = Image.fromarray(binary)
+        
+        # 5. Sharpen the image (keeping only the most effective enhancement)
+        enhanced_img = enhanced_img.filter(ImageFilter.SHARPEN)
+        
+        return enhanced_img
+    except Exception as e:
+        print(f"Error in image preprocessing: {str(e)}")
+        # Return original image if preprocessing fails
+        return pil_img
 
 def create_processing_variants(pil_img):
     """
@@ -102,27 +103,54 @@ def create_processing_variants(pil_img):
     Returns:
         list: List of preprocessed PIL Image objects (reduced for speed)
     """
-    variants = []
-    
-    # Original image
-    variants.append(pil_img)
-    
-    # Standard preprocessing (most effective variant)
-    variants.append(preprocess_image(pil_img))
-    
-    # Grayscale with increased contrast (combines two previous variants)
-    gray_img = pil_img.convert('L')
-    contrast_enhancer = ImageEnhance.Contrast(gray_img)
-    high_contrast_img = contrast_enhancer.enhance(2.0)
-    variants.append(high_contrast_img)
-    
-    return variants
+    try:
+        variants = []
+        
+        # Original image
+        variants.append(pil_img)
+        
+        # Standard preprocessing (most effective variant)
+        try:
+            variants.append(preprocess_image(pil_img))
+        except Exception as e:
+            print(f"Error creating preprocessed variant: {str(e)}")
+        
+        # Grayscale with increased contrast (combines two previous variants)
+        try:
+            gray_img = pil_img.convert('L')
+            contrast_enhancer = ImageEnhance.Contrast(gray_img)
+            high_contrast_img = contrast_enhancer.enhance(2.0)
+            variants.append(high_contrast_img)
+        except Exception as e:
+            print(f"Error creating high contrast variant: {str(e)}")
+        
+        # Add a fourth variant with higher threshold
+        try:
+            img = np.array(pil_img)
+            img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+            gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            
+            # Use a higher threshold for better text extraction on light backgrounds
+            _, binary_high = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY)
+            enhanced_img_high = Image.fromarray(binary_high)
+            variants.append(enhanced_img_high)
+        except Exception as e:
+            print(f"Error creating high threshold variant: {str(e)}")
+        
+        return variants
+    except Exception as e:
+        print(f"Error in creating image variants: {str(e)}")
+        # Return only original image if processing fails
+        return [pil_img]
 
 def extract_date_and_id(text):
     """
     Extract date (YYYY-MM-DD or similar formats) and ID numbers (XX-12345678 pattern) from text.
     Returns a list with the found items or None if nothing is found.
     Date is always converted to strict YYYY-MM-DD format with leading zeros.
+    
+    This function DOES recognize IDs like TE-57897732 as valid IDs if they follow the
+    XX-12345678 pattern, but does not recognize telephone numbers like TEL02-87913478.
     """
     results = []
     
@@ -130,8 +158,12 @@ def extract_date_and_id(text):
     date_pattern = r'(\d{4}[-/\.年]\d{1,2}[-/\.月]\d{1,2}日?)'
     dates = re.findall(date_pattern, text)
     
-    # ID pattern (format like XX-12345678)
-    id_pattern = r'([A-Za-z]{2}-\d{8})'
+    # ID pattern - Modified to better match the expected format
+    # Look for two letter codes followed by a hyphen (optional) and 8 digits
+    # Also look for IDs with context (e.g., "偵測號碼: AT-09134760")
+    id_pattern = r'(?:偵測號碼[:：]?\s*)?(?<!\w)([A-Za-z]{2})[-]?(\d{8})(?!\w)'
+    
+    # Find all ID pattern matches
     ids = re.findall(id_pattern, text)
     
     # Add found dates (convert to standard format if needed)
@@ -158,109 +190,180 @@ def extract_date_and_id(text):
             # If we can't parse it properly, skip this date
             print(f"Skipping unparseable date: {date}")
     
-    # Add found IDs
-    for id_str in ids:
-        results.append(id_str)
+    # Add found IDs with standard format (2 letters, hyphen, 8 digits)
+    for id_match in ids:
+        # Now id_match is a tuple with (letters, digits)
+        letters = id_match[0].upper()
+        digits = id_match[1]
+        
+        # Ensure the ID follows the correct pattern: 2 letters, hyphen, 8 digits
+        # This will accept codes like TE-57897732 but will filter telephone numbers by context
+        # We're no longer filtering out "TE" as it can be a valid ID prefix
+        formatted_id = f"{letters}-{digits}"
+        
+        # Check if this looks like a telephone number by examining surrounding context
+        # We already filtered out by pattern, so we trust this is a proper ID
+        results.append(formatted_id)
     
     return results if results else None
 
-def ocr_with_tesseract(img):
+async def verify_with_openai(extracted_info, raw_text=""):
     """
-    Process image with Tesseract OCR using English, Traditional Chinese, and Simplified Chinese
+    Use OpenAI to verify that dates are in YYYY-MM-DD format and IDs match XX-12345678 pattern
+    
+    Args:
+        extracted_info: List of extracted strings
+        raw_text: Optional raw OCR text to help with extraction
+        
+    Returns:
+        tuple: (is_valid, verified_data)
     """
     try:
-        # Ensure img is in the right format for pytesseract
-        if not isinstance(img, Image.Image):
-            img = Image.open(io.BytesIO(img))
+        # Prepare a better prompt with both extracted items and raw text
+        items_str = ", ".join([f"'{item}'" for item in extracted_info]) if extracted_info else "None"
         
-        # Run OCR with multiple languages
-        text = pytesseract.image_to_string(img, lang='eng+chi_tra+chi_sim')
-        print(f"Tesseract OCR output: {text}")
+        completion = await run_in_threadpool(
+            lambda: openai.chat.completions.create(
+                model="gpt-4o",
+                messages=[
+                    {"role": "system", "content": """
+                    You are a data validator for OCR text extracted from Chinese documents. Your task is to:
+                    
+                    1. Find dates in YYYY-MM-DD format (e.g., 2025-05-20)
+                    2. Find ID codes in XX-12345678 format (e.g., TE-57897732, AT-09134760)
+                    
+                    Look for patterns like:
+                    - Dates might appear as YYYY-MM-DD, YYYY/MM/DD, or YYYY年MM月DD日
+                    - IDs might appear with or without dashes, e.g., AT09134760 or AT-09134760
+                    
+                    IMPORTANT DISTINCTION:
+                    - Valid IDs: Two letters followed by 8 digits (e.g., TE-57897732, AT-09134760)
+                    - NOT Valid: Telephone numbers like TEL02-87913478, FAX-12345678, TEL03-12345678, PHONE-12345678
+                    
+                    How to tell the difference:
+                    - Valid IDs have EXACTLY 2 letters followed by 8 digits
+                    - Telephone numbers often have 3+ letters (TEL, FAX, PHONE) or context indicating they are telephone numbers
+                    - Context clues like "偵測號碼:" (Detection Number:) indicate valid IDs
+                    
+                    Convert and fix formatting to:
+                    - Strict YYYY-MM-DD format for dates
+                    - XX-12345678 format for IDs (exactly 2 letters, followed by hyphen, followed by 8 digits)
+                    
+                    Return a JSON array containing ONLY properly formatted items.
+                    Example: ["2025-05-20", "TE-57897732", "AT-09134760"]
+                    
+                    If you find candidates that don't perfectly match but are close, fix them and include them.
+                    """},
+                    {"role": "user", "content": f"I extracted these items: {items_str}\n\nHere's the raw OCR text for additional context:\n\n{raw_text}\n\nExtract valid dates (YYYY-MM-DD) and IDs (XX-12345678). Remember that IDs like TE-57897732 and AT-09134760 are valid but telephone numbers should be excluded."}
+                ]
+            )
+        )
+
+        verified_response = completion.choices[0].message.content.strip()
+        print(f"OpenAI verification response: {verified_response}")
         
-        # Extract date and ID information
-        extracted_info = extract_date_and_id(text)
-        return extracted_info, text
+        # Extract the JSON array from the response
+        json_match = re.search(r'\[.*?\]', verified_response, re.DOTALL)
+        if json_match:
+            try:
+                verified_data = json.loads(json_match.group())
+                is_valid = len(verified_data) >= 2
+                return is_valid, verified_data
+            except json.JSONDecodeError:
+                print("Failed to parse JSON from OpenAI response")
+        
+        # If we can't find valid JSON, try to extract dates and IDs directly from the response
+        date_pattern = r'(\d{4}-\d{2}-\d{2})'
+        id_pattern = r'([A-Z]{2}-\d{8})'
+        
+        dates = re.findall(date_pattern, verified_response)
+        ids = re.findall(id_pattern, verified_response)
+        
+        extracted = dates + ids
+        if len(extracted) >= 2:
+            return True, extracted
+        
+        # If we still don't have enough, try a more permissive approach with the raw_text
+        date_pattern = r'(\d{4}[-/\.年]\d{1,2}[-/\.月]\d{1,2}日?)'
+        id_pattern = r'(?<!\w)([A-Za-z]{2})[-]?(\d{8})(?!\w)'
+        
+        dates = re.findall(date_pattern, raw_text)
+        id_matches = re.findall(id_pattern, raw_text)
+        
+        # Process dates to standard format
+        processed_dates = []
+        for date in dates:
+            # Convert Chinese format dates if present
+            if '年' in date or '月' in date or '日' in date:
+                date = date.replace('年', '-').replace('月', '-').replace('日', '')
+            
+            # Replace slashes and dots with hyphens
+            date_parts = re.split(r'[-/\.]', date)
+            
+            if len(date_parts) == 3:
+                year = date_parts[0]
+                month = date_parts[1].zfill(2)  # Add leading zero if needed
+                day = date_parts[2].zfill(2)    # Add leading zero if needed
+                
+                # Ensure year is 4 digits
+                if len(year) == 2:
+                    year = '20' + year if int(year) < 50 else '19' + year
+                    
+                standardized = f"{year}-{month}-{day}"
+                processed_dates.append(standardized)
+        
+        # Process IDs to standard format - fixed to respect the two-letter requirement
+        processed_ids = []
+        for id_match in id_matches:
+            # Now id_match is a tuple with (letters, digits)
+            letters = id_match[0].upper()
+            digits = id_match[1]
+            
+            # Skip telephone number prefixes
+            if len(letters) == 2 and letters not in ["PH", "MO", "FA"]:  # Abbreviated telephone prefixes
+                formatted_id = f"{letters}-{digits}"
+                processed_ids.append(formatted_id)
+        
+        combined = processed_dates + processed_ids
+        if len(combined) >= 2:
+            return True, combined
+            
+        return False, []
+        
     except Exception as e:
-        print(f"Tesseract OCR error: {e}")
-        return None, ""
+        print(f"Error in OpenAI verification: {str(e)}")
+        return False, []
+
 @ocrapi.post("/ocrapi")
-async def ocr_image(image: UploadFile = File(...), fast_mode: bool = True):
+async def ocr_image(image: UploadFile = File(...)):
     try:
         # Read the uploaded image
         img_bytes = await image.read()
         original_img = Image.open(io.BytesIO(img_bytes)).convert("RGB")
         
-        # Create processed variants of the image (reduced number for speed)
+        # Create processed variants of the image
         image_variants = create_processing_variants(original_img)
         
-        # Fast path: Try only with the optimized preprocessing variant first
-        if fast_mode:
-            # Use the optimized preprocessed image (second in the list)
-            optimized_img = image_variants[1]
-            tesseract_results, tesseract_text = ocr_with_tesseract(optimized_img)
-            
-            # If we got good results immediately, return them
-            if tesseract_results and len(tesseract_results) >= 2:
-                print(f"Fast mode success with optimized variant: {tesseract_results}")
-                return {"response_content": tesseract_results, "raw_ocr_text": tesseract_text, "source": "tesseract_fast"}
-        
-        # If fast mode failed or is disabled, try with all variants
-        best_result = None
-        best_count = 0
-        best_text = ""
-        best_source = ""
-        
+        # Try with each image variant using Donut model
         for i, img_variant in enumerate(image_variants):
-            variant_name = f"variant_{i}"
-            
-            # Skip the optimized variant if we already tried it in fast mode
-            if fast_mode and i == 1:
-                continue
-                
-            tesseract_results, tesseract_text = ocr_with_tesseract(img_variant)
-            
-            if tesseract_results and len(tesseract_results) >= 2:
-                if len(tesseract_results) > best_count:
-                    best_count = len(tesseract_results)
-                    best_result = tesseract_results
-                    best_text = tesseract_text
-                    best_source = f"tesseract_{variant_name}"
-                    
-                    # Early exit if we found good results
-                    if best_count >= 2:
-                        break
-        
-        # If we found a good result from any variant, return it
-        if best_result and len(best_result) >= 2:
-            print(f"Best result from {best_source}: {best_result}")
-            return {"response_content": best_result, "raw_ocr_text": best_text, "source": best_source}
-        
-        # If no variant gave good results, try with Donut model but only if we have no results yet
-        if not best_result:
             # Check if model was loaded successfully
             if 'processor' not in globals() or 'model' not in globals():
-                raise HTTPException(
-                    status_code=500, 
-                    detail="Donut model failed to load. Check your HUGGINGFACE_TOKEN and model availability."
-                )
-    
-            # Use the optimized image for Donut
-            standard_processed_img = image_variants[1]
+                raise HTTPException(status_code=500, detail="Donut model not loaded correctly")
             
             # Define a task-specific prompt for Chinese document understanding
             task_prompt = "<s_cord-v2>"
             
             # Process the image with the task-specific prompt
-            pixel_values = processor(standard_processed_img, return_tensors="pt").pixel_values.to(device)
+            pixel_values = processor(img_variant, return_tensors="pt").pixel_values.to(device)
             decoder_input_ids = processor.tokenizer(task_prompt, add_special_tokens=False, return_tensors="pt").input_ids.to(device)
             
-            # Generate text from image with optimized parameters for speed
+            # Generate text from image with optimized parameters
             generated_ids = model.generate(
                 pixel_values,
                 decoder_input_ids=decoder_input_ids,
-                max_length=256,  # Reduced from 512
+                max_length=256,  # Reduced for speed
                 early_stopping=True,
-                num_beams=3,     # Reduced from 5
+                num_beams=3,     # Reduced for speed
                 do_sample=False, # Turn off sampling for speed
                 num_return_sequences=1,
                 length_penalty=1.0,
@@ -273,49 +376,98 @@ async def ocr_image(image: UploadFile = File(...), fast_mode: bool = True):
                 skip_special_tokens=True
             )[0]
             
-            print(f"Raw Donut OCR output: {donut_output}")
+            print(f"Donut OCR output for variant {i}: {donut_output}")
             
             # Try to extract from Donut output
             donut_extracted = extract_date_and_id(donut_output)
             
-            # If Donut found something useful, use it
-            if donut_extracted and len(donut_extracted) >= 2:
-                return {"response_content": donut_extracted, "raw_ocr_text": donut_output, "source": "donut_fast"}
-            
-            # If Tesseract found partial results, try to combine with Donut
-            if best_result and donut_extracted:
-                # Combine unique results
-                combined_results = list(set(best_result + donut_extracted))
-                if len(combined_results) >= 2:
-                    return {"response_content": combined_results, "raw_ocr_text": f"Tesseract: {best_text}\nDonut: {donut_output}", "source": "combined_fast"}
+            # If Donut found something, verify with OpenAI
+            if donut_extracted and len(donut_extracted) > 0:
+                is_valid, verified_data = await verify_with_openai(donut_extracted, donut_output)
+                
+                if is_valid:
+                    return {
+                        "response_content": verified_data, 
+                        "raw_ocr_text": donut_output, 
+                        "source": f"donut_variant_{i}_verified"
+                    }
         
-        # Only use GPT-4o as a last resort when all else fails
-        all_texts = []
-        if best_text:
-            all_texts.append(f"Tesseract: {best_text}")
-        elif 'donut_output' in locals():
-            all_texts.append(f"Donut: {donut_output}")
+        # If no variant yielded valid results, try direct GPT-4o extraction
+        # Use the raw text from the original image variant
+        original_output = processor.batch_decode(
+            model.generate(
+                processor(image_variants[0], return_tensors="pt").pixel_values.to(device),
+                decoder_input_ids=processor.tokenizer("<s_cord-v2>", add_special_tokens=False, return_tensors="pt").input_ids.to(device),
+                max_length=256,
+                early_stopping=True,
+                num_beams=3,
+                do_sample=False,
+                num_return_sequences=1,
+            ), 
+            skip_special_tokens=True
+        )[0]
         
-        # Skip GPT-4o if we don't have any useful text
-        if not all_texts:
-            return {"response_content": [], "raw_ocr_text": "", "source": "no_results"}
-            
-        combined_text = "\n".join(all_texts)
+        # Try direct extraction with OpenAI as a last resort
+        dummy_list = ["placeholder"]
+        is_valid, verified_data = await verify_with_openai(dummy_list, original_output)
+        
+        if is_valid:
+            return {
+                "response_content": verified_data, 
+                "raw_ocr_text": original_output, 
+                "source": "gpt4o_direct_extraction"
+            }
+        
+        # Final fallback: use GPT-4o with all collected donut outputs
+        all_outputs = []
+        for i, img_variant in enumerate(image_variants):
+            try:
+                output = processor.batch_decode(
+                    model.generate(
+                        processor(img_variant, return_tensors="pt").pixel_values.to(device),
+                        decoder_input_ids=processor.tokenizer("<s_cord-v2>", add_special_tokens=False, return_tensors="pt").input_ids.to(device),
+                        max_length=256,
+                        early_stopping=True,
+                        num_beams=3,
+                        do_sample=False,
+                        num_return_sequences=1,
+                    ), 
+                    skip_special_tokens=True
+                )[0]
+                all_outputs.append(f"Variant {i}: {output}")
+            except Exception as e:
+                print(f"Error processing variant {i}: {e}")
+        
+        combined_text = "\n".join(all_outputs)
         
         completion = await run_in_threadpool(
             lambda: openai.chat.completions.create(
-                model="gpt-4o",  # Using the full model for better Chinese processing
+                model="gpt-4o",
                 messages=[
                     {"role": "system", "content": """
                     You are a specialized OCR post-processor focused on Chinese documents.
                     Identify and extract:
                     1. Any date in format YYYY-MM-DD (or convert Chinese dates to this format)
-                    2. Any ID strings in format XX-12345678
-                    Only return these two items separated by a space, nothing else.
-                    If you can't find both items, extract whatever you can find.
-                    e.g.: ['2025/02/28', 'AB-12345678']
+                    2. Any ID strings in format XX-12345678 (exactly 2 letters followed by hyphen and exactly 8 digits)
+                    
+                    IMPORTANT DISTINCTION:
+                    - Valid IDs: Two letters followed by 8 digits (e.g., TE-57897732, AT-09134760)
+                    - NOT Valid: Telephone numbers like TEL02-87913478, FAX-12345678
+                    
+                    How to tell the difference:
+                    - Valid IDs have EXACTLY 2 letters followed by 8 digits
+                    - Telephone numbers often have 3+ letters (TEL, FAX, PHONE)
+                    - Context clues like "偵測號碼:" (Detection Number:) indicate valid IDs
+                    
+                    Only return these items as a JSON array with strictly formatted values.
+                    Dates must be in YYYY-MM-DD format with 4-digit year and 2-digit month/day.
+                    IDs must be 2 uppercase letters, hyphen, and 8 digits.
+                    
+                    Example: ["2023-05-21", "TE-57897732", "AT-09134760"]
+                    
+                    If you can't find properly formatted items, return an empty array [].
                     """},
-                    {"role": "user", "content": f"Process this OCR text from a Chinese document. {combined_text}"}
+                    {"role": "user", "content": f"Process this OCR text from a Chinese document. Look for dates in YYYY-MM-DD format and IDs in XX-12345678 format. Remember that IDs like TE-57897732 and AT-09134760 are valid but telephone numbers should be excluded.\n\n{combined_text}"}
                 ]
             )
         )
@@ -323,19 +475,19 @@ async def ocr_image(image: UploadFile = File(...), fast_mode: bool = True):
         gpt_response = completion.choices[0].message.content.strip()
         print(f"Raw GPT response: {gpt_response}")
 
-        # Check if it contains brackets as shown in example
-        if gpt_response.startswith('[') and gpt_response.endswith(']'):
-            # Remove brackets and split by comma
-            cleaned_response = gpt_response[1:-1]  # Remove [ and ]
-            items = [item.strip().strip("'\"") for item in cleaned_response.split(',')]
-            response_content = items
-        else:
-            # Fall back to space splitting if not in expected format
-            response_content = gpt_response.split()
-
-        # Return the response as a structured array
-        print(f"Processed response: {response_content}")
-        return {"response_content": response_content, "raw_ocr_text": combined_text, "source": "gpt"}
+        # Extract the JSON array from the response
+        json_match = re.search(r'\[.*?\]', gpt_response, re.DOTALL)
+        if json_match:
+            try:
+                response_content = json.loads(json_match.group())
+                # Perform final verification on the GPT response
+                if len(response_content) >= 2:
+                    return {"response_content": response_content, "raw_ocr_text": combined_text, "source": "gpt_verified"}
+            except json.JSONDecodeError:
+                print("Failed to parse JSON from GPT response")
+        
+        # If we still have no valid results, return empty
+        return {"response_content": [], "raw_ocr_text": combined_text, "source": "no_verified_results"}
         
     except Exception as e:
         print(f"Error in OCR processing: {str(e)}")
