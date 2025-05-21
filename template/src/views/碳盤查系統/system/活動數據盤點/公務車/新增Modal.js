@@ -364,7 +364,7 @@ export const VehicleAdd = ({
     // Auto hide after 5 seconds
     setTimeout(() => {
       setShowAlert(false);
-    }, 5000);
+    }, 15000);
   };
 
   const handleSubmit = async (e) => {
