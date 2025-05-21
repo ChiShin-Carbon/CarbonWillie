@@ -1,7 +1,9 @@
 from docx import Document
 from docx.shared import Cm
 
-from .storeDef import set_heading, set_heading2, set_paragraph, set_ch6_stairs1
+from .ch0Def import set_heading, set_heading2, set_paragraph
+from .ch6Def import set_ch6_stairs1
+
 
 
 def create_chapter6(user_id):

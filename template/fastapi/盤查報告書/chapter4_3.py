@@ -1,7 +1,8 @@
 from docx import Document
 from docx.shared import Cm
 
-from .storeDef import set_heading, set_heading2, set_paragraph, set_ch4_stairs7
+from .ch0Def import set_heading, set_heading2, set_paragraph, set_explain
+from .ch4Def import set_ch4_stairs7
 
 def add_stairs_paragraphs(doc, texts, format_func):
     for text in texts:
