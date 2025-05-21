@@ -15,12 +15,13 @@ from fastapi.responses import FileResponse
 
 from fastapi import BackgroundTasks
 
-
+from .storeDef3 import get_latest_baseline_year
 
 # 建立 APIRouter 實例
 get_word = APIRouter(tags=["word專用"])
 
 def merge_documents(user_id):
+    year = get_latest_baseline_year()
     doc1 = create_chapter1(user_id)
     doc2 = create_chapter2(user_id)
     doc3 = create_chapter3(user_id)
@@ -77,6 +78,7 @@ if __name__ == "__main__":
 @get_word.get("/generate_word/{user_id}")
 async def generate_word(user_id: int, background_tasks: BackgroundTasks):
     """API 端點，生成 Word 檔案後提供下載"""
+    
     file_path = "combined.docx"  # 設定檔案名稱
 
     # 將生成檔案的操作放入背景任務
