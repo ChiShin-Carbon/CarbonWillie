@@ -350,13 +350,73 @@ def set_ch5_table3(table, quantitative_inventory=None):
 
 
 
-def set_ch5_table4(table):
+def set_ch5_table4(table, quantitative_inventory=None):
+    from docx.oxml import OxmlElement, parse_xml
+    from docx.oxml.ns import qn
+    from docx.enum.text import WD_ALIGN_PARAGRAPH
+    from docx.enum.table import WD_ALIGN_VERTICAL
+    from docx.shared import Pt
+    
+    # Default values in case quantitative_inventory is None
+    if quantitative_inventory is None:
+        quantitative_inventory = {
+            "category1_total_emission_equivalent": 0,
+            "stationary_emission_equivalent": 0,
+            "mobile_emission_equivalent": 0,
+            "process_emission_equivalent": 0,
+            "fugitive_emission_equivalent": 0,
+            "category2_total_emission_equivalent": 0,
+            "total_emission_equivalent": 0
+        }
+    
+    # Extract emission values
+    category1_total = quantitative_inventory.get("category1_total_emission_equivalent", 0)
+    stationary = quantitative_inventory.get("stationary_emission_equivalent", 0)
+    mobile = quantitative_inventory.get("mobile_emission_equivalent", 0)
+    process = quantitative_inventory.get("process_emission_equivalent", 0)
+    fugitive = quantitative_inventory.get("fugitive_emission_equivalent", 0)
+    category2_total = quantitative_inventory.get("category2_total_emission_equivalent", 0)
+    total = quantitative_inventory.get("total_emission_equivalent", 0)
+    
+    # Calculate percentages
+    def calculate_percentage(value, total):
+        if total == 0:
+            return "0.00%"
+        elif value == 0:
+            return "-----"
+        else:
+            return f"{(value / total * 100):.2f}%"
+    
+    category1_percent = calculate_percentage(category1_total, total)
+    stationary_percent = calculate_percentage(stationary, total)
+    mobile_percent = calculate_percentage(mobile, total)
+    process_percent = calculate_percentage(process, total)
+    fugitive_percent = calculate_percentage(fugitive, total)
+    category2_percent = calculate_percentage(category2_total, total)
+    total_percent = "100.00%"
+    
+    # Format emission values to 3 decimal places
+    category1_str = f"{category1_total:.3f}" if category1_total != 0 else "0.000"
+    stationary_str = f"{stationary:.3f}" if stationary != 0 else "0.000"
+    mobile_str = f"{mobile:.3f}" if mobile != 0 else "0.000"
+    process_str = f"{process:.3f}" if process != 0 else "0.000"
+    fugitive_str = f"{fugitive:.3f}" if fugitive != 0 else "0.000"
+    category2_str = f"{category2_total:.3f}" if category2_total != 0 else "0.000"
+    total_str = f"{total:.3f}" if total != 0 else "0.000"
+    
     header_cells = [
         (0, 0, "全廠溫室氣體範疇別及類別一與二排放型式排放量統計表"),
-        (1, 0, "範疇"),(1, 1, "類別一"),(1, 5, "類別二"),(1, 6, "總排放當量"),
-        (2, 1, "固定排放"),(2, 2, "製程排放"),(2, 3, "移動排放"),(2, 4, "逸散排放"),(2, 5, "外購電力"),
-        (3, 0, "排放當量\n(公噸CO2e/年)"),(5, 0, "氣體別占比\n(%)"),
-        (7, 0, "註：依溫室氣體排放量盤查登錄管理辦法第二條第一款規定，溫室氣體排放量以公噸二氧化碳當量(公噸CO2e)表示，並四捨五入至小數點後第三位。"),
+        (1, 0, "範疇"), (1, 1, "類別一"), (1, 5, "類別二"), (1, 6, "總排放當量"),
+        (2, 1, "固定排放"), (2, 2, "製程排放"), (2, 3, "移動排放"), (2, 4, "逸散排放"), (2, 5, "外購電力"),
+        (3, 0, "排放當量\n(公噸CO2e/年)"),
+        (3, 1, category1_str),
+        (4, 1, stationary_str), (4, 2, process_str), (4, 3, mobile_str), (4, 4, fugitive_str),
+        (3, 5, category2_str), (3, 6, total_str),
+        (5, 0, "氣體別占比\n(%)"),
+        (5, 1, category1_percent),
+        (6, 1, stationary_percent), (6, 2, process_percent), (6, 3, mobile_percent), (6, 4, fugitive_percent),
+        (5, 5, category2_percent), (5, 6, total_percent),
+        (7, 0, "註：依溫室氣體排放量盤查登錄管理辦法第二條第一款規定，溫室氣體排放量以公噸二氧化碳當量(公噸CO2e)表示，並四捨五入至小數點後第三位。"),
     ]
 
     for row_idx, col_idx, text in header_cells:
@@ -393,7 +453,9 @@ def set_ch5_table4(table):
     table.cell(1, 6).merge(table.cell(2, 6))  
     table.cell(3, 6).merge(table.cell(4, 6))
     table.cell(5, 6).merge(table.cell(6, 6)) 
-    
+
+    table.cell(3, 5).merge(table.cell(4, 5))
+    table.cell(5, 5).merge(table.cell(6, 5))
 
     for cell in table.rows[0].cells:  # 只針對第一列
         shading = parse_xml(r'<w:shd {} w:fill="FFF2CC"/>'.format(nsdecls('w')))
@@ -430,7 +492,6 @@ def set_ch5_table4(table):
 
             cell.vertical_alignment = WD_ALIGN_VERTICAL.CENTER  # 上下置中
 
-                # 設定特定儲存格 (1,1) 和 (1,5) 為粗體
+            # 設定特定儲存格 (1,1) 和 (1,5) 為粗體
             if (row_idx == 1 and col_idx in [1, 5]):
                 run.font.bold = True  # 設置為粗體
-

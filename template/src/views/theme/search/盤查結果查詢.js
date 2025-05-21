@@ -788,8 +788,7 @@ const Tabs = () => {
                 </CCardBody>
               </CCard>
               <br></br>
-              {/* 全廠溫室氣體數據等級評估結果 */}
-              <CCard style={{ width: '100%' }}>
+              {/* <CCard style={{ width: '100%' }}>
                 <CCardTitle>
                   <div style={{ display: 'flex', flexDireaction: 'row' }}>
                     <div
@@ -904,10 +903,10 @@ const Tabs = () => {
                   </table>
                   <br />
                 </CCardBody>
-              </CCard>
-              <br></br>
+              </CCard> */}
+              {/* <br></br> */}
               {/* 溫室氣體不確定性量化評估結果 */}
-              <CCard style={{ width: '100%' }}>
+              {/* <CCard style={{ width: '100%' }}>
                 <CCardTitle>
                   <div style={{ display: 'flex', flexDireaction: 'row' }}>
                     <div
@@ -991,7 +990,7 @@ const Tabs = () => {
                   </table>
                   <br />
                 </CCardBody>
-              </CCard>
+              </CCard> */}
               <br></br>
               <br></br>
             </>
