@@ -174,7 +174,7 @@ const Tabs = () => {
         <CTabList variant="underline-border" className="system-tablist">
           <div className={styles.tabsContainer}>
             <div className={styles.tabsLeft}>
-              <Link to="/碳盤查系統/system" className="system-tablist-link">
+              <Link to="/碳盤查系統/system/基準年設定" className="system-tablist-link">
                 <CTab aria-controls="tab1" itemKey={3} className="system-tablist-choose">
                   基準年&邊界設定
                 </CTab>

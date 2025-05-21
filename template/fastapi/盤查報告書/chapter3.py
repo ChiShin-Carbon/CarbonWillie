@@ -1,8 +1,10 @@
 from docx import Document
 from docx.shared import Cm
 
-from .storeDef import set_heading, set_heading2, set_paragraph, set_explain,set_ch3_table1
 from .storeDef2 import get_org_name
+
+from .ch0Def import set_heading, set_heading2, set_paragraph, set_explain
+from .ch3Def import set_ch3_table1
 
 
 def create_chapter3(user_id):

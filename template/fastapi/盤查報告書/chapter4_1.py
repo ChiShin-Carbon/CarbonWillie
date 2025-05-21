@@ -1,8 +1,8 @@
 from docx import Document
 from docx.shared import Cm
 
-from .storeDef import set_heading, set_heading2, set_paragraph, set_explain,set_ch4_table1,set_ch4_stairs1,set_ch4_stairs2,set_ch4_stairs3,set_ch4_stairs4
-
+from .ch0Def import set_heading, set_heading2, set_paragraph, set_explain
+from .ch4Def import set_ch4_table1,set_ch4_stairs1,set_ch4_stairs2,set_ch4_stairs3,set_ch4_stairs4
 
 def create_chapter4_1(user_id):
     doc = Document()
