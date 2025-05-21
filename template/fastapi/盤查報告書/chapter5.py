@@ -5,9 +5,22 @@ import requests
 from .ch0Def import set_heading, set_heading2, set_paragraph, set_explain
 from .ch5Def import set_ch5_table1, set_ch5_table2, set_ch5_table3, set_ch5_table4
 from .storeDef2 import get_org_name
+from .storeDef3 import get_latest_baseline_year,get_latest_cfv_start_date
 
 def create_chapter5(user_id):
     org_name = get_org_name(user_id)
+    
+    # 獲取日期並轉換格式
+    date_str = get_latest_cfv_start_date()
+    # 假設日期格式為 YYYY-MM-DD
+    date_parts = date_str.split('-')
+    if len(date_parts) >= 2:
+        date = f"{date_parts[0]}年{int(date_parts[1])}月"
+    else:
+        date = date_str  # 如果日期格式不是預期的，保留原格式
+    
+    year = get_latest_baseline_year()
+    year2 = year-1911
     doc = Document()
 
     # 獲取文檔的第一個 section（默認只有一個）
@@ -41,7 +54,7 @@ def create_chapter5(user_id):
 
     # 使用從API獲取的總排放當量數據
     total_emission = quantitative_inventory.get("total_emission_equivalent", "xxxx.xxxx")
-    content = doc.add_paragraph(f"本機構於【ooo年OO月】規劃並導入溫室氣體盤查，以【ooo年度】(最近一個完整會計年度)為本機構溫室氣體盤查之基準年。基準年排放清冊如表5.1所示，基準年排放量為{total_emission}噸CO2e。")
+    content = doc.add_paragraph(f"本機構於{date}規劃並導入溫室氣體盤查，以{year2}年度(最近一個完整會計年度)為本機構溫室氣體盤查之基準年。基準年排放清冊如表5.1所示，基準年排放量為{total_emission}噸CO2e。")
     set_paragraph(content)
 
     explain = doc.add_paragraph(f"表5.1、{org_name}基準年溫室氣體排放清冊")

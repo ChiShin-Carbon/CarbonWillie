@@ -5,10 +5,15 @@ from .storeDef2 import get_org_name
 
 from .ch0Def import set_heading, set_heading2, set_paragraph, set_explain
 from .ch3Def import set_ch3_table1
+from .storeDef3 import get_latest_baseline_year
+from . storeDef4 import get_total_emission_equivalent
 
 
 def create_chapter3(user_id):
     org_name = get_org_name(user_id)
+    year= get_latest_baseline_year()
+    total=get_total_emission_equivalent()
+
     doc = Document()
 
         # 獲取文檔的第一個 section（默認只有一個）
@@ -67,7 +72,7 @@ def create_chapter3(user_id):
     preface = doc.add_heading("3.4 溫室氣體總排放量",level=2)
     set_heading2(preface)
     
-    content = doc.add_paragraph("經盤查，本機構【OOO年度】溫室氣體總排放量為【xxxx.xx】公噸CO2e。")
+    content = doc.add_paragraph(f"經盤查，本機構{year}年溫室氣體總排放量{total}公噸CO2e。")
     set_paragraph(content)
 
 

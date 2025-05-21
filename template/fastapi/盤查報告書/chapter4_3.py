@@ -3,6 +3,7 @@ from docx.shared import Cm
 
 from .ch0Def import set_heading, set_heading2, set_paragraph, set_explain
 from .ch4Def import set_ch4_stairs7
+from . storeDef4 import get_total_emission_equivalent,get_category1_total_emission_equivalent,get_category2_total_emission_equivalent
 
 def add_stairs_paragraphs(doc, texts, format_func):
     for text in texts:
@@ -10,6 +11,23 @@ def add_stairs_paragraphs(doc, texts, format_func):
         format_func(para) 
 
 def create_chapter4_3(user_id):
+    total=get_total_emission_equivalent()
+    total_cat1= get_category1_total_emission_equivalent()
+    total_cat2= get_category2_total_emission_equivalent()
+
+        # 計算百分比
+    # 避免除以零的情況
+    if total > 0:
+        cat1_percentage = (total_cat1 / total) * 100
+        cat2_percentage = (total_cat2 / total) * 100
+    else:
+        cat1_percentage = 0
+        cat2_percentage = 0
+    
+    # 格式化百分比，保留小數點後兩位
+    cat1_percentage_formatted = f"{cat1_percentage:.2f}"
+    cat2_percentage_formatted = f"{cat2_percentage:.2f}"
+
     doc = Document()
 
         # 獲取文檔的第一個 section（默認只有一個）
@@ -47,7 +65,7 @@ def create_chapter4_3(user_id):
     preface = doc.add_heading("4.5	重大排放源之資訊流",level=2)
     set_heading2(preface)
     
-    content = doc.add_paragraph("根據本機構進行的溫室氣體盤查結果，總排放量為【xxxx.xxxx】公噸。其中，範疇二的外購電力排放量為【xxxx.xxxx】公噸，占總排放量的【xx.xx】%。相比之下，範疇一的排放量為【xxxx.xxxx】公噸，占總排放量的【xx.xx】%，顯示出外購電力在整體溫室氣體排放量中占據了最大的比例。各式活動源及各類溫室氣體的排放量及排放占比，請詳見表5.1。")
+    content = doc.add_paragraph(f"根據本機構進行的溫室氣體盤查結果，總排放量為{total}公噸。其中，範疇二的外購電力排放量為{total_cat2}公噸，占總排放量的{cat2_percentage_formatted}%。相比之下，範疇一的排放量為{total_cat1}公噸，占總排放量的{cat1_percentage_formatted}%，顯示出外購電力在整體溫室氣體排放量中占據了最大的比例。各式活動源及各類溫室氣體的排放量及排放占比，請詳見表5.1。")
     set_paragraph(content)
 
     #4.6 本次盤查排除事項、注意事項及推估說明

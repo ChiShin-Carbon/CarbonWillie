@@ -3,12 +3,15 @@ from docx.shared import Cm
 
 from .storeDef import set_title
 from .storeDef2 import get_org_name
+from .storeDef3 import get_latest_baseline_year
+
 
 from datetime import datetime
 
 
 def create_title(user_id):
     org_name = get_org_name(user_id)
+    year= get_latest_baseline_year()
     doc = Document()
 
     # 獲取文檔的第一個 section（默認只有一個）
@@ -24,7 +27,7 @@ def create_title(user_id):
     doc.add_paragraph("")  # 插入一個空白行
     doc.add_paragraph("")  # 插入一個空白行
     doc.add_paragraph("")  # 插入一個空白行
-    title=doc.add_paragraph(f"OOOO年{org_name}\n溫室氣體盤查報告書")
+    title=doc.add_paragraph(f"{year}年{org_name}\n溫室氣體盤查報告書")
     set_title(title)
     doc.add_paragraph("")  # 插入一個空白行
     doc.add_paragraph("")  # 插入一個空白行

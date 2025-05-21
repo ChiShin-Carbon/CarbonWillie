@@ -6,6 +6,8 @@ from .storeDef2 import get_org_name,get_charge_person,get_org_address,get_intro,
 
 from .ch0Def import set_heading, set_heading2, set_paragraph, set_explain
 from .ch1Def import set_ch1_table1,set_ch1_pointlist
+from .storeDef3 import get_latest_baseline_year
+
 
 
 def create_chapter1(user_id):
@@ -14,6 +16,8 @@ def create_chapter1(user_id):
     charge_person = get_charge_person(user_id)
     intro=get_intro(user_id)
     summary = get_summary(user_id)
+    year= get_latest_baseline_year()
+    year2=year-1911
 
     doc = Document()
 
@@ -79,7 +83,7 @@ def create_chapter1(user_id):
     preface = doc.add_heading("1.4 報告書涵蓋期間與責任/有效期間",level=2)
     set_heading2(preface)
     content1_4_1 = doc.add_paragraph("1.4.1 報告書涵蓋期間與責任")
-    content1_4_1_1=doc.add_paragraph(f"本報告書之盤查內容是以【OOOO年度】於{org_address}（以下均稱本機構）組織邊界範圍內產生之所有溫室氣體為盤查範圍，並供作下年度新報告書完成前引用。")
+    content1_4_1_1=doc.add_paragraph(f"本報告書之盤查內容是以{year2}年度於{org_address}（以下均稱本機構）組織邊界範圍內產生之所有溫室氣體為盤查範圍，並供作下年度新報告書完成前引用。")
     
     content1_4_2 = doc.add_paragraph("1.4.2 本報告書為隔年1月時開始進行前一年度之溫室氣體排放量之各項盤查工作，並於2月開始報告書之內容製作，其涵蓋前一年本校之溫室氣體排放總結，供作本年度及下年度新報告書完成前引用。")
     content1_4_3=doc.add_paragraph("1.4.3 報告書完成後，經過年度內部諮詢之程序，並修正缺失後，完成本報告書。")
