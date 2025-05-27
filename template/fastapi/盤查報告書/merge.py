@@ -9,6 +9,7 @@ from .chapter6 import create_chapter6
 from .title import create_title
 
 from docx import Document
+from docx2pdf import convert  # 新增導入
 from fastapi import FastAPI, APIRouter, HTTPException, status
 import os
 from fastapi.responses import FileResponse
@@ -76,9 +77,9 @@ def get_latest_baseline_year():
     finally:
         conn.close()
 
-def merge_documents(user_id, file_path):
+def merge_documents_and_convert_to_pdf(user_id, word_file_path, pdf_file_path):
     """
-    合併所有章節的文件
+    合併所有章節的文件並轉換為PDF
     """
     try:
         doc1 = create_chapter1(user_id)
@@ -128,12 +129,21 @@ def merge_documents(user_id, file_path):
             combined_doc.element.body.append(element)
 
         # 確保目錄存在
-        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+        os.makedirs(os.path.dirname(word_file_path), exist_ok=True)
         
-        # 保存合併後的文件
-        combined_doc.save(file_path)
-        print(f"合併完成，生成 {file_path}")
+        # 保存合併後的Word文件
+        combined_doc.save(word_file_path)
+        print(f"Word文件合併完成，生成 {word_file_path}")
         
+        # 將Word文件轉換為PDF
+        try:
+            convert(word_file_path, pdf_file_path)
+            print(f"PDF轉換完成，生成 {pdf_file_path}")
+        except Exception as pdf_error:
+            print(f"PDF轉換過程中發生錯誤: {pdf_error}")
+            # 即使PDF轉換失敗，Word文件已經成功生成，不需要拋出異常
+            # 但可以記錄錯誤日誌
+            
     except Exception as e:
         print(f"文件合併過程中發生錯誤: {e}")
         raise
@@ -141,24 +151,30 @@ def merge_documents(user_id, file_path):
 @get_word.get("/generate_word/{user_id}")
 async def generate_word(user_id: int, background_tasks: BackgroundTasks):
     """
-    API 端點，根據最新 Baseline 年份生成 Word 檔案後提供下載
+    API 端點，根據最新 Baseline 年份生成 Word 和 PDF 檔案後提供下載
     """
     try:
         # 取得最新的 Baseline 年份
         year = get_latest_baseline_year()
         
-        # 設定檔案名稱為 "年份+盤查報告書.docx"
-        filename = f"{year}盤查報告書.docx"
-        file_path = os.path.join(UPLOAD_FOLDER, filename)
+        # 設定檔案名稱
+        base_filename = f"{year}盤查報告書"
+        word_filename = f"{base_filename}.docx"
+        pdf_filename = f"{base_filename}.pdf"
+        
+        word_file_path = os.path.join(UPLOAD_FOLDER, word_filename)
+        pdf_file_path = os.path.join(UPLOAD_FOLDER, pdf_filename)
 
         # 將生成檔案的操作放入背景任務
-        background_tasks.add_task(merge_documents, user_id, file_path)
+        background_tasks.add_task(merge_documents_and_convert_to_pdf, user_id, word_file_path, pdf_file_path)
 
         return {
-            "message": "文件生成中，請稍後查收下載",
-            "filename": filename,
+            "message": "Word和PDF文件生成中，請稍後查收下載",
+            "word_filename": word_filename,
+            "pdf_filename": pdf_filename,
             "year": year,
-            "file_path": file_path
+            "word_file_path": word_file_path,
+            "pdf_file_path": pdf_file_path
         }
         
     except HTTPException as e:
@@ -170,3 +186,43 @@ async def generate_word(user_id: int, background_tasks: BackgroundTasks):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"文件生成過程中發生錯誤: {str(e)}"
         )
+    
+
+@get_word.get("/check_word_status/{year}")
+async def check_word_status(year: int):
+    """
+    檢查指定年份的Word/PDF檔案是否已生成完成
+    """
+    try:
+        # 檢查Word文件
+        word_filename = f"{year}盤查報告書.docx"
+        pdf_filename = f"{year}盤查報告書.pdf"
+        
+        word_path = os.path.join(UPLOAD_FOLDER, word_filename)
+        pdf_path = os.path.join(UPLOAD_FOLDER, pdf_filename)
+        
+        if os.path.exists(pdf_path):  # 優先檢查PDF
+            return {
+                "exists": True,
+                "message": f"{year}年度盤查報告書已成功生成",
+                "file_path": pdf_path
+            }
+        elif os.path.exists(word_path):
+            return {
+                "exists": True,
+                "message": f"{year}年度盤查報告書(Word版)已成功生成",
+                "file_path": word_path
+            }
+        else:
+            return {
+                "exists": False,
+                "message": f"{year}年度盤查報告書尚未生成",
+                "file_path": None
+            }
+    
+    except Exception as e:
+        return {
+            "exists": False,
+            "message": f"檢查報告書狀態時發生錯誤: {str(e)}",
+            "file_path": None
+        }

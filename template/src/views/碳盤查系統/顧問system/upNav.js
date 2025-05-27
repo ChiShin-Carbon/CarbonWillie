@@ -21,10 +21,14 @@ export const UpNav = () => {
     const [baselineYear, setBaselineYear] = useState(null)
     const [isLoading, setIsLoading] = useState(false)
     const [isGeneratingExcel, setIsGeneratingExcel] = useState(false)
+    const [isGeneratingWord, setIsGeneratingWord] = useState(false) // 新增Word生成狀態
     const [toastVisible, setToastVisible] = useState(false)
     const [toastMessage, setToastMessage] = useState('')
     const [toastType, setToastType] = useState('success') // 'success' or 'danger'
     const navigate = useNavigate()
+
+    // 假設的user_id，實際應該從認證系統獲取
+    const [userId] = useState(1) // 請根據實際情況設定
 
     // Fetch the latest baseline ID when component mounts
     useEffect(() => {
@@ -95,6 +99,59 @@ export const UpNav = () => {
         }
     }, [isGeneratingExcel, baselineYear])
 
+    // Word/PDF生成狀態輪詢
+    useEffect(() => {
+        let intervalId
+
+        if (isGeneratingWord && baselineYear) {
+            // 開始輪詢
+            intervalId = setInterval(async () => {
+                try {
+                    const response = await fetch(`http://localhost:8000/check_word_status/${baselineYear}`)
+                    
+                    if (response.ok) {
+                        const data = await response.json()
+                        if (data.exists) {
+                            // Word/PDF文件已生成完成
+                            console.log('Word/PDF檔案已成功生成:', data.file_path)
+                            showToast(`${baselineYear}年度盤查報告書已成功生成！`, 'success')
+                            setIsGeneratingWord(false)
+                            clearInterval(intervalId)
+                        }
+                    } else {
+                        // 如果API還沒有check_word_status，我們可以用簡單的時間估計
+                        // 這是臨時方案，建議後端實現對應的狀態檢查API
+                        console.log('Word狀態檢查API尚未實現，使用預估時間')
+                    }
+                } catch (error) {
+                    console.error('輪詢Word狀態時發生錯誤:', error)
+                    // 如果API不存在，我們設定一個預估時間（比如30秒後停止輪詢）
+                    // 這是臨時方案
+                }
+            }, 3000) // 每3秒檢查一次
+
+            // 如果沒有狀態檢查API，設定一個預估的完成時間（30秒）
+            const fallbackTimeout = setTimeout(() => {
+                if (isGeneratingWord) {
+                    showToast(`${baselineYear}年度盤查報告書生成中，請稍後檢查檔案`, 'info')
+                    setIsGeneratingWord(false)
+                    clearInterval(intervalId)
+                }
+            }, 30000) // 30秒後停止輪詢
+
+            return () => {
+                clearTimeout(fallbackTimeout)
+            }
+        }
+
+        // 組件卸載或狀態變更時清除輪詢
+        return () => {
+            if (intervalId) {
+                clearInterval(intervalId)
+            }
+        }
+    }, [isGeneratingWord, baselineYear])
+
     // 顯示提示訊息
     const showToast = (message, type = 'success') => {
         setToastMessage(message)
@@ -137,6 +194,36 @@ export const UpNav = () => {
         }
     }
 
+    // Generate Word/PDF report
+    const generateWordReport = async () => {
+        try {
+            const response = await fetch(`http://localhost:8000/generate_word/${userId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+
+            const data = await response.json()
+            
+            if (response.ok) {
+                console.log('Word/PDF generation initiated:', data)
+                // 啟動輪詢機制
+                setIsGeneratingWord(true)
+                showToast('已開始生成盤查報告書，請稍候...', 'info')
+                return true
+            } else {
+                console.error('Failed to generate Word/PDF:', data.message)
+                showToast(`生成盤查報告書失敗: ${data.message}`, 'danger')
+                return false
+            }
+        } catch (error) {
+            console.error('Error generating Word/PDF report:', error)
+            showToast(`生成盤查報告書時發生錯誤: ${error.message}`, 'danger')
+            return false
+        }
+    }
+
     // Handle completion of baseline
     const handleCompleteBaseline = async () => {
         if (!baselineId) {
@@ -147,8 +234,9 @@ export const UpNav = () => {
 
         setIsLoading(true)
         try {
-            // First generate the inventory excel
+            // 同時生成Excel和Word/PDF
             const excelGenerated = await generateInventoryExcel()
+            const wordGenerated = await generateWordReport()
             
             // Then mark the baseline as complete
             const response = await fetch(`http://localhost:8000/baseline/${baselineId}/complete`, {
@@ -163,7 +251,15 @@ export const UpNav = () => {
 
             if (response.ok) {
                 console.log('Baseline marked as complete')
-                showToast("盤查已標記為完成" + (excelGenerated ? "，盤查清冊生成中" : ""), "success")
+                let message = "盤查已標記為完成"
+                if (excelGenerated && wordGenerated) {
+                    message += "，盤查清冊和報告書生成中"
+                } else if (excelGenerated) {
+                    message += "，盤查清冊生成中"
+                } else if (wordGenerated) {
+                    message += "，報告書生成中"
+                }
+                showToast(message, "success")
                 setVisible(false)
                
             } else {
@@ -202,8 +298,13 @@ export const UpNav = () => {
                         </div>
 
                         <div className={styles.tabsRight}>
-                            <button className={styles.tabsDone} onClick={() => setVisible(!visible)}>
-                                完成盤查</button>
+                            <button 
+                                className={styles.tabsDone} 
+                                onClick={() => setVisible(!visible)}
+                                disabled={isGeneratingExcel || isGeneratingWord}
+                            >
+                                {(isGeneratingExcel || isGeneratingWord) ? '生成中...' : '完成盤查'}
+                            </button>
                         </div>
                     </div>
                 </CTabList>
@@ -234,7 +335,19 @@ export const UpNav = () => {
                 <CModalHeader>
                     <CModalTitle id="LiveDemoExampleLabel"><b>注意!</b></CModalTitle>
                 </CModalHeader>
-                <CModalBody>確認將完成本年度的盤查嗎? 同時將生成本年度盤查文件。</CModalBody>
+                <CModalBody>
+                    確認將完成本年度的盤查嗎? 
+                    <br />
+                    同時將生成本年度盤查清冊和盤查報告書。
+                    {(isGeneratingExcel || isGeneratingWord) && (
+                        <div className="mt-2 text-info">
+                            <small>
+                                {isGeneratingExcel && "📊 盤查清冊生成中... "}
+                                {isGeneratingWord && "📄 報告書生成中... "}
+                            </small>
+                        </div>
+                    )}
+                </CModalBody>
                 <CModalFooter>
                     <CButton className="modalbutton1" onClick={() => setVisible(false)}>
                         取消
@@ -242,7 +355,7 @@ export const UpNav = () => {
                     <CButton 
                         className="modalbutton2" 
                         onClick={handleCompleteBaseline}
-                        disabled={isLoading}
+                        disabled={isLoading || isGeneratingExcel || isGeneratingWord}
                     >
                         {isLoading ? '處理中...' : '完成'}
                     </CButton>
