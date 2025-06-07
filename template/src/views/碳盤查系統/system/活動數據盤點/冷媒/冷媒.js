@@ -108,45 +108,45 @@ export const Refrigerant = ({refreshRefrigerantData}) => {
       setErrorMessage('取得基準期間資料時發生錯誤');
     }
   };
-
-  // Function to fetch refrigerant data with baseline period filter
-  const fetchRefrigerantData = async () => {
-    setIsLoading(true);
-    try {
-      const data = await getRefrigerantData();
-      if (data && cfvStartDate && cfvEndDate) {
-        // Apply baseline period filter to fill records within each refrigerant
-        const startDate = new Date(cfvStartDate);
-        const endDate = new Date(cfvEndDate);
+// Function to fetch refrigerant data with baseline period filter
+const fetchRefrigerantData = async () => {
+  setIsLoading(true);
+  try {
+    const data = await getRefrigerantData();
+    if (data && cfvStartDate && cfvEndDate) {
+      const startDate = new Date(cfvStartDate);
+      const endDate = new Date(cfvEndDate);
+      
+      const filteredData = data.map(refrigerant => {
+        // Filter fill records that fall within the baseline period
+        let filteredFillrec = [];
+        if (refrigerant.fillrec && refrigerant.fillrec.length > 0) {
+          filteredFillrec = refrigerant.fillrec.filter(fill => {
+            const docDate = new Date(fill.Doc_date);
+            return docDate >= startDate && docDate <= endDate;
+          });
+        }
         
-        const filteredData = data.map(refrigerant => {
-          // Filter fill records that fall within the baseline period
-          if (refrigerant.fillrec && refrigerant.fillrec.length > 0) {
-            const filteredFillrec = refrigerant.fillrec.filter(fill => {
-              const docDate = new Date(fill.Doc_date);
-              return docDate >= startDate && docDate <= endDate;
-            });
-            
-            return {
-              ...refrigerant,
-              fillrec: filteredFillrec
-            };
-          }
-          return refrigerant;
-        });
-        
-        setRefrigerants(filteredData);
-      } else if (data) {
-        // If no baseline dates are available yet, show all data
-        setRefrigerants(data);
-      }
-    } catch (error) {
-      console.error('Error fetching refrigerant data:', error);
-      setErrorMessage('無法獲取冷媒數據');
-    } finally {
-      setIsLoading(false);
+        return {
+          ...refrigerant,
+          fillrec: filteredFillrec
+        };
+      });
+      // Don't filter out refrigerant records - show all refrigerant devices
+      // Only the fill records are filtered by CFV period
+      
+      setRefrigerants(filteredData);
+    } else if (data) {
+      // If no baseline dates are available yet, show all data
+      setRefrigerants(data);
     }
-  };
+  } catch (error) {
+    console.error('Error fetching refrigerant data:', error);
+    setErrorMessage('無法獲取冷媒數據');
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   // Function to toggle expanded row
   const toggleRow = (rowIndex) => {

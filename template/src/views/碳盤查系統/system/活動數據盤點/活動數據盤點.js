@@ -113,6 +113,7 @@ const Tabs = () => {
   const [userId, setUserId] = useState(null)
   const [userPosition, setUserPosition] = useState(null)
   const [userRole, setUserRole] = useState(null)
+  const [errorMessage, setErrorMessage] = useState('')
 
   // Check if user has permission to add/edit/delete
   const hasEditPermission = userPosition === '3'
@@ -146,13 +147,12 @@ const Tabs = () => {
 
   // Fetch user ID and authorized tables on component mount
   useEffect(() => {
-    // Get user ID from localStorage
+    // Get user ID from sessionStorage
     const storedUserId = window.sessionStorage.getItem('user_id');
     const storedUserPosition = window.sessionStorage.getItem('position');
     const rawStoredUserRole = window.sessionStorage.getItem('role');
     
     // Properly process the role value to treat "false" as admin (1)
-    // Note the change here - now we're treating "false" as '1' instead of '0'
     const storedUserRole = (rawStoredUserRole === '1' || rawStoredUserRole === 'false') ? '1' : '0';
     
     console.log('Raw role from sessionStorage:', rawStoredUserRole);
@@ -162,64 +162,68 @@ const Tabs = () => {
       const parsedUserId = parseInt(storedUserId, 10);
       setUserId(parsedUserId);
       setUserPosition(storedUserPosition);
-      setUserRole(storedUserRole); // Set the processed role value
+      setUserRole(storedUserRole);
       
-      // Fetch authorized tables from API (still needed for non-admin users)
+      // Fetch authorized tables for this user
       fetchAuthorizedTables(parsedUserId);
     } else {
       console.error('User ID not found in sessionStorage');
       setIsLoading(false);
     }
   }, []);
+
   // Function to fetch authorized tables from the API
-  const fetchAuthorizedTables = async () => {
+  const fetchAuthorizedTables = async (userId) => {
     try {
       setIsLoading(true);
+      setErrorMessage('');
 
-      const form = new FormData();
-      form.append("user_id", window.sessionStorage.getItem("user_id"));
-
-      // Use the exact endpoint path from your FastAPI router
-      const response = await fetch("http://localhost:8000/authorized-tables", {
-        method: "POST",
-        body: form
+      // Use the same endpoint as in the first file
+      const response = await fetch('http://localhost:8000/authorizedTable', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
 
-
-      // Check if the request was successful
       if (!response.ok) {
-        throw new Error(`Error: ${response.status} - ${response.statusText}`);
+        const errorData = await response.json();
+        console.log(response.status);
+        setErrorMessage(`Error: ${errorData.detail || 'Unknown error'}`);
+        setAuthorizedTables([]);
+        return;
       }
 
-      // Parse the JSON response
       const data = await response.json();
+      console.log('All authorized records:', data);
 
-      // Update state with the fetched data
-      setAuthorizedTables(data);
-      console.log('Authorized tables loaded:', data);
+      // Filter records for the current user
+      const userAuthorizedTables = data.filter(record => record.user_id === userId);
+      console.log('User authorized tables:', userAuthorizedTables);
+
+      setAuthorizedTables(userAuthorizedTables);
+      setErrorMessage('');
     } catch (error) {
       console.error('Error fetching authorized tables:', error);
-      // Optional: show error message to user
-      // alert('Failed to load your authorized tables. Please try refreshing the page.');
+      setErrorMessage('Error fetching authorized tables');
+      setAuthorizedTables([]);
     } finally {
       setIsLoading(false);
     }
   };
 
   // Check if a function/table is authorized for the current user
-  // Check if a function/table is authorized for the current user
-  // Check if a function/table is authorized for the current user
   const isAuthorized = (functionName) => {
     // If Position is 1 (admin), grant access to all tables
     if (userPosition === '1' || userRole === '1' || userRole === 'true') return true;
-    // For other Positions, check authorized tables
+    
+    // For other positions, check authorized tables
     if (!authorizedTables.length) return false;
 
     // Convert function name to Chinese title
     const chineseTitle = functionTitlesMap[functionName];
     return authorizedTables.some(table => table.table_name === chineseTitle);
   };
-
 
   // Handle clicking on a function item
   const handleFunctionChange = (func, title) => {
@@ -257,7 +261,7 @@ const Tabs = () => {
     }
   }, [extinguishers]);
 
-  // Update key when refrigerantor data changes
+  // Update key when refrigerant data changes
   useEffect(() => {
     if (refrigerants && refrigerants.length > 0) {
       setRefreshKey(prevKey => prevKey + 1);
@@ -276,7 +280,7 @@ const Tabs = () => {
     }
 
     try {
-      const response = await fetch(`/authorized-tables/${authorizedItem.authorized_record_id}`, {
+      const response = await fetch(`http://localhost:8000/authorized-tables/${authorizedItem.authorized_record_id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -429,18 +433,31 @@ const Tabs = () => {
   // Render a nav item with conditional styling based on authorization
   const renderNavItem = (functionName, title) => {
     const isAuthorizedItem = isAuthorized(functionName);
+    
+    // Get completion status if authorized
+    let isCompleted = false;
+    if (isAuthorizedItem && authorizedTables.length > 0) {
+      const chineseTitle = functionTitlesMap[functionName];
+      const authorizedItem = authorizedTables.find(table => table.table_name === chineseTitle);
+      isCompleted = authorizedItem ? authorizedItem.is_done : false;
+    }
+
     return (
       <div
         className={`${styles.navContent} 
                    ${currentFunction === functionName ? styles.navContentChoose : ''} 
-                   ${!isAuthorizedItem ? styles.navContentDisabled : ''}`}
+                   ${!isAuthorizedItem ? styles.navContentDisabled : ''}
+                   ${isCompleted ? styles.navContentCompleted : ''}`}
         onClick={() => isAuthorizedItem && handleFunctionChange(functionName, title)}
         style={{
           cursor: isAuthorizedItem ? 'pointer' : 'not-allowed',
-          opacity: isAuthorizedItem ? 1 : 0.5
+          opacity: isAuthorizedItem ? 1 : 0.5,
+          backgroundColor: isCompleted ? '#d4edda' : '',
+          borderLeft: isCompleted ? '4px solid #28a745' : ''
         }}
       >
         {title}
+        {isCompleted && <span style={{ color: '#28a745', marginLeft: '8px' }}>✓</span>}
       </div>
     );
   };
@@ -496,6 +513,12 @@ const Tabs = () => {
           </button>
         )}
       </div>
+
+      {errorMessage && (
+        <div className="alert alert-danger" role="alert">
+          {errorMessage}
+        </div>
+      )}
 
       <div className={styles.activityData}>
         <CCard className={styles.activityCard}>
