@@ -194,21 +194,21 @@ const Tabs = () => {
                   <div>
                     <strong>2024碳費計算</strong>
                   </div>
-                  <div>
+                  {/* <div>
                     <CFormSelect size="sm" className={styles.input}>
                       <option>全部表格</option>
                       <option value="1">表1</option>
                       <option value="2">表2</option>
                       <option value="3">表3</option>
                     </CFormSelect>
-                  </div>
+                  </div> */}
                 </div>
-                <div className={styles.rightItem}>
+                {/* <div className={styles.rightItem}>
                   <button>
                     <CIcon icon={cilDataTransferDown} className="me-2" />
                     下載全部
                   </button>
-                </div>
+                </div> */}
               </div>
               {/* 總覽 */}
               <CCard style={{ width: '100%' }}>
@@ -229,7 +229,7 @@ const Tabs = () => {
                     >
                       總覽
                     </div>
-                    <CButton
+                    {/* <CButton
                       style={{
                         position: 'absolute',
                         right: '30px',
@@ -244,7 +244,7 @@ const Tabs = () => {
                       <b>
                         <CIcon icon={cilDataTransferDown} className="me-2" />
                       </b>
-                    </CButton>
+                    </CButton> */}
                   </div>
                   {/* <div style={{ width: '100%', height: '50px', display: 'grid', alignItems: 'center', }}>
                                         <strong style={{ fontSize: '1.4rem', display: 'flex', alignItems: 'center', padding: '5px' }}>總覽</strong>
@@ -511,7 +511,7 @@ const Tabs = () => {
                         </CButton>
                       </CModalFooter>
                     </CModal>
-                    <CButton
+                    {/* <CButton
                       style={{
                         position: 'absolute',
                         right: '30px',
@@ -526,7 +526,7 @@ const Tabs = () => {
                       <b>
                         <CIcon icon={cilDataTransferDown} className="me-2" />
                       </b>
-                    </CButton>
+                    </CButton> */}
                   </div>
                 </CCardTitle>
                 <CCardBody>
@@ -677,7 +677,7 @@ const Tabs = () => {
                         </CButton>
                       </CModalFooter>
                     </CModal>
-                    <CButton
+                    {/* <CButton
                       style={{
                         position: 'absolute',
                         right: '30px',
@@ -692,7 +692,7 @@ const Tabs = () => {
                       <b>
                         <CIcon icon={cilDataTransferDown} className="me-2" />
                       </b>
-                    </CButton>
+                    </CButton> */}
                   </div>
                 </CCardTitle>
                 <CCardBody>
