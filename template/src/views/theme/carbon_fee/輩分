@@ -1,0 +1,315 @@
+{/* /*碳費分析&圖表呈現頁 */}
+          {activeTab === 'tab2' && (
+            <>
+              <div className={styles.titleContainer}>
+                <div className={styles.leftItem}>
+                  <div>
+                    <strong>xx2024碳費分析</strong>
+                  </div>
+                  <div>
+                    <CFormSelect size="sm" className={styles.input}>
+                      <option>全部圖形</option>
+                      <option value="1">表1</option>
+                      <option value="2">表2</option>
+                      <option value="3">表3</option>
+                    </CFormSelect>
+                  </div>
+                </div>
+                <div className={styles.rightItem}>
+                  <button>
+                    <CIcon icon={cilDataTransferDown} className="me-2" />
+                    下載全部
+                  </button>
+                </div>
+              </div>
+              <CRow>
+                {/* 圓餅圖 */}
+                <CCol xs={12}>
+                  <CCard className="mb-4">
+                    <CCardHeader
+                      style={{
+                        backgroundColor: '#9D6B6B',
+                        height: '50px',
+                        display: 'flex',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <strong
+                        style={{
+                          fontSize: '1.5rem',
+                          color: 'white',
+                          display: 'flex',
+                          alignItems: 'center',
+                          padding: '5px',
+                        }}
+                      >
+                        統計圖表 /{' '}
+                      </strong>
+                      <strong style={{ fontSize: '1.3rem', color: 'white', padding: '5px' }}>
+                        圓餅圖
+                      </strong>
+                      <CButton
+                        style={{
+                          position: 'absolute',
+                          right: '10px',
+                          color: 'white',
+                          display: 'flex',
+                          alignItems: 'center',
+                        }}
+                      >
+                        <b>
+                          <CIcon icon={cilDataTransferDown} style={{ fontSize: '24px' }} />
+                        </b>
+                      </CButton>
+                    </CCardHeader>
+                    <CCardBody
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        flexDirection: 'column',
+                      }}
+                    >
+                      <div style={{ width: '350px', height: '350px' }}>
+                        <CChartPie
+                          data={{
+                            labels: ['電力使用', '冷媒', '滅火器'],
+                            datasets: [
+                              {
+                                data: [80.79, 8.52, 4.44],
+                                backgroundColor: ['#d882c0', '#FFB3FF', '#FFB6C1'],
+                                hoverBackgroundColor: ['#d882c0', '#FFB3FF', '#FFB6C1'],
+                              },
+                            ],
+                          }}
+                          options={{
+                            responsive: true,
+                            plugins: {
+                              legend: {
+                                display: true,
+                                position: 'right', // 圖例位置
+                                labels: {
+                                  boxWidth: 25,
+                                },
+                              },
+                              tooltip: {
+                                enabled: true, // 顯示提示框
+                              },
+                            },
+                            // 開啟數據標籤
+                            datalabels: {
+                              display: true,
+                              color: 'black', // 設定標籤顏色
+                              font: {
+                                weight: 'bold', // 設定字體粗細
+                              },
+                              formatter: (value) => `${value}%`, // 顯示百分比或其他格式
+                            },
+                            responsive: true,
+                            maintainAspectRatio: true,
+                          }}
+                        />
+                      </div>
+                    </CCardBody>
+                  </CCard>
+                </CCol>
+              </CRow>
+              {/* 碳費分析 */}
+              <CCard style={{ width: '100%' }}>
+                <CCardTitle>
+                  <div style={{ display: 'flex', flexDireaction: 'row' }}>
+                    <div
+                      style={{
+                        fontWeight: 'bold',
+                        fontSize: '1.5rem',
+                        color: 'white',
+                        backgroundColor: '#9D6B6B',
+                        borderTopLeftRadius: '5px',
+                        borderBottomRightRadius: '20px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        padding: '10px 30px 10px 30px',
+                      }}
+                    >
+                      分析總覽
+                    </div>
+                    <CButton
+                      style={{
+                        height: '18px',
+                        width: '18px',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        marginTop: '28px',
+                      }}
+                      onClick={() => setVisible3(!visible3)}
+                    >
+                      <FontAwesomeIcon
+                        icon={faCircleInfo}
+                        style={{ width: '20px', height: '20px' }}
+                      />
+                    </CButton>
+                    <CModal visible={visible3} onClose={() => setVisible3(false)}>
+                      <CModalHeader>
+                        <CModalTitle>
+                          <b>碳費&排放當量</b>
+                        </CModalTitle>
+                      </CModalHeader>
+                      <CModalBody>
+                        <ul>
+                          <li>
+                            <font style={{ backgroundColor: '#DCDCDC' }}>
+                              碳費 = 收費排放量*徵收費率
+                            </font>
+                          </li>
+                          <li>
+                            <font style={{ backgroundColor: '#DCDCDC' }}>
+                              收費排放量 = [年排放當量-K值]*排放量調整係數
+                            </font>
+                            <br />
+                            <b>非高碳洩漏風險者K值為25,000公噸</b>
+                            ；高碳洩漏風險者K值為0公噸二氧化碳當量。
+                            <br />
+                            <b>非高碳洩漏風險者的排放量調整係數為0</b>
+                            ；高碳洩漏風險行業在初期適用0.2的排放量調整係數，第二期與第三期分別為0.4和0.6​。
+                          </li>
+                        </ul>
+                      </CModalBody>
+                      <CModalFooter>
+                        <CButton color="secondary" onClick={() => setVisible3(false)}>
+                          關閉
+                        </CButton>
+                      </CModalFooter>
+                    </CModal>
+                    <CButton
+                      style={{
+                        position: 'absolute',
+                        right: '30px',
+                        width: '40px',
+                        backgroundColor: '#9D6B6B',
+                        color: 'white',
+                        display: 'flex',
+                        alignItems: 'center',
+                        marginTop: '10px',
+                      }}
+                    >
+                      <b>
+                        <CIcon icon={cilDataTransferDown} className="me-2" />
+                      </b>
+                    </CButton>
+                  </div>
+                </CCardTitle>
+                <CCardBody>
+                  <table style={{ fontSize: '1.2rem' }}>
+                    <thead
+                      style={{
+                        border: '1px solid white',
+                        backgroundColor: '#339933',
+                        color: 'white',
+                      }}
+                    >
+                      <tr>
+                        <th scope="col" style={cellStyle} rowSpan={2}></th>
+                        <th scope="col" style={cellStyle} rowSpan={2}>
+                          範疇
+                        </th>
+                        <th scope="col" style={cellStyle} rowSpan={2}>
+                          類型
+                        </th>
+                        <th scope="col" style={cellStyle} rowSpan={2}>
+                          排放當量<br></br>(公噸CO2e/年)
+                        </th>
+                        <th scope="col" style={cellStyle} rowSpan={2}>
+                          百分比<br></br>(%)
+                        </th>
+                        <th scope="col" style={cellStyle} rowSpan={2}>
+                          一般費率<br></br>(300元/公噸CO2e)
+                        </th>
+                        <th scope="col" style={cellStyle} colSpan={2}>
+                          優惠費率
+                        </th>
+                      </tr>
+                      <tr>
+                        <th scope="col" style={cellStyle}>
+                          達技術標竿<br></br>(100元/公噸CO2e)
+                        </th>
+                        <th scope="col" style={cellStyle}>
+                          達行業別目標<br></br>(50元/公噸CO2e)
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody style={{ border: '1px solid white', backgroundColor: '#ccffcc' }}>
+                      <tr>
+                        <td
+                          style={{
+                            border: '1px solid white',
+                            textAlign: 'center',
+                            verticalAlign: 'middle',
+                          }}
+                        >
+                          <b>1</b>
+                        </td>
+                        <td style={cellStyle}>二</td>
+                        <td style={cellStyle}>外購電力</td>
+                        <td style={cellStyle}>197.7533</td>
+                        <td style={cellStyle}>80.79%</td>
+                        <td style={cellStyle}>{(197.7533 * 300 * 1).toLocaleString()}</td>
+                        <td style={cellStyle}>{(197.7533 * 100 * 1).toLocaleString()}</td>
+                        <td style={cellStyle}>{(197.7533 * 50 * 1).toLocaleString()}</td>
+                      </tr>
+                      <tr>
+                        <td style={rankingstyle}>
+                          <b>2</b>
+                        </td>
+                        <td style={cellStyle}>一</td>
+                        <td style={cellStyle}>冷媒</td>
+                        <td style={cellStyle}>20.8505</td>
+                        <td style={cellStyle}>8.52%</td>
+                        <td style={cellStyle}>{(20.8505 * 300 * 1).toLocaleString()}</td>
+                        <td style={cellStyle}>{(20.8505 * 100 * 1).toLocaleString()}</td>
+                        <td style={cellStyle}>{(20.8505 * 50 * 1).toLocaleString()}</td>
+                      </tr>
+                      <tr>
+                        <td style={rankingstyle}>
+                          <b>3</b>
+                        </td>
+                        <td style={cellStyle}>一</td>
+                        <td style={cellStyle}>滅火器</td>
+                        <td style={cellStyle}>10.8795</td>
+                        <td style={cellStyle}>4.44%</td>
+                        <td style={cellStyle}>{(10.8795 * 300 * 1).toLocaleString()}</td>
+                        <td style={cellStyle}>{(10.8795 * 100 * 1).toLocaleString()}</td>
+                        <td style={cellStyle}>{(10.8795 * 50 * 1).toLocaleString()}</td>
+                      </tr>
+                      <tr>
+                        <td style={rankingstyle}>
+                          <b>4</b>
+                        </td>
+                        <td style={cellStyle}>一</td>
+                        <td style={cellStyle}>公務車</td>
+                        <td style={cellStyle}>10.0595</td>
+                        <td style={cellStyle}>4.11%</td>
+                        <td style={cellStyle}>{(10.0595 * 300 * 1).toLocaleString()}</td>
+                        <td style={cellStyle}>{(10.0595 * 100 * 1).toLocaleString()}</td>
+                        <td style={cellStyle}>{(10.0595 * 50 * 1).toLocaleString()}</td>
+                      </tr>
+                      <tr>
+                        <td style={rankingstyle}>
+                          <b>5</b>
+                        </td>
+                        <td style={cellStyle}>一</td>
+                        <td style={cellStyle}>化糞池</td>
+                        <td style={cellStyle}>5.2186</td>
+                        <td style={cellStyle}>2.13%</td>
+                        <td style={cellStyle}>{(5.2186 * 300 * 1).toLocaleString()}</td>
+                        <td style={cellStyle}>{(5.2186 * 100 * 1).toLocaleString()}</td>
+                        <td style={cellStyle}>{(5.2186 * 50 * 1).toLocaleString()}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <br />
+                </CCardBody>
+              </CCard>
+              <br></br>
+            </>
+          )}
