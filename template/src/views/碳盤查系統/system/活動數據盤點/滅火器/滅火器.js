@@ -82,45 +82,45 @@ export const FireExtinguisher = ({refreshFireExtinguisherData}) => {
       setErrorMessage('取得基準期間資料時發生錯誤');
     }
   };
-
-  // Function to fetch extinguisher data with baseline period filter
-  const fetchExtinguisherData = async () => {
-    setIsLoading(true);
-    try {
-      const data = await getExtinguisherData();
-      if (data && cfvStartDate && cfvEndDate) {
-        // Apply baseline period filter to fill records within each extinguisher
-        const startDate = new Date(cfvStartDate);
-        const endDate = new Date(cfvEndDate);
+// Function to fetch extinguisher data with baseline period filter
+const fetchExtinguisherData = async () => {
+  setIsLoading(true);
+  try {
+    const data = await getExtinguisherData();
+    if (data && cfvStartDate && cfvEndDate) {
+      const startDate = new Date(cfvStartDate);
+      const endDate = new Date(cfvEndDate);
+      
+      const filteredData = data.map(extinguisher => {
+        // Filter fill records that fall within the baseline period
+        let filteredFillrec = [];
+        if (extinguisher.fillrec && extinguisher.fillrec.length > 0) {
+          filteredFillrec = extinguisher.fillrec.filter(fill => {
+            const docDate = new Date(fill.Doc_date);
+            return docDate >= startDate && docDate <= endDate;
+          });
+        }
         
-        const filteredData = data.map(extinguisher => {
-          // Filter fill records that fall within the baseline period
-          if (extinguisher.fillrec && extinguisher.fillrec.length > 0) {
-            const filteredFillrec = extinguisher.fillrec.filter(fill => {
-              const docDate = new Date(fill.Doc_date);
-              return docDate >= startDate && docDate <= endDate;
-            });
-            
-            return {
-              ...extinguisher,
-              fillrec: filteredFillrec
-            };
-          }
-          return extinguisher;
-        });
-        
-        setExtinguishers(filteredData);
-      } else if (data) {
-        // If no baseline dates available yet, show all data
-        setExtinguishers(data);
-      }
-    } catch (error) {
-      console.error('Error fetching extinguisher data:', error);
-      setErrorMessage('無法獲取滅火器數據');
-    } finally {
-      setIsLoading(false);
+        return {
+          ...extinguisher,
+          fillrec: filteredFillrec
+        };
+      });
+      // Don't filter out extinguisher records - show all extinguisher devices
+      // Only the fill records are filtered by CFV period
+      
+      setExtinguishers(filteredData);
+    } else if (data) {
+      // If no baseline dates available yet, show all data
+      setExtinguishers(data);
     }
-  };
+  } catch (error) {
+    console.error('Error fetching extinguisher data:', error);
+    setErrorMessage('無法獲取滅火器數據');
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   // Fetch baseline data on component mount
   useEffect(() => {

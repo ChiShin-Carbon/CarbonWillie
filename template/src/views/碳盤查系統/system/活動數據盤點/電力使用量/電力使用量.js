@@ -44,13 +44,13 @@ export const Electricity = ({ refreshElectricityData }) => {
   const [userPosition, setUserPosition] = useState(null)
   const [cfvStartDate, setCfvStartDate] = useState(null) // State for baseline start date
   const [cfvEndDate, setCfvEndDate] = useState(null) // State for baseline end date
-  
+
   // Get user position from sessionStorage
   useEffect(() => {
     const position = window.sessionStorage.getItem('position')
     setUserPosition(position ? parseInt(position) : null)
   }, [])
-  
+
   // Check if user has permission to edit/delete
   const hasEditPermission = userPosition === 3;
 
@@ -129,52 +129,63 @@ export const Electricity = ({ refreshElectricityData }) => {
       };
     }
   };
-
-  // Function to fetch electricity data with baseline period filter
-  const fetchElectricityData = async () => {
-    setIsLoading(true);
-    try {
-      const data = await getElectricityData();
-      if (data && cfvStartDate && cfvEndDate) {
-        // Apply baseline period filter to fill records within each electricity
-        const startDate = new Date(cfvStartDate);
-        const endDate = new Date(cfvEndDate);
-        
-        const filteredData = data.map(electricity => {
-          // Filter fill records that fall within the baseline period
-          if (electricity.fillrec && electricity.fillrec.length > 0) {
-            const filteredFillrec = electricity.fillrec.filter(fill => {
-              // For electricity records, we'll filter by Doc_date (receipt month)
-              // Assuming Doc_date is in format YYYY-MM
-              const parts = fill.Doc_date.split('-');
-              if (parts.length >= 2) {
-                // Create a date for the 1st of the month
-                const docDate = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, 1);
-                return docDate >= startDate && docDate <= endDate;
-              }
-              return false;
-            });
+// Function to fetch electricity data with baseline period filter
+const fetchElectricityData = async () => {
+  setIsLoading(true);
+  try {
+    const data = await getElectricityData();
+    if (data && cfvStartDate && cfvEndDate) {
+      const startDate = new Date(cfvStartDate);
+      const endDate = new Date(cfvEndDate);
+      
+      console.log('CFV Start Date:', cfvStartDate, 'Parsed:', startDate);
+      console.log('CFV End Date:', cfvEndDate, 'Parsed:', endDate);
+      
+      const filteredData = data.map(electricity => {
+        // Filter fill records that fall within the baseline period
+        let filteredFillrec = [];
+        if (electricity.fillrec && electricity.fillrec.length > 0) {
+          filteredFillrec = electricity.fillrec.filter(fill => {
+            // Parse the full date (YYYY-MM-DD format)
+            const docDate = new Date(fill.Doc_date);
             
-            return {
-              ...electricity,
-              fillrec: filteredFillrec
-            };
-          }
-          return electricity;
-        });
+            console.log('Doc_date:', fill.Doc_date, 'Parsed:', docDate);
+            console.log('In range:', docDate >= startDate && docDate <= endDate);
+            
+            // Check if the date is valid
+            if (isNaN(docDate.getTime())) {
+              console.warn('Invalid date parsed from:', fill.Doc_date);
+              return false;
+            }
+            
+            return docDate >= startDate && docDate <= endDate;
+          });
+          
+          console.log(`Electricity ${electricity.electricity_id}: ${electricity.fillrec.length} total records, ${filteredFillrec.length} filtered records`);
+        }
         
-        setElectricities(filteredData);
-      } else if (data) {
-        // If no baseline dates available yet, show all data
-        setElectricities(data);
-      }
-    } catch (error) {
-      console.error('Error fetching electricity data:', error);
-      setErrorMessage('無法獲取用電數據');
-    } finally {
-      setIsLoading(false);
+        return {
+          ...electricity,
+          fillrec: filteredFillrec
+        };
+      });
+      
+      console.log('Total electricity meters:', filteredData.length);
+      console.log('Meters with CFV period data:', filteredData.filter(e => e.fillrec && e.fillrec.length > 0).length);
+      
+      setElectricities(filteredData);
+    } else if (data) {
+      // If no baseline dates available yet, show all data
+      console.log('No CFV dates available, showing all data');
+      setElectricities(data);
     }
-  };
+  } catch (error) {
+    console.error('Error fetching electricity data:', error);
+    setErrorMessage('無法獲取用電數據');
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   // Fetch baseline data on component mount
   useEffect(() => {
