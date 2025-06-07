@@ -7,6 +7,7 @@ import {
     CCardSubtitle, CCardText, CCardTitle, CButton,
     CTable, CTableBody, CTableCaption, CTableDataCell, CTableHead, CTableHeaderCell, CTableRow, CCollapse,
     CAccordion, CAccordionItem, CAccordionHeader, CAccordionBody, CModal, CModalHeader, CModalBody, CModalFooter, CModalTitle,
+    CToast, CToastBody, CToastHeader, CProgress, CProgressBar
 
 } from '@coreui/react'
 import '../../scss/碳盤查系統.css'
@@ -32,10 +33,55 @@ import '@react-pdf-viewer/default-layout/lib/styles/index.css';
 const Tabs = () => {
 
     const [activeSection, setActiveSection] = useState(null); // 用來追踪當前選中的章節
+    const [modalVisible, setModalVisible] = useState(false); // 新增 Modal 可見狀態
+    
+    // 新增通知系統相關狀態
+    const [toasts, setToasts] = useState([]);
+    const [uploadProgress, setUploadProgress] = useState(0);
+    const [isUploading, setIsUploading] = useState(false);
+
+    // 通知系統函數
+    const addToast = (message, type = 'info') => {
+        const id = Date.now();
+        const newToast = {
+            id,
+            message,
+            type,
+            visible: true
+        };
+        setToasts(prev => [...prev, newToast]);
+        
+        // 自動關閉通知（除了上傳中的通知）
+        if (type !== 'info' || !message.includes('上傳中')) {
+            setTimeout(() => {
+                closeToast(id);
+            }, 5000);
+        }
+    };
+
+    const closeToast = (id) => {
+        setToasts(prev => prev.map(toast => 
+            toast.id === id ? { ...toast, visible: false } : toast
+        ));
+        setTimeout(() => {
+            setToasts(prev => prev.filter(toast => toast.id !== id));
+        }, 300);
+    };
 
     const handleDownload = () => {
         if (!pdfFile) return;
 
+        // 檢查是否為系統原始生成版本
+        if (selectedVersion === "0") {
+            setModalVisible(true); // 顯示 Modal
+        } else {
+            // 直接下載
+            performDownload();
+        }
+    };
+
+    // 實際執行下載的函數
+    const performDownload = () => {
         // 儲存 pdfFile 至變數 A
         const A = pdfFile;
 
@@ -50,6 +96,13 @@ const Tabs = () => {
         link.click();
         document.body.removeChild(link);
     };
+
+    // 處理 Modal 確認下載
+    const handleConfirmDownload = () => {
+        setModalVisible(false); // 隱藏 Modal
+        performDownload(); // 執行下載
+    };
+
     ///////////////////////////////////////////////////////////////////////////////////////////
 
     const [pdfFile, setPdfFile] = useState("");
@@ -227,60 +280,155 @@ const Tabs = () => {
     //////////////////////////////////上傳檔案API/////////////////////////////
     const [file, setFile] = useState(null); // 上傳的檔案
 
-
-
     // 處理檔案選擇
     const handleFileChange = (event) => {
         const selectedFile = event.target.files[0];
         if (selectedFile) {
             // 檢查檔案格式
             if (selectedFile.type !== "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
-                alert("請上傳word檔案(.docx)!");
+                addToast("請上傳word檔案(.docx)!", 'warning');
                 setFile(null); // 重置檔案
             } else {
                 setFile(selectedFile);
             }
         }
     };
-    // 上傳檔案
+
+    // 修改上傳檔案函數，加入進度追蹤
     const handleUpload = async () => {
         if (!file) {
-            alert("請選擇檔案!");
+            addToast("請選擇檔案!", 'warning');
             return;
         }
 
-        try {
-            alert("上傳中請稍等..."); // Step 1: 上傳前顯示
+        setIsUploading(true);
+        setUploadProgress(0);
+        
+        // 顯示上傳中通知
+        const uploadingToastId = Date.now();
+        const uploadingToast = {
+            id: uploadingToastId,
+            message: (
+                <div>
+                    <div style={{ marginBottom: '10px' }}>檔案上傳中，請稍候...</div>
+                    <CProgress className="mb-2">
+                        <CProgressBar 
+                            value={uploadProgress}
+                            color="info"
+                        >
+                            {uploadProgress}%
+                        </CProgressBar>
+                    </CProgress>
+                </div>
+            ),
+            type: 'info',
+            visible: true
+        };
+        setToasts(prev => [...prev, uploadingToast]);
 
+        try {
             const formData = new FormData();
-            formData.append('user_id', window.sessionStorage.getItem("user_id")); // 假設使用者 ID 為 1
+            formData.append('user_id', window.sessionStorage.getItem("user_id"));
             formData.append('year', selectedYear);
             formData.append('file', file);
 
-            const response = await fetch("http://127.0.0.1:8000/upload_report/", {
-                method: "POST",
-                body: formData,
+            // 使用 axios 來追蹤上傳進度
+            const response = await axios.post("http://127.0.0.1:8000/upload_report/", formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+                onUploadProgress: (progressEvent) => {
+                    const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                    setUploadProgress(percentCompleted);
+                    
+                    // 更新上傳中通知的進度
+                    setToasts(prev => prev.map(toast => 
+                        toast.id === uploadingToastId ? {
+                            ...toast,
+                            message: (
+                                <div>
+                                    <div style={{ marginBottom: '10px' }}>檔案上傳中，請稍候...</div>
+                                    <CProgress className="mb-2">
+                                        <CProgressBar 
+                                            value={percentCompleted}
+                                            color="info"
+                                        >
+                                            {percentCompleted}%
+                                        </CProgressBar>
+                                    </CProgress>
+                                </div>
+                            )
+                        } : toast
+                    ));
+                }
             });
 
-            if (response.ok) {
-                const data = await response.json();
-                console.log("檔案上傳成功:", data);
-
-                alert("檔案上傳成功!"); // Step 2: 成功後提示
-                location.reload();       // Step 3: 使用者按下「確定」後重新整理頁面
-            } else {
-                console.log(`Error uploading file: ${response.status}`);
-                alert("上傳失敗，請稍後再試");
+            if (response.status === 200) {
+                // 關閉上傳中通知
+                closeToast(uploadingToastId);
+                
+                // 顯示成功通知
+                addToast("檔案上傳成功！", 'success');
+                
+                // 重置狀態
+                setFile(null);
+                setIsUploading(false);
+                setUploadProgress(0);
+                
+                // 重新整理頁面
+                setTimeout(() => {
+                    location.reload();
+                }, 2000);
             }
         } catch (error) {
             console.error("Error uploading file:", error);
-            alert("上傳過程發生錯誤，請稍後再試");
+            
+            // 關閉上傳中通知
+            closeToast(uploadingToastId);
+            
+            // 顯示錯誤通知
+            addToast("上傳過程發生錯誤，請稍後再試", 'danger');
+            
+            setIsUploading(false);
+            setUploadProgress(0);
         }
     };
 
 
     return (
         <main>
+            {/* 通知系統 */}
+            <div style={{
+                position: 'fixed',
+                top: '20px',
+                right: '20px',
+                zIndex: 9999,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '10px'
+            }}>
+                {toasts.map((toast) => (
+                    <CToast 
+                        key={toast.id}
+                        visible={toast.visible}
+                        className={`bg-${toast.type} text-white`}
+                        style={{
+                            minWidth: '300px',
+                            transform: toast.visible ? 'translateX(0)' : 'translateX(100%)',
+                            transition: 'transform 0.3s ease-in-out'
+                        }}
+                    >
+                        <CToastHeader 
+                            closeButton
+                            onClose={() => closeToast(toast.id)}
+                        >
+                            <strong className="me-auto">通知</strong>
+                        </CToastHeader>
+                        <CToastBody>{toast.message}</CToastBody>
+                    </CToast>
+                ))}
+            </div>
+
             <div className={styles.systemTablist}>
                 <div className={styles.tabsLeft}>
                     <div>
@@ -311,10 +459,20 @@ const Tabs = () => {
                 <div className={styles.buttonRight}>
                     <div>
                         <strong>選擇檔案</strong>
-                        <input type="file" onChange={handleFileChange} />
+                        <input type="file" onChange={handleFileChange} disabled={isUploading} />
                     </div>
 
-                    <button onClick={handleUpload}><FontAwesomeIcon icon={faFileArrowUp} /> 上傳編修後檔案</button>
+                    <button 
+                        onClick={handleUpload} 
+                        disabled={isUploading}
+                        style={{ 
+                            opacity: isUploading ? 0.6 : 1,
+                            cursor: isUploading ? 'not-allowed' : 'pointer'
+                        }}
+                    >
+                        <FontAwesomeIcon icon={faFileArrowUp} /> 
+                        {isUploading ? '上傳中...' : '上傳編修後檔案'}
+                    </button>
 
                 </div>
             </div>
@@ -324,19 +482,11 @@ const Tabs = () => {
                     <hr className="system-hr" style={{ width: '360px' }}></hr>
                 </div>
                 <div className={styles.titleRight}>
-                    {/* <select>
-                        <option>編輯完成</option>
-                        <option value="1">編輯中</option>
-                    </select>
-                    <button className={styles.save}>儲存</button> */}
                     <span style={{ color: 'gray', fontWeight: 'bold' }}>
                         {uploadInfo ? `該版本上傳資訊 : ${uploadInfo}` : ""}
                     </span>
-
                 </div>
-
             </div>
-
 
             <div className={styles.cardRow}>
                 <CCard className={styles.cardCatalog}>
@@ -362,9 +512,6 @@ const Tabs = () => {
                     </div>
                 </CCard>
 
-
-
-
                 <CCard className={styles.cardMain}>
                     <div style={{ height: '600px' }}>
                         {pdfFile ? (
@@ -387,12 +534,34 @@ const Tabs = () => {
                                 <FontAwesomeIcon icon={faFileExport} /> 匯出該版本報告
                             </button>
                         )}
-
                     </div>
-
                 </CCard>
             </div >
 
+            {/* 新增的 Modal */}
+            <CModal
+                visible={modalVisible}
+                onClose={() => setModalVisible(false)}
+                aria-labelledby="DownloadWarningModal"
+            >
+                <CModalHeader>
+                    <CModalTitle id="DownloadWarningModal"><b>注意!</b></CModalTitle>
+                </CModalHeader>
+                <CModalBody>
+                    系統原始生成之碳盤查報告書內文僅供參考，請再依各機構需求自行進行編修。
+                </CModalBody>
+                <CModalFooter>
+                    <CButton className="modalbutton1" onClick={() => setModalVisible(false)}>
+                        取消
+                    </CButton>
+                    <CButton 
+                        className="modalbutton2" 
+                        onClick={handleConfirmDownload}
+                    >
+                        確認下載
+                    </CButton>
+                </CModalFooter>
+            </CModal>
 
         </main >
     );
