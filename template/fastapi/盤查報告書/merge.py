@@ -15,6 +15,7 @@ import os
 from fastapi.responses import FileResponse
 from fastapi import BackgroundTasks
 from connect.connect import connectDB
+from datetime import datetime  # 新增導入
 
 # 建立 APIRouter 實例
 get_word = APIRouter(tags=["word專用"])
@@ -77,9 +78,60 @@ def get_latest_baseline_year():
     finally:
         conn.close()
 
-def merge_documents_and_convert_to_pdf(user_id, word_file_path, pdf_file_path):
+def get_business_id_by_user_id(user_id):
     """
-    合併所有章節的文件並轉換為PDF
+    根據user_id查詢對應的business_id
+    """
+    conn = connectDB()
+    if not conn:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="無法連接到資料庫")
+    
+    cursor = conn.cursor()
+    try:
+        cursor.execute("SELECT business_id FROM users WHERE user_id = ?", (user_id,))
+        result = cursor.fetchone()
+        
+        if not result:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"找不到user_id為{user_id}的用戶")
+        
+        return result[0]
+    
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"查詢用戶資料發生錯誤: {e}")
+    finally:
+        conn.close()
+
+def insert_report_baseline(business_id, year, file_path):
+    """
+    將報告資訊插入Report_Baseline資料表
+    """
+    conn = connectDB()
+    if not conn:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="無法連接到資料庫")
+    
+    cursor = conn.cursor()
+    try:
+        # 獲取當前時間
+        created_at = datetime.now()
+        
+        # 插入資料
+        cursor.execute("""
+            INSERT INTO Report_Baseline (business_id, year, file_path, created_at)
+            VALUES (?, ?, ?, ?)
+        """, (business_id, year, file_path, created_at))
+        
+        conn.commit()
+        print(f"成功插入Report_Baseline記錄: business_id={business_id}, year={year}, file_path={file_path}")
+        
+    except Exception as e:
+        conn.rollback()
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"插入Report_Baseline發生錯誤: {e}")
+    finally:
+        conn.close()
+
+def merge_documents_and_convert_to_pdf(user_id, word_file_path, pdf_file_path, year):
+    """
+    合併所有章節的文件並轉換為PDF，完成後插入資料庫記錄
     """
     try:
         doc1 = create_chapter1(user_id)
@@ -136,13 +188,32 @@ def merge_documents_and_convert_to_pdf(user_id, word_file_path, pdf_file_path):
         print(f"Word文件合併完成，生成 {word_file_path}")
         
         # 將Word文件轉換為PDF
+        pdf_generated = False
         try:
             convert(word_file_path, pdf_file_path)
             print(f"PDF轉換完成，生成 {pdf_file_path}")
+            pdf_generated = True
         except Exception as pdf_error:
             print(f"PDF轉換過程中發生錯誤: {pdf_error}")
             # 即使PDF轉換失敗，Word文件已經成功生成，不需要拋出異常
             # 但可以記錄錯誤日誌
+        
+        # 如果PDF生成成功，則插入資料庫記錄
+        if pdf_generated:
+            try:
+                # 取得business_id
+                business_id = get_business_id_by_user_id(user_id)
+                
+                # 設定file_path (相對路徑)
+                file_path = f"/original_report/{year}盤查報告書.pdf"
+                
+                # 插入資料庫記錄
+                insert_report_baseline(business_id, year, file_path)
+                
+            except Exception as db_error:
+                print(f"插入資料庫記錄時發生錯誤: {db_error}")
+                # 即使資料庫插入失敗，檔案已經生成，可以選擇是否拋出異常
+                # 這裡選擇記錄錯誤但不中斷流程
             
     except Exception as e:
         print(f"文件合併過程中發生錯誤: {e}")
@@ -165,8 +236,8 @@ async def generate_word(user_id: int, background_tasks: BackgroundTasks):
         word_file_path = os.path.join(UPLOAD_FOLDER, word_filename)
         pdf_file_path = os.path.join(UPLOAD_FOLDER, pdf_filename)
 
-        # 將生成檔案的操作放入背景任務
-        background_tasks.add_task(merge_documents_and_convert_to_pdf, user_id, word_file_path, pdf_file_path)
+        # 將生成檔案的操作放入背景任務，並傳入year參數
+        background_tasks.add_task(merge_documents_and_convert_to_pdf, user_id, word_file_path, pdf_file_path, year)
 
         return {
             "message": "Word和PDF文件生成中，請稍後查收下載",

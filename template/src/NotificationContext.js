@@ -64,9 +64,6 @@ export const NotificationProvider = ({ children }) => {
             showToast(`${baselineYear}年度盤查清冊已成功生成！`, 'success')
             setIsGeneratingExcel(false)
             clearInterval(intervalId)
-            
-            // Excel完成後開始生成Word/PDF
-            startWordGeneration()
           }
         } catch (error) {
           console.error('輪詢Excel狀態時發生錯誤:', error)
@@ -86,35 +83,46 @@ export const NotificationProvider = ({ children }) => {
     let intervalId
 
     if (isGeneratingWord && baselineYear) {
+      console.log('開始輪詢Word/PDF生成狀態...')
+      
       intervalId = setInterval(async () => {
         try {
+          console.log(`正在檢查Word/PDF狀態: ${baselineYear}`)
           const response = await fetch(`http://localhost:8000/check_word_status/${baselineYear}`)
           
           if (response.ok) {
             const data = await response.json()
+            console.log('Word/PDF狀態響應:', data)
+            
             if (data.exists) {
               console.log('Word/PDF檔案已成功生成:', data.file_path)
               showToast(`${baselineYear}年度盤查報告書已成功生成！`, 'success')
               setIsGeneratingWord(false)
               clearInterval(intervalId)
+            } else {
+              console.log('Word/PDF檔案尚未生成，繼續等待...')
             }
+          } else {
+            console.error('檢查Word/PDF狀態API響應錯誤:', response.status)
           }
         } catch (error) {
           console.error('輪詢Word狀態時發生錯誤:', error)
         }
       }, 3000)
 
-      // 如果API不存在，設定預估完成時間
-      const fallbackTimeout = setTimeout(() => {
+      // 設置最大輪詢時間為5分鐘，避免無限輪詢
+      const maxTimeout = setTimeout(() => {
         if (isGeneratingWord) {
-          showToast(`${baselineYear}年度盤查報告書生成中，請稍後檢查檔案`, 'info')
+          console.log('Word/PDF生成超時，停止輪詢')
+          showToast(`${baselineYear}年度盤查報告書生成時間較長，請稍後手動檢查檔案`, 'warning')
           setIsGeneratingWord(false)
           clearInterval(intervalId)
         }
-      }, 30000)
+      }, 300000) // 5分鐘超時
 
       return () => {
-        clearTimeout(fallbackTimeout)
+        clearInterval(intervalId)
+        clearTimeout(maxTimeout)
       }
     }
 
@@ -172,9 +180,9 @@ export const NotificationProvider = ({ children }) => {
   }
 
   // 開始Excel生成
-  const startExcelGeneration = async () => {
+  const startExcelGeneration = async (userId = 1) => {
     try {
-      const response = await fetch('http://localhost:8000/generate_inventory_excel', {
+      const response = await fetch(`http://localhost:8000/generate_inventory_excel/${userId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -200,6 +208,7 @@ export const NotificationProvider = ({ children }) => {
   // 開始Word/PDF生成
   const startWordGeneration = async (userId = 1) => {
     try {
+      console.log('開始調用Word/PDF生成API...')
       const response = await fetch(`http://localhost:8000/generate_word/${userId}`, {
         method: 'GET',
         headers: {
@@ -208,6 +217,7 @@ export const NotificationProvider = ({ children }) => {
       })
 
       const data = await response.json()
+      console.log('Word/PDF生成API響應:', data)
       
       if (response.ok) {
         setIsGeneratingWord(true)
@@ -218,12 +228,58 @@ export const NotificationProvider = ({ children }) => {
         return false
       }
     } catch (error) {
+      console.error('調用Word/PDF生成API時發生錯誤:', error)
       showToast(`生成盤查報告書時發生錯誤: ${error.message}`, 'danger')
       return false
     }
   }
 
-  // 完成盤查
+  // 並行生成Excel和Word/PDF
+  const generateBothDocuments = async (userId = 1) => {
+    try {
+      // 使用 Promise.allSettled 同時執行兩個生成任務
+      // 這樣即使其中一個失敗，另一個仍會繼續執行
+      const results = await Promise.allSettled([
+        startExcelGeneration(userId),
+        startWordGeneration(userId)
+      ])
+      
+      const [excelResult, wordResult] = results
+      
+      // 檢查結果並顯示適當的通知
+      let successCount = 0
+      let failureMessages = []
+      
+      if (excelResult.status === 'fulfilled' && excelResult.value) {
+        successCount++
+      } else {
+        failureMessages.push('盤查清冊生成啟動失敗')
+      }
+      
+      if (wordResult.status === 'fulfilled' && wordResult.value) {
+        successCount++
+      } else {
+        failureMessages.push('盤查報告書生成啟動失敗')
+      }
+      
+      if (successCount === 2) {
+        
+        return true
+      } else if (successCount === 1) {
+        showToast(`部分生成任務啟動成功，但有錯誤：${failureMessages.join(', ')}`, 'warning')
+        return true
+      } else {
+        showToast(`所有生成任務都啟動失敗：${failureMessages.join(', ')}`, 'danger')
+        return false
+      }
+    } catch (error) {
+      console.error('並行生成文檔時發生錯誤:', error)
+      showToast(`生成文檔時發生錯誤: ${error.message}`, 'danger')
+      return false
+    }
+  }
+
+  // 完成盤查 - 修改為並行生成
   const completeBaseline = async (baselineId) => {
     if (!baselineId) {
       showToast("沒有可用的基準年ID", "danger")
@@ -231,8 +287,8 @@ export const NotificationProvider = ({ children }) => {
     }
 
     try {
-      // 先生成Excel
-      const excelGenerated = await startExcelGeneration()
+      // 並行開始生成Excel和Word/PDF
+      const documentsGenerated = await generateBothDocuments()
       
       // 標記baseline為完成
       const response = await fetch(`http://localhost:8000/baseline/${baselineId}/complete`, {
@@ -247,8 +303,8 @@ export const NotificationProvider = ({ children }) => {
 
       if (response.ok) {
         let message = "盤查已標記為完成"
-        if (excelGenerated) {
-          message += "，盤查清冊生成中，完成後將自動開始生成報告書"
+        if (documentsGenerated) {
+          message += "，盤查清冊和報告書正在同時生成中"
         }
         showToast(message, "success")
         return true
@@ -273,6 +329,7 @@ export const NotificationProvider = ({ children }) => {
     closeToast,
     startExcelGeneration,
     startWordGeneration,
+    generateBothDocuments, // 新增的並行生成方法
     completeBaseline
   }
 

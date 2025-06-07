@@ -7,6 +7,7 @@ import traceback
 from openpyxl import Workbook
 import requests
 from typing import Optional
+from datetime import datetime
 
 # 取得當前檔案的目錄
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -86,6 +87,58 @@ def get_baseline_year():
     
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"查詢發生錯誤: {e}")
+    finally:
+        conn.close()
+
+# 根據 user_id 獲取 business_id 的函數
+def get_business_id_by_user_id(user_id: int):
+    """根據 user_id 從 users 資料表獲取 business_id"""
+    conn = connectDB()
+    if not conn:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="無法連接到資料庫")
+    
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""
+            SELECT business_id 
+            FROM users 
+            WHERE user_id = ?
+        """, (user_id,))
+        
+        result = cursor.fetchone()
+        if not result:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"找不到 user_id {user_id} 的使用者")
+        
+        return result[0]
+    
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"查詢使用者資料時發生錯誤: {e}")
+    finally:
+        conn.close()
+
+# 插入資料到 Inventory_Baseline 資料表
+def insert_inventory_baseline(business_id: int, year: int, file_path: str):
+    """插入資料到 Inventory_Baseline 資料表"""
+    conn = connectDB()
+    if not conn:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="無法連接到資料庫")
+    
+    cursor = conn.cursor()
+    try:
+        # 獲取當前時間
+        created_at = datetime.now()
+        
+        cursor.execute("""
+            INSERT INTO Inventory_Baseline (business_id, year, file_path, created_at)
+            VALUES (?, ?, ?, ?)
+        """, (business_id, year, file_path, created_at))
+        
+        conn.commit()
+        print(f"成功插入 Inventory_Baseline 記錄: business_id={business_id}, year={year}, file_path={file_path}")
+    
+    except Exception as e:
+        conn.rollback()
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"插入 Inventory_Baseline 資料時發生錯誤: {e}")
     finally:
         conn.close()
 
@@ -173,7 +226,7 @@ def generate_excel_file(year: int):
         raise Exception(error_msg)
 
 # 非同步任務處理函數
-def process_excel_generation(year: int):
+def process_excel_generation(year: int, user_id: int):
     try:
         # 更新任務狀態為進行中
         excel_generation_tasks[year] = {
@@ -181,18 +234,34 @@ def process_excel_generation(year: int):
             "file_path": None
         }
         
+        # 生成 Excel 檔案
         output_path = generate_excel_file(year)
+        
+        # 獲取 business_id
+        business_id = get_business_id_by_user_id(user_id)
+        
+        # 準備資料庫路徑格式
+        db_file_path = f"/original_excel/{year}盤查清冊.xlsx"
+        
+        # 插入資料到 Inventory_Baseline 資料表
+        insert_inventory_baseline(business_id, year, db_file_path)
+        
         print(f"Excel 檔案已成功生成: {output_path}")
+        print(f"資料已成功插入 Inventory_Baseline 資料表")
+        
     except Exception as e:
-        print(f"Excel 檔案生成失敗: {e}")
+        print(f"Excel 檔案生成或資料庫插入失敗: {e}")
 
 # API 端點
-@excel_generator_router.post("/generate_inventory_excel", response_model=GenerateExcelResponse)
-async def generate_inventory_excel(background_tasks: BackgroundTasks):
+@excel_generator_router.post("/generate_inventory_excel/{user_id}", response_model=GenerateExcelResponse)
+async def generate_inventory_excel(user_id: int, background_tasks: BackgroundTasks):
     """
-    生成碳盤查清冊 Excel 檔案，並保存到指定路徑
+    生成碳盤查清冊 Excel 檔案，並保存到指定路徑，同時插入資料到 Inventory_Baseline 資料表
     """
     try:
+        # 驗證 user_id 是否存在並獲取 business_id
+        business_id = get_business_id_by_user_id(user_id)
+        
         # 獲取基準年份
         year = get_baseline_year()
         if not year:
@@ -201,8 +270,8 @@ async def generate_inventory_excel(background_tasks: BackgroundTasks):
                 content={"success": False, "message": "無法獲取基準年份", "year": None, "file_path": None}
             )
         
-        # 使用背景任務來生成 Excel 檔案
-        background_tasks.add_task(process_excel_generation, year)
+        # 使用背景任務來生成 Excel 檔案並插入資料庫
+        background_tasks.add_task(process_excel_generation, year, user_id)
         
         # 生成的檔案路徑
         output_filename = f"{year}盤查清冊.xlsx"
@@ -210,7 +279,7 @@ async def generate_inventory_excel(background_tasks: BackgroundTasks):
         
         return {
             "success": True,
-            "message": f"已開始生成 {year} 年度碳盤查清冊，檔案生成後將保存至 {output_path}",
+            "message": f"已開始生成 {year} 年度碳盤查清冊，檔案生成後將保存至 {output_path}，並記錄至資料庫",
             "year": year,
             "file_path": output_path
         }
