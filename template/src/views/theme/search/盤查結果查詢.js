@@ -179,21 +179,21 @@ const Tabs = () => {
                   <div>
                     <strong>2024盤查報告</strong>
                   </div>
-                  <div>
+                  {/* <div>
                     <CFormSelect size="sm" className={styles.input}>
                       <option>全部表格</option>
                       <option value="1">表1</option>
                       <option value="2">表2</option>
                       <option value="3">表3</option>
                     </CFormSelect>
-                  </div>
+                  </div> */}
                 </div>
-                <div className={styles.rightItem}>
+                {/* <div className={styles.rightItem}>
                   <button>
                     <CIcon icon={cilDataTransferDown} className="me-2" />
                     下載全部
                   </button>
-                </div>
+                </div> */}
               </div>
               {/* 全廠電力 */}
               <CCard style={{ width: '100%' }}>
@@ -214,7 +214,7 @@ const Tabs = () => {
                     >
                       全廠電力
                     </div>
-                    <CButton
+                    {/* <CButton
                       style={{
                         position: 'absolute',
                         right: '30px',
@@ -229,7 +229,7 @@ const Tabs = () => {
                       <b>
                         <CIcon icon={cilDataTransferDown} className="me-2" />
                       </b>
-                    </CButton>
+                    </CButton> */}
                   </div>
                 </CCardTitle>
                 <CCardBody>
@@ -308,7 +308,7 @@ const Tabs = () => {
                     >
                       全廠&nbsp;七大溫室氣體排放量統計表
                     </div>
-                    <CButton
+                    {/* <CButton
                       style={{
                         position: 'absolute',
                         right: '30px',
@@ -323,7 +323,7 @@ const Tabs = () => {
                       <b>
                         <CIcon icon={cilDataTransferDown} className="me-2" />
                       </b>
-                    </CButton>
+                    </CButton> */}
                   </div>
                 </CCardTitle>
                 <CCardBody>
@@ -450,7 +450,7 @@ const Tabs = () => {
                     >
                       範疇一&nbsp;&nbsp;七大溫室氣體排放量統計表
                     </div>
-                    <CButton
+                    {/* <CButton
                       style={{
                         position: 'absolute',
                         right: '30px',
@@ -465,7 +465,7 @@ const Tabs = () => {
                       <b>
                         <CIcon icon={cilDataTransferDown} className="me-2" />
                       </b>
-                    </CButton>
+                    </CButton> */}
                   </div>
                 </CCardTitle>
                 <CCardBody>
@@ -592,7 +592,7 @@ const Tabs = () => {
                     >
                       範疇一及範疇二&nbsp;&nbsp;排放形式排放量統計表
                     </div>
-                    <CButton
+                    {/* <CButton
                       style={{
                         position: 'absolute',
                         right: '30px',
@@ -607,7 +607,7 @@ const Tabs = () => {
                       <b>
                         <CIcon icon={cilDataTransferDown} className="me-2" />
                       </b>
-                    </CButton>
+                    </CButton> */}
                   </div>
                 </CCardTitle>
                 <CCardBody>
@@ -1004,21 +1004,21 @@ const Tabs = () => {
                   <div>
                     <strong>2024盤查報告</strong>
                   </div>
-                  <div>
+                  {/* <div>
                     <CFormSelect size="sm" className={styles.input}>
                       <option>全部圖形</option>
                       <option value="1">表1</option>
                       <option value="2">表2</option>
                       <option value="3">表3</option>
                     </CFormSelect>
-                  </div>
+                  </div> */}
                 </div>
-                <div className={styles.rightItem}>
+                {/* <div className={styles.rightItem}>
                   <button>
                     <CIcon icon={cilDataTransferDown} className="me-2" />
                     下載全部
                   </button>
-                </div>
+                </div> */}
               </div>
 
               <CRow>
@@ -1047,7 +1047,7 @@ const Tabs = () => {
                       <strong style={{ fontSize: '1.2rem', color: 'white', padding: '5px' }}>
                         圓餅圖
                       </strong>
-                      <CButton
+                      {/* <CButton
                         style={{
                           position: 'absolute',
                           right: '10px',
@@ -1059,7 +1059,7 @@ const Tabs = () => {
                         <b>
                           <CIcon icon={cilDataTransferDown} style={{ fontSize: '24px' }} />
                         </b>
-                      </CButton>
+                      </CButton> */}
                     </CCardHeader>
                     <CCardBody
                       style={{
@@ -1141,7 +1141,7 @@ const Tabs = () => {
                       <strong style={{ fontSize: '1.2rem', color: 'white', padding: '5px' }}>
                         半圓環形圖
                       </strong>
-
+{/* 
                       <CButton
                         style={{
                           position: 'absolute',
@@ -1154,7 +1154,7 @@ const Tabs = () => {
                         <b>
                           <CIcon icon={cilDataTransferDown} style={{ fontSize: '24px' }} />
                         </b>
-                      </CButton>
+                      </CButton> */}
                     </CCardHeader>
                     <CCardBody
                       style={{
@@ -1327,7 +1327,7 @@ const Tabs = () => {
                       <strong style={{ fontSize: '1.2rem', color: 'white', padding: '5px' }}>
                         柱狀圖
                       </strong>
-                      <CButton
+                      {/* <CButton
                         style={{
                           position: 'absolute',
                           right: '10px',
@@ -1339,7 +1339,7 @@ const Tabs = () => {
                         <b>
                           <CIcon icon={cilDataTransferDown} style={{ fontSize: '24px' }} />
                         </b>
-                      </CButton>
+                      </CButton> */}
                     </CCardHeader>
                     <CCardBody
                       style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
@@ -1417,7 +1417,7 @@ const Tabs = () => {
                       <strong style={{ fontSize: '1.2rem', color: 'white', padding: '5px' }}>
                         環形圖
                       </strong>
-                      <CButton
+                      {/* <CButton
                         style={{
                           position: 'absolute',
                           right: '10px',
@@ -1429,7 +1429,7 @@ const Tabs = () => {
                         <b>
                           <CIcon icon={cilDataTransferDown} style={{ fontSize: '24px' }} />
                         </b>
-                      </CButton>
+                      </CButton> */}
                     </CCardHeader>
                     <CCardBody
                       style={{
