@@ -44,16 +44,16 @@ async def read_user_credentials(
             conn.commit()
 
             # 構建對應的 Emission_Source（排放源鑑別） 插入邏輯
-            baseline_id = "SELECT TOP 1 baseline_id, cfv_start_date, cfv_end_date, edit_time FROM Baseline ORDER BY edit_time DESC"
-            cursor.execute(baseline_id)
+            baseline_id_query = "SELECT baseline_id FROM Baseline WHERE is_completed = 0"
+            cursor.execute(baseline_id_query)
             baseline_id = cursor.fetchone()[0]
 
             fuel_code = "170001" if oil_species == 0 else "170006"  # 0: 汽油, 1: 柴油
             remark = "公務車-汽油" if oil_species == 0 else "公務車-柴油"
 
             # 查詢 Emission_Source 表，確認是否已存在相同之 fuel_code
-            check_query = "SELECT source_id FROM Emission_Source WHERE fuel_code = ? AND source_table = ?"
-            cursor.execute(check_query, (fuel_code, "Vehicle"))
+            check_query = "SELECT source_id FROM Emission_Source WHERE baseline_id = ? AND fuel_code = ? AND source_table = ?"
+            cursor.execute(check_query, (baseline_id, fuel_code, "Vehicle"))
             emission_source = cursor.fetchone()
 
             if emission_source:
@@ -65,14 +65,15 @@ async def read_user_credentials(
                         trust_category, credibility_info, emission_category, emission_pattern, 
                         supplier, is_CHP, remark
                     )
+                    OUTPUT INSERTED.source_id
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """
                 emission_values = (
                     baseline_id, "Vehicle", "G20900", "0020", 0, fuel_code, 2, "", 1, 2, "", 0, remark
                 )
                 cursor.execute(emission_source_query, emission_values)
+                source_id = cursor.fetchone()[0]
                 conn.commit()
-                source_id = cursor.lastrowid
 
             # 在 Activity_Data 表插入資料
             data_source = "活動數據盤點-公務車"
