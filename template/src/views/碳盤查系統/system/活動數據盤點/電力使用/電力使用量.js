@@ -38,7 +38,7 @@ export const ElectricityUsage = () => {
   }, [])
   
   // Check if user has permission to edit/delete
-  const hasEditPermission = userPosition !== 1
+  const hasEditPermission = userPosition !== 1 && userRole !== 0 && userRole !== 1
 
   // Function to fetch baseline data
   const getBaseline = async () => {

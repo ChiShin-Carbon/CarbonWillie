@@ -36,11 +36,15 @@ export const Vehicle = ({refreshVehicleData}) => {
   const [userPosition, setUserPosition] = useState(null)
   const [cfvStartDate, setCfvStartDate] = useState(null)  // State for baseline start date
   const [cfvEndDate, setCfvEndDate] = useState(null)  // State for baseline end date
+  const [userRole, setUserRole] = useState(null)
+
   
   // Get user position from sessionStorage
   useEffect(() => {
-    const position = window.sessionStorage.getItem('position')
-    setUserPosition(position ? parseInt(position) : null)
+    const storedUserPosition = window.sessionStorage.getItem('position');
+    const storedUserRole = window.sessionStorage.getItem('role');
+    setUserPosition(storedUserPosition ? parseInt(storedUserPosition) : null);
+    setUserRole(storedUserRole ? parseInt(storedUserRole) : null);
   }, [])
 
   // Function to fetch baseline data
@@ -143,7 +147,7 @@ export const Vehicle = ({refreshVehicleData}) => {
   }, [cfvStartDate, cfvEndDate]);
 
   // Check if user has permission to edit/delete
-  const hasEditPermission = userPosition === 3;
+  const hasEditPermission = userPosition !== 1 && userRole !== 0 && userRole !== 1
 
   return (
     <div>
