@@ -116,7 +116,7 @@ const Tabs = () => {
   const [errorMessage, setErrorMessage] = useState('')
 
   // Check if user has permission to add/edit/delete - hide button for position=1 or role=0 or role=1
-  const hasEditPermission = userPosition !== '1' && userRole !== '0' && userRole !== '1'
+  const hasEditPermission = userPosition !== 1 && userRole !== 0 && userRole !== 1
 
   const {
     vehicle,
@@ -149,14 +149,11 @@ const Tabs = () => {
   useEffect(() => {
     // Get user ID from sessionStorage
     const storedUserId = window.sessionStorage.getItem('user_id');
-    const storedUserPosition = window.sessionStorage.getItem('position');
-    const rawStoredUserRole = window.sessionStorage.getItem('role');
+    const storedUserPosition = parseInt(window.sessionStorage.getItem('position'), 10);
+    const storedUserRole = parseInt(window.sessionStorage.getItem('role'), 10);
     
-    // Properly process the role value to treat "false" as admin (1)
-    const storedUserRole = (rawStoredUserRole === '1' || rawStoredUserRole === 'false') ? '1' : '0';
-    
-    console.log('Raw role from sessionStorage:', rawStoredUserRole);
-    console.log('Processed role:', storedUserRole);
+    console.log('Position from sessionStorage:', storedUserPosition);
+    console.log('Role from sessionStorage:', storedUserRole);
     
     if (storedUserId) {
       const parsedUserId = parseInt(storedUserId, 10);
@@ -215,7 +212,7 @@ const Tabs = () => {
   // Check if a function/table is authorized for the current user
   const isAuthorized = (functionName) => {
     // If Position is 1 (admin), grant access to all tables
-    if (userPosition === '1' || userRole === '1' || userRole === 'true') return true;
+    if (userPosition === 1 || userRole === 1) return true;
     
     // For other positions, check authorized tables
     if (!authorizedTables.length) return false;
@@ -615,7 +612,7 @@ const Tabs = () => {
             </>
           ) : (
             <div className={styles.noChoose}>
-              {!(userPosition === '1' || userRole === '1') && authorizedTables.length === 0
+              {!(userPosition === 1 || userRole === 1) && authorizedTables.length === 0
                 ? '您目前沒有任何授權項目。請聯繫管理員獲取權限。'
                 : '請選擇一個項目!'}
             </div>
