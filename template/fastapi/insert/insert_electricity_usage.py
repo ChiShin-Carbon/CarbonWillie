@@ -51,16 +51,16 @@ async def read_user_credentials(
             conn.commit()
 
             # Get baseline_id separately - similar to vehicle approach
-            baseline_query = "SELECT TOP 1 baseline_id, cfv_start_date, cfv_end_date, edit_time FROM Baseline ORDER BY edit_time DESC"
-            cursor.execute(baseline_query)
+            baseline_id_query = "SELECT baseline_id FROM Baseline WHERE is_completed = 0"
+            cursor.execute(baseline_id_query)
             baseline_id = cursor.fetchone()[0]
 
             fuel_code = "350099"
             emission_remark = "台電-外購電力"  # Renamed to avoid conflict with parameter
 
             # Check if Emission_Source already exists
-            check_query = "SELECT source_id FROM Emission_Source WHERE fuel_code = ? AND source_table = ?"
-            cursor.execute(check_query, (fuel_code, "Electricity_Usage"))
+            check_query = "SELECT source_id FROM Emission_Source WHERE baseline_id = ? AND fuel_code = ? AND source_table = ?"
+            cursor.execute(check_query, (baseline_id, fuel_code, "Electricity_Usage"))
             emission_source = cursor.fetchone()
 
             if emission_source:
@@ -73,6 +73,7 @@ async def read_user_credentials(
                         trust_category, credibility_info, emission_category, emission_pattern, 
                         supplier, is_CHP, remark
                     )
+                    OUTPUT INSERTED.source_id
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """
                 emission_values = (
@@ -80,11 +81,8 @@ async def read_user_credentials(
                     1, "", 2, 1, "台灣電力公司", 0, emission_remark
                 )
                 cursor.execute(emission_source_query, emission_values)
-                conn.commit()
-                
-                # Now get the source_id in a separate query
-                cursor.execute("SELECT @@IDENTITY")  # Get the last inserted ID
                 source_id = cursor.fetchone()[0]
+                conn.commit()
 
             # Determine value to use based on electricity_type
             if electricity_type == 1:
@@ -94,15 +92,16 @@ async def read_user_credentials(
             else:
                 raise ValueError("Invalid electricity_type: Must be 1 or 2")
 
-            # Check if Activity_Data exists for this source
-            check_activity_query = "SELECT activity_data FROM Activity_Data WHERE source_id = ?"
-            cursor.execute(check_activity_query, (source_id,))
-            existing_activity_data = cursor.fetchone()
-
+            # 在 Activity_Data 表插入資料
             data_source = "活動數據盤點-電力使用量"
             save_unit = "管理部門"
             data_type = 0
             calorific_value = 7800  # 熱值
+
+            # 查詢是否已有相同 source_id 之 Activity_Data 記錄
+            check_activity_query = "SELECT activity_data FROM Activity_Data WHERE source_id = ?"
+            cursor.execute(check_activity_query, (source_id,))
+            existing_activity_data = cursor.fetchone()
 
             if existing_activity_data:
                 # Update existing Activity_Data
@@ -113,16 +112,44 @@ async def read_user_credentials(
                 # Insert new Activity_Data
                 insert_activity_query = """
                     INSERT INTO Activity_Data (
-                        source_id, activity_data, distribution_ratio, data_source, save_unit, data_type,
+                        source_id, activity_data, distribution_ratio, activity_data_unit, data_source, save_unit, data_type,
                         calorific_value, moisture_content, carbon_content
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """
                 insert_activity_values = (
-                    source_id, value_to_use, 100, data_source, save_unit, data_type, calorific_value, 0, 0
+                    source_id, value_to_use, 100, 4, data_source, save_unit, data_type, calorific_value, 0, 0
                 )
                 cursor.execute(insert_activity_query, insert_activity_values)
-            
             conn.commit()
+            
+            # 查詢 Emission_Factor 表中的 factor 和 GWP
+            factor_gwp_query = "SELECT gas_type, factor, GWP FROM Emission_Factor WHERE fuel_code = ?"
+            cursor.execute(factor_gwp_query, (fuel_code,))
+            factor_gwp_list = cursor.fetchall()
+
+            if factor_gwp_list:
+                for gas_type, factor, gwp in factor_gwp_list:
+                    emissions = round(carbon_emission / 1000, 5) #排放量
+                    emission_equivalent = round(emissions * gwp, 5) #排放當量
+
+                    # 在 Quantitative_Inventory 表插入資料
+                    # 查詢是否已有相同 source_id 之 Quantitative_Inventory 記錄
+                    check_emissions_query = "SELECT emissions, emission_equivalent FROM Quantitative_Inventory WHERE source_id = ? AND gas_type = ?"
+                    cursor.execute(check_emissions_query, (source_id, gas_type))
+                    existing_emissions = cursor.fetchone()
+
+                    if existing_emissions:
+                        # 若存在，累加 emissions, emission_equivalent
+                        new_emissions = round(existing_emissions[0] + emissions, 5)
+                        new_emission_equivalent = round(existing_emissions[1] + emission_equivalent, 5)
+                        update_emissions_query = "UPDATE Quantitative_Inventory SET emissions = ?, emission_equivalent = ? WHERE source_id = ? AND gas_type = ?"
+                        cursor.execute(update_emissions_query, (new_emissions, new_emission_equivalent, source_id, gas_type))
+                    else:
+                        # 若不存在，插入新記錄
+                        insert_emissions_query = "INSERT INTO Quantitative_Inventory (source_id, gas_type, emissions, emission_equivalent) VALUES (?, ?, ?, ?)"
+                        cursor.execute(insert_emissions_query, (source_id, gas_type, emissions, emission_equivalent))
+                    conn.commit()
+            
             return {"status": "success", "image_path": str(image_path)}
         
         except Exception as e:
