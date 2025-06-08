@@ -39,15 +39,8 @@ export const Refrigerant = () => {
                 </CTableHead>
                 <CTableBody className={styles.tableBody}>
                     <tr>
-                        <td>123</td>
-                        <td>123</td>
-                        <td>123</td>
-                        <td>123</td>
-                        <td>123</td>
-                        <td>123</td>
-                        <td>123</td>
-                        <td>123</td>
-                    </tr>
+                            <td colSpan="8" style={{ textAlign: 'center' }}>此年份無冷媒資料</td>
+                        </tr>
                 </CTableBody>
             </CTable>
 

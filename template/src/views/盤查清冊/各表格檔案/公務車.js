@@ -39,6 +39,8 @@ export const Vehicle = ({ year }) => {
             setLoading(true);
             setError(null);
 
+            setVehicleData([]);
+
             try {
                 const response = await fetch(`http://127.0.0.1:8000/vehicle_data_by_year/${year}`, {
                     method: "GET",
@@ -54,6 +56,9 @@ export const Vehicle = ({ year }) => {
             } catch (err) {
                 console.error("獲取車輛資料發生錯誤:", err);
                 setError(err.message);
+
+                setVehicleData([]);
+
             } finally {
                 setLoading(false);
             }

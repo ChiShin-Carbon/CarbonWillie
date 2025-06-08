@@ -22,7 +22,7 @@ import styles from '../../scss/盤查清冊.module.css'
 
 import { ElectricityUsage } from './各表格檔案/電力使用量.js';
 
-export const ClassTwo = () => {
+export const ClassTwo = ({ year }) => {
 
     return (
         <div>
@@ -32,7 +32,7 @@ export const ClassTwo = () => {
                 </div>
             </div>
             <div>
-                <ElectricityUsage />
+                <ElectricityUsage year={year}/>
             </div>
         </div>
     )

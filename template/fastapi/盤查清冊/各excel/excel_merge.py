@@ -184,6 +184,11 @@ def generate_excel_file(year: int):
         generator_data = emergencygenerator_sheet.get_generator_data(year)
         emergencygenerator_sheet.create_emergency_generator_sheet(wb, generator_data)
 
+        # 匯入電力使用量
+        from . import electricityUsage_sheet
+        electricity_data = electricityUsage_sheet.get_electricity_data(year)
+        electricityUsage_sheet.create_electricity_usage_sheet(wb, electricity_data)
+
         # 匯入員工通勤資料模組
         from . import commute_sheet
         commute_data = commute_sheet.get_commute_data(year)

@@ -33,6 +33,9 @@ export const SellingWaste = ({ year }) => {
             setLoading(true);
             setError(null);
 
+            setWasteData([]);
+
+
             try {
                 const response = await fetch(`http://127.0.0.1:8000/selling_waste_data_by_year/${year}`, {
                     method: "GET",
@@ -40,7 +43,7 @@ export const SellingWaste = ({ year }) => {
                 });
 
                 console.log("Response status:", response.status);
-                
+
                 if (!response.ok) {
                     const errorText = await response.text();
                     console.error("Error response:", errorText);
@@ -53,6 +56,9 @@ export const SellingWaste = ({ year }) => {
             } catch (err) {
                 console.error("獲取銷售廢棄物資料發生錯誤:", err);
                 setError(err.message);
+
+                setWasteData([]);
+
             } finally {
                 setLoading(false);
             }

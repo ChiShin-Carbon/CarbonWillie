@@ -33,6 +33,8 @@ export const EmergencyGenerator = ({ year }) => {
             setLoading(true);
             setError(null);
 
+            setGeneratorData([]);
+
             try {
                 const response = await fetch(`http://127.0.0.1:8000/generator_data_by_year/${year}`, {
                     method: "GET",
@@ -48,6 +50,9 @@ export const EmergencyGenerator = ({ year }) => {
             } catch (err) {
                 console.error("獲取緊急發電機資料發生錯誤:", err);
                 setError(err.message);
+
+                setGeneratorData([]);
+
             } finally {
                 setLoading(false);
             }

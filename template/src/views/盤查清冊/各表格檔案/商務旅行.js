@@ -53,6 +53,7 @@ export const BusinessTrip = ({ year }) => {
             setLoading(true);
             setError(null);
 
+            setBusinessTripData([]);
             try {
                 const response = await fetch(`http://127.0.0.1:8000/businesstrip_data_by_year/${year}`, {
                     method: "GET",
@@ -73,6 +74,8 @@ export const BusinessTrip = ({ year }) => {
             } catch (err) {
                 console.error("獲取商務旅行資料發生錯誤:", err);
                 setError(err.message);
+
+                setBusinessTripData([]);
             } finally {
                 setLoading(false);
             }

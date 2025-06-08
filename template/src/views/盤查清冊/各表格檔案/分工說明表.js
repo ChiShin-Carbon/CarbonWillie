@@ -65,6 +65,8 @@ export const Division = ({ year }) => {
             setLoading(true);
             setError(null);
 
+            setAuthorizedUsers([]);
+
             try {
                 const response = await fetch(`http://127.0.0.1:8000/authorized_users_by_year/${year}`, {
                     method: "GET",
@@ -80,6 +82,8 @@ export const Division = ({ year }) => {
             } catch (err) {
                 console.error("獲取授權使用者資料發生錯誤:", err);
                 setError(err.message);
+
+                setAuthorizedUsers([]);
             } finally {
                 setLoading(false);
             }
@@ -102,8 +106,8 @@ export const Division = ({ year }) => {
             ...user,
             displayTableName: categoryPrefix,
             originalTableName: user.table_name,
-            sortOrder: categoryOrder.indexOf(categoryPrefix) !== -1 ? 
-                       categoryOrder.indexOf(categoryPrefix) : Number.MAX_SAFE_INTEGER
+            sortOrder: categoryOrder.indexOf(categoryPrefix) !== -1 ?
+                categoryOrder.indexOf(categoryPrefix) : Number.MAX_SAFE_INTEGER
         };
     }).sort((a, b) => a.sortOrder - b.sortOrder);
 

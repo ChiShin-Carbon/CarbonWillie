@@ -33,6 +33,9 @@ export const NonEmployee = ({ year }) => {
             setLoading(true);
             setError(null);
 
+            setNonemployeeData([]);
+
+
             try {
                 const response = await fetch(`http://127.0.0.1:8000/nonemployee_data_by_year/${year}`, {
                     method: "GET",
@@ -48,6 +51,8 @@ export const NonEmployee = ({ year }) => {
             } catch (err) {
                 console.error("獲取非員工資料發生錯誤:", err);
                 setError(err.message);
+
+                setNonemployeeData([]);
             } finally {
                 setLoading(false);
             }

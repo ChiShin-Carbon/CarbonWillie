@@ -33,6 +33,8 @@ export const Employee = ({ year }) => {
             setLoading(true);
             setError(null);
 
+            setEmployeeData([]);
+
             try {
                 const response = await fetch(`http://127.0.0.1:8000/employee_data_by_year/${year}`, {
                     method: "GET",
@@ -48,6 +50,8 @@ export const Employee = ({ year }) => {
             } catch (err) {
                 console.error("獲取員工資料發生錯誤:", err);
                 setError(err.message);
+
+                setEmployeeData([]);
             } finally {
                 setLoading(false);
             }

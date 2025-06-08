@@ -71,7 +71,8 @@ def create_chapter4_3(user_id):
     #4.6 本次盤查排除事項、注意事項及推估說明
     preface = doc.add_heading("4.6 本次盤查排除事項、注意事項及推估說明",level=2)
     set_heading2(preface)
-    
+    content = doc.add_paragraph("【以下內容大多為參考，請再自行進行編修】")
+    set_paragraph(content)
     content = doc.add_paragraph("以下為本次辦理溫室氣體盤查工作，有關盤查排除事項、注意事項及活動數據不完整資訊下推估的說明。")
     set_paragraph(content)
 
