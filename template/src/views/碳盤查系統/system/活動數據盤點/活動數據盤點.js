@@ -115,8 +115,8 @@ const Tabs = () => {
   const [userRole, setUserRole] = useState(null)
   const [errorMessage, setErrorMessage] = useState('')
 
-  // Check if user has permission to add/edit/delete
-  const hasEditPermission = userPosition === '3'
+  // Check if user has permission to add/edit/delete - hide button for position=1 or role=0 or role=1
+  const hasEditPermission = userPosition !== '1' && userRole !== '0' && userRole !== '1'
 
   const {
     vehicle,
