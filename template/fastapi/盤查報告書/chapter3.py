@@ -4,7 +4,7 @@ from docx.shared import Cm
 from .storeDef2 import get_org_name
 
 from .ch0Def import set_heading, set_heading2, set_paragraph, set_explain
-from .ch3Def import set_ch3_table1
+from .ch3Def import set_ch3_table1,set_ch3_table2
 from .storeDef3 import get_latest_baseline_year
 from . storeDef4 import get_total_emission_equivalent
 
@@ -47,7 +47,7 @@ def create_chapter3(user_id):
     table_explain = doc.add_paragraph(f"表3-1、{org_name}直接溫室氣體排放源")
     set_explain(table_explain)
     # 新增表格
-    table1 = doc.add_table(rows=15, cols=16)
+    table1 = doc.add_table(rows=4, cols=16)
     
     set_ch3_table1(table1)
 
@@ -63,7 +63,7 @@ def create_chapter3(user_id):
     set_explain(table_explain)
     
     table2 = doc.add_table(rows=3, cols=16)
-    set_ch3_table1(table2)
+    set_ch3_table2(table2)
 
 
 
