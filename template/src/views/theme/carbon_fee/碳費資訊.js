@@ -80,16 +80,20 @@ const Tabs = () => {
   const [visible2, setVisible2] = useState(false) // 削減率計算公式model
   const [visible3, setVisible3] = useState(false) // 削減率計算公式model
 
+  const [availableYears, setAvailableYears] = useState([])
+  const [selectedYear, setSelectedYear] = useState('')
   const [electricityUsage, setElectricityUsage] = useState('')
   const [quantitativeInventory, setQuantitativeInventory] = useState({})
 
-  const getResult = async () => {
+  const getResult = async (year = '') => {
     try {
-      const response = await fetch('http://localhost:8000/result')
+      const response = await fetch(`http://localhost:8000/result${year ? `?year=${year}` : ''}`)
       if (response.ok) {
         const data = await response.json()
         setElectricityUsage(data.result.Electricity_Usage)
         setQuantitativeInventory(data.result.Quantitative_Inventory)
+        setAvailableYears(data.result.Available_Years)
+        setSelectedYear(data.result.Selected_Year.toString())
       } else {
         console.log(response.status)
       }
@@ -102,6 +106,12 @@ const Tabs = () => {
     getResult()
   }, [])
 
+  useEffect(() => {
+    if (selectedYear !== '') {
+      getResult(selectedYear)
+    }
+  }, [selectedYear])
+
   return (
     <CRow>
       <div className={styles.systemTablist}>
@@ -113,11 +123,20 @@ const Tabs = () => {
               選擇年分
             </strong>
             <CCol style={{ justifyContent: 'left', alignItems: 'center', padding: '0' }}>
-              <CFormSelect style={{ width: '120px' }}>
-                <option>2025</option>
-                <option value="1">2024</option>
-                <option value="2">2023</option>
-                <option value="3">2022</option>
+              <CFormSelect
+                style={{ width: '120px' }}
+                value={selectedYear}
+                onChange={(e) => {
+                  const selected = e.target.value
+                  setSelectedYear(selected)
+                  getResult(selected)
+                }}
+              >
+                {availableYears.map((year) => (
+                  <option key={year} value={year.toString()}>
+                    {year}
+                  </option>
+                ))}
               </CFormSelect>
             </CCol>
           </div>
@@ -192,7 +211,7 @@ const Tabs = () => {
               <div className={styles.titleContainer}>
                 <div className={styles.leftItem}>
                   <div>
-                    <strong>2024碳費計算</strong>
+                    <strong>{selectedYear}碳費計算</strong>
                   </div>
                   {/* <div>
                     <CFormSelect size="sm" className={styles.input}>
@@ -750,7 +769,6 @@ const Tabs = () => {
             </>
           )}
 
-          
           {/* 碳費新聞 */}
           {activeTab === 'tab3' && <NEWS />}
         </div>
