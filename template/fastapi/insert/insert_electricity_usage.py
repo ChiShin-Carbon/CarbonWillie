@@ -129,6 +129,11 @@ async def read_user_credentials(
 
             if factor_gwp_list:
                 for gas_type, factor, gwp in factor_gwp_list:
+                    if carbon_emission is None or carbon_emission == 0:
+    emissions = round(value_to_use * factor / 1000, 5)  # 使用因子計算排放量
+else:
+    emissions = round(carbon_emission / 1000, 5)  # 使用提供的碳排資料
+
                     emissions = round(carbon_emission / 1000, 5) #排放量
                     emission_equivalent = round(emissions * gwp, 5) #排放當量
 
