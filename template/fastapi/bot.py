@@ -18,6 +18,8 @@ import asyncio
 from concurrent.futures import ThreadPoolExecutor
 import re
 from collections import Counter
+from datetime import datetime
+from decimal import Decimal
 
 # Load environment variables
 load_dotenv()
@@ -85,30 +87,98 @@ def get_tables_content():
         return file.read()
 
 
+def parse_database_records(records, column_names=None):
+    """
+    Parse database records into a more readable format.
+    
+    Args:
+        records: Raw database records (list of tuples)
+        column_names: List of column names (optional)
+    
+    Returns:
+        List of dictionaries with parsed data
+    """
+    if not records:
+        return []
+    
+    parsed_records = []
+    for record in records:
+        parsed_record = {}
+        for i, value in enumerate(record):
+            # Convert different data types to readable format
+            if isinstance(value, Decimal):
+                parsed_record[f'col_{i}'] = float(value)
+            elif isinstance(value, datetime):
+                parsed_record[f'col_{i}'] = value.strftime('%Y-%m-%d %H:%M:%S')
+            elif hasattr(value, 'date') and callable(getattr(value, 'date')):  # datetime.date
+                parsed_record[f'col_{i}'] = value.strftime('%Y-%m-%d')
+            else:
+                parsed_record[f'col_{i}'] = str(value) if value is not None else None
+        
+        parsed_records.append(parsed_record)
+    
+    return parsed_records
+
+
+def get_column_info(cursor, table_name):
+    """
+    Get column information for a table to better understand the data structure.
+    
+    Args:
+        cursor: Database cursor
+        table_name: Name of the table
+    
+    Returns:
+        List of column names
+    """
+    try:
+        # Try to get column information (this syntax might vary depending on your database)
+        cursor.execute(f"PRAGMA table_info({table_name})")
+        columns = cursor.fetchall()
+        return [col[1] for col in columns]  # Column names are usually in index 1
+    except:
+        # If PRAGMA doesn't work, try alternative method
+        try:
+            cursor.execute(f"SELECT * FROM {table_name} LIMIT 0")
+            return [description[0] for description in cursor.description]
+        except:
+            return None
+
+
 async def handle_query_intent(client, user_message):
-    """Handle database query intent."""
+    """Handle database query intent with improved answer generation."""
     tables_content = get_tables_content()
     
     try:
-        # Generate SQL query
+        # Generate SQL query with better context
         query_intent = client.chat.completions.create(
             model="gpt-4o",
             messages=[
                 {"role": "system", "content": f"""
-                我們的資料庫有以下table，請判斷使用者的問題屬於哪個table，並給出query的指令
-                (注意：
-                1.只要給出SQL指令即可，不需markdown格式
-                2.每次都select * from table_name即可(選擇整個table)
-                3.避免使用中文標點符號如：，、；等，請使用英文標點符號)
+                我們的資料庫有以下table，請根據使用者的問題生成適當的SQL查詢。
+                
+                重要指示：
+                1. 只回傳SQL查詢語句，不需要markdown格式
+                2. 根據問題的具體需求選擇適當的欄位，不一定要select *
+                3. 如果問題涉及特定年份、日期或條件，請在WHERE子句中包含這些條件
+                4. 避免使用中文標點符號，使用英文標點符號
+                5. 如果需要聚合數據（如總和、平均值、計數），請使用適當的聚合函數
+                
+                資料庫結構：
                 {tables_content}
                 """},
                 {"role": "user", "content": user_message},
             ]
         )
 
-        # Sanitize the SQL query - replace Chinese punctuation with English
-        sql_query = query_intent.choices[0].message.content
+        # Sanitize the SQL query
+        sql_query = query_intent.choices[0].message.content.strip()
         sql_query = sql_query.replace('，', ',').replace('；', ';').replace('：', ':')
+        
+        # Remove markdown formatting if present
+        sql_query = re.sub(r'```sql\n?|```\n?', '', sql_query)
+        
+        print(f"Generated SQL: {sql_query}")
         
         # Execute database query
         conn = connectDB()
@@ -118,30 +188,62 @@ async def handle_query_intent(client, user_message):
                 cursor.execute(sql_query)
                 records = cursor.fetchall()
                 
-                # Generate response based on query results
+                # Get column names for better context
+                column_names = [description[0] for description in cursor.description] if cursor.description else None
+                
+                # Parse records for better readability
+                parsed_records = parse_database_records(records, column_names)
+                
+                # Generate a more user-friendly response
+                response_prompt = f"""
+                使用者問題：{user_message}
+                
+                資料庫查詢結果：
+                欄位名稱：{column_names if column_names else '未知'}
+                資料筆數：{len(records)}
+                資料內容：{parsed_records if parsed_records else records}
+                
+                請根據以上資訊，以自然、易懂的方式回答使用者的問題。要求：
+                1. 直接回答問題，避免顯示原始資料庫記錄格式
+                2. 將數據轉換為有意義的資訊
+                3. 如果有多筆相同的資料，請進行適當的總結
+                4. 使用清晰的中文表達
+                5. 如果沒有找到相關資料，請明確說明
+                6. 避免顯示技術性的資料庫欄位名稱和原始tuple格式
+                """
+                
                 result = client.chat.completions.create(
                     model="gpt-4o",
+                    temperature=0.1,  # Lower temperature for more consistent responses
                     messages=[
-                        {"role": "system", "content": f"""
-                        依據{user_message}在{records}中尋找使用者要的資料並回覆，如果沒特別要求就回覆所有資料
-                        """},
+                        {"role": "system", "content": "你是一個專業的數據分析助手，能夠將資料庫查詢結果轉換為清晰、易懂的回答。請避免顯示原始的資料庫記錄格式，而是提供有意義的資訊摘要。"},
+                        {"role": "user", "content": response_prompt}
                     ]
                 )
                 
                 result_message = result.choices[0].message.content
-                print(result_message)
+                print(f"Generated response: {result_message}")
                 return {"response": result_message}
+                
             except Exception as e:
                 print(f"Database execution error: {e}")
-                return {"response": "抱歉，碳智郎僅能回答資料庫中和碳盤查相關的問題"}
+                # Provide more specific error handling
+                if "no such table" in str(e).lower():
+                    return {"response": "抱歉，找不到相關的資料表。請確認您的問題是否與資料庫中的資料相關。"}
+                elif "syntax error" in str(e).lower():
+                    return {"response": "抱歉，查詢過程中發生錯誤。請嘗試重新表述您的問題。"}
+                else:
+                    return {"response": "抱歉，處理您的查詢時發生錯誤。請稍後再試或重新表述您的問題。"}
             finally:
                 conn.close()
         else:
             print("Could not connect to the database.")
-            return {"response": "抱歉，碳智郎僅能回答資料庫中和碳盤查相關的問題"}
+            return {"response": "抱歉，無法連接到資料庫。請稍後再試。"}
+            
     except Exception as e:
         print(f"Error in handling query intent: {e}")
-        return {"response": "抱歉，碳智郎僅能回答資料庫中和碳盤查相關的問題"}
+        return {"response": "抱歉，處理您的問題時發生錯誤。請稍後再試。"}
+
 
 async def handle_answer_intent(client, user_message):
     """Handle RAG-based answer intent using PDF documents."""
