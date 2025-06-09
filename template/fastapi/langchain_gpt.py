@@ -29,17 +29,8 @@ async def botmessage(request: MessageRequest):
     # 創建一個 LangChain LLM 實例，並設置生成模型的溫度
     llm = OpenAI(temperature=0.7, max_tokens=1000)  # 設置 max_tokens 來控制回應的長度
 
-    # 修改模板，明確指定使用繁體中文回答
-    prompt = PromptTemplate(
-        input_variables=["user_message"], 
-        template="""你是一個有幫助的助理。請用繁體中文回答以下問題或訊息。
-        如果用戶使用中文提問，請務必用中文回答。
-        如果用戶使用其他語言，也請翻譯成中文後回答。
-        
-        用戶訊息：{user_message}
-        
-        請用繁體中文回答："""
-    )
+    # 定義模板
+    prompt = PromptTemplate(input_variables=["user_message"], template="You are a helpful assistant. Respond to the following message: {user_message}")
 
     # 創建 LLMChain 實例，結合 prompt 和 LLM
     chain = LLMChain(llm=llm, prompt=prompt)
