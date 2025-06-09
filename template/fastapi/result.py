@@ -90,9 +90,14 @@ def read_result(year: Optional[int] = Query(None)):
                     SUM(CASE WHEN es.emission_category = 2 THEN qi.emission_equivalent ELSE 0 END) AS category2_total_emission_equivalent
 
                 FROM Quantitative_inventory qi
-                JOIN Emission_Source es ON qi.source_id = es.source_id;
+                JOIN Emission_Source es ON qi.source_id = es.source_id
+                WHERE es.baseline_id IN (
+                    SELECT baseline_id
+                    FROM Baseline
+                    WHERE YEAR(cfv_start_date) = ?
+                );
             """
-            cursor.execute(query_result)
+            cursor.execute(query_result,(year,))
             result_record = cursor.fetchone()
 
             if result_record:

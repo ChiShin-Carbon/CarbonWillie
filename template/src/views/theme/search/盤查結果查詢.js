@@ -702,10 +702,10 @@ const Tabs = () => {
                           {quantitativeInventory.stationary_emission_equivalent}
                         </td>
                         <td style={cellStyle}>
-                          {quantitativeInventory.mobile_emission_equivalent}
+                          {quantitativeInventory.process_emission_equivalent}
                         </td>
                         <td style={cellStyle}>
-                          {quantitativeInventory.process_emission_equivalent}
+                          {quantitativeInventory.mobile_emission_equivalent}
                         </td>
                         <td style={cellStyle}>
                           {quantitativeInventory.fugitive_emission_equivalent}
@@ -776,7 +776,7 @@ const Tabs = () => {
                         <td style={cellStyle}>
                           {quantitativeInventory.category1_total_emission_equivalent
                             ? (
-                                (quantitativeInventory.mobile_emission_equivalent /
+                                (quantitativeInventory.process_emission_equivalent /
                                   quantitativeInventory.category1_total_emission_equivalent) *
                                 100
                               ).toFixed(2) + '%'
@@ -785,7 +785,7 @@ const Tabs = () => {
                         <td style={cellStyle}>
                           {quantitativeInventory.category1_total_emission_equivalent
                             ? (
-                                (quantitativeInventory.process_emission_equivalent /
+                                (quantitativeInventory.mobile_emission_equivalent /
                                   quantitativeInventory.category1_total_emission_equivalent) *
                                 100
                               ).toFixed(2) + '%'
