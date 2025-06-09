@@ -484,6 +484,7 @@ const Tabs = () => {
             <CFormCheck
               id="sitetrue"
               label="列入盤查"
+              checked={new_is_inclusion}
               onChange={(e) => setNewIsInclusion(e.target.checked)}
             />
           </CForm>
