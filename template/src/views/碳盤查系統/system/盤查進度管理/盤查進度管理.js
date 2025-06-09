@@ -41,6 +41,19 @@ const Tabs = () => {
   const [tableData, setTableData] = useState([]) // 新增狀態來存放從後端獲取的資料
   const [authorizedID, setAuthorizedID] = useState([]) // 新增來存放從後端獲取的資料
 
+  // Get user position and role from sessionStorage
+  const storedUserPosition = parseInt(window.sessionStorage.getItem('position'), 10);
+  const storedUserRole = parseInt(window.sessionStorage.getItem('role'), 10);
+  
+  // Check if user has permission to review (position === 1)
+  const canReview = storedUserPosition === 1;
+  
+  console.log('User permissions:', {
+    position: storedUserPosition,
+    role: storedUserRole,
+    canReview: canReview
+  });
+
   const formatDate = (isoDate) => {
     if (!isoDate) {
       return ''; // 如果 isoDate 为 null 或 undefined，则返回空字符串
@@ -65,7 +78,7 @@ const Tabs = () => {
         },
       })
       const data = await response.json()
-      
+
       // Ensure data is an array before setting state
       if (Array.isArray(data)) {
         setTableData(data) // Set table data only if it's an array
@@ -81,7 +94,6 @@ const Tabs = () => {
       setTableData([]) // Set to empty array on error
     }
   }
-  
 
   // 使用 useEffect 在組件加載時呼叫 API
   useEffect(() => {
@@ -123,8 +135,8 @@ const Tabs = () => {
   }
 
   // 過濾後的表格資料，排除 status 欄位的搜尋
-  const filteredData = Array.isArray(tableData) 
-  ? tableData.filter(
+  const filteredData = Array.isArray(tableData)
+    ? tableData.filter(
       (row) =>
         (row.table_name?.includes(searchValue) ||
           row.username?.includes(searchValue) ||
@@ -134,7 +146,7 @@ const Tabs = () => {
         ) &&
         (selectedFeedback === '' || (row.review === 1 ? '尚未審核' : '已審核') === selectedFeedback)
     )
-  : [];
+    : [];
 
   // handleSearchInput 處理輸入框變化
   const handleSearchInput = (e) => {
@@ -159,6 +171,20 @@ const Tabs = () => {
   const handleFeedbackChange = (e) => {
     setSelectedFeedback(e.target.value)
   }
+
+  // Handle review button clicks with permission check
+  const handleReviewButtonClick = (action, recordId) => {
+    if (!canReview) {
+      alert('您沒有權限執行審核操作，僅限主管使用 (position = 1)');
+      return;
+    }
+    
+    if (action === 'success') {
+      setTrueIsModalOpen(recordId);
+    } else if (action === 'failed') {
+      setFalseIsModalOpen(recordId);
+    }
+  };
 
   const handleComplete = () => {
     if (selectedItems.length === 0) {
@@ -201,12 +227,7 @@ const Tabs = () => {
         </CTabList>
       </CTabs>
 
-      <div className="system-titlediv">
-        <div>
-          <h4 className="system-title">盤查進度管理</h4>
-          <hr className="system-hr"></hr>
-        </div>
-      </div>
+
       <CCol xs={12}>
         <div className="d-flex align-items-center">
           <CCol sm={8}>
@@ -262,7 +283,6 @@ const Tabs = () => {
               <CTable>
                 <CTableHead color="light">
                   <CTableRow>
-                    {/* <CTableHeaderCell scope="col">勾選</CTableHeaderCell> */}
                     <CTableHeaderCell scope="col">排放源項目</CTableHeaderCell>
                     <CTableHeaderCell scope="col">填寫單位</CTableHeaderCell>
                     <CTableHeaderCell scope="col">負責人</CTableHeaderCell>
@@ -273,77 +293,129 @@ const Tabs = () => {
                 </CTableHead>
                 <CTableBody>
                   {filteredData.length > 0 ? (
-                    filteredData.map((row, index) => (
-                      <CTableRow key={index}>
-                        {/* 勾選 
-                        <CTableDataCell>
-                          <CFormCheck style={{ borderColor: 'black' }} />
-                        </CTableDataCell>*/}
-                        {/* 排放源項目 */}{/*測試用 {row.review} */}
-                        <CTableDataCell>{row.table_name}</CTableDataCell>
-                        {/* 顯示部門名稱 */}
-                        <CTableDataCell>{getDepartmentName(row.department)}</CTableDataCell>
-                        {/* 負責人 */}
-                        <CTableDataCell>{row.username}</CTableDataCell>
-                        {/* 資料蒐集完成日 */}
-                        <CTableDataCell>{formatDate(row.completed_at)}</CTableDataCell>
-                        {/* 狀態 */}
-                        <CTableDataCell>
-                          {row.is_done ? (
-                            <div className="check_icon">
-                              <CIcon icon={cilCheckAlt} className="check" />
-                            </div>
-                          ) : (
-                            <div className="x_icon">
-                              <CIcon icon={cilX} className="x" />
-                            </div>
-                          )}
-                        </CTableDataCell>
-                        {/* 回報狀態 */}
-                        <CTableDataCell>
+                    filteredData.map((row, index) => {
+                      // Add debugging for each row
+                      console.log(`Row ${index}:`, {
+                        id: row.authorized_record_id,
+                        table_name: row.table_name,
+                        is_done: row.is_done,
+                        review: row.review,
+                        review_type: typeof row.review
+                      });
 
-                          {/* 正式的 */}
-                          {row.is_done ? (
-                              row.review === 1 ? (
-                                <>
-                                  <button className={styles.aza1} style={{ marginRight: '10px' }} onClick={() => setTrueIsModalOpen(row.authorized_record_id)}>
-                                    審核成功
-                                  </button>
-                                  <button className={styles.aza2} onClick={() => setFalseIsModalOpen(row.authorized_record_id)}>
-                                    審核失敗
-                                  </button>
-                                  <EditSuccessModal isOpen={isTrueModalOpen === row.authorized_record_id} onClose={() => setTrueIsModalOpen(null)} authorizedRecordId={row.authorized_record_id} refreshData={getAuthorizedRecords}/>
-                                  <EditFalseModal isOpen={isFalseModalOpen === row.authorized_record_id} onClose={() => setFalseIsModalOpen(null)} authorizedRecordId={row.authorized_record_id} refreshData={getAuthorizedRecords}/>
-                                </>
-                              ) : row.review === 2 ? (
-                                <button className={styles.aza1}>審核成功</button>
-                              ) : row.review === 3 ? (
-                                <button className={styles.aza2}>審核失敗</button>
-                              ) : (
-                                getReview(row.review)
-                              )
+                      return (
+                        <CTableRow key={index}>
+                          {/* 排放源項目 */}
+                          <CTableDataCell>
+                            {row.table_name}
+                          </CTableDataCell>
+                          {/* 顯示部門名稱 */}
+                          <CTableDataCell>{getDepartmentName(row.department)}</CTableDataCell>
+                          {/* 負責人 */}
+                          <CTableDataCell>{row.username}</CTableDataCell>
+                          {/* 資料蒐集完成日 */}
+                          <CTableDataCell>{formatDate(row.completed_at)}</CTableDataCell>
+                          {/* 狀態 */}
+                          <CTableDataCell>
+                            {row.is_done ? (
+                              <div className="check_icon">
+                                <CIcon icon={cilCheckAlt} className="check" />
+                              </div>
                             ) : (
-                              <button className={styles.aza3}>尚未完成</button>
-                            )
-                          }
+                              <div className="x_icon">
+                                <CIcon icon={cilX} className="x" />
+                              </div>
+                            )}
+                          </CTableDataCell>
+                          {/* 回報狀態 */}
+                          <CTableDataCell>
+                            {(() => {
+                              console.log(`Processing row ${row.authorized_record_id}:`, {
+                                is_done: row.is_done,
+                                review: row.review
+                              });
 
-                        </CTableDataCell>
-                      </CTableRow>
-                    ))
+                              // Check review status first
+                              if (row.review === 2) {
+                                console.log(`Row ${row.authorized_record_id}: Showing 審核成功 (review=2)`);
+                                return <button className={styles.aza1}>審核成功</button>;
+                              } else if (row.review === 3) {
+                                console.log(`Row ${row.authorized_record_id}: Showing 審核失敗 (review=3)`);
+                                return (
+                                  <div>
+                                    <button className={styles.aza2} style={{ marginBottom: '5px', display: 'block' }}>
+                                      審核失敗
+                                    </button>
+                                  </div>
+                                );
+                              } else if (row.is_done && row.review === 1) {
+                                console.log(`Row ${row.authorized_record_id}: Showing review buttons (completed, pending review)`);
+                                return (
+                                  <>
+                                    <button 
+                                      className={styles.aza1} 
+                                      style={{ 
+                                        marginRight: '10px',
+                                        opacity: canReview ? 1 : 0.5,
+                                        cursor: canReview ? 'pointer' : 'not-allowed',
+                                        filter: canReview ? 'none' : 'grayscale(50%)'
+                                      }} 
+                                      onClick={() => handleReviewButtonClick('success', row.authorized_record_id)}
+                                      disabled={!canReview}
+                                      title={canReview ? '審核成功' : '您沒有審核權限 (需要 position = 1)'}
+                                    >
+                                      審核成功
+                                    </button>
+                                    <button 
+                                      className={styles.aza2} 
+                                      style={{
+                                        opacity: canReview ? 1 : 0.5,
+                                        cursor: canReview ? 'pointer' : 'not-allowed',
+                                        filter: canReview ? 'none' : 'grayscale(50%)'
+                                      }}
+                                      onClick={() => handleReviewButtonClick('failed', row.authorized_record_id)}
+                                      disabled={!canReview}
+                                      title={canReview ? '審核失敗' : '您沒有審核權限 (需要 position = 1)'}
+                                    >
+                                      審核失敗
+                                    </button>
+                                    {/* Only render modals if user has permission */}
+                                    {canReview && (
+                                      <>
+                                        <EditSuccessModal 
+                                          isOpen={isTrueModalOpen === row.authorized_record_id} 
+                                          onClose={() => setTrueIsModalOpen(null)} 
+                                          authorizedRecordId={row.authorized_record_id} 
+                                          refreshData={getAuthorizedRecords} 
+                                        />
+                                        <EditFalseModal 
+                                          isOpen={isFalseModalOpen === row.authorized_record_id} 
+                                          onClose={() => setFalseIsModalOpen(null)} 
+                                          authorizedRecordId={row.authorized_record_id} 
+                                          refreshData={getAuthorizedRecords} 
+                                        />
+                                      </>
+                                    )}
+                                  </>
+                                );
+                              } else {
+                                console.log(`Row ${row.authorized_record_id}: Showing 尚未完成 (not completed)`);
+                                return <button className={styles.aza3}>尚未完成</button>;
+                              }
+                            })()}
+                          </CTableDataCell>
+                        </CTableRow>
+                      );
+                    })
                   ) : (
                     <CTableRow>
-                      <CTableDataCell colSpan="9" className="text-center">
+                      <CTableDataCell colSpan="6" className="text-center">
                         沒有找到符合條件的資料
                       </CTableDataCell>
                     </CTableRow>
-                  )
-                  }
+                  )}
                 </CTableBody>
               </CTable>
-              {/* 盤點完成button */}
-              {/* <div style={{ textAlign: 'center' }}>
-                <button className={styles.complete} onClick={() => setVisible(!visible)}>盤點完成</button>
-              </div> */}
             </CForm>
           </CCardBody>
         </CCard>

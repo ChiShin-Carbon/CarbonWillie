@@ -270,6 +270,9 @@ const Tabs = () => {
     // Find the authorized_record_id for the current function
     const tableName = functionTitlesMap[functionName];
     const authorizedItem = authorizedTables.find(item => item.table_name === tableName);
+    const authorized_record_id = authorizedItem.authorized_record_id
+
+    console.log(authorized_record_id)
 
     if (!authorizedItem) {
       console.error(`No authorized record found for ${tableName}`);
@@ -277,12 +280,11 @@ const Tabs = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:8000/authorized-tables/${authorizedItem.authorized_record_id}`, {
+      const response = await fetch(`http://localhost:8000/authorized-tables/${authorized_record_id}?is_done=${isDone}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ is_done: isDone }),
       });
 
       if (!response.ok) {

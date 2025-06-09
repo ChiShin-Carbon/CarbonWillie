@@ -1,45 +1,90 @@
-import React , { useState, useEffect }from 'react';
+// EditFalseModal.js - Updated to use path parameters
+import React from 'react';
 import { CModal, CModalHeader, CModalTitle, CModalBody, CModalFooter, CButton } from '@coreui/react';
 import '../../../../scss/盤查進度管理.css'
 import '../../../../scss/碳盤查系統.css'
 import styles from '../../../../scss/活動數據盤點.module.css'
 
-const EditFalseModal = ({ isOpen, onClose, authorizedRecordId, reviewValue = 3, refreshData }) => {
+const EditFalseModal = ({ isOpen, onClose, authorizedRecordId, refreshData }) => {
   const handleConfirm = async () => {
     try {
-      console.log("Sending request for ID:", authorizedRecordId); // 確保 ID 正確
-      const requestBody = { 
-        review: reviewValue // 傳遞 review 的動態值
-      };
-      console.log("Request Body:", requestBody);  // 確認送出的 JSON 資料
+      console.log("=== REACT DEBUG INFO ===");
+      console.log("authorizedRecordId:", authorizedRecordId, "Type:", typeof authorizedRecordId);
+      
+      const reviewValue = 3; // 審核失敗
+      const url = `http://localhost:8000/update_review/${authorizedRecordId}/${reviewValue}`;
+      console.log("Request URL:", url);
   
-      const response = await fetch(`http://localhost:8000/update_review/${authorizedRecordId}`, {
+      const response = await fetch(url, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(requestBody)  // 確保 JSON 正確格式
+        headers: { 
+          'Accept': 'application/json'
+        }
+        // No body needed since we're using path parameters
       });
       
+      console.log("Response status:", response.status);
+      console.log("Response ok:", response.ok);
+      
       if (!response.ok) {
-        throw new Error('Failed to update review');
+        const errorText = await response.text();
+        console.error("Error response text:", errorText);
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
+      }
+      
+      const result = await response.json();
+      console.log("Success response:", result);
+
+      // Check if the operation was actually successful
+      if (result.message && result.message.includes("審核失敗")) {
+        console.log("✅ Review failed status updated successfully!");
+      } else {
+        console.log("⚠️ Unexpected response message:", result.message);
       }
 
-      // **新增這行: 更新後重新抓取資料**
+      // 重新抓取資料
+      console.log("Calling refreshData...");
       refreshData(); 
-
+      
+      // 關閉 modal
       onClose();
+      
+      // 顯示成功訊息
+      alert('審核失敗狀態已更新，該項目需要重新完成');
+      
     } catch (error) {
-      console.error('Error:', error);
-      alert('更新失敗，請稍後再試');
+      console.error('=== ERROR DETAILS ===');
+      console.error('Error object:', error);
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
+      alert('更新失敗，請稍後再試: ' + error.message);
     }
   };
+
+  // Also log when modal opens
+  React.useEffect(() => {
+    if (isOpen) {
+      console.log("=== MODAL OPENED ===");
+      console.log("authorizedRecordId:", authorizedRecordId);
+      console.log("isOpen:", isOpen);
+    }
+  }, [isOpen, authorizedRecordId]);
 
   return (
     <CModal visible={isOpen} onClose={onClose}>
       <CModalHeader>
-        <CModalTitle id="LiveDemoExampleLabel">審核確認</CModalTitle>
+        <CModalTitle>審核確認</CModalTitle>
       </CModalHeader>
       <CModalBody>
-        <div className="d-flex flex-column align-items-center"><center>確定為審核失敗嗎?</center></div>
+        <div className="d-flex flex-column align-items-center">
+          <center>
+            確定為審核失敗嗎?
+            <br />
+            <small className="text-muted">
+              此操作將會將項目標記為未完成狀態，需要重新填寫
+            </small>
+          </center>
+        </div>
       </CModalBody>
       <CModalFooter>
         <CButton className="modalbutton1" onClick={onClose}>
