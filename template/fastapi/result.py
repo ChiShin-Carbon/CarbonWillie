@@ -1,4 +1,5 @@
-from fastapi import APIRouter, HTTPException, status
+from typing import Optional
+from fastapi import APIRouter, HTTPException, status, Query
 from connect.connect import connectDB
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
@@ -15,17 +16,36 @@ class Result(BaseModel):
 
 
 @result.get("/result")
-def read_result():
+def read_result(year: Optional[int] = Query(None)):
     conn = connectDB()
     if conn:
         cursor = conn.cursor()
         try:
+            # 年分
+            query_years = "SELECT DISTINCT YEAR(cfv_start_date) AS year FROM Baseline"
+            cursor.execute(query_years)
+            year_rows = cursor.fetchall()
+            available_years = sorted([row[0] for row in year_rows], reverse=True)
+
+            if not available_years:
+                raise HTTPException(status_code=404, detail="No available years")
+
+            # 預設最新年分
+            if year is None:
+                year = available_years[0]
+
             # 全廠電力
             query_electricity_usage = """
-                SELECT activity_data FROM Activity_Data
-                WHERE source_id = (SELECT source_id FROM Emission_Source WHERE source_table = 'Electricity_Usage')
+                SELECT activity_data FROM Activity_Data 
+                WHERE source_id = (
+                    SELECT source_id FROM Emission_Source 
+                    WHERE source_table = 'Electricity_Usage' 
+                    AND baseline_id = (
+                        SELECT baseline_id FROM Baseline WHERE YEAR(cfv_start_date)=?
+                    )
+                )
             """
-            cursor.execute(query_electricity_usage)
+            cursor.execute(query_electricity_usage, (year,))
             electricity_usage_record = cursor.fetchone()
             
             if not electricity_usage_record:
@@ -107,7 +127,9 @@ def read_result():
             return {
                 "result": {
                     "Electricity_Usage": electricity_usage,
-                    "Quantitative_Inventory": quantitative_inventory
+                    "Quantitative_Inventory": quantitative_inventory,
+                    "Available_Years": available_years,
+                    "Selected_Year": year
                 }
             }
         
