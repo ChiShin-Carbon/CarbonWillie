@@ -47,16 +47,30 @@ const Charts = () => {
     { name: '2020', code: 'yy2020' },
   ]
 
+  const [availableYears, setAvailableYears] = useState([])
+  const [prevYearQuantitativeInventory, setPrevYearQuantitativeInventory] = useState({})
   const [electricityUsage, setElectricityUsage] = useState('')
   const [quantitativeInventory, setQuantitativeInventory] = useState({})
 
-  const getResult = async () => {
+  const getResult = async (year = '') => {
     try {
-      const response = await fetch('http://localhost:8000/result')
+      const response = await fetch(`http://localhost:8000/result${year ? `?year=${year}` : ''}`)
       if (response.ok) {
         const data = await response.json()
         setElectricityUsage(data.result.Electricity_Usage)
         setQuantitativeInventory(data.result.Quantitative_Inventory)
+        setAvailableYears(data.result.Available_Years)
+
+        // 如果是第一次載入（year 沒有傳入）
+        if (!year && data.result.Available_Years.length > 1) {
+          const previousYear = data.result.Available_Years[1]
+          // 取得上一年度的資料
+          const prevRes = await fetch(`http://localhost:8000/result?year=${previousYear}`)
+          if (prevRes.ok) {
+            const prevData = await prevRes.json()
+            setPrevYearQuantitativeInventory(prevData.result.Quantitative_Inventory)
+          }
+        }
       } else {
         console.log(response.status)
       }
@@ -112,9 +126,7 @@ const Charts = () => {
                 <h5 style={{ fontWeight: 900 }}>
                   碳盤查是評估組織或活動所產生的溫室氣體排放量的系統性過程，旨在識別主要碳排放來源並支持制定有效的減排策略
                 </h5>
-
               </div>
-
             </strong>
             {/*結束*/}
             {/* 已登入
@@ -143,7 +155,6 @@ const Charts = () => {
                         </div> 
                         結束*/}
           </CCardBody>
-
         </CCard>
 
         <CCard className="mb-4 customCard">
@@ -153,20 +164,16 @@ const Charts = () => {
                 碳排總量&nbsp;&nbsp;
                 <span style={{ fontSize: '0.8rem', color: 'gray' }}>/CO2e</span>
                 <br />
-                {/*
-                                                        <div className="customCardBody"  style={{ textAlign: 'center', color: 'gray' }}>
-                                                            暫無資料!
-                                                        </div>
-                                                        */}
                 <h3 style={{ fontWeight: 900 }}>
-                  {quantitativeInventory.total_emission_equivalent}
+                  {quantitativeInventory.total_emission_equivalent ?? '尚無資料'}
                 </h3>
-                <span style={{ fontSize: '0.8rem', color: 'gray' }}>上一年度碳盤查 0</span>
+                <span style={{ fontSize: '0.8rem', color: 'gray' }}>
+                  上一年度碳盤查 {prevYearQuantitativeInventory.total_emission_equivalent ?? '0'}
+                </span>
               </strong>
             </div>
           </CCardBody>
         </CCard>
-
       </CCol>
 
       {/* 右侧 3/4 宽度 */}
@@ -326,7 +333,6 @@ const Charts = () => {
           </CCardBody>
         </CCard>
       </CCol>
-
     </CRow>
   )
 }
