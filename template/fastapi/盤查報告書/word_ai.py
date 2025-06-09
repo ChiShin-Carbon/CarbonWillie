@@ -144,68 +144,104 @@ async def batch_extract_web_content(links: list):
         
     return valid_results
 
-# 🔹 **異步 OpenAI 處理**
-async def generate_intro_and_summary_from_results(company_name: str, company_id: str, results: list):
-    """使用異步 OpenAI 先過濾企業相關資訊，再生成企業前言與簡介"""
+# 🔹 **優化後的單次 OpenAI 處理 - 合併兩個步驟**
+async def generate_intro_and_summary_from_results_optimized(company_name: str, company_id: str, results: list):
+    """優化版本：一次性過濾並生成企業前言與簡介，減少API調用次數"""
     openai_client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
     
-    # **Step 1: 先過濾與企業無關的內容**
-    filter_prompt = [
-        {"role": "system", "content": "你是一個企業資訊專家，請根據以下網頁內容判斷哪些與公司最相關，只保留高度相關的資訊。"},
-        {"role": "user", "content": f"這是企業 '{company_name}' (編號: {company_id}) 的相關資訊。請篩選出與該企業直接相關的內容，忽略無關的內容，只返回與該企業高度相關的內容。"}
-    ]
-    
+    # **整合所有網頁內容**
+    all_content = ""
     for idx, result in enumerate(results):
-        filter_prompt.append({
-            "role": "user", 
-            "content": f"網頁{idx+1}：\n標題：{result['title']}\n描述：{result['description']}\n內容：{result['content']}"
-        })
+        all_content += f"\n網頁{idx+1}：\n標題：{result['title']}\n描述：{result['description']}\n內容：{result['content']}\n"
     
-    filter_response = await openai_client.chat.completions.create(
-        model="gpt-4",
-        messages=filter_prompt,
-        max_tokens=2000,
-        temperature=0.3
-    )
-    
-    filtered_text = filter_response.choices[0].message.content.strip()
-    
-    # **Step 2: 生成企業前言與簡介**
-    generate_prompt = [
-        {"role": "system", "content": "你是一個專業的企業資訊生成助手，請根據提供的企業資訊，整合並輸出以下內容："},
-        {"role": "user", "content": f"""
-        企業前言：描述企業的願景、使命、經營理念等（正式、嚴謹），內容請參考篩選後的資訊，生成與以下前言範例字數差不多的答案
-        前言範例(參考其架構):
-        本校創校迄今，歷任校長遵循創辦人創校職志，經營擘畫，積極發揚「誠、勤、樸、慎、創新」精神形成優良校風，並秉持「創意、務實、宏觀、合作、溝通、熱忱」的教育理念，以科技與人文融匯、創新與品質並重、專業與通識兼顧、理論與實務結合為主軸，發展為實務化、資訊化、人文化、創新化、國際化的高等學府。
-        為提供學生多元學習，整合相關學術資源，本校特成立電通、工程、醫護暨管理三大學院，藉由各學系的合作、因應產業需求，開設相關學程，讓學生透過跨領域學習，提升專業知能與職場競爭力。
-        本校積極提升教學、研究、輔導與服務外，並與遠傳、新世紀資通、遠東新世紀、亞東醫院等遠東集團產學合作，成果斐然，已成為技職教育新典範。
-        
-        企業簡介：詳細介紹企業的歷史、創立背景、創立年分、主要業務等（正式、嚴謹），內容請參考篩選後的資訊，生成與以下簡介範例字數差不多的答案
-        簡介範例(參考其架構):
-        亞東科技大學於民國五十七年十月，在遠東集團創辦人徐有庠先生的「弘文明德，育才興國」理念下創設，初名「私立亞東工業技藝專科學校」，為全國第一所私立二年制專科學校，六十二年六月奉准正名為「私立亞東工業專科學校」，八十九學年度獲教育部核定改制為「亞東技術學院」，一一Ｏ學年度改名為「亞東學校財團法人亞東科技大學」。
-        本校教職員生人數4,397人(資料時間2024年)其中學生3,931人，教職員工451人。
+    # **一次性 Prompt：過濾 + 生成**
+    combined_prompt = [
+        {"role": "system", "content": """你是一個專業的企業資訊分析師。請完成以下任務：
+1. 首先從提供的網頁內容中篩選出與目標企業直接相關的資訊
+2. 基於篩選後的資訊，生成企業前言和企業簡介
 
-        這是企業 '{company_name}' 的篩選後資訊，請根據這些內容撰寫企業前言與企業簡介。\n\n{filtered_text}
-        """}
+請嚴格按照以下格式輸出，不要添加其他文字：
+企業前言：[在這裡輸出企業前言內容]
+
+企業簡介：[在這裡輸出企業簡介內容]"""},
+        
+        {"role": "user", "content": f"""
+企業名稱：{company_name}
+企業編號：{company_id}
+
+請根據以下網頁資訊，先篩選與該企業相關的內容，然後生成企業前言與簡介：
+
+{all_content}
+
+生成要求：
+企業前言：描述企業的願景、使命、經營理念等（正式、嚴謹），參考以下範例架構：
+本校創校迄今，歷任校長遵循創辦人創校職志，經營擘畫，積極發揚「誠、勤、樸、慎、創新」精神形成優良校風，並秉持「創意、務實、宏觀、合作、溝通、熱忱」的教育理念，以科技與人文融匯、創新與品質並重、專業與通識兼顧、理論與實務結合為主軸，發展為實務化、資訊化、人文化、創新化、國際化的高等學府。
+為提供學生多元學習，整合相關學術資源，本校特成立電通、工程、醫護暨管理三大學院，藉由各學系的合作、因應產業需求，開設相關學程，讓學生透過跨領域學習，提升專業知能與職場競爭力。
+本校積極提升教學、研究、輔導與服務外，並與遠傳、新世紀資通、遠東新世紀、亞東醫院等遠東集團產學合作，成果斐然，已成為技職教育新典範。
+
+企業簡介：詳細介紹企業的歷史、創立背景、創立年分、主要業務等（正式、嚴謹），參考以下範例架構：
+亞東科技大學於民國五十七年十月，在遠東集團創辦人徐有庠先生的「弘文明德，育才興國」理念下創設，初名「私立亞東工業技藝專科學校」，為全國第一所私立二年制專科學校，六十二年六月奉准正名為「私立亞東工業專科學校」，八十九學年度獲教育部核定改制為「亞東技術學院」，一一Ｏ學年度改名為「亞東學校財團法人亞東科技大學」。
+本校教職員生人數4,397人(資料時間2024年)其中學生3,931人，教職員工451人。
+"""}
     ]
     
-    generate_response = await openai_client.chat.completions.create(
-        model="gpt-4",
-        messages=generate_prompt,
-        max_tokens=1500,
-        temperature=0.5
+    # **使用更快的模型並優化參數**
+    response = await openai_client.chat.completions.create(
+        model="gpt-4o-mini",  # 使用更快的模型
+        messages=combined_prompt,
+        max_tokens=2000,
+        temperature=0.3,
+        top_p=0.9,  # 添加 top_p 參數優化生成速度
+        frequency_penalty=0,  # 減少重複
+        presence_penalty=0
     )
     
-    generated_text = generate_response.choices[0].message.content.strip()
+    generated_text = response.choices[0].message.content.strip()
     
-    # **Step 3: 擷取企業前言與簡介**
+    # **解析結果**
     intro_start = generated_text.find("企業前言：")
     summary_start = generated_text.find("企業簡介：")
     
-    intro = generated_text[intro_start + len("企業前言："):summary_start].strip() if intro_start != -1 else ""
-    summary = generated_text[summary_start + len("企業簡介："):].strip() if summary_start != -1 else ""
+    if intro_start != -1 and summary_start != -1:
+        intro = generated_text[intro_start + len("企業前言："):summary_start].strip()
+        summary = generated_text[summary_start + len("企業簡介："):].strip()
+    else:
+        # 如果格式解析失敗，嘗試其他方式
+        lines = generated_text.split('\n')
+        intro = ""
+        summary = ""
+        current_section = None
+        
+        for line in lines:
+            if "企業前言" in line:
+                current_section = "intro"
+                intro += line.replace("企業前言：", "").strip()
+            elif "企業簡介" in line:
+                current_section = "summary"
+                summary += line.replace("企業簡介：", "").strip()
+            elif current_section == "intro" and line.strip():
+                intro += " " + line.strip()
+            elif current_section == "summary" and line.strip():
+                summary += " " + line.strip()
     
-    return {"intro": intro, "summary": summary}
+    return {"intro": intro.strip(), "summary": summary.strip()}
+
+# 🔹 **進一步優化：並行處理爬蟲和部分數據準備**
+async def parallel_scrape_and_prepare(org_name: str, business_id: str, max_results=10):
+    """並行執行搜索和爬取，進一步提升速度"""
+    # 獲取搜索結果
+    links = await get_google_search_results(org_name, business_id, max_results)
+    
+    if not links:
+        return None
+    
+    # 限制爬取數量到前6個最相關的鏈接，減少處理時間
+    limited_links = links[:6]
+    
+    # 並行爬取內容
+    results = await batch_extract_web_content(limited_links)
+    
+    return results
 
 # 🔹 **修改後的 API 端點**
 @word_ai.post("/scrape_company_data")
@@ -228,10 +264,10 @@ async def scrape_company_data(request: CompanyRequest):
 
 @word_ai.post("/generate_company_info")
 async def generate_company_info(request: CompanyRequest):
-    """接受公司資料，爬取數據並生成企業前言與簡介（異步版本）"""
-    # 獲取爬蟲結果
-    links = await get_google_search_results(request.org_name, request.business_id, max_results=10)
-    results = await batch_extract_web_content(links)
+    """接受公司資料，爬取數據並生成企業前言與簡介（優化版本）"""
+    
+    # 使用優化的並行爬取
+    results = await parallel_scrape_and_prepare(request.org_name, request.business_id, max_results=8)
     
     if not results:
         return {
@@ -241,12 +277,59 @@ async def generate_company_info(request: CompanyRequest):
             "summary": "無法獲取足夠的企業資訊來生成簡介"
         }
     
-    # 生成前言與簡介
-    generated_data = await generate_intro_and_summary_from_results(request.org_name, request.business_id, results)
+    # 使用優化的單次 AI 調用
+    generated_data = await generate_intro_and_summary_from_results_optimized(
+        request.org_name, 
+        request.business_id, 
+        results
+    )
 
     return {
         "company": request.org_name,
         "business_id": request.business_id,
         "intro": generated_data['intro'],
         "summary": generated_data['summary']
+    }
+
+# 🔹 **額外優化：添加快速版本 API**
+@word_ai.post("/generate_company_info_fast")
+async def generate_company_info_fast(request: CompanyRequest):
+    """快速版本：只處理前3個最相關的網站，大幅提升速度"""
+    
+    # 只獲取前5個搜索結果
+    links = await get_google_search_results(request.org_name, request.business_id, max_results=5)
+    
+    if not links:
+        return {
+            "company": request.org_name,
+            "business_id": request.business_id,
+            "intro": "無法獲取足夠的企業資訊來生成前言",
+            "summary": "無法獲取足夠的企業資訊來生成簡介"
+        }
+    
+    # 只爬取前3個網站
+    limited_links = links[:3]
+    results = await batch_extract_web_content(limited_links)
+    
+    if not results:
+        return {
+            "company": request.org_name,
+            "business_id": request.business_id,
+            "intro": "無法獲取足夠的企業資訊來生成前言",
+            "summary": "無法獲取足夠的企業資訊來生成簡介"
+        }
+    
+    # 使用優化的單次 AI 調用
+    generated_data = await generate_intro_and_summary_from_results_optimized(
+        request.org_name, 
+        request.business_id, 
+        results
+    )
+
+    return {
+        "company": request.org_name,
+        "business_id": request.business_id,
+        "intro": generated_data['intro'],
+        "summary": generated_data['summary'],
+        "note": "快速版本 - 基於前3個最相關網站生成"
     }
