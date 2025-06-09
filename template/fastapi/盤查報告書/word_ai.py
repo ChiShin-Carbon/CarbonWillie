@@ -1,15 +1,15 @@
 import os
-import requests
-from openai import OpenAI
-from dotenv import load_dotenv  # Import for loading environment variables
+import aiohttp
+import asyncio
+from openai import AsyncOpenAI
+from dotenv import load_dotenv
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from fastapi.concurrency import run_in_threadpool  # For running synchronous code
-from bs4 import BeautifulSoup  # 用於爬蟲
-import re  # 正則表達式處理字串
+from fastapi.concurrency import run_in_threadpool
+from bs4 import BeautifulSoup
+import re
 from serpapi import GoogleSearch
 import time
-import openai
 
 load_dotenv()
 
@@ -20,124 +20,134 @@ class CompanyRequest(BaseModel):
     org_name: str
     business_id: str
 
-
-
 # 🔹 **步驟1：使用 SERPAPI 搜尋企業相關連結**
-def get_google_search_results(org_name: str, business_id: str, max_results=10):
+async def get_google_search_results(org_name: str, business_id: str, max_results=10):
     """
-    使用 SERPAPI 搜尋企業的相關連結
+    使用 SERPAPI 搜尋企業的相關連結（異步版本）
     """
-    serpapi_key = os.getenv("SERPAPI_API_KEY")  # 🛑 替換為你的 SERPAPI API KEY
-    search_query = f"{org_name} {business_id}"
+    def _search():
+        serpapi_key = os.getenv("SERPAPI_API_KEY")
+        search_query = f"{org_name} {business_id}"
 
-    params = {
-        "engine": "google",
-        "q": search_query,
-        "hl": "zh-TW",
-        "gl": "tw",
-        "api_key": serpapi_key
-    }
+        params = {
+            "engine": "google",
+            "q": search_query,
+            "hl": "zh-TW",
+            "gl": "tw",
+            "api_key": serpapi_key
+        }
 
-    search = GoogleSearch(params)
-    results = search.get_dict()
+        search = GoogleSearch(params)
+        results = search.get_dict()
 
-    if "organic_results" not in results:
-        raise HTTPException(status_code=500, detail="❌ SERPAPI 搜尋失敗，未獲取結果")
+        if "organic_results" not in results:
+            raise HTTPException(status_code=500, detail="❌ SERPAPI 搜尋失敗，未獲取結果")
 
-    # **提取前 N 個相關連結**
-    links = []
-    for result in results["organic_results"][:max_results]:  # 取前 max_results 筆
-        link = result.get("link")
-        if link:
-            links.append(link)
+        # **提取前 N 個相關連結**
+        links = []
+        for result in results["organic_results"][:max_results]:
+            link = result.get("link")
+            if link:
+                links.append(link)
 
-    return links
+        return links
+    
+    # 在線程池中執行搜索
+    return await run_in_threadpool(_search)
 
-
-# 🔹 **步驟2：擷取網頁內容（更完整）**
-def extract_web_content(url):
+# 🔹 **步驟2：擷取網頁內容（異步版本）**
+async def extract_web_content(session: aiohttp.ClientSession, url: str):
     """
-    進入網頁，擷取標題、meta 描述、關鍵字與主要內文
+    異步擷取網頁內容
     """
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36"
     }
 
     try:
-        response = requests.get(url, headers=headers, timeout=10)
-        response.raise_for_status()
-        response.encoding = response.apparent_encoding or "utf-8"
+        async with session.get(url, headers=headers, timeout=aiohttp.ClientTimeout(total=10)) as response:
+            if response.status != 200:
+                print(f"❌ HTTP {response.status} for {url}")
+                return None
+                
+            # 獲取響應內容
+            content = await response.text(encoding='utf-8', errors='ignore')
+            
+            # 在線程池中執行 BeautifulSoup 解析（CPU 密集型操作）
+            def _parse_content():
+                soup = BeautifulSoup(content, "html.parser")
 
-        # 解析網頁內容
-        soup = BeautifulSoup(response.text, "html.parser")
+                # **擷取網站標題**
+                title_tag = soup.find("title")
+                title = title_tag.text.strip() if title_tag else "未找到標題"
 
-        # **擷取網站標題**
-        title_tag = soup.find("title")
-        title = title_tag.text.strip() if title_tag else "未找到標題"
+                # **擷取 meta description**
+                description_tag = soup.find("meta", attrs={"name": "description"})
+                description = description_tag["content"].strip() if description_tag else "未找到網站簡介"
 
-        # **擷取 meta description**
-        description_tag = soup.find("meta", attrs={"name": "description"})
-        description = description_tag["content"].strip() if description_tag else "未找到網站簡介"
+                # **擷取 meta keywords**
+                keywords_tag = soup.find("meta", attrs={"name": "keywords"})
+                keywords = keywords_tag["content"].strip() if keywords_tag else "未找到關鍵字"
 
-        # **擷取 meta keywords**
-        keywords_tag = soup.find("meta", attrs={"name": "keywords"})
-        keywords = keywords_tag["content"].strip() if keywords_tag else "未找到關鍵字"
+                # **擷取主要內容（最多 10 段）**
+                paragraphs = [p.text.strip() for p in soup.find_all("p") if p.text.strip()]
+                headings = [h.text.strip() for h in soup.find_all(["h1", "h2", "h3"]) if h.text.strip()]
 
-        # **擷取主要內容（最多 10 段）**
-        paragraphs = [p.text.strip() for p in soup.find_all("p") if p.text.strip()]
-        headings = [h.text.strip() for h in soup.find_all(["h1", "h2", "h3"]) if h.text.strip()]
+                # 合併標題與內文
+                main_content = "\n".join(headings[:5] + paragraphs[:10])
 
-        # 合併標題與內文
-        main_content = "\n".join(headings[:5] + paragraphs[:10])  # 最多 5 個標題 + 10 段文字
+                return {
+                    "url": url,
+                    "title": title,
+                    "description": description,
+                    "keywords": keywords,
+                    "content": main_content
+                }
+            
+            return await run_in_threadpool(_parse_content)
 
-        return {
-            "url": url,
-            "title": title,
-            "description": description,
-            "keywords": keywords,
-            "content": main_content
-        }
-
-    except requests.exceptions.RequestException as e:
+    except Exception as e:
         print(f"❌ 擷取網頁內容時發生錯誤：{e}")
         return None
 
-
-# 🔹 **步驟3：API 端點**
-@word_ai.post("/scrape_company_data")
-async def scrape_company_data(request: CompanyRequest):
+# 🔹 **步驟3：批量異步爬取**
+async def batch_extract_web_content(links: list):
     """
-    使用企業名稱 & 統編來搜尋 Google，擷取企業資訊
+    批量異步爬取網頁內容
     """
-    links = get_google_search_results(request.org_name, request.business_id, max_results=10)
-
-    if not links:
-        return {"message": "未找到相關企業網站"}
-
     results = []
-    for link in links:
-        data = extract_web_content(link)
-        if data:
-            results.append(data)
-        time.sleep(1)  # 避免爬取過快被封鎖
+    
+    # 創建 aiohttp session
+    connector = aiohttp.TCPConnector(limit=5)  # 限制同時連接數
+    timeout = aiohttp.ClientTimeout(total=30)
+    
+    async with aiohttp.ClientSession(connector=connector, timeout=timeout) as session:
+        # 創建所有爬取任務
+        tasks = []
+        for link in links:
+            task = extract_web_content(session, link)
+            tasks.append(task)
+        
+        # 並發執行所有爬取任務，但限制同時執行的數量
+        semaphore = asyncio.Semaphore(3)  # 同時最多3個請求
+        
+        async def bounded_extract(link_task):
+            async with semaphore:
+                return await link_task
+        
+        # 執行所有任務
+        bounded_tasks = [bounded_extract(task) for task in tasks]
+        results = await asyncio.gather(*bounded_tasks, return_exceptions=True)
+        
+        # 過濾掉失敗的結果
+        valid_results = [result for result in results if result is not None and not isinstance(result, Exception)]
+        
+    return valid_results
 
-    return {
-        "company": request.org_name,
-        "search_results": results
-    }
-
-
-
-
-
-
-
-
-
-
-def generate_intro_and_summary_from_results(company_name: str, company_id: str, results: list):
-    """使用 OpenAI 先過濾企業相關資訊，再生成企業前言與簡介"""
-    openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+# 🔹 **異步 OpenAI 處理**
+async def generate_intro_and_summary_from_results(company_name: str, company_id: str, results: list):
+    """使用異步 OpenAI 先過濾企業相關資訊，再生成企業前言與簡介"""
+    openai_client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
     
     # **Step 1: 先過濾與企業無關的內容**
     filter_prompt = [
@@ -151,7 +161,7 @@ def generate_intro_and_summary_from_results(company_name: str, company_id: str, 
             "content": f"網頁{idx+1}：\n標題：{result['title']}\n描述：{result['description']}\n內容：{result['content']}"
         })
     
-    filter_response = openai_client.chat.completions.create(
+    filter_response = await openai_client.chat.completions.create(
         model="gpt-4",
         messages=filter_prompt,
         max_tokens=2000,
@@ -179,7 +189,7 @@ def generate_intro_and_summary_from_results(company_name: str, company_id: str, 
         """}
     ]
     
-    generate_response = openai_client.chat.completions.create(
+    generate_response = await openai_client.chat.completions.create(
         model="gpt-4",
         messages=generate_prompt,
         max_tokens=1500,
@@ -197,22 +207,42 @@ def generate_intro_and_summary_from_results(company_name: str, company_id: str, 
     
     return {"intro": intro, "summary": summary}
 
+# 🔹 **修改後的 API 端點**
+@word_ai.post("/scrape_company_data")
+async def scrape_company_data(request: CompanyRequest):
+    """
+    使用企業名稱 & 統編來搜尋 Google，擷取企業資訊（異步版本）
+    """
+    links = await get_google_search_results(request.org_name, request.business_id, max_results=10)
 
-# 修改 API 端點，整合爬蟲與 OpenAI 的功能
+    if not links:
+        return {"message": "未找到相關企業網站"}
+
+    # 使用異步批量爬取
+    results = await batch_extract_web_content(links)
+
+    return {
+        "company": request.org_name,
+        "search_results": results
+    }
+
 @word_ai.post("/generate_company_info")
 async def generate_company_info(request: CompanyRequest):
-    """接受公司資料，爬取數據並生成企業前言與簡介"""
+    """接受公司資料，爬取數據並生成企業前言與簡介（異步版本）"""
     # 獲取爬蟲結果
-    links = get_google_search_results(request.org_name, request.business_id, max_results=10)
-    results = []
-
-    for link in links:
-        data = extract_web_content(link)
-        if data:
-            results.append(data)
+    links = await get_google_search_results(request.org_name, request.business_id, max_results=10)
+    results = await batch_extract_web_content(links)
+    
+    if not results:
+        return {
+            "company": request.org_name,
+            "business_id": request.business_id,
+            "intro": "無法獲取足夠的企業資訊來生成前言",
+            "summary": "無法獲取足夠的企業資訊來生成簡介"
+        }
     
     # 生成前言與簡介
-    generated_data = generate_intro_and_summary_from_results(request.org_name, request.business_id, results)
+    generated_data = await generate_intro_and_summary_from_results(request.org_name, request.business_id, results)
 
     return {
         "company": request.org_name,
@@ -220,4 +250,3 @@ async def generate_company_info(request: CompanyRequest):
         "intro": generated_data['intro'],
         "summary": generated_data['summary']
     }
-
