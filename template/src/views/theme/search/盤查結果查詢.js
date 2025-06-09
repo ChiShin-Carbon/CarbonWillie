@@ -154,11 +154,11 @@ const Tabs = () => {
           </div> */}
         </div>
         {/* <div className={styles.buttonRight}>
-                    <button>
-                        <CIcon style={{ display: 'inline' }} icon={cilDataTransferUp} className="me-2" />
-                        上傳檔案
-                    </button>
-                </div> */}
+              <button>
+                  <CIcon style={{ display: 'inline' }} icon={cilDataTransferUp} className="me-2" />
+                  上傳檔案
+              </button>
+          </div> */}
       </div>
       <div style={{ height: '10px' }}></div>
       <CCol xs={12}>
@@ -1021,7 +1021,7 @@ const Tabs = () => {
               <div className={styles.titleContainer}>
                 <div className={styles.leftItem}>
                   <div>
-                    <strong>2024盤查報告</strong>
+                    <strong>{selectedYear}盤查報告</strong>
                   </div>
                   {/* <div>
                     <CFormSelect size="sm" className={styles.input}>
