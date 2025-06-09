@@ -501,7 +501,7 @@ const Tabs = () => {
           <h4 className="system-title">活動數據盤點</h4>
           <hr className="system-hr"></hr>
         </div>
-        {currentFunction && (
+        {currentFunction && hasEditPermission && (
           <button
             className="system-save"
             onClick={() => updateTableStatus(currentFunction, true)}
