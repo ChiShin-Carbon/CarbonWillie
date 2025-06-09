@@ -121,7 +121,7 @@ const Charts = () => {
           <CCardBody>
             {/*這裡未登入=>*/}
             <strong>
-              <div style={{ height: '310px', fontWeight: 900 }}>
+              <div style={{ height: '280px', fontWeight: 900 }}>
                 <h2 style={{ fontWeight: 900 }}>說明</h2>
                 <h5 style={{ fontWeight: 900 }}>
                   碳盤查是評估組織或活動所產生的溫室氣體排放量的系統性過程，旨在識別主要碳排放來源並支持制定有效的減排策略
