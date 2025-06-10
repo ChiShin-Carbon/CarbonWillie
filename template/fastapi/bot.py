@@ -186,52 +186,58 @@ class SQLQueryEnhancer:
 
     def generate_user_friendly_response(self, user_message: str, parsed_records: List[Dict], 
                                       metadata: Dict) -> str:
-        """Generate response (optimized)."""
+        """Generate response with meaningful column interpretation."""
         
-        # Quick fallback for simple cases
         if not parsed_records:
             return "沒有找到符合條件的資料。"
         
-        total_records = len(parsed_records)
-        if total_records == 1:
-            # Single record - simple format
-            record = parsed_records[0]
-            result = "查詢結果：\n"
-            for key, value in record.items():
-                result += f"{key}: {value}\n"
-            return result
+        # Get database schema for column interpretation
+        tables_content = self.get_enhanced_tables_content()
         
-        # Simplified response generation for multiple records
+        total_records = len(parsed_records)
+        
+        # Create enhanced response prompt with schema context
         response_prompt = f"""
-根據用戶問題生成簡潔回答：
+你是碳盤查數據分析專家。根據用戶問題和資料庫結構，提供有意義的回答。
 
-問題：{user_message}
+用戶問題：{user_message}
+查詢結果：{json.dumps(parsed_records[:5], ensure_ascii=False)}
 資料筆數：{total_records}
-結果：{json.dumps(parsed_records[:3], ensure_ascii=False)}
 
-要求：
-1. 直接回答問題
-2. 簡潔明瞭
-3. 如果資料多，提供摘要
-4. 轉換代碼：部門(1=管理,2=資訊,3=業務,4=門診,5=健檢,6=檢驗,7=其他)
+資料庫結構參考：
+{tables_content[:3000]}
+
+任務要求：
+1. 根據資料庫結構說明，將英文欄位名稱轉換為中文含義
+2. 提供有意義的數據解釋，而不是原始的欄位名稱
+3. 回答要簡潔明確，避免使用換行符
+4. 轉換代碼含義：部門(1=管理,2=資訊,3=業務,4=門診,5=健檢,6=檢驗,7=其他)，職位(1=總經理,2=副總,3=主管,4=副主管,5=組長,6=其他)
+5. 直接回答用戶的問題，提供實用的信息
+
+範例：如果查詢結果是 "total_electricity_usage: 1357.0"，應該回答 "總用電量為1357.0度" 而不是顯示欄位名稱。
         """
         
         try:
             result = self.client.chat.completions.create(
                 model="gpt-4o-mini",
                 temperature=0,
-                max_tokens=300,  # Limit for faster response
+                max_tokens=400,
                 messages=[
-                    {"role": "system", "content": "你是數據分析助手，提供簡潔準確的回答。"},
+                    {"role": "system", "content": "你是碳盤查數據分析專家。根據資料庫結構將查詢結果轉換為有意義的中文回答，不要直接顯示英文欄位名稱。回答時避免換行符。"},
                     {"role": "user", "content": response_prompt}
                 ]
             )
             
-            return result.choices[0].message.content
+            # Clean the response
+            answer = result.choices[0].message.content
+            answer = answer.replace('\n', ' ').replace('\r', ' ')
+            answer = ' '.join(answer.split())
+            
+            return answer
             
         except Exception as e:
             print(f"Error generating response: {e}")
-            return f"找到 {total_records} 筆資料。"
+            return f"查詢完成，找到 {total_records} 筆資料。"
 
 
 # ========================================
@@ -387,40 +393,55 @@ def retrieve_top_k_chunks(vectorstore, user_query, k=5):
     return [doc.page_content for doc in sub_docs]
 
 def summarize_chunks_optimized(client, query, chunks):
-    """Optimized summarization with reduced complexity."""
+    """Optimized summarization with reduced complexity and no newlines."""
     if not chunks:
-        return "No relevant information found."
+        return "沒有找到相關資訊。"
     
-    # Read table content for context
+    # Read CreateTables.txt for database schema context
     tables_path = "./CreateTables.txt"
     table_content = ""
     try:
         with open(tables_path, 'r', encoding='utf-8') as file:
             table_content = file.read()
+            # Extract key table information for context
+            table_content = table_content[:2000]  # Increase limit for better context
     except Exception as e:
-        print(f"Error reading table content: {e}")
+        print(f"Error reading CreateTables.txt: {e}")
         table_content = ""
 
-    # Simplified prompt
-    combined_content = "\n\n".join(chunks)
+    # Combine RAG content
+    combined_content = " ".join(chunks)  # Use space instead of \n\n
     
-    # Create system prompt with table content if available
-    system_prompt = "基於提供的內容回答用戶問題，保持簡潔準確。並且**避免**直接以資料庫欄位名稱進行回答，請以人性化的方式進行回答"
-    if table_content:
-        system_prompt += f"\n\n資料庫結構參考：\n{table_content}"  # Limit table content size
+    # Create comprehensive system prompt
+    system_prompt = f"""你是碳盤查專業助手。請根據提供的資料庫結構和知識庫內容回答用戶問題。
+
+資料庫結構參考：
+{table_content}
+
+回答要求：
+1. 基於提供的內容和資料庫結構回答
+2. 回答要簡潔明確，完全避免使用換行符
+3. 如果涉及資料查詢，請說明相關資料表
+4. 提供實用的碳盤查建議
+5. 回答內容要連貫，用空格連接，不要有任何換行符號"""
     
     try:
         response = client.chat.completions.create(
-            model="gpt-4o-mini",  # Faster model
+            model="gpt-4o-mini",
             temperature=0.1,
-            max_tokens=400,  # Limit response length
+            max_tokens=500,  # Increase for better answers
             messages=[
                 {"role": "system", "content": system_prompt},
-                {"role": "user", "content": f"問題：{query}\n\n內容：{combined_content}"}
+                {"role": "user", "content": f"問題：{query} 參考內容：{combined_content}"}
             ]
         )
         
-        return response.choices[0].message.content
+        # Clean the response to remove newlines and extra spaces
+        answer = response.choices[0].message.content
+        answer = answer.replace('\n', ' ').replace('\r', ' ')
+        answer = ' '.join(answer.split())  # Remove extra spaces
+        
+        return answer
     
     except Exception as e:
         print(f"Summarization error: {str(e)}")
