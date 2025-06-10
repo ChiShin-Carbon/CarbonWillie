@@ -126,22 +126,42 @@ def quick_extract(text):
                     print(f"Found standalone ROC date: {date_str} -> {converted_date}")
                     break
     
-    # 2. CONTEXT-AWARE RECEIPT NUMBER EXTRACTION
-    # Look for "單據號碼" context
+    # 2. ENHANCED RECEIPT NUMBER EXTRACTION
+    # Look for receipt numbers with improved patterns
     receipt_context_patterns = [
-        r'(?:單據號碼|Receipt.*Number)[^\w]*([A-Za-z]\d{10,20})',
-        r'(?:收據|receipt)[^\w]*([A-Za-z]\d{10,20})',
-        # Look for M followed by long number in receipt context
+        # Pattern 1: Look for "單據號碼" followed by the number
+        r'(?:單據號碼|Receipt.*Number|收據號碼)[^\w\n]*?[- ]*?(MO?\d{10,20})',
+        # Pattern 2: Look for standalone MO followed by digits (most common pattern)
+        r'\b(MO\d{10,20})\b',
+        # Pattern 3: Look for M0 followed by digits  
+        r'\b(M0\d{10,20})\b',
+        # Pattern 4: More flexible pattern for M + digits
         r'\b(M\d{13,20})\b',
-        r'\b(M0\d{12,19})\b',
+        # Pattern 5: Look for the specific pattern in your OCR (with spaces)
+        r'(MO\s*\d{3}\s*\d{3}\s*\d{4}\s*\d{3})',
+        # Pattern 6: Alternative pattern matching
+        r'(?:單據.*號碼.*?|Receipt.*Number.*?)[- ]*(M[O0]\d{10,20})',
     ]
     
     for pattern in receipt_context_patterns:
         match = re.search(pattern, cleaned, re.IGNORECASE)
         if match:
-            results['receipt_number'] = match.group(1)
-            print(f"Found receipt number: {results['receipt_number']}")
+            receipt_num = match.group(1)
+            # Clean up any spaces in the receipt number
+            receipt_num = re.sub(r'\s+', '', receipt_num)
+            results['receipt_number'] = receipt_num
+            print(f"Found receipt number: {receipt_num}")
             break
+    
+    # Additional fallback: Look for receipt number in original text with spaces
+    if not results['receipt_number']:
+        # Look for pattern like "MO114052316318" even with OCR spacing issues
+        space_pattern = r'(M[O0]?\s*\d{3}\s*\d{3}\s*\d{4}\s*\d{3,4})'
+        match = re.search(space_pattern, text, re.IGNORECASE)
+        if match:
+            receipt_num = re.sub(r'\s+', '', match.group(1))
+            results['receipt_number'] = receipt_num
+            print(f"Found receipt number with spaces: {receipt_num}")
     
     # 3. CUSTOMER NUMBER - Taiwan Power format
     customer_patterns = [
@@ -240,7 +260,7 @@ async def fast_ai_extraction(text):
                     
                     CRITICAL TASKS:
                     1. Find 繳費日期 (Payment Date) - Look for "Payment Date" label and nearby ROC date like 114/05/23
-                    2. Find 單據號碼 (Receipt Number) - Look for "M" followed by long digits like M0114052316318
+                    2. Find 單據號碼 (Receipt Number) - Look for "M" followed by long digits like M0114052316318 or MO114052316318
                     3. Find 電號 (Customer Number) - Format XX-XX-XXXX-XX-X like 16-46-3302-10-5
                     
                     ROC DATE CONVERSION: ROC year + 1911 = Gregorian year
@@ -249,11 +269,12 @@ async def fast_ai_extraction(text):
                     Return ONLY this JSON format:
                     {
                         "payment_date": "YYYY-MM-DD",
-                        "receipt_number": "M0XXXXXXXXXXXXX", 
+                        "receipt_number": "M0XXXXXXXXXXXXX",
                         "customer_number": "XX-XX-XXXX-XX-X"
                     }
                     
                     Set fields to null if not found. Be very careful with ROC date conversion.
+                    Look for receipt numbers that start with M or MO followed by digits.
                     """},
                     {"role": "user", "content": f"""
                     Extract from this Taiwan Power Company receipt OCR text:
@@ -262,7 +283,7 @@ async def fast_ai_extraction(text):
                     
                     Look specifically for:
                     - Payment Date (繳費日期) field and its value
-                    - Receipt Number (單據號碼) - usually starts with M
+                    - Receipt Number (單據號碼) - usually starts with M or MO like MO114052316318
                     - Customer Number (電號) with dashes
                     """}
                 ],
