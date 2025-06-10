@@ -20,6 +20,7 @@ import re
 from collections import Counter
 from datetime import datetime
 from decimal import Decimal
+from typing import Dict, List, Any, Optional, Tuple
 
 # Load environment variables
 load_dotenv()
@@ -31,6 +32,358 @@ botapi = APIRouter(tags=["bot"])
 class MessageRequest(BaseModel):
     message: str
 
+
+# ========================================
+# Enhanced SQL Query Generation Class
+# ========================================
+
+class SQLQueryEnhancer:
+    def __init__(self, client: OpenAI):
+        self.client = client
+        self.common_errors = {
+            "no such table": "找不到指定的資料表",
+            "syntax error": "SQL語法錯誤",
+            "no such column": "找不到指定的欄位",
+            "ambiguous column": "欄位名稱模糊，需要指定表格名稱"
+        }
+    
+    def get_enhanced_tables_content(self) -> str:
+        """Read and return enhanced database tables information with examples."""
+        tables_path = "./CreateTables.txt"
+        try:
+            with open(tables_path, 'r', encoding='utf-8') as file:
+                content = file.read()
+            
+            # Add common query patterns and examples
+            enhanced_content = content + """
+            
+# ========================================
+# 常用查詢模式和範例 (Common Query Patterns and Examples)
+# ========================================
+
+# 1. 時間範圍查詢範例：
+# SELECT * FROM Vehicle WHERE Doc_date BETWEEN '2024-01-01' AND '2024-12-31'
+# SELECT * FROM Electricity_Usage WHERE period_start >= '2024-01-01' AND period_end <= '2024-12-31'
+
+# 2. 聚合查詢範例：
+# SELECT SUM(liters) as total_fuel FROM Vehicle WHERE YEAR(Doc_date) = 2024
+# SELECT COUNT(*) as record_count FROM users WHERE department = 1
+
+# 3. 跨表查詢範例：
+# SELECT u.username, v.liters, v.Doc_date 
+# FROM users u JOIN Vehicle v ON u.user_id = v.user_id
+
+# 4. 排放量計算範例：
+# SELECT es.remark, SUM(qi.emission_equivalent) as total_emissions
+# FROM Emission_Source es 
+# JOIN Quantitative_Inventory qi ON es.source_id = qi.source_id
+# GROUP BY es.source_id, es.remark
+
+# 5. 月份統計範例：
+# SELECT YEAR(Doc_date) as year, MONTH(Doc_date) as month, SUM(liters) as monthly_fuel
+# FROM Vehicle 
+# GROUP BY YEAR(Doc_date), MONTH(Doc_date)
+# ORDER BY year, month
+
+# 重要提醒：
+# - 使用 YEAR(), MONTH(), DAY() 函數處理日期
+# - 金額和數量欄位通常是 DECIMAL 類型
+# - 外鍵關聯：user_id 連接 users 表，business_id 連接 Company_Info 表
+# - 日期格式：'YYYY-MM-DD'
+# - 布林值：0=否/False, 1=是/True
+
+# 部門代碼對照：1=管理部門, 2=資訊部門, 3=業務部門, 4=門診部門, 5=健檢部門, 6=檢驗部門, 7=其他
+# 職位代碼對照：1=總經理, 2=副總經理, 3=主管, 4=副主管, 5=組長, 6=其他
+# 角色權限對照：0=系統管理員, 1=顧問, 2=企業用戶
+            """
+            return enhanced_content
+        except Exception as e:
+            print(f"Error reading tables content: {e}")
+            return ""
+
+    def generate_sql_with_context(self, user_message: str) -> str:
+        """Generate SQL query with enhanced context and error handling."""
+        tables_content = self.get_enhanced_tables_content()
+        
+        # Enhanced system prompt with more specific instructions
+        system_prompt = f"""
+你是一個專業的SQL查詢生成專家，專門處理碳排放管理系統的資料庫查詢。
+
+重要指示：
+1. **只回傳可執行的SQL查詢語句**，不要包含任何markdown格式、解釋文字或前後綴
+2. **根據問題選擇合適的欄位**，避免不必要的 SELECT *
+3. **正確使用日期格式**：'YYYY-MM-DD'，使用 YEAR(), MONTH(), DAY() 函數處理日期查詢
+4. **適當使用聚合函數**：SUM(), COUNT(), AVG(), MAX(), MIN()
+5. **正確處理JOIN關聯**：
+   - users.user_id ↔ 其他表的 user_id
+   - Company_Info.business_id ↔ users.business_id
+   - Baseline.baseline_id ↔ Emission_Source.baseline_id
+6. **使用英文標點符號**，避免中文標點
+7. **處理模糊查詢**：使用 LIKE '%keyword%'
+8. **排序和分組**：適當使用 ORDER BY 和 GROUP BY
+
+常見查詢類型對應：
+- "多少" → COUNT() 或 SUM()
+- "平均" → AVG()
+- "最大/最小" → MAX()/MIN()
+- "趨勢/每月/每年" → GROUP BY YEAR(), MONTH()
+- "範圍/期間" → BETWEEN 或 >= AND <=
+- "包含/含有" → LIKE '%keyword%'
+
+代碼對照表：
+- 部門：1=管理部門, 2=資訊部門, 3=業務部門, 4=門診部門, 5=健檢部門, 6=檢驗部門, 7=其他
+- 職位：1=總經理, 2=副總經理, 3=主管, 4=副主管, 5=組長, 6=其他
+- 角色：0=系統管理員, 1=顧問, 2=企業用戶
+
+資料庫結構：
+{tables_content}
+
+請根據用戶問題生成精確的SQL查詢：
+        """
+        
+        try:
+            response = self.client.chat.completions.create(
+                model="gpt-4o",
+                temperature=0.1,  # Low temperature for consistency
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_message}
+                ]
+            )
+            
+            sql_query = response.choices[0].message.content.strip()
+            
+            # Clean and sanitize the SQL query
+            sql_query = self.sanitize_sql_query(sql_query)
+            
+            return sql_query
+            
+        except Exception as e:
+            print(f"Error generating SQL: {e}")
+            raise Exception("SQL生成失敗，請重新嘗試")
+
+    def sanitize_sql_query(self, sql_query: str) -> str:
+        """Clean and sanitize the SQL query."""
+        # Remove markdown formatting
+        sql_query = re.sub(r'```sql\n?|```\n?|```', '', sql_query)
+        
+        # Replace Chinese punctuation with English
+        replacements = {
+            '，': ',',
+            '；': ';',
+            '：': ':',
+            '"': '"',
+            '"': '"',
+            ''': "'",
+            ''': "'",
+            '（': '(',
+            '）': ')'
+        }
+        
+        for chinese, english in replacements.items():
+            sql_query = sql_query.replace(chinese, english)
+        
+        # Remove extra whitespace and newlines
+        sql_query = ' '.join(sql_query.split())
+        
+        # Basic SQL injection prevention (whitelist approach)
+        dangerous_keywords = ['DROP', 'DELETE', 'UPDATE', 'INSERT', 'ALTER', 'CREATE', 'EXEC', 'EXECUTE']
+        sql_upper = sql_query.upper()
+        
+        for keyword in dangerous_keywords:
+            if keyword in sql_upper:
+                # Allow only specific safe UPDATE/INSERT patterns if needed
+                if keyword in ['UPDATE', 'INSERT'] and 'SET' not in sql_upper:
+                    continue
+                else:
+                    raise Exception(f"不允許執行 {keyword} 操作")
+        
+        return sql_query
+
+    def execute_query_with_metadata(self, sql_query: str) -> Tuple[List[Dict], Dict]:
+        """Execute query and return results with metadata."""
+        conn = connectDB()
+        if not conn:
+            raise Exception("無法連接到資料庫")
+        
+        try:
+            cursor = conn.cursor()
+            cursor.execute(sql_query)
+            
+            # Get column information
+            column_info = []
+            if cursor.description:
+                column_info = [{"name": desc[0], "type": str(desc[1])} for desc in cursor.description]
+            
+            # Fetch results
+            raw_records = cursor.fetchall()
+            
+            # Parse records with enhanced type handling
+            parsed_records = self.parse_database_records_enhanced(raw_records, column_info)
+            
+            # Generate metadata
+            metadata = {
+                "total_records": len(raw_records),
+                "columns": column_info,
+                "query_type": self.analyze_query_type(sql_query),
+                "execution_time": datetime.now().isoformat()
+            }
+            
+            return parsed_records, metadata
+            
+        except Exception as e:
+            # Enhanced error handling with suggestions
+            error_msg = str(e).lower()
+            suggestion = self.get_error_suggestion(error_msg)
+            raise Exception(f"查詢執行錯誤: {suggestion}")
+        finally:
+            conn.close()
+
+    def parse_database_records_enhanced(self, records: List[tuple], column_info: List[Dict]) -> List[Dict]:
+        """Enhanced parsing of database records with proper type handling."""
+        if not records:
+            return []
+        
+        parsed_records = []
+        for record in records:
+            parsed_record = {}
+            for i, value in enumerate(record):
+                column_name = column_info[i]["name"] if i < len(column_info) else f"col_{i}"
+                
+                # Enhanced type conversion
+                if value is None:
+                    parsed_record[column_name] = None
+                elif isinstance(value, Decimal):
+                    parsed_record[column_name] = float(value)
+                elif isinstance(value, datetime):
+                    parsed_record[column_name] = value.strftime('%Y-%m-%d %H:%M:%S')
+                elif hasattr(value, 'date') and callable(getattr(value, 'date')):
+                    parsed_record[column_name] = value.strftime('%Y-%m-%d')
+                elif isinstance(value, bool):
+                    parsed_record[column_name] = "是" if value else "否"
+                elif isinstance(value, (int, float)):
+                    parsed_record[column_name] = value
+                else:
+                    parsed_record[column_name] = str(value)
+            
+            parsed_records.append(parsed_record)
+        
+        return parsed_records
+
+    def analyze_query_type(self, sql_query: str) -> str:
+        """Analyze the type of SQL query for better response formatting."""
+        sql_upper = sql_query.upper()
+        
+        if "COUNT(" in sql_upper:
+            return "計數查詢"
+        elif "SUM(" in sql_upper:
+            return "總和查詢"
+        elif "AVG(" in sql_upper:
+            return "平均值查詢"
+        elif "GROUP BY" in sql_upper:
+            return "分組統計查詢"
+        elif "JOIN" in sql_upper:
+            return "關聯查詢"
+        elif "ORDER BY" in sql_upper:
+            return "排序查詢"
+        else:
+            return "一般查詢"
+
+    def get_error_suggestion(self, error_msg: str) -> str:
+        """Provide helpful suggestions based on error messages."""
+        for error_pattern, suggestion in self.common_errors.items():
+            if error_pattern in error_msg:
+                return suggestion
+        
+        if "conversion failed" in error_msg:
+            return "數據類型轉換失敗，請檢查日期格式或數值格式"
+        elif "timeout" in error_msg:
+            return "查詢超時，請嘗試縮小查詢範圍"
+        else:
+            return "查詢執行失敗，請檢查SQL語法或聯絡系統管理員"
+
+    def generate_user_friendly_response(self, user_message: str, parsed_records: List[Dict], 
+                                      metadata: Dict) -> str:
+        """Generate a user-friendly response based on query results."""
+        
+        # Enhanced response generation prompt
+        response_prompt = f"""
+根據用戶問題和查詢結果，生成一個清晰、有意義的回答。
+
+用戶問題：{user_message}
+查詢類型：{metadata.get('query_type', '一般查詢')}
+結果筆數：{metadata.get('total_records', 0)}
+欄位資訊：{[col['name'] for col in metadata.get('columns', [])]}
+
+查詢結果：
+{json.dumps(parsed_records, ensure_ascii=False, indent=2) if parsed_records else '無資料'}
+
+請按照以下要求生成回答：
+
+1. **直接回答用戶問題**，避免顯示原始資料庫格式
+2. **數據摘要**：如果有多筆資料，提供重點摘要
+3. **數值格式化**：
+   - 金額：添加千分位逗號
+   - 日期：使用易讀格式
+   - 布林值：使用"是/否"
+4. **結構化呈現**：
+   - 統計結果：使用清楚的數字表達
+   - 列表資料：使用條列或表格格式
+   - 趨勢資料：描述變化趨勢
+5. **上下文解釋**：適當解釋結果的意義
+6. **無資料處理**：如果沒有找到資料，說明原因並建議替代方案
+7. **代碼轉換**：將數字代碼轉換為有意義的描述
+   - 部門代碼：1=管理部門, 2=資訊部門, 3=業務部門, 4=門診部門, 5=健檢部門, 6=檢驗部門, 7=其他
+   - 職位代碼：1=總經理, 2=副總經理, 3=主管, 4=副主管, 5=組長, 6=其他
+   - 角色代碼：0=系統管理員, 1=顧問, 2=企業用戶
+
+特別注意：
+- 避免顯示技術性欄位名稱（如col_0, col_1）
+- 提供實用的洞察和建議
+        """
+        
+        try:
+            result = self.client.chat.completions.create(
+                model="gpt-4o",
+                temperature=0.2,
+                messages=[
+                    {"role": "system", "content": "你是專業的數據分析助手，擅長將資料庫查詢結果轉換為清晰易懂的商業洞察。請提供實用、準確且易於理解的回答。"},
+                    {"role": "user", "content": response_prompt}
+                ]
+            )
+            
+            return result.choices[0].message.content
+            
+        except Exception as e:
+            print(f"Error generating response: {e}")
+            # Fallback to basic response
+            return self.generate_fallback_response(parsed_records, metadata)
+
+    def generate_fallback_response(self, parsed_records: List[Dict], metadata: Dict) -> str:
+        """Generate a basic fallback response when AI response generation fails."""
+        if not parsed_records:
+            return "查詢完成，但沒有找到符合條件的資料。"
+        
+        total_records = metadata.get('total_records', len(parsed_records))
+        
+        if total_records == 1:
+            return f"找到 1 筆資料：{parsed_records[0]}"
+        elif total_records <= 5:
+            response = f"找到 {total_records} 筆資料：\n"
+            for i, record in enumerate(parsed_records, 1):
+                response += f"{i}. {record}\n"
+            return response
+        else:
+            response = f"找到 {total_records} 筆資料，顯示前 3 筆：\n"
+            for i, record in enumerate(parsed_records[:3], 1):
+                response += f"{i}. {record}\n"
+            response += f"... 還有 {total_records - 3} 筆資料"
+            return response
+
+
+# ========================================
+# Main Bot Functions
+# ========================================
 
 @botapi.post("/botapi")
 async def botmessage(request: MessageRequest):
@@ -82,21 +435,51 @@ Your task is to:
 
 def get_tables_content():
     """Read and return database tables information."""
-    tables_path = "./CreateTables.txt"
-    with open(tables_path, 'r', encoding='utf-8') as file:
-        return file.read()
+    enhancer = SQLQueryEnhancer(None)  # We only need the file reading functionality
+    return enhancer.get_enhanced_tables_content()
 
+
+# Enhanced Query Handler (replaces the original one)
+async def handle_query_intent(client, user_message):
+    """Enhanced handler for database query intent."""
+    enhancer = SQLQueryEnhancer(client)
+    
+    try:
+        # Generate SQL query
+        sql_query = enhancer.generate_sql_with_context(user_message)
+        print(f"Generated SQL: {sql_query}")
+        
+        # Execute query with metadata
+        parsed_records, metadata = enhancer.execute_query_with_metadata(sql_query)
+        
+        # Generate user-friendly response
+        response = enhancer.generate_user_friendly_response(user_message, parsed_records, metadata)
+        
+        return {"response": response}
+        
+    except Exception as e:
+        error_msg = str(e)
+        print(f"Error in enhanced query handling: {error_msg}")
+        
+        # Provide specific error responses
+        if "不允許執行" in error_msg:
+            return {"response": "抱歉，為了安全考量，不允許執行此類操作。"}
+        elif "無法連接" in error_msg:
+            return {"response": "抱歉，目前無法連接到資料庫，請稍後再試。"}
+        elif "SQL生成失敗" in error_msg:
+            return {"response": "抱歉，無法理解您的問題，請嘗試重新表述。"}
+        else:
+            return {"response": f"處理查詢時發生錯誤：{error_msg}。請嘗試重新表述您的問題。"}
+
+
+# ========================================
+# Legacy Functions (kept for compatibility)
+# ========================================
 
 def parse_database_records(records, column_names=None):
     """
     Parse database records into a more readable format.
-    
-    Args:
-        records: Raw database records (list of tuples)
-        column_names: List of column names (optional)
-    
-    Returns:
-        List of dictionaries with parsed data
+    (Legacy function - kept for compatibility)
     """
     if not records:
         return []
@@ -123,13 +506,7 @@ def parse_database_records(records, column_names=None):
 def get_column_info(cursor, table_name):
     """
     Get column information for a table to better understand the data structure.
-    
-    Args:
-        cursor: Database cursor
-        table_name: Name of the table
-    
-    Returns:
-        List of column names
+    (Legacy function - kept for compatibility)
     """
     try:
         # Try to get column information (this syntax might vary depending on your database)
@@ -145,105 +522,9 @@ def get_column_info(cursor, table_name):
             return None
 
 
-async def handle_query_intent(client, user_message):
-    """Handle database query intent with improved answer generation."""
-    tables_content = get_tables_content()
-    
-    try:
-        # Generate SQL query with better context
-        query_intent = client.chat.completions.create(
-            model="gpt-4o",
-            messages=[
-                {"role": "system", "content": f"""
-                我們的資料庫有以下table，請根據使用者的問題生成適當的SQL查詢。
-                
-                重要指示：
-                1. 只回傳SQL查詢語句，不需要markdown格式
-                2. 根據問題的具體需求選擇適當的欄位，不一定要select *
-                3. 如果問題涉及特定年份、日期或條件，請在WHERE子句中包含這些條件
-                4. 避免使用中文標點符號，使用英文標點符號
-                5. 如果需要聚合數據（如總和、平均值、計數），請使用適當的聚合函數
-                
-                資料庫結構：
-                {tables_content}
-                """},
-                {"role": "user", "content": user_message},
-            ]
-        )
-
-        # Sanitize the SQL query
-        sql_query = query_intent.choices[0].message.content.strip()
-        sql_query = sql_query.replace('，', ',').replace('；', ';').replace('：', ':')
-        
-        # Remove markdown formatting if present
-        sql_query = re.sub(r'```sql\n?|```\n?', '', sql_query)
-        
-        print(f"Generated SQL: {sql_query}")
-        
-        # Execute database query
-        conn = connectDB()
-        if conn:
-            try:
-                cursor = conn.cursor()
-                cursor.execute(sql_query)
-                records = cursor.fetchall()
-                
-                # Get column names for better context
-                column_names = [description[0] for description in cursor.description] if cursor.description else None
-                
-                # Parse records for better readability
-                parsed_records = parse_database_records(records, column_names)
-                
-                # Generate a more user-friendly response
-                response_prompt = f"""
-                使用者問題：{user_message}
-                
-                資料庫查詢結果：
-                欄位名稱：{column_names if column_names else '未知'}
-                資料筆數：{len(records)}
-                資料內容：{parsed_records if parsed_records else records}
-                
-                請根據以上資訊，以自然、易懂的方式回答使用者的問題。要求：
-                1. 直接回答問題，避免顯示原始資料庫記錄格式
-                2. 將數據轉換為有意義的資訊
-                3. 如果有多筆相同的資料，請進行適當的總結
-                4. 使用清晰的中文表達
-                5. 如果沒有找到相關資料，請明確說明
-                6. 避免顯示技術性的資料庫欄位名稱和原始tuple格式
-                """
-                
-                result = client.chat.completions.create(
-                    model="gpt-4o",
-                    temperature=0.1,  # Lower temperature for more consistent responses
-                    messages=[
-                        {"role": "system", "content": "你是一個專業的數據分析助手，能夠將資料庫查詢結果轉換為清晰、易懂的回答。請避免顯示原始的資料庫記錄格式，而是提供有意義的資訊摘要。"},
-                        {"role": "user", "content": response_prompt}
-                    ]
-                )
-                
-                result_message = result.choices[0].message.content
-                print(f"Generated response: {result_message}")
-                return {"response": result_message}
-                
-            except Exception as e:
-                print(f"Database execution error: {e}")
-                # Provide more specific error handling
-                if "no such table" in str(e).lower():
-                    return {"response": "抱歉，找不到相關的資料表。請確認您的問題是否與資料庫中的資料相關。"}
-                elif "syntax error" in str(e).lower():
-                    return {"response": "抱歉，查詢過程中發生錯誤。請嘗試重新表述您的問題。"}
-                else:
-                    return {"response": "抱歉，處理您的查詢時發生錯誤。請稍後再試或重新表述您的問題。"}
-            finally:
-                conn.close()
-        else:
-            print("Could not connect to the database.")
-            return {"response": "抱歉，無法連接到資料庫。請稍後再試。"}
-            
-    except Exception as e:
-        print(f"Error in handling query intent: {e}")
-        return {"response": "抱歉，處理您的問題時發生錯誤。請稍後再試。"}
-
+# ========================================
+# RAG-based Answer Functions (unchanged)
+# ========================================
 
 async def handle_answer_intent(client, user_message):
     """Handle RAG-based answer intent using PDF documents."""
