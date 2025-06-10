@@ -18,6 +18,7 @@ from companyinfo import companyinfo
 from edit.editcompanyinfo import editcompanyinfo
 from edit.editcfvinfo import editcfvinfo
 from ocrapi import ocrapi
+from ocrapi_elec import ocrapi_elec
 from bot import botapi
 from insert.insert_vehicle import insert_vehicle
 from insert.insert_Extinguisher import insert_Extinguisher
@@ -206,6 +207,7 @@ app.include_router(editpassword)
 app.include_router(companyinfo)
 app.include_router(editcompanyinfo)
 app.include_router(editcfvinfo)
+app.include_router(ocrapi_elec)
 app.include_router(ocrapi)
 app.include_router(botapi)
 app.include_router(baseline)
