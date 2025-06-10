@@ -77,10 +77,20 @@ def read_result(year: Optional[int] = Query(None)):
             else:
                 year = selected_year
 
+            # 重新查詢該年度的電力資料
+            cursor.execute("""
+                SELECT activity_data FROM Activity_Data 
+                WHERE source_id = (
+                    SELECT source_id FROM Emission_Source 
+                    WHERE source_table = 'Electricity_Usage' 
+                    AND baseline_id = (
+                        SELECT baseline_id FROM Baseline WHERE YEAR(cfv_start_date)=?
+                    )
+                )
+            """, (year,))
+            electricity_record = cursor.fetchone()
+            electricity_usage = electricity_record[0] if electricity_record else "0"
 
-            # 該年若尚無電力資料，仍可繼續
-            if electricity_usage is None:
-                electricity_usage = "0"
 
             # 全廠電力
             # query_electricity_usage = """
@@ -149,31 +159,36 @@ def read_result(year: Optional[int] = Query(None)):
             result_record = cursor.fetchone()
 
             if result_record:
+                keys = [
+                    "total_emission_equivalent",
+                    "CO2_emission_equivalent",
+                    "CH4_emission_equivalent",
+                    "N2O_emission_equivalent",
+                    "HFCS_emission_equivalent",
+                    "PFCS_emission_equivalent",
+                    "SF6_emission_equivalent",
+                    "NF3_emission_equivalent",
+                    "category1_total_emission_equivalent",
+                    "category1_CO2_emission_equivalent",
+                    "category1_CH4_emission_equivalent",
+                    "category1_N2O_emission_equivalent",
+                    "category1_HFCS_emission_equivalent",
+                    "category1_PFCS_emission_equivalent",
+                    "category1_SF6_emission_equivalent",
+                    "category1_NF3_emission_equivalent",
+                    "stationary_emission_equivalent",
+                    "mobile_emission_equivalent",
+                    "process_emission_equivalent",
+                    "fugitive_emission_equivalent",
+                    "category2_total_emission_equivalent"
+                ]
                 quantitative_inventory = {
-                    "total_emission_equivalent": result_record[0],
-                    "CO2_emission_equivalent": result_record[1],
-                    "CH4_emission_equivalent": result_record[2],
-                    "N2O_emission_equivalent": result_record[3],
-                    "HFCS_emission_equivalent": result_record[4],
-                    "PFCS_emission_equivalent": result_record[5],
-                    "SF6_emission_equivalent": result_record[6],
-                    "NF3_emission_equivalent": result_record[7],
-                    "category1_total_emission_equivalent": result_record[8], #範疇一
-                    "category1_CO2_emission_equivalent": result_record[9],
-                    "category1_CH4_emission_equivalent": result_record[10],
-                    "category1_N2O_emission_equivalent": result_record[11],
-                    "category1_HFCS_emission_equivalent": result_record[12],
-                    "category1_PFCS_emission_equivalent": result_record[13],
-                    "category1_SF6_emission_equivalent": result_record[14],
-                    "category1_NF3_emission_equivalent": result_record[15],
-                    "stationary_emission_equivalent": result_record[16], #固定排放
-                    "mobile_emission_equivalent": result_record[17], #移動排放
-                    "process_emission_equivalent": result_record[18], # 製程排放
-                    "fugitive_emission_equivalent": result_record[19], #逸散排放
-                    "category2_total_emission_equivalent": result_record[20], #範疇二
+                    key: (value if value is not None else 0)
+                    for key, value in zip(keys, result_record)
                 }
             else:
-                quantitative_inventory = {}
+                quantitative_inventory = {key: 0 for key in keys}
+
             
             conn.close()
 
