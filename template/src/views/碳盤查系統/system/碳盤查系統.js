@@ -167,7 +167,7 @@ const CarbonInventoryFlow = () => {
       console.log("Using user_id:", userId);
       
       // RFC 3339 format with timezone info, required by FastAPI's datetime parsing
-      const startDateStr = `${nextYear}-01-31T00:00:00+08:00`
+      const startDateStr = `${nextYear}-01-01T00:00:00+08:00`
       const endDateStr = `${nextYear}-12-31T23:59:59+08:00`
       
       console.log("Sending baseline data with formatted dates:", {
