@@ -30,8 +30,7 @@ def read_result(year: Optional[int] = Query(None)):
             if not available_years:
                 raise HTTPException(status_code=404, detail="No available years")
 
-            # 預設最新年分
-            # 嘗試找出最新有「電力或盤查資料」的年分
+            # 先找出最新具備電力或盤查資料的年分
             selected_year = None
             electricity_usage = None
 
@@ -61,7 +60,7 @@ def read_result(year: Optional[int] = Query(None)):
                 """, (y,))
                 inventory_count = cursor.fetchone()[0]
 
-                # 有任一資料就使用該年
+                # 有任一資料，則使用該年度
                 if electricity_record or inventory_count > 0:
                     selected_year = y
                     if electricity_record:
@@ -73,31 +72,9 @@ def read_result(year: Optional[int] = Query(None)):
 
             year = selected_year  # 設定查詢年分
 
-
-
-            # 全廠電力
-            # query_electricity_usage = """
-            #     SELECT activity_data FROM Activity_Data 
-            #     WHERE source_id = (
-            #         SELECT source_id FROM Emission_Source 
-            #         WHERE source_table = 'Electricity_Usage' 
-            #         AND baseline_id = (
-            #             SELECT baseline_id FROM Baseline WHERE YEAR(cfv_start_date)=?
-            #         )
-            #     )
-            # """
-            # cursor.execute(query_electricity_usage, (year,))
-            # electricity_usage_record = cursor.fetchone()
-            
-            # if not electricity_usage_record:
-            #     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Electricity usage data not found")
-
-            # electricity_usage = electricity_usage_record[0]
-
+            # 該年若尚無電力資料，仍可繼續
             if electricity_usage is None:
-                # 該年無電力資料，但仍可繼續
-                electricity_usage = "N/A"  # 或其他預設值
-
+                electricity_usage = "0"
 
             # 排放當量
             query_result = """
