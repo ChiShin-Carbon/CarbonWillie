@@ -1,20 +1,54 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException
 from PIL import Image, ImageEnhance
+from transformers import DonutProcessor, VisionEncoderDecoderModel
 import io
 from fastapi.concurrency import run_in_threadpool
 import openai
 from dotenv import load_dotenv
 import os
+import torch
 import re
+import logging
+import warnings
+from transformers import logging as transformers_logging
 import json
 import pytesseract
 import asyncio
 
 
+# Set logging level to ERROR to suppress warnings and info messages
+logging.getLogger().setLevel(logging.ERROR)
+transformers_logging.set_verbosity_error()
+warnings.filterwarnings("ignore")
+
 # Load environment variables
 load_dotenv()
+os.environ["TRANSFORMERS_VERBOSITY"] = "error"
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 ocrapi_elec = APIRouter()
+
+# Load Donut model
+MODEL_NAME = "naver-clova-ix/donut-base-finetuned-cord-v2"
+
+try:
+    processor = DonutProcessor.from_pretrained(
+        MODEL_NAME,
+        token=os.getenv("HUGGINGFACE_TOKEN")
+    )
+    model = VisionEncoderDecoderModel.from_pretrained(
+        MODEL_NAME,
+        token=os.getenv("HUGGINGFACE_TOKEN")
+    )
+    
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model.to(device)
+    
+    print(f"Donut model loaded successfully on {device}!")
+except Exception as e:
+    print(f"Error loading Donut model: {e}")
+    processor = None
+    model = None
 
 def perform_fast_ocr(pil_img):
     """
@@ -127,6 +161,44 @@ def has_minimum_data(results):
     print(f"Validation: Date={has_date}, ID={has_id}")
     return has_date and has_id
 
+async def fast_donut_ocr(pil_img):
+    """
+    Fast Donut OCR with optimized parameters
+    """
+    try:
+        if not processor or not model:
+            return ""
+        
+        if pil_img.mode != 'RGB':
+            pil_img = pil_img.convert('RGB')
+        
+        task_prompt = "<s_cord-v2>"
+        
+        pixel_values = processor(pil_img, return_tensors="pt").pixel_values.to(device)
+        decoder_input_ids = processor.tokenizer(task_prompt, add_special_tokens=False, return_tensors="pt").input_ids.to(device)
+        
+        # Ultra-fast generation parameters
+        generated_ids = model.generate(
+            pixel_values,
+            decoder_input_ids=decoder_input_ids,
+            max_length=100,  # Very short for speed
+            early_stopping=True,
+            num_beams=1,     # Fastest - no beam search
+            do_sample=False,
+            num_return_sequences=1,
+            use_cache=True
+        )
+        
+        donut_output = processor.batch_decode(generated_ids, skip_special_tokens=True)[0]
+        cleaned = re.sub(r'<[^>]+>', ' ', donut_output)
+        cleaned = re.sub(r'\s+', ' ', cleaned).strip()
+        
+        return cleaned
+        
+    except Exception as e:
+        print(f"Donut OCR error: {str(e)}")
+        return ""
+
 async def fast_ai_extraction(text):
     """
     Streamlined AI extraction for missing fields only
@@ -168,45 +240,70 @@ async def ocr_image(image: UploadFile = File(...)):
         
         print("🚀 Fast OCR processing...")
         
-        # Step 1: Single OCR pass (no variants for maximum speed)
+        # Step 1: Try Pytesseract first (fastest)
         ocr_text = perform_fast_ocr(img)
-        print(f"OCR result: {ocr_text[:100]}...")
+        print(f"Pytesseract result: {ocr_text[:100]}...")
         
-        if not ocr_text:
-            return {"response_content": [], "raw_ocr_text": "", "source": "ocr_failed"}
+        if ocr_text:
+            extracted = quick_extract(ocr_text)
+            if has_minimum_data(extracted):
+                result = [v for v in [extracted['payment_date'], extracted['receipt_number'], extracted['customer_number']] if v]
+                return {
+                    "response_content": result,
+                    "raw_ocr_text": ocr_text,
+                    "source": "pytesseract_fast",
+                    "extracted_fields": extracted
+                }
         
-        # Step 2: Quick pattern extraction
-        extracted = quick_extract(ocr_text)
+        # Step 2: Try Donut if Pytesseract insufficient
+        if processor and model:
+            print("📄 Trying Donut OCR...")
+            donut_text = await fast_donut_ocr(img)
+            print(f"Donut result: {donut_text}")
+            
+            if donut_text:
+                donut_extracted = quick_extract(donut_text)
+                if has_minimum_data(donut_extracted):
+                    result = [v for v in [donut_extracted['payment_date'], donut_extracted['receipt_number'], donut_extracted['customer_number']] if v]
+                    return {
+                        "response_content": result,
+                        "raw_ocr_text": donut_text,
+                        "source": "donut_fast",
+                        "extracted_fields": donut_extracted
+                    }
+                
+                # Combine both OCR outputs for better AI processing
+                combined_text = f"Pytesseract: {ocr_text}\nDonut: {donut_text}"
+            else:
+                combined_text = ocr_text
+        else:
+            combined_text = ocr_text
         
-        # Step 3: Check if we have minimum required data
-        if has_minimum_data(extracted):
-            # Success! Return immediately
-            result = [v for v in [extracted['payment_date'], extracted['receipt_number'], extracted['customer_number']] if v]
-            return {
-                "response_content": result,
-                "raw_ocr_text": ocr_text,
-                "source": "fast_extraction",
-                "extracted_fields": extracted
-            }
+        # Step 3: Use AI for missing fields
+        if combined_text:
+            print("📡 Using AI for extraction...")
+            ai_result = await fast_ai_extraction(combined_text)
+            
+            if len(ai_result) >= 2:  # At least 2 fields found
+                return {
+                    "response_content": ai_result,
+                    "raw_ocr_text": combined_text,
+                    "source": "ai_extraction"
+                }
         
-        # Step 4: Only use AI if we're missing critical data
-        print("📡 Using AI for missing fields...")
-        ai_result = await fast_ai_extraction(ocr_text)
+        # Fallback: Return best partial result
+        best_extracted = extracted if ocr_text else {}
+        if processor and model and donut_text:
+            donut_extracted = quick_extract(donut_text)
+            if len([v for v in donut_extracted.values() if v]) > len([v for v in best_extracted.values() if v]):
+                best_extracted = donut_extracted
         
-        if len(ai_result) >= 2:  # At least 2 fields found
-            return {
-                "response_content": ai_result,
-                "raw_ocr_text": ocr_text,
-                "source": "ai_extraction"
-            }
-        
-        # Fallback: Return what we found
-        partial_result = [v for v in [extracted['payment_date'], extracted['receipt_number'], extracted['customer_number']] if v]
+        partial_result = [v for v in [best_extracted.get('payment_date'), best_extracted.get('receipt_number'), best_extracted.get('customer_number')] if v]
         return {
             "response_content": partial_result,
-            "raw_ocr_text": ocr_text,
+            "raw_ocr_text": combined_text or ocr_text,
             "source": "partial_extraction",
-            "extracted_fields": extracted
+            "extracted_fields": best_extracted
         }
         
     except Exception as e:
