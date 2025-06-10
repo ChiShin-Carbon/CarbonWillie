@@ -11,6 +11,48 @@ import {getEmployeeData} from '../fetchdata.js'
 import Zoom from 'react-medium-image-zoom';
 import 'react-medium-image-zoom/dist/styles.css';
 
+// Helper function to safely parse date strings
+const parseEditTime = (dateString) => {
+    if (!dateString) {
+        console.warn('Empty date string provided');
+        return new Date(); // Return current date as fallback
+    }
+    
+    // Try multiple parsing methods
+    let date;
+    
+    // Method 1: Direct Date constructor
+    date = new Date(dateString);
+    if (!isNaN(date.getTime()) && date.getFullYear() > 1990) {
+        return date;
+    }
+    
+    // Method 2: Replace space with 'T' for ISO format
+    if (typeof dateString === 'string' && dateString.includes(' ')) {
+        const isoString = dateString.replace(' ', 'T');
+        date = new Date(isoString);
+        if (!isNaN(date.getTime()) && date.getFullYear() > 1990) {
+            return date;
+        }
+    }
+    
+    // Method 3: Manual parsing for YYYY-MM-DD HH:MM:SS format
+    if (typeof dateString === 'string') {
+        const match = dateString.match(/(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2}):(\d{2})/);
+        if (match) {
+            const [, year, month, day, hour, minute, second] = match;
+            date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day), parseInt(hour), parseInt(minute), parseInt(second));
+            if (!isNaN(date.getTime()) && date.getFullYear() > 1990) {
+                return date;
+            }
+        }
+    }
+    
+    // If all methods fail, return current date as fallback
+    console.warn('Failed to parse date:', dateString, typeof dateString);
+    return new Date(); // Always return a valid Date object
+};
+
 export const Employee = ({refreshEmployeeData}) => {
     const [isEditModalVisible, setEditModalVisible] = useState(false);
     const [employeeData, setEmployeeData] = useState([]);
@@ -205,15 +247,23 @@ export const Employee = ({refreshEmployeeData}) => {
 
                                     <td>
                                         {employee.username}<br />
-                                        {new Date(employee.edit_time).toLocaleString('zh-TW', {
-                                            year: 'numeric',
-                                            month: '2-digit',
-                                            day: '2-digit',
-                                            hour: '2-digit',
-                                            minute: '2-digit',
-                                            second: '2-digit',
-                                            hour12: false
-                                        })}
+                                        {(() => {
+                                            try {
+                                                const parsedDate = parseEditTime(employee.edit_time);
+                                                return parsedDate.toLocaleString('zh-TW', {
+                                                    year: 'numeric',
+                                                    month: '2-digit',
+                                                    day: '2-digit',
+                                                    hour: '2-digit',
+                                                    minute: '2-digit',
+                                                    second: '2-digit',
+                                                    hour12: false
+                                                });
+                                            } catch (error) {
+                                                console.error('Error parsing edit_time:', employee.edit_time, error);
+                                                return '日期解析錯誤';
+                                            }
+                                        })()}
                                     </td>
 
                                     {hasEditPermission && (

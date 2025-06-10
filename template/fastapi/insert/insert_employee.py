@@ -37,6 +37,8 @@ async def read_user_credentials(
     if conn:
         cursor = conn.cursor()
         try:
+            current_time = datetime.now()
+
             query = """
                 INSERT INTO Employee (
                     user_id, period_date, employee_number, daily_hours, workday, overtime,
@@ -58,7 +60,7 @@ async def read_user_credentials(
                 special,
                 explain,
                 str(image_path),
-                datetime.now()
+                current_time
             )
 
             print("Executing query:", query)  # Debug print
