@@ -56,6 +56,7 @@ const Tabs = () => {
   }, [])
 
   // 表格數據
+  // 表格數據
   const tableData = emission_sources
     .map((source) => {
       // Check if activity_data is empty
@@ -85,10 +86,13 @@ const Tabs = () => {
           activity: activity.activity_data || '',
           activityUnit: activity_data_unit_map[activity.activity_data_unit],
           emiCoe1: gasTypes,
+          // CORRECTED VERSION - Remove the duplicate and use only this one:
           emiCoeList: gasTypes.map((gasType, index) => {
             // Get the emission factor for this index, or use a default empty object if it doesn't exist
             const emissionFactor = emissionFactors[index] || {}
-            const emissionData = emissionsList.find((e) => e.gas_type === index + 1) || {} // 依gas_type對應emissions
+            // Use the actual gas_type from the emission factor to find matching emissions
+            const actualGasType = emissionFactor.gas_type || (index + 1)
+            const emissionData = emissionsList.find((e) => e.gas_type === actualGasType) || {}
 
             return {
               gasType,
