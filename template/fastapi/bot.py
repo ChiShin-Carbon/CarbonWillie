@@ -391,8 +391,23 @@ def summarize_chunks_optimized(client, query, chunks):
     if not chunks:
         return "No relevant information found."
     
+    # Read table content for context
+    tables_path = "./CreateTables.txt"
+    table_content = ""
+    try:
+        with open(tables_path, 'r', encoding='utf-8') as file:
+            table_content = file.read()
+    except Exception as e:
+        print(f"Error reading table content: {e}")
+        table_content = ""
+
     # Simplified prompt
     combined_content = "\n\n".join(chunks)
+    
+    # Create system prompt with table content if available
+    system_prompt = "基於提供的內容回答用戶問題，保持簡潔準確。並且**避免**直接以資料庫欄位名稱進行回答，請以人性化的方式進行回答"
+    if table_content:
+        system_prompt += f"\n\n資料庫結構參考：\n{table_content}"  # Limit table content size
     
     try:
         response = client.chat.completions.create(
@@ -400,7 +415,7 @@ def summarize_chunks_optimized(client, query, chunks):
             temperature=0.1,
             max_tokens=400,  # Limit response length
             messages=[
-                {"role": "system", "content": "基於提供的內容回答用戶問題，保持簡潔準確。"},
+                {"role": "system", "content": system_prompt},
                 {"role": "user", "content": f"問題：{query}\n\n內容：{combined_content}"}
             ]
         )
