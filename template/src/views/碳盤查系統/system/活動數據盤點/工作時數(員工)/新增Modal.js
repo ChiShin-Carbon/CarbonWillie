@@ -299,7 +299,7 @@ export const EmployeeAdd = ({
             const formDataToSend = new FormData();
             formDataToSend.append("user_id", window.sessionStorage.getItem("user_id"));
             formDataToSend.append("month", formData.month);
-            formDataToSend.append("employee", formData.employee);
+            formDataToSend.append("employee_number", formData.employee);
             formDataToSend.append("daily_hours", formData.daily_hours);
             formDataToSend.append("workday", formData.workday);
             formDataToSend.append("overtime", formData.overtime || "0");
