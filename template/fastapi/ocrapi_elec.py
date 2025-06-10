@@ -64,7 +64,7 @@ def perform_fast_ocr(pil_img):
 
 def quick_extract(text):
     """
-    Lightning-fast pattern extraction using optimized regex
+    Enhanced pattern extraction with field label context awareness
     """
     results = {
         'payment_date': None,
@@ -72,84 +72,111 @@ def quick_extract(text):
         'customer_number': None
     }
     
-    # Clean text once
+    # Clean text but preserve line structure for context
+    lines = text.split('\n')
     cleaned = re.sub(r'\s+', ' ', text.replace('\n', ' ').replace('\r', ' '))
     print(f"Quick analysis: {cleaned[:150]}...")
     
-    # 1. PAYMENT DATE - Multiple fast patterns for ROC dates
-    date_patterns = [
-        r'\b(1\d{2})\s*[/\-]\s*(\d{1,2})\s*[/\-]\s*(\d{1,2})\b',  # 114/05/23 or 114 05 23
-        r'\b(1\d{4})\s*[/\-]\s*(\d{1,2})\b',  # 11405/23 condensed format
-        r'(\d{6})',  # 114052 condensed date
+    # 1. CONTEXT-AWARE PAYMENT DATE EXTRACTION
+    # Look for Payment Date field label context
+    payment_date_found = False
+    
+    # Pattern 1: Look for "Payment Date" or "繳費日期" followed by date
+    payment_context_patterns = [
+        r'(?:Payment\s+Date|繳費日期)[^\d]*(\d{3}[/\-]\d{1,2}[/\-]\d{1,2})',
+        r'(?:payment\s+Date|Payment\s+date)[^\d]*(\d{3}[/\-]\d{1,2}[/\-]\d{1,2})',
     ]
     
-    for pattern in date_patterns:
-        matches = re.findall(pattern, cleaned)
-        for match in matches:
-            if isinstance(match, tuple):
-                if len(match) == 3:  # YYY/MM/DD format
-                    try:
-                        year, month, day = int(match[0]), int(match[1]), int(match[2])
-                        if 100 <= year <= 120 and 1 <= month <= 12 and 1 <= day <= 31:
-                            gregorian_year = year + 1911
-                            results['payment_date'] = f"{gregorian_year}-{month:02d}-{day:02d}"
-                            print(f"Found payment date: {match} -> {results['payment_date']}")
-                            break
-                    except ValueError:
-                        continue
-                elif len(match) == 2:  # YYYMM/DD format
-                    try:
-                        year_month, day = match[0], int(match[1])
-                        if len(year_month) == 5:  # 11405
-                            year = int(year_month[:3])  # 114
-                            month = int(year_month[3:])  # 05
-                            if 100 <= year <= 120 and 1 <= month <= 12 and 1 <= day <= 31:
-                                gregorian_year = year + 1911
-                                results['payment_date'] = f"{gregorian_year}-{month:02d}-{day:02d}"
-                                print(f"Found condensed date: {year_month}/{day} -> {results['payment_date']}")
-                                break
-                    except ValueError:
-                        continue
-            else:  # Single match - 6 digit date
-                if len(match) == 6:  # 114052
-                    try:
-                        year = int(match[:3])  # 114
-                        month = int(match[3:5])  # 05
-                        day = int(match[5:])  # 2 (assuming single digit)
-                        if 100 <= year <= 120 and 1 <= month <= 12 and 1 <= day <= 31:
-                            gregorian_year = year + 1911
-                            results['payment_date'] = f"{gregorian_year}-{month:02d}-{day:02d}"
-                            print(f"Found 6-digit date: {match} -> {results['payment_date']}")
-                            break
-                    except ValueError:
-                        continue
-        
-        if results['payment_date']:
-            break
-    
-    # 2. RECEIPT NUMBER - Fast pattern
-    receipt_patterns = [
-        r'M0(\d{12,15})',  # M0 + 12-15 digits
-        r'\bM(\d{13,17})\b',  # M + 13-17 digits
-    ]
-    
-    for pattern in receipt_patterns:
-        match = re.search(pattern, cleaned)
+    for pattern in payment_context_patterns:
+        match = re.search(pattern, cleaned, re.IGNORECASE)
         if match:
-            if pattern.startswith(r'M0'):
-                results['receipt_number'] = f"M0{match.group(1)}"
-            else:
-                results['receipt_number'] = f"M{match.group(1)}"
-            print(f"Found receipt: {results['receipt_number']}")
+            date_str = match.group(1)
+            converted_date = convert_roc_date(date_str)
+            if converted_date:
+                results['payment_date'] = converted_date
+                payment_date_found = True
+                print(f"Found payment date with context: {date_str} -> {converted_date}")
+                break
+    
+    # Pattern 2: Look in structured receipt areas (between specific field labels)
+    if not payment_date_found:
+        for line in lines:
+            # Check if line contains payment date context
+            if re.search(r'(?:payment|繳費|Date|日期)', line, re.IGNORECASE):
+                # Extract ROC date from this line
+                date_match = re.search(r'(\d{3}[/\-]\d{1,2}[/\-]\d{1,2})', line)
+                if date_match:
+                    converted_date = convert_roc_date(date_match.group(1))
+                    if converted_date:
+                        results['payment_date'] = converted_date
+                        payment_date_found = True
+                        print(f"Found payment date in context line: {date_match.group(1)} -> {converted_date}")
+                        break
+    
+    # Pattern 3: Look for standalone ROC dates (fallback)
+    if not payment_date_found:
+        # Find all ROC dates and pick the most likely one
+        roc_dates = re.findall(r'\b(1\d{2}[/\-]\d{1,2}[/\-]\d{1,2})\b', cleaned)
+        for date_str in roc_dates:
+            # Skip dates that are part of other numbers (like customer numbers)
+            if not re.search(rf'\d+-\d+-\d+-{re.escape(date_str)}', cleaned):
+                converted_date = convert_roc_date(date_str)
+                if converted_date:
+                    results['payment_date'] = converted_date
+                    print(f"Found standalone ROC date: {date_str} -> {converted_date}")
+                    break
+    
+    # 2. CONTEXT-AWARE RECEIPT NUMBER EXTRACTION
+    # Look for "單據號碼" context
+    receipt_context_patterns = [
+        r'(?:單據號碼|Receipt.*Number)[^\w]*([A-Za-z]\d{10,20})',
+        r'(?:收據|receipt)[^\w]*([A-Za-z]\d{10,20})',
+        # Look for M followed by long number in receipt context
+        r'\b(M\d{13,20})\b',
+        r'\b(M0\d{12,19})\b',
+    ]
+    
+    for pattern in receipt_context_patterns:
+        match = re.search(pattern, cleaned, re.IGNORECASE)
+        if match:
+            results['receipt_number'] = match.group(1)
+            print(f"Found receipt number: {results['receipt_number']}")
             break
     
     # 3. CUSTOMER NUMBER - Taiwan Power format
-    customer_match = re.search(r'\b(\d{2}-\d{2}-\d{4}-\d{2}-\d{1,2})\b', cleaned)
-    if customer_match:
-        results['customer_number'] = customer_match.group(1)
-        print(f"Found customer: {results['customer_number']}")
+    customer_patterns = [
+        r'(?:電號|Customer\s+Number)[^\d]*(\d{2}-\d{2}-\d{4}-\d{2}-\d{1,2})',
+        r'\b(\d{2}-\d{2}-\d{4}-\d{2}-\d{1,2})\b',
+    ]
+    
+    for pattern in customer_patterns:
+        match = re.search(pattern, cleaned, re.IGNORECASE)
+        if match:
+            results['customer_number'] = match.group(1)
+            print(f"Found customer number: {results['customer_number']}")
+            break
     
     return results
+
+def convert_roc_date(date_str):
+    """
+    Convert ROC date string to Gregorian format with validation
+    """
+    try:
+        # Extract year, month, day from date string
+        parts = re.split(r'[/\-]', date_str)
+        if len(parts) == 3:
+            year = int(parts[0])
+            month = int(parts[1])
+            day = int(parts[2])
+            
+            # Validate ROC year range (100-120 = 2011-2031)
+            if 100 <= year <= 120 and 1 <= month <= 12 and 1 <= day <= 31:
+                gregorian_year = year + 1911
+                return f"{gregorian_year}-{month:02d}-{day:02d}"
+    except (ValueError, IndexError):
+        pass
+    return None
 
 def has_minimum_data(results):
     """
@@ -201,29 +228,65 @@ async def fast_donut_ocr(pil_img):
 
 async def fast_ai_extraction(text):
     """
-    Streamlined AI extraction for missing fields only
+    Enhanced AI extraction with specific field targeting
     """
     try:
-        # Quick AI call with focused prompt
         completion = await run_in_threadpool(
             lambda: openai.chat.completions.create(
                 model="gpt-4o-mini",
                 messages=[
-                    {"role": "system", "content": "Extract from Taiwan Power receipt. Return only JSON: {\"payment_date\": \"YYYY-MM-DD\", \"receipt_number\": \"M0...\", \"customer_number\": \"XX-XX-XXXX-XX-X\"}. ROC year + 1911 = Gregorian year. Set null if not found."},
-                    {"role": "user", "content": f"Extract 繳費日期, 單據號碼, 電號 from: {text[:300]}"}
+                    {"role": "system", "content": """
+                    You are an expert at extracting data from Taiwan Power Company receipts.
+                    
+                    CRITICAL TASKS:
+                    1. Find 繳費日期 (Payment Date) - Look for "Payment Date" label and nearby ROC date like 114/05/23
+                    2. Find 單據號碼 (Receipt Number) - Look for "M" followed by long digits like M0114052316318
+                    3. Find 電號 (Customer Number) - Format XX-XX-XXXX-XX-X like 16-46-3302-10-5
+                    
+                    ROC DATE CONVERSION: ROC year + 1911 = Gregorian year
+                    Example: 114/05/23 becomes 2025-05-23 (114 + 1911 = 2025)
+                    
+                    Return ONLY this JSON format:
+                    {
+                        "payment_date": "YYYY-MM-DD",
+                        "receipt_number": "M0XXXXXXXXXXXXX", 
+                        "customer_number": "XX-XX-XXXX-XX-X"
+                    }
+                    
+                    Set fields to null if not found. Be very careful with ROC date conversion.
+                    """},
+                    {"role": "user", "content": f"""
+                    Extract from this Taiwan Power Company receipt OCR text:
+                    
+                    {text[:500]}
+                    
+                    Look specifically for:
+                    - Payment Date (繳費日期) field and its value
+                    - Receipt Number (單據號碼) - usually starts with M
+                    - Customer Number (電號) with dashes
+                    """}
                 ],
-                max_tokens=150,  # Limit response length
-                temperature=0    # Deterministic output
+                max_tokens=200,
+                temperature=0
             )
         )
 
         response = completion.choices[0].message.content.strip()
+        print(f"AI response: {response}")
+        
         json_match = re.search(r'\{.*?\}', response, re.DOTALL)
         
         if json_match:
             data = json.loads(json_match.group())
-            # Return list of non-null values
-            return [v for v in [data.get('payment_date'), data.get('receipt_number'), data.get('customer_number')] if v]
+            # Return list of non-null values in priority order
+            result = []
+            if data.get('payment_date'):
+                result.append(data['payment_date'])
+            if data.get('receipt_number'):
+                result.append(data['receipt_number'])
+            if data.get('customer_number'):
+                result.append(data['customer_number'])
+            return result
         
         return []
         
