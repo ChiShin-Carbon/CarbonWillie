@@ -169,7 +169,7 @@ const AddFillModal = ({
         formDataToSend.append('image', imageFile);
 
         try {
-            const res = await fetch('http://localhost:8000/ocrapi', {
+            const res = await fetch('http://localhost:8000/ocrapi_elec', {
                 method: 'POST',
                 body: formDataToSend,
             });
