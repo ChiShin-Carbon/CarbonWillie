@@ -143,7 +143,7 @@ class SQLQueryEnhancer:
         
         try:
             response = self.client.chat.completions.create(
-                model="gpt-4o",
+                model="gpt-4o-mini",
                 temperature=0.1,  # Low temperature for consistency
                 messages=[
                     {"role": "system", "content": system_prompt},
@@ -344,7 +344,7 @@ class SQLQueryEnhancer:
         
         try:
             result = self.client.chat.completions.create(
-                model="gpt-4o",
+                model="gpt-4o-mini",
                 temperature=0.2,
                 messages=[
                     {"role": "system", "content": "你是專業的數據分析助手，擅長將資料庫查詢結果轉換為清晰易懂的商業洞察。請提供實用、準確且易於理解的回答。"},
@@ -397,7 +397,7 @@ async def botmessage(request: MessageRequest):
 
     # Determine intent
     intent_response = client.chat.completions.create(
-        model="gpt-4o",
+        model="gpt-4o-mini",
         messages=[
             {"role": "system", "content": f"""
 You are an intelligent assistant that replies to the user's questions with precision. 
@@ -553,7 +553,7 @@ def detect_user_language(client, user_message):
     """Detect the user's language from their message."""
     # Use a language detection prompt with the OpenAI API
     language_detection = client.chat.completions.create(
-        model="gpt-4o",
+        model="gpt-4o-mini",
         temperature=0,
         messages=[
             {"role": "system", "content": """
@@ -699,7 +699,7 @@ def score_chunk_sync(client, query, chunk, index):
 """
 
     score_response = client.chat.completions.create(
-        model="gpt-4o",
+        model="gpt-4o-mini",
         temperature=0,
         messages=[
             {"role": "system", "content": "你是精確的內容評分專家。你必須遵循指示，只回傳一個0-10之間的整數作為評分結果，不能有任何其他文字、標點或說明。違反此規則將導致評分系統失效。"},
