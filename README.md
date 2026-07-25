@@ -32,7 +32,7 @@ npm start
 
 ## System Overview
 
-> Introduction to the project background and motivation, system features, key functionalities, and conclusion with future development directions.
+> Overview of the project background, features, and project outcomes.
 
 <a href="https://youtu.be/ui26MhRhWRM" target="_blank">
   <img src="https://img.youtube.com/vi/ui26MhRhWRM/maxresdefault.jpg" 
@@ -42,7 +42,7 @@ npm start
 
 ## System Demo
 
-> Demonstration of the overall system architecture, workflow, and key system functionalities through practical operation.
+> Demonstration of the system workflow and key functionalities.
 
 <a href="https://youtu.be/9fn0XUY7q-E" target="_blank">
   <img src="https://img.youtube.com/vi/9fn0XUY7q-E/maxresdefault.jpg" 
