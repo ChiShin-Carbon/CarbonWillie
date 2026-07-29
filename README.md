@@ -6,12 +6,12 @@
 ![SQL Server](https://img.shields.io/badge/SQL%20Server-Database-CC2927?logo=microsoftsqlserver&logoColor=white)
 ![OpenAI](https://img.shields.io/badge/OpenAI-GPT--4o-412991?logo=openai&logoColor=white)
 
-## Table of Contents
-- [Abstract](#abstract)
-- [Technology Stack](#technology-stack)
-- [System Overview](#system-overview)
-- [System Demo](#system-demo)
-- [Installation Guide](#installation-guide)
+- [📝 Abstract](#-abstract)
+- [🛠️ Technology Stack](#%EF%B8%8F-technology-stack)
+- [📺 System Overview](#-system-overview)
+- [🎬 System Demo](#-system-demo)
+- [📂 Project Resources & Documentation](#-project-resources--documentation)
+- [⚙️ Installation Guide](#%EF%B8%8F-installation-guide)
   - [Prerequisites](#prerequisites)
   - [Frontend Setup](#frontend-setup)
   - [Backend Setup](#backend-setup)
@@ -19,7 +19,7 @@
 
 ---
 
-## Abstract
+## 📝 Abstract
 
 With the escalating climate crisis, Carbon Footprint Verification (CFV) has become essential for emission management and reduction. Taiwan's government actively promotes corporate carbon footprint verification, yet the health examination industry faces challenges due to high energy consumption, complex operations, and data integration issues.
 
@@ -27,7 +27,7 @@ To address this, this study develops an intelligent CFV management system tailor
 
 This system streamlines CFV, improves data accuracy, and aids enterprises in formulating effective carbon reduction strategies.
 
-## Technology Stack
+## 🛠️ Technology Stack
 
 | Technology | Description |
 |---|---|
@@ -40,7 +40,7 @@ This system streamlines CFV, improves data accuracy, and aids enterprises in for
 | RAG | Domain Knowledge Retrieval |
 | Visual Studio Code | Development Environment |
 
-## System Overview
+## 📺 System Overview
 
 > Overview of the project background, features, and project outcomes.
 
@@ -50,7 +50,7 @@ This system streamlines CFV, improves data accuracy, and aids enterprises in for
        width="450">
 </a>
 
-## System Demo
+## 🎬 System Demo
 
 > Demonstration of the system workflow and key functionalities.
 
@@ -62,7 +62,20 @@ This system streamlines CFV, improves data accuracy, and aids enterprises in for
 
 ---
 
-## Installation Guide
+## 📁 Project Resources & Documentation
+
+All related documentation, user manuals, and required setup data are available in the project Google Drive folder:
+
+🔗 **[FJCU_Undergraduate_Final_Project_CFV_System](https://drive.google.com/drive/folders/1oZ9VgixFKYfPM46qH0rcFPQp3ve7nxf9?usp=sharing)**
+
+- 📄 **System Documentation**
+- 📄 **System Overview Document**
+- 📄 **System User Manual**
+- 📁 **RAG Document** (Domain knowledge files required for RAG integration)
+
+---
+
+## ⚙️ Installation Guide
 
 ### Prerequisites
 
